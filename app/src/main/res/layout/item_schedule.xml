@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical">
+
+    <ImageView
+        android:id="@+id/btn_close_schedule"
+        android:layout_gravity="end"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:src="@drawable/ic_close"/>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal|end"
+        android:text="saat ini seluruh petugas kami belum dapat menjawab panggilan Anda, mohon jadwalkan waktu terbaik bagi kami untuk menghubungi Anda kembali."
+        android:textColor="@color/black"
+        android:textSize="17sp"
+        android:justificationMode="inter_word"
+        android:layout_marginBottom="25dp"/>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Hari &amp; Tanggal"
+        android:textStyle="bold"
+        android:textColor="@color/black"
+        android:textSize="17sp"
+        android:layout_marginBottom="10dp"/>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="0dp"
+            android:layout_weight="0.9"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+            <EditText
+                android:id="@+id/et_Date"
+                android:focusable="false"
+                android:drawableEnd="@drawable/ic_date"
+                android:drawableRight="@drawable/ic_date"
+                android:drawableTint="@color/black"
+                android:textSize="17sp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+        </com.google.android.material.textfield.TextInputLayout>
+
+    </LinearLayout>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Waktu"
+        android:textStyle="bold"
+        android:textColor="@color/black"
+        android:textSize="17sp"
+        android:layout_marginBottom="10dp"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="0dp"
+            android:layout_weight="0.9"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu">
+            <AutoCompleteTextView
+                android:drawableEnd="@drawable/ic_time"
+                android:drawableRight="@drawable/ic_time"
+                android:drawableTint="@color/black"
+                android:focusable="false"
+                android:id="@+id/et_time"
+                android:textSize="15sp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="none" />
+        </com.google.android.material.textfield.TextInputLayout>
+    </LinearLayout>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnSchedule2"
+        android:layout_width="wrap_content"
+        android:layout_height="30dp"
+        android:text="Jadwalkan Panggilan"
+        android:textSize="10sp"
+        android:paddingTop="2dp"
+        android:layout_marginTop="15dp"
+        android:background="@drawable/oval_background_10dp"
+        android:backgroundTint="@color/teal_200"
+        android:textColor="@color/white"
+        android:layout_gravity="center"/>
+
+
+</LinearLayout>

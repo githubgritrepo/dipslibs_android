@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".Dashboard"
+    android:orientation="horizontal">
+
+    <ScrollView
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:background="#8080ff">
+
+        <LinearLayout
+            android:id="@+id/tabs"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="top"
+            android:orientation="vertical" >
+
+            <Button
+                android:id="@+id/btnTabWelcome"
+                android:layout_width="110dp"
+                android:layout_height="80dp"
+                android:text="Home" />
+
+            <Button
+                android:id="@+id/btnTabPage2"
+                android:layout_width="110dp"
+                android:layout_height="80dp"
+                android:text="Produk dan Layanan" />
+
+            <Button
+                android:id="@+id/btnTabMeeting"
+                android:layout_width="110dp"
+                android:layout_height="80dp"
+                android:text="HUbungi Kami via DiPS" />
+
+        </LinearLayout>
+
+    </ScrollView>
+
+    <FrameLayout
+        android:id="@+id/tabcontent"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1" >
+
+        <TextView
+            android:id="@+id/viewTabWelcome"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:text="Hello, world"/>
+
+        <TextView
+            android:id="@+id/viewTabPage2"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:text="Waiting to Form Transfer...."/>
+
+        <TextView
+            android:id="@+id/viewTabMeeting"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:text="Waiting..." />
+
+    </FrameLayout>
+
+</LinearLayout>

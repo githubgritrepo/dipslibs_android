@@ -1,0 +1,45 @@
+<RelativeLayout
+    android:id="@+id/rlprogress"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/transparentblack"
+    android:clickable="true"
+    android:visibility="gone"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/profileimage"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_centerInParent="true"
+        android:src="@color/white" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/profileimage"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="20dp"
+        android:text="please wait"
+        android:textColor="@color/white" />
+
+
+    <ProgressBar
+        android:layout_width="120dp"
+        android:layout_height="120dp"
+        android:layout_centerInParent="true" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <ImageView
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:elevation="10dp" />
+    </LinearLayout>
+
+</RelativeLayout>

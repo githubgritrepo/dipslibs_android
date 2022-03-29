@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/MIT_Zoom.iml" filepath="$PROJECT_DIR$/.idea/modules/MIT_Zoom.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/MIT_Zoom.app.iml" filepath="$PROJECT_DIR$/.idea/modules/app/MIT_Zoom.app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/mobilertc/MIT_Zoom.mobilertc.iml" filepath="$PROJECT_DIR$/.idea/modules/mobilertc/MIT_Zoom.mobilertc.iml" />
+    </modules>
+  </component>
+</project>
