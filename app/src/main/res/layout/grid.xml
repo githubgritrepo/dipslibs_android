@@ -6,9 +6,11 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <androidx.cardview.widget.CardView
+        android:elevation="0dp"
+        android:backgroundTint="@android:color/transparent"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:cardCornerRadius="15dp"
+        app:cardCornerRadius="19dp"
         android:layout_gravity="center">
 
         <ImageView
@@ -17,7 +19,7 @@
             android:layout_width="match_parent"
             android:layout_height="120dp"
             android:layout_margin="2dp"
-            android:scaleType="centerCrop"
+            android:scaleType="fitXY"
             tools:ignore="ContentDescription"
             android:adjustViewBounds="true"/>
 

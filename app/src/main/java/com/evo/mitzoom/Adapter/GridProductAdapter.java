@@ -1,20 +1,30 @@
 package com.evo.mitzoom.Adapter;
 
+import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewParent;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.evo.mitzoom.R;
+import com.github.javiersantos.materialstyleddialogs.MaterialStyledDialog;
+import com.google.android.material.dialog.MaterialDialogs;
+import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 
 public class GridProductAdapter extends RecyclerView.Adapter<GridProductAdapter.GriViewHolder> {
 
     int[] gambar;
+    Context ctx;
+    LayoutInflater inflater;
+    MaterialStyledDialog materialStyledDialog;
 
-    public GridProductAdapter(int[] gambar) {
+    public GridProductAdapter(Context ctx, int[] gambar) {
+        this.ctx = ctx;
         this.gambar = gambar;
     }
 
@@ -40,8 +50,31 @@ public class GridProductAdapter extends RecyclerView.Adapter<GridProductAdapter.
         ImageView ads;
         public GriViewHolder(@NonNull View itemView) {
             super(itemView);
-
             ads = (ImageView) itemView.findViewById(R.id.ads);
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    popUpAds();
+                    Toast.makeText(ads.getContext(), "ini ads", Toast.LENGTH_SHORT).show();
+                }
+            });
         }
     }
+
+    private void popUpAds() {
+        View view = LayoutInflater.from(ctx).inflate(R.layout.item_ads,null);
+        materialStyledDialog = new MaterialStyledDialog.Builder(ctx)
+                .setHeaderDrawable(R.drawable.bannerads)
+                .setCustomView(view, 20, 20, 20, 0)
+                .setHeaderScaleType(ImageView.ScaleType.FIT_XY)
+                .show();
+        ExtendedFloatingActionButton materialButton = view.findViewById(R.id.btnback);
+        materialButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                materialStyledDialog.dismiss();
+            }
+        });
+    }
+
 }

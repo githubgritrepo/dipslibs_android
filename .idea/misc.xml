@@ -46,10 +46,22 @@
         <entry key="..\:/Project Mobile Apps/MITZoom/app/src/main/res/layout/layout_bottomsheetlogin.xml" value="0.15307971014492755" />
         <entry key="..\:/Project Mobile Apps/MITZoom/app/src/main/res/layout/progress_loading.xml" value="0.22327898550724637" />
         <entry key="..\:/Project Mobile Apps/MITZoom/app/src/main/res/menu/navigation_primary.xml" value="0.25416666666666665" />
+        <entry key="..\:/Users/Mohammad Rafii B/AndroidStudioProjects/ZOOMFIX/app/src/main/res/drawable-hdpi/ic_back.xml" value="0.1865" />
+        <entry key="..\:/Users/Mohammad Rafii B/AndroidStudioProjects/ZOOMFIX/app/src/main/res/drawable/oval_background.xml" value="0.174" />
+        <entry key="..\:/Users/Mohammad Rafii B/AndroidStudioProjects/ZOOMFIX/app/src/main/res/drawable/oval_background_10dp.xml" value="0.174" />
+        <entry key="..\:/Users/Mohammad Rafii B/AndroidStudioProjects/ZOOMFIX/app/src/main/res/drawable/oval_background_15dp.xml" value="0.174" />
+        <entry key="..\:/Users/Mohammad Rafii B/AndroidStudioProjects/ZOOMFIX/app/src/main/res/drawable/oval_background_button.xml" value="0.174" />
+        <entry key="..\:/Users/Mohammad Rafii B/AndroidStudioProjects/ZOOMFIX/app/src/main/res/drawable/oval_connecting_call.xml" value="0.174" />
+        <entry key="..\:/Users/Mohammad Rafii B/AndroidStudioProjects/ZOOMFIX/app/src/main/res/layout/activity_dips_capture.xml" value="0.2" />
+        <entry key="..\:/Users/Mohammad Rafii B/AndroidStudioProjects/ZOOMFIX/app/src/main/res/layout/activity_dips_waiting_room.xml" value="0.1" />
+        <entry key="..\:/Users/Mohammad Rafii B/AndroidStudioProjects/ZOOMFIX/app/src/main/res/layout/grid.xml" value="0.25" />
+        <entry key="..\:/Users/Mohammad Rafii B/AndroidStudioProjects/ZOOMFIX/app/src/main/res/layout/item_ads.xml" value="0.2" />
+        <entry key="..\:/Users/Mohammad Rafii B/AndroidStudioProjects/ZOOMFIX/app/src/main/res/layout/item_schedule.xml" value="0.22" />
+        <entry key="..\:/Users/Mohammad Rafii B/AndroidStudioProjects/ZOOMFIX/app/src/main/res/layout/slide.xml" value="0.2" />
       </map>
     </option>
   </component>
-  <component name="ProjectRootManager" version="2" languageLevel="JDK_11" default="true" project-jdk-name="1.8" project-jdk-type="JavaSDK">
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_11" project-jdk-name="1.8" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/build/classes" />
   </component>
   <component name="ProjectType">

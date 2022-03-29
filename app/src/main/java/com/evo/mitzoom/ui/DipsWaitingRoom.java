@@ -71,8 +71,7 @@ public class DipsWaitingRoom extends AppCompatActivity {
     String [] nama = {"ads1", "ads2", "ads1", "ads2", "ads1", "ads2"};
     private RecyclerView rv_product;
     private GridProductAdapter gridAdapter;
-    private MaterialButton btnSchedule,btnSchedule2;
-    private ImageButton btnEndCall;
+    private MaterialButton btnSchedule,btnSchedule2, btnEndCall;
     private LayoutInflater inflater;
     private View dialogView;
     private ImageView btnclose;
@@ -108,7 +107,7 @@ public class DipsWaitingRoom extends AppCompatActivity {
         previewHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
 
         rv_product.setLayoutManager(new GridLayoutManager(this,2));
-        gridAdapter = new GridProductAdapter(gambar);
+        gridAdapter = new GridProductAdapter(DipsWaitingRoom.this,gambar);
         rv_product.setAdapter(gridAdapter);
 
         Intent intent = getIntent();

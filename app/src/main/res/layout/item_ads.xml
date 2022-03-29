@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:fillViewport="true"
+    android:theme="@style/Theme.MaterialComponents.DayNight.DarkActionBar"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <LinearLayout
+            android:layout_width="match_parent"
+            android:orientation="vertical"
+            android:layout_height="wrap_content">
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:justificationMode="inter_word"
+            android:layout_marginBottom="10dp"
+            android:textStyle="bold"
+            android:text="Mudah &amp; Murah"/>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:justificationMode="inter_word"
+            android:layout_marginBottom="10dp"
+            android:text="Belanja tak perlu keluar rumah, bisa langsung transaksi dengan mudah dan murah dari Company Brand menggunakan kartu XYZ tipe apapun! Discount hingga 50% khusus untuk pengguna baru dan dapatkan promo menarik lainnya!"/>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:justificationMode="inter_word"
+            android:layout_marginBottom="10dp"
+            android:text="Belanja tak perlu keluar rumah, bisa langsung transaksi dengan mudah dan murah dari Company Brand menggunakan kartu XYZ tipe apapun! Discount hingga 50% khusus untuk pengguna baru dan dapatkan promo menarik lainnya!"/>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:justificationMode="inter_word"
+            android:layout_marginBottom="10dp"
+            android:text="Belanja tak perlu keluar rumah, bisa langsung transaksi dengan mudah dan murah dari Company Brand menggunakan kartu XYZ tipe apapun! Discount hingga 50% khusus untuk pengguna baru dan dapatkan promo menarik lainnya!"/>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:justificationMode="inter_word"
+            android:layout_marginBottom="10dp"
+            android:text="Belanja tak perlu keluar rumah, bisa langsung transaksi dengan mudah dan murah dari Company Brand menggunakan kartu XYZ tipe apapun! Discount hingga 50% khusus untuk pengguna baru dan dapatkan promo menarik lainnya!"/>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:justificationMode="inter_word"
+            android:layout_marginBottom="10dp"
+            android:text="Belanja tak perlu keluar rumah, bisa langsung transaksi dengan mudah dan murah dari Company Brand menggunakan kartu XYZ tipe apapun! Discount hingga 50% khusus untuk pengguna baru dan dapatkan promo menarik lainnya!"/>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:justificationMode="inter_word"
+            android:layout_marginBottom="10dp"
+            android:text="Belanja tak perlu keluar rumah, bisa langsung transaksi dengan mudah dan murah dari Company Brand menggunakan kartu XYZ tipe apapun! Discount hingga 50% khusus untuk pengguna baru dan dapatkan promo menarik lainnya!"/>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:justificationMode="inter_word"
+            android:layout_marginBottom="10dp"
+            android:text="Belanja tak perlu keluar rumah, bisa langsung transaksi dengan mudah dan murah dari Company Brand menggunakan kartu XYZ tipe apapun! Discount hingga 50% khusus untuk pengguna baru dan dapatkan promo menarik lainnya!"/>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:justificationMode="inter_word"
+            android:layout_marginBottom="10dp"
+            android:text="Belanja tak perlu keluar rumah, bisa langsung transaksi dengan mudah dan murah dari Company Brand menggunakan kartu XYZ tipe apapun! Discount hingga 50% khusus untuk pengguna baru dan dapatkan promo menarik lainnya!"/>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:justificationMode="inter_word"
+            android:layout_marginBottom="10dp"
+            android:text="Belanja tak perlu keluar rumah, bisa langsung transaksi dengan mudah dan murah dari Company Brand menggunakan kartu XYZ tipe apapun! Discount hingga 50% khusus untuk pengguna baru dan dapatkan promo menarik lainnya!"/>
+                <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+                    android:id="@+id/btnback"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_margin="10dp"
+                    android:textStyle="bold"
+                    app:icon="@drawable/ic_back"
+                    app:iconGravity="textStart"
+                    app:iconTint="@color/white"
+                    android:textSize="15sp"
+                    android:backgroundTint="@color/Blue"
+                    android:text="KEMBALI"
+                    android:textColor="@color/white"/>
+        </LinearLayout>
+</ScrollView>

@@ -31,16 +31,17 @@
                 android:id="@+id/llMsg"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="@drawable/oval_background"
                 android:layout_alignParentBottom="true"
                 android:layout_centerInParent="true"
-                android:layout_marginBottom="50dp">
+                android:layout_marginBottom="50dp"
+                android:background="@drawable/oval_background">
+
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/wink"
-                    android:textStyle="bold"
-                    android:textColor="@color/black"/>
+                    android:textColor="@color/black"
+                    android:textStyle="bold" />
             </LinearLayout>
 
         </RelativeLayout>
