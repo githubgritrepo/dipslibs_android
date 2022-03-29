@@ -81,4 +81,6 @@
 
     </LinearLayout>
 
+    <include layout="@layout/progress_loading" />
+
 </RelativeLayout>

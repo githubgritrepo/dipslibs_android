@@ -12,7 +12,7 @@
         android:layout_width="100dp"
         android:layout_height="100dp"
         android:layout_centerInParent="true"
-        android:src="@color/white" />
+        android:src="@mipmap/dips361" />
 
     <TextView
         android:layout_width="wrap_content"
