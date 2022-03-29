@@ -30,8 +30,10 @@ import android.util.Log;
 import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+import android.view.View;
 import android.view.WindowManager;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.evo.mitzoom.API.ApiService;
@@ -77,6 +79,7 @@ public class DipsCapture extends AppCompatActivity implements CameraSource.Pictu
     private SurfaceHolder previewHolder = null;
     private SurfaceHolder transHolder = null;
     private FaceDetector detector;
+    private RelativeLayout rlprogress;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -91,6 +94,7 @@ public class DipsCapture extends AppCompatActivity implements CameraSource.Pictu
 
         preview = (SurfaceView) findViewById(R.id.mySurface);
         transPreview = (SurfaceView) findViewById(R.id.transSurface);
+        rlprogress = (RelativeLayout) findViewById(R.id.rlprogress);
         LinearLayout llMsg = (LinearLayout) findViewById(R.id.llMsg);
         llMsg.getBackground().setAlpha(150);
 
@@ -297,6 +301,7 @@ public class DipsCapture extends AppCompatActivity implements CameraSource.Pictu
         String imgBase64 = imageRotateBase64(bitmapCrop, rotationInDegree);
 
         if (!imgBase64.isEmpty()) {
+            showProgress(true);
             processCaptureIdentify(imgBase64);
         }
         //byte[] bytePhoto = Base64.decode(imgBase64, Base64.NO_WRAP);
@@ -384,6 +389,7 @@ public class DipsCapture extends AppCompatActivity implements CameraSource.Pictu
         call.enqueue(new Callback<CaptureIdentify>() {
             @Override
             public void onResponse(Call<CaptureIdentify> call, Response<CaptureIdentify> response) {
+                showProgress(false);
                 if (response.isSuccessful() && response.body() != null) {
                     String dataS = response.body().toString();
 //                    try {
@@ -395,7 +401,7 @@ public class DipsCapture extends AppCompatActivity implements CameraSource.Pictu
                             if (errCode == 0) {
                                 SweetAlertDialog sweetDialog = new SweetAlertDialog(mContext,SweetAlertDialog.WARNING_TYPE);
                                 sweetDialog.setTitleText("Warning!!!");
-                                sweetDialog.setContentText(msg);
+                                sweetDialog.setContentText(getResources().getString(R.string.not_using_dips));
                                 sweetDialog.setConfirmText("OK");
                                 sweetDialog.setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
                                     @Override
@@ -434,9 +440,19 @@ public class DipsCapture extends AppCompatActivity implements CameraSource.Pictu
 
             @Override
             public void onFailure(Call<CaptureIdentify> call, Throwable t) {
+                showProgress(false);
                 Toast.makeText(mContext, t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    private void showProgress(Boolean bool){
+
+        if (bool){
+            rlprogress.setVisibility(View.VISIBLE);
+        }else {
+            rlprogress.setVisibility(View.GONE);
+        }
     }
 
 }

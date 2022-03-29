@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">DiPS361</string>
+    <string name="tab_text_1">Inter Account</string>
+    <string name="tab_text_2">Inter Bank</string>
+    <string name="home">Home</string>
+    <string name="aboutus">About Us</string>
+    <string name="welcometext">Welcome\nto DiPS361</string>
+    <string name="desc_welcome">Virtual Customer Support Application\nEasy, safe and convenient</string>
+    <string name="wink">Wink To\nCapture Image.</string>
+    <string name="msg_error">There is an error</string>
+    <string name="using_dips">You Can Use DiPS361</string>
+    <string name="not_using_dips">Sorry You Cant Use DiPS361 Services</string>
+    <string name="result_not_defined">Result is not defined</string>
+</resources>
