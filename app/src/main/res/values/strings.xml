@@ -11,4 +11,21 @@
     <string name="using_dips">Anda Bisa Menggunakan DiPS361</string>
     <string name="not_using_dips">Maaf Anda Tidak Bisa Menggunakan Layanan DiPS361</string>
     <string name="result_not_defined">Hasil tidak ditentukan</string>
+    <string name="call_is_being_connected">Panggilan terhubung...</string>
+    <string name="schedule_a_task">Jadwalkan Panggilan</string>
+    <string name="end_call">Akhiri</string>
+    <string name="headline_schedule">saat ini seluruh petugas kami belum dapat menjawab panggilan Anda, mohon jadwalkan waktu terbaik bagi kami untuk menghubungi Anda kembali.</string>
+    <string name="day_date_schedule"><![CDATA[Hari & Tanggal]]></string>
+    <string name="time">Waktu</string>
+    <string name="notif_blank">Data belum diisi</string>
+    <string name="no">Tidak</string>
+    <string name="headline_endcall">Apakah anda ingin mengkahiri panggilan ?</string>
+    <string name="headline_waiting">Saat ini customer support sedang dalam proses dengan customer lain. Anda dapat menunggu di ruang tunggu atau menjadwalkan panggilan.</string>
+    <string name="waiting">Bersedia menunggu</string>
+    <string name="headline_success">Customer Support sudah siap melayani anda.</string>
+    <string name="btn_continue">Lanjutkan</string>
+    <string name="news">Berita</string>
+    <string name="product">Produk</string>
+    <string name="services">Layanan</string>
+    <string name="back">Kembali</string>
 </resources>

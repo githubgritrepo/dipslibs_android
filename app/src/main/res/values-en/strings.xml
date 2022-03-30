@@ -12,4 +12,21 @@
     <string name="using_dips">You Can Use DiPS361</string>
     <string name="not_using_dips">Sorry You Cant Use DiPS361 Services</string>
     <string name="result_not_defined">Result is not defined</string>
+    <string name="call_is_being_connected">Calls are connected...</string>
+    <string name="schedule_a_task">Schedule a call</string>
+    <string name="end_call">End</string>
+    <string name="headline_schedule">Currently all of our agents is busy to answer your call, please schedule the best time for us to call you back.</string>
+    <string name="day_date_schedule"><![CDATA[Date]]></string>
+    <string name="time">Time</string>
+    <string name="notif_blank">Data is empty</string>
+    <string name="no">Cancel</string>
+    <string name="headline_endcall">Are you sure to end voice call ?</string>
+    <string name="headline_waiting">Currently customer support is in the process with other customers. You can wait in the waiting room or schedule a call.</string>
+    <string name="waiting">Ready to wait</string>
+    <string name="headline_success">Customer Support ready to serve you.</string>
+    <string name="btn_continue">Continue</string>
+    <string name="news">News</string>
+    <string name="product">Products</string>
+    <string name="services">Services</string>
+    <string name="back">Back</string>
 </resources>

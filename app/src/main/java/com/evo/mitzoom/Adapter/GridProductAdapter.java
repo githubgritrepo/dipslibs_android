@@ -15,12 +15,13 @@ import com.evo.mitzoom.R;
 import com.github.javiersantos.materialstyleddialogs.MaterialStyledDialog;
 import com.google.android.material.dialog.MaterialDialogs;
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 public class GridProductAdapter extends RecyclerView.Adapter<GridProductAdapter.GriViewHolder> {
 
     int[] gambar;
+    int position;
     Context ctx;
-    LayoutInflater inflater;
     MaterialStyledDialog materialStyledDialog;
 
     public GridProductAdapter(Context ctx, int[] gambar) {
@@ -55,7 +56,6 @@ public class GridProductAdapter extends RecyclerView.Adapter<GridProductAdapter.
                 @Override
                 public void onClick(View v) {
                     popUpAds();
-                    Toast.makeText(ads.getContext(), "ini ads", Toast.LENGTH_SHORT).show();
                 }
             });
         }
@@ -65,6 +65,7 @@ public class GridProductAdapter extends RecyclerView.Adapter<GridProductAdapter.
         View view = LayoutInflater.from(ctx).inflate(R.layout.item_ads,null);
         materialStyledDialog = new MaterialStyledDialog.Builder(ctx)
                 .setHeaderDrawable(R.drawable.bannerads)
+                .setCancelable(false)
                 .setCustomView(view, 20, 20, 20, 0)
                 .setHeaderScaleType(ImageView.ScaleType.FIT_XY)
                 .show();

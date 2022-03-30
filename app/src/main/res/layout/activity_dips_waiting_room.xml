@@ -42,7 +42,7 @@
                     android:textSize="16sp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Panggilan sedang dihubungkan..."
+                    android:text="@string/call_is_being_connected"
                     android:textColor="@color/white"
                     android:textStyle="bold" />
             </LinearLayout>
@@ -57,11 +57,13 @@
         android:orientation="vertical"
         android:padding="10dp"
         android:layout_below="@id/llHead">
+
         <androidx.viewpager.widget.ViewPager
             android:id="@+id/pager"
             android:layout_width="match_parent"
             android:layout_height="125dp"
-            android:focusableInTouchMode="true" />
+            android:focusableInTouchMode="true"
+            tools:ignore="SpeakableTextPresentCheck" />
         <me.relex.circleindicator.CircleIndicator
             android:id="@+id/indicator"
             android:layout_width="wrap_content"
@@ -69,11 +71,14 @@
             android:layout_margin="6dp"
             android:layout_gravity="center"
             app:ci_drawable="@drawable/circleindicator_round"/>
+
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rv_product"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            tools:listitem="@layout/grid"/>
+            android:layout_marginBottom="50dp"
+            tools:ignore="SpeakableTextPresentCheck"
+            tools:listitem="@layout/grid" />
 
     </LinearLayout>
 
@@ -98,7 +103,8 @@
             app:indicatorColor="@color/gray_blue"
             app:indicatorRadius="25dp"
             app:menu="@menu/navigation_waitingroom"
-            app:textColor="@color/black" />
+            app:textColor="@color/black"
+            tools:ignore="SpeakableTextPresentCheck" />
 
         <androidx.coordinatorlayout.widget.CoordinatorLayout
             android:layout_width="match_parent"
@@ -125,17 +131,19 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginEnd="20dp"
-                        android:textAppearance="@style/TextAppearance.AppCompat.Button"
                         android:backgroundTint="@color/button_schedule"
-                        android:text="Jadwalkan Panggilan" />
+                        android:text="@string/schedule_a_task"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Button"
+                        tools:ignore="TextContrastCheck" />
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/end_call"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:textAppearance="@style/TextAppearance.AppCompat.Button"
                         android:backgroundTint="@color/button_end_call"
-                        android:text="Akhiri" />
+                        android:text="@string/end_call"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Button"
+                        tools:ignore="TextContrastCheck" />
                 </LinearLayout>
 
             </com.google.android.material.bottomappbar.BottomAppBar>

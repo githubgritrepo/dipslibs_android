@@ -142,9 +142,7 @@ public class DipsCapture extends AppCompatActivity implements CameraSource.Pictu
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        Intent intent = new Intent(DipsCapture.this,DipsWaitingRoom.class);
-                        intent.putExtra("ISCUSTOMER",0);
-                        startActivity(intent);
+                        clickImage();
                     }
                 });
             }

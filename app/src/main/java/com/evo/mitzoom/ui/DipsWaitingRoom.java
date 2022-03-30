@@ -49,6 +49,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import cn.pedant.SweetAlert.SweetAlertDialog;
+import me.ibrahimsn.lib.SmoothBottomBar;
 import me.relex.circleindicator.CircleIndicator;
 
 public class DipsWaitingRoom extends AppCompatActivity {
@@ -57,7 +58,7 @@ public class DipsWaitingRoom extends AppCompatActivity {
     private ViewPager mPager;
     private ArrayList<Integer> imgArray = new ArrayList<Integer>();
     private int currentPage;
-    private static final Integer[] img = {R.drawable.adsv1, R.drawable.adsp2, R.drawable.adsp4};
+    private static final Integer[] img = {R.drawable.adsv1, R.drawable.adsv2, R.drawable.adsv3};
     public static int CAM_ID = 0;
     private static final String KEY_USE_FACING = "use_facing";
     public static Integer useFacing = null;
@@ -67,8 +68,8 @@ public class DipsWaitingRoom extends AppCompatActivity {
     private SurfaceView preview = null;
     private SurfaceHolder previewHolder = null;
     private static int degreeFront = 0;
-    int [] gambar = {R.drawable.adsp2, R.drawable.adsp4, R.drawable.adsp2, R.drawable.adsp4, R.drawable.adsp2, R.drawable.adsp4};
-    String [] nama = {"ads1", "ads2", "ads1", "ads2", "ads1", "ads2"};
+    int [] gambar = {R.drawable.ads1, R.drawable.ads2, R.drawable.ads3, R.drawable.ads4,R.drawable.ads1, R.drawable.ads2, R.drawable.ads3, R.drawable.ads4,R.drawable.ads1, R.drawable.ads2, R.drawable.ads3, R.drawable.ads4,R.drawable.ads1, R.drawable.ads2, R.drawable.ads3, R.drawable.ads4};
+
     private RecyclerView rv_product;
     private GridProductAdapter gridAdapter;
     private MaterialButton btnSchedule,btnSchedule2, btnEndCall;
@@ -80,6 +81,7 @@ public class DipsWaitingRoom extends AppCompatActivity {
     private int year, month, day, waktu_tunggu = 5000;
     private String tanggal, waktu;
     String [] time = {"08.00 - 10.00", "10.00 - 12.00", "12.00 - 14.00", "14.00 - 16.00", "16.00 - 17.00"};
+    SmoothBottomBar smoothBottomBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -99,6 +101,7 @@ public class DipsWaitingRoom extends AppCompatActivity {
         rv_product = (RecyclerView) findViewById(R.id.rv_product);
         btnSchedule = (MaterialButton) findViewById(R.id.btnSchedule);
         btnEndCall = findViewById(R.id.end_call);
+        smoothBottomBar = findViewById(R.id.BottomBar);
 
         preview = (SurfaceView) findViewById(R.id.mySurface);
 
@@ -109,6 +112,18 @@ public class DipsWaitingRoom extends AppCompatActivity {
         rv_product.setLayoutManager(new GridLayoutManager(this,2));
         gridAdapter = new GridProductAdapter(DipsWaitingRoom.this,gambar);
         rv_product.setAdapter(gridAdapter);
+        rv_product.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+                if (dy > 0 ){
+                    smoothBottomBar.setVisibility(View.INVISIBLE);
+
+                }
+                else if (dy < 0){
+                   smoothBottomBar.setVisibility(View.VISIBLE);
+                }
+            }
+        });
 
         Intent intent = getIntent();
         useFacing = intent.getIntExtra(KEY_USE_FACING, Camera.CameraInfo.CAMERA_FACING_FRONT);
@@ -302,10 +317,10 @@ public class DipsWaitingRoom extends AppCompatActivity {
                 tanggal = et_Date.getText().toString();
                 waktu = et_time.getText().toString();
                 if (tanggal.trim().equals("")){
-                    Toast.makeText(getApplicationContext(), "Tanggal belum diisi", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), R.string.notif_blank, Toast.LENGTH_SHORT).show();
                 }
                 else if (waktu.trim().equals("")){
-                    Toast.makeText(getApplicationContext(), "Waktu Belum diisi", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), R.string.notif_blank, Toast.LENGTH_SHORT).show();
                 }
                 else {
                     Toast.makeText(getApplicationContext(), "Jadwal panggilan anda "+tanggal+" jam "+waktu, Toast.LENGTH_LONG).show();
@@ -315,12 +330,11 @@ public class DipsWaitingRoom extends AppCompatActivity {
             }
         });
     }
-
     private void EndCall(){
         SweetAlertDialog sweetAlertDialog = new SweetAlertDialog(DipsWaitingRoom.this, SweetAlertDialog.WARNING_TYPE);
-        sweetAlertDialog.setContentText("Apakah anda ingin mengakhiri panggilan ?");
-        sweetAlertDialog.setConfirmText("Akhiri Panggilan");
-        sweetAlertDialog.setCancelText("Tidak");
+        sweetAlertDialog.setContentText(getResources().getString(R.string.headline_endcall));
+        sweetAlertDialog.setConfirmText(getResources().getString(R.string.end_call));
+        sweetAlertDialog.setCancelText(getResources().getString(R.string.no));
         sweetAlertDialog.show();
         sweetAlertDialog.setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
             @Override
@@ -331,15 +345,14 @@ public class DipsWaitingRoom extends AppCompatActivity {
             }
         });
     }
-
     private void PopUpWaiting(){
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
                 SweetAlertDialog sweetAlertDialog = new SweetAlertDialog(DipsWaitingRoom.this, SweetAlertDialog.WARNING_TYPE);
-                sweetAlertDialog.setContentText("Saat ini customer support sedang dalam proses dengan customer lain. Anda dapat menunggu di ruang tunggu atau menjadwalkan panggilan.");
-                sweetAlertDialog.setConfirmText("Bersedia menunggu");
-                sweetAlertDialog.setCancelText("Jadwalkan panggilan");
+                sweetAlertDialog.setContentText(getResources().getString(R.string.headline_waiting));
+                sweetAlertDialog.setConfirmText(getResources().getString(R.string.waiting));
+                sweetAlertDialog.setCancelText(getResources().getString(R.string.schedule_a_task));
                 sweetAlertDialog.show();
                 sweetAlertDialog.setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
                     @Override
@@ -368,8 +381,8 @@ public class DipsWaitingRoom extends AppCompatActivity {
             @Override
             public void run() {
                 SweetAlertDialog sweetAlertDialog = new SweetAlertDialog(DipsWaitingRoom.this, SweetAlertDialog.SUCCESS_TYPE);
-                sweetAlertDialog.setContentText("Customer Support sudah siap melayani anda.");
-                sweetAlertDialog.setConfirmText("Lanjut");
+                sweetAlertDialog.setContentText(getResources().getString(R.string.headline_success));
+                sweetAlertDialog.setConfirmText(getResources().getString(R.string.btn_continue));
                 sweetAlertDialog.show();
                 sweetAlertDialog.setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
                     @Override
@@ -380,9 +393,7 @@ public class DipsWaitingRoom extends AppCompatActivity {
             }
         },120000);
     }
-
-    public void setCameraDisplayOrientation()
-    {
+    public void setCameraDisplayOrientation(){
         if (camera == null)
         {
             Log.d("CEK","setCameraDisplayOrientation - camera null");
@@ -417,7 +428,6 @@ public class DipsWaitingRoom extends AppCompatActivity {
         }
         camera.setDisplayOrientation(result);
     }
-
     SurfaceHolder.Callback surfaceCallback = new SurfaceHolder.Callback() {
         @Override
         public void surfaceCreated(@NonNull SurfaceHolder holder) {

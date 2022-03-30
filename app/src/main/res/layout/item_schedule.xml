@@ -16,7 +16,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal|end"
-        android:text="saat ini seluruh petugas kami belum dapat menjawab panggilan Anda, mohon jadwalkan waktu terbaik bagi kami untuk menghubungi Anda kembali."
+        android:text="@string/headline_schedule"
         android:textColor="@color/black"
         android:textSize="17sp"
         android:justificationMode="inter_word"
@@ -24,7 +24,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Hari &amp; Tanggal"
+        android:text="@string/day_date_schedule"
         android:textStyle="bold"
         android:textColor="@color/black"
         android:textSize="17sp"
@@ -56,7 +56,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Waktu"
+        android:text="@string/time"
         android:textStyle="bold"
         android:textColor="@color/black"
         android:textSize="17sp"
@@ -96,7 +96,7 @@
         android:background="@drawable/oval_background_button"
         android:backgroundTint="@color/button_schedule"
         android:textAppearance="@style/TextAppearance.AppCompat.Button"
-        android:text="Jadwalkan Panggilan"
+        android:text="@string/schedule_a_task"
         android:textColor="@color/white"/>
 
 
