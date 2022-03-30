@@ -147,10 +147,10 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
                 "\"version\":1," +
                 "\"role_type\":0," +
                 "\"user_identity\":\"\","+
-                "\"session_key\":\"test\","+
+                "\"session_key\":\"123456\","+
                 "\"iat\":"+timesIat+"," +
                 "\"exp\":"+timesExp+"," +
-                "\"tpc\":\"percobaansesi20220315\"}";
+                "\"tpc\":\"mobile01\"}";
 
         String secretKey = AuthConstants.APP_SECRET;
         String base64Secret = null;

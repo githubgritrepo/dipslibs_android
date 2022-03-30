@@ -11,4 +11,13 @@
     <string name="using_dips">Anda Bisa Menggunakan DiPS361</string>
     <string name="not_using_dips">Maaf Anda Tidak Bisa Menggunakan Layanan DiPS361</string>
     <string name="result_not_defined">Hasil tidak ditentukan</string>
+    <string name="tutup">Tutup</string>
+    <string name="chat">Chat</string>
+    <string name="confirm_accept">Apakah Anda setuju untuk menggunakan Layanan DiPS361?</string>
+    <string name="tidak_not">Tidak</string>
+    <string name="setuju_accept">Setuju</string>
+    <string name="leave_message">Do you want to leave this session?</string>
+    <string name="cancel">Cancel</string>
+    <string name="leave_leave_text">Leave Session</string>
+    <string name="leave_end_text">End Session</string>
 </resources>

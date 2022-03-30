@@ -12,4 +12,13 @@
     <string name="using_dips">You Can Use DiPS361</string>
     <string name="not_using_dips">Sorry You Cant Use DiPS361 Services</string>
     <string name="result_not_defined">Result is not defined</string>
+    <string name="tutup">Close</string>
+    <string name="chat">Chat</string>
+    <string name="confirm_accept">Do you agree to use the DiPS361 Service?</string>
+    <string name="tidak_not">Not</string>
+    <string name="setuju_accept">Accept</string>
+    <string name="leave_message">Do you want to leave this session?</string>
+    <string name="cancel">Cancel</string>
+    <string name="leave_leave_text">Leave Session</string>
+    <string name="leave_end_text">End Session</string>
 </resources>

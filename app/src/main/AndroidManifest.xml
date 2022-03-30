@@ -22,7 +22,11 @@
         android:usesCleartextTraffic="true">
         <activity
             android:name=".ui.DipsVideoConfren"
-            android:exported="false" />
+            android:exported="false"
+            android:screenOrientation="portrait"
+            android:configChanges="screenSize|orientation|keyboardHidden|keyboard"
+            android:theme="@style/ZMTheme.SubWindow"
+            android:windowSoftInputMode="adjustPan"/>
         <activity
             android:name=".ui.DipsWaitingRoom"
             android:exported="false"

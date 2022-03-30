@@ -3,19 +3,23 @@ package com.evo.mitzoom.ui;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
+import androidx.core.app.ActivityCompat;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.ViewPager;
 
+import android.Manifest;
 import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.hardware.Camera;
 import android.hardware.camera2.CameraAccessException;
 import android.hardware.camera2.CameraManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -34,26 +38,54 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.auth0.android.jwt.Claim;
+import com.auth0.android.jwt.JWT;
+import com.evo.mitzoom.API.ApiService;
+import com.evo.mitzoom.API.Server;
 import com.evo.mitzoom.Adapter.AdapterSlide;
 import com.evo.mitzoom.Adapter.GridAdapter;
 import com.evo.mitzoom.Adapter.GridProductAdapter;
+import com.evo.mitzoom.BaseMeetingActivity;
+import com.evo.mitzoom.Constants.AuthConstants;
 import com.evo.mitzoom.R;
+import com.evo.mitzoom.util.ErrorMsgUtil;
+import com.evo.mitzoom.util.NetworkUtil;
 import com.google.android.gms.vision.CameraSource;
 import com.google.android.material.button.MaterialButton;
+import com.google.gson.JsonObject;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
 import cn.pedant.SweetAlert.SweetAlertDialog;
 import me.relex.circleindicator.CircleIndicator;
+import okhttp3.MediaType;
+import okhttp3.RequestBody;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import us.zoom.sdk.ZoomVideoSDK;
+import us.zoom.sdk.ZoomVideoSDKAudioOption;
+import us.zoom.sdk.ZoomVideoSDKErrors;
+import us.zoom.sdk.ZoomVideoSDKInitParams;
+import us.zoom.sdk.ZoomVideoSDKRawDataMemoryMode;
+import us.zoom.sdk.ZoomVideoSDKSession;
+import us.zoom.sdk.ZoomVideoSDKSessionContext;
+import us.zoom.sdk.ZoomVideoSDKVideoOption;
 
 public class DipsWaitingRoom extends AppCompatActivity {
 
     private Context mContext;
+    protected final static int REQUEST_VIDEO_AUDIO_CODE = 1010;
+    protected int renderType = BaseMeetingActivity.RENDER_TYPE_ZOOMRENDERER;
     private ViewPager mPager;
     private ArrayList<Integer> imgArray = new ArrayList<Integer>();
     private int currentPage;
@@ -96,6 +128,7 @@ public class DipsWaitingRoom extends AppCompatActivity {
         mContext = this;
 
         initPager();
+        initializeSdk();
 
         rv_product = (RecyclerView) findViewById(R.id.rv_product);
         btnSchedule = (MaterialButton) findViewById(R.id.btnSchedule);
@@ -127,7 +160,7 @@ public class DipsWaitingRoom extends AppCompatActivity {
             }
         });
 
-        PopUpWaiting();
+        //PopUpWaiting();
         PopUpSucces();
 
     }
@@ -184,6 +217,27 @@ public class DipsWaitingRoom extends AppCompatActivity {
                 handler.post(updates);
             }
         }, 2500, 2500);
+    }
+
+    private void initializeSdk() {
+        ZoomVideoSDKInitParams params = new ZoomVideoSDKInitParams();
+        params.domain = AuthConstants.WEB_DOMAIN; // Required
+        params.enableLog = true; // Optional for debugging
+        params.videoRawDataMemoryMode = ZoomVideoSDKRawDataMemoryMode.ZoomVideoSDKRawDataMemoryModeHeap;
+        params.audioRawDataMemoryMode = ZoomVideoSDKRawDataMemoryMode.ZoomVideoSDKRawDataMemoryModeHeap;
+        params.shareRawDataMemoryMode = ZoomVideoSDKRawDataMemoryMode.ZoomVideoSDKRawDataMemoryModeHeap;
+
+        ZoomVideoSDK sdk = ZoomVideoSDK.getInstance();
+        int initResult = sdk.initialize(this, params);
+        if (initResult == ZoomVideoSDKErrors.Errors_Success) {
+            // You have successfully initialized the SDK
+            Log.d("CEK","successfully initialized the SDK");
+        } else {
+            // Something went wrong, see error code documentation
+            Log.d("CEK","Something went wrong : "+initResult);
+            Toast.makeText(this, ErrorMsgUtil.getMsgByErrorCode(initResult), Toast.LENGTH_LONG).show();
+        }
+
     }
 
     private void initPreview(int width, int height) {
@@ -376,10 +430,11 @@ public class DipsWaitingRoom extends AppCompatActivity {
                     @Override
                     public void onClick(SweetAlertDialog sweetAlertDialog) {
                         sweetAlertDialog.dismiss();
+                        processJoinVideo();
                     }
                 });
             }
-        },120000);
+        },10000);
     }
 
     public void setCameraDisplayOrientation()
@@ -436,4 +491,130 @@ public class DipsWaitingRoom extends AppCompatActivity {
 
         }
     };
+
+    protected boolean requestPermission() {
+        if (Build.VERSION.SDK_INT >= 23 && (checkSelfPermission(Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED ||
+                checkSelfPermission(Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED ||
+                checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)) {
+            ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.CAMERA,
+                    Manifest.permission.RECORD_AUDIO, Manifest.permission.READ_EXTERNAL_STORAGE}, REQUEST_VIDEO_AUDIO_CODE);
+            return false;
+        }
+        return true;
+    }
+
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == REQUEST_VIDEO_AUDIO_CODE) {
+            if (Build.VERSION.SDK_INT >= 23 && (checkSelfPermission(Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED
+                    && checkSelfPermission(Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED)) {
+
+                onPermissionGranted();
+            }
+        }
+    }
+
+    protected void onPermissionGranted() {
+        processJoinVideo();
+    }
+
+    private void processJoinVideo() {
+        if (!requestPermission())
+            return;
+        if (!NetworkUtil.hasDataNetwork(this)) {
+            Toast.makeText(this, "Connection Failed. Please check your network connection and try again.", Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        if (null == ZoomVideoSDK.getInstance()) {
+            Toast.makeText(this, "Please initialize SDK", Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        processSignature();
+    }
+
+    private void processSignature() {
+        JSONObject jsons = new JSONObject();
+        try {
+            jsons.put("sessionName","mobile01");
+            jsons.put("role",0);
+            jsons.put("sessionKey","123456");
+            jsons.put("userIdentity","Customer");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), jsons.toString());
+
+        ApiService API = Server.getAPIService();
+        Call<JsonObject> call = API.Signature(requestBody);
+        call.enqueue(new Callback<JsonObject>() {
+            @Override
+            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                if (response.isSuccessful() && response.body().size() > 0) {
+                    String dataS = response.body().toString();
+                    try {
+                        JSONObject jsObj = new JSONObject(dataS);
+                        String signatures = "";
+                        if (jsObj.has("signature")) {
+                            if (!jsObj.isNull("signature")) {
+                                signatures = jsObj.getString("signature");
+                                processCreateVideo(signatures);
+                            }
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                } else {
+                    Log.d("CEK","MASUK ELSE");
+                }
+            }
+
+            @Override
+            public void onFailure(Call<JsonObject> call, Throwable t) {
+                Toast.makeText(mContext,t.getMessage(),Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void processCreateVideo(String signatures) {
+        JWT jwt = new JWT(signatures);
+        Map<String, Claim> allClaims = jwt.getClaims();
+        String name = allClaims.get("user_identity").asString();
+        String sessionName = allClaims.get("tpc").asString();
+        String sessionPass = allClaims.get("session_key").asString();
+
+        ZoomVideoSDKSessionContext sessionContext = new ZoomVideoSDKSessionContext();
+
+        ZoomVideoSDKAudioOption audioOption = new ZoomVideoSDKAudioOption();
+        audioOption.connect = true;
+        audioOption.mute = false;
+        sessionContext.audioOption = audioOption;
+
+        ZoomVideoSDKVideoOption videoOption = new ZoomVideoSDKVideoOption();
+        videoOption.localVideoOn = true;
+        sessionContext.videoOption = videoOption;
+
+        sessionContext.sessionName = sessionName;
+        sessionContext.userName = name;
+        sessionContext.token = signatures;
+        //Optional
+        sessionContext.sessionPassword = sessionPass;
+
+        ZoomVideoSDKSession session = ZoomVideoSDK.getInstance().joinSession(sessionContext);
+
+        if(null==session){
+            return;
+        }
+
+        Intent intent = new Intent(this, DipsVideoConfren.class);
+        intent.putExtra("name", name);
+        intent.putExtra("password", sessionPass);
+        intent.putExtra("sessionName", sessionName);
+        intent.putExtra("render_type", renderType);
+        startActivity(intent);
+    }
 }
