@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <color name="button_connecting_call">#80000000</color>
+    <color name="button_end_call">#FF002E</color>
+    <color name="button_schedule">#22D882</color>
     <color name="colorPrimary">#00c5ec</color>
     <color name="colorPrimaryDark">#00574B</color>
     <color name="colorAccent">#D81B60</color>

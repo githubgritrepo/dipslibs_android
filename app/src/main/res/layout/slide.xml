@@ -11,9 +11,10 @@
         android:layout_gravity="center">
 
         <ImageView
+            android:src="@drawable/adsv1"
             android:id="@+id/images"
             android:layout_width="match_parent"
-            android:layout_height="150dp"
+            android:layout_height="wrap_content"
             android:scaleType="centerCrop"
             android:adjustViewBounds="true"/>
 

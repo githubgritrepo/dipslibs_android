@@ -4,16 +4,16 @@
     <item
         android:id="@+id/menuNews"
         android:icon="@drawable/ic_news"
-        android:title="Berita" />
+        android:title="@string/news" />
 
     <item
         android:id="@+id/menuProduct"
         android:icon="@drawable/ic_product"
-        android:title="Produk" />
+        android:title="@string/product" />
 
     <item
         android:id="@+id/menuService"
         android:icon="@drawable/ic_info"
-        android:title="Layanan" />
+        android:title="@string/services" />
 
 </menu>
