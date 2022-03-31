@@ -9,8 +9,8 @@ import com.google.android.gms.vision.face.FaceDetector;
 
 public class GraphicFaceTracker extends Tracker<Face> {
 
-    private static final float OPEN_THRESHOLD = 0.85f;
-    private static final float CLOSE_THRESHOLD = 0.4f;
+    private static final float OPEN_THRESHOLD = 0.99f;
+    private static final float CLOSE_THRESHOLD = 0.03f;
     private final DipsCapture dipsCapture;
     private int state = 0;
 

@@ -37,4 +37,6 @@
     <string name="product">Produk</string>
     <string name="services">Layanan</string>
     <string name="back">Kembali</string>
+    <string name="name">Nama</string>
+    <string name="nik">NIK</string>
 </resources>

@@ -4,60 +4,59 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_gravity="bottom|center_horizontal"
-    android:gravity="center_horizontal"
-    android:orientation="vertical"
-    android:scrollbars="none"
     android:background="@color/white"
+    android:gravity="center_horizontal"
     android:paddingTop="@dimen/dp_10"
-    android:visibility="invisible">
+    android:scrollbars="none">
 
     <ScrollView
         android:id="@+id/action_bar_scroll"
-        android:layout_width="wrap_content"
-        android:layout_height="0dp"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
         android:layout_weight="1"
         android:orientation="vertical"
         android:padding="0dp"
         android:scrollbars="none">
 
         <LinearLayout
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center_horizontal"
             android:minWidth="56dp"
             android:orientation="horizontal">
 
             <ImageView
+                android:contentDescription="btnmute"
                 android:id="@+id/icon_audio"
                 android:layout_width="wrap_content"
                 android:layout_height="50dp"
+                android:layout_margin="5dp"
                 android:onClick="onClickAudio"
-                android:src="@drawable/icon_unmute"
-                android:layout_margin="5dp"/>
+                android:src="@drawable/icon_unmute" />
 
             <Button
                 android:id="@+id/icon_chat"
                 android:layout_width="wrap_content"
                 android:layout_height="40dp"
+                android:layout_margin="5dp"
                 android:background="@drawable/oval_background_10dp"
                 android:backgroundTint="@color/Blue"
-                android:layout_margin="5dp"
+                android:drawableStart="@drawable/ic_chat"
                 android:text="@string/chat"
-                android:textStyle="bold"
                 android:textColor="@color/white"
-                android:drawableStart="@drawable/ic_chat" />
+                android:textStyle="bold" />
 
             <Button
                 android:id="@+id/icon_close"
                 android:layout_width="wrap_content"
                 android:layout_height="40dp"
+                android:layout_margin="5dp"
                 android:background="@drawable/oval_background_10dp"
                 android:backgroundTint="@color/zm_v1_red_A100"
-                android:layout_margin="5dp"
-                android:text="@string/tutup"
                 android:onClick="onClickEnd"
-                android:textStyle="bold"
-                android:textColor="@color/white"/>
+                android:text="@string/tutup"
+                android:textColor="@color/white"
+                android:textStyle="bold" />
 
         </LinearLayout>
     </ScrollView>

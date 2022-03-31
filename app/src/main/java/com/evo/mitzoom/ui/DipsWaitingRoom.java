@@ -16,6 +16,7 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.PixelFormat;
 import android.hardware.Camera;
 import android.hardware.camera2.CameraAccessException;
 import android.hardware.camera2.CameraManager;
@@ -137,10 +138,8 @@ public class DipsWaitingRoom extends AppCompatActivity {
         smoothBottomBar = findViewById(R.id.BottomBar);
 
         preview = (SurfaceView) findViewById(R.id.mySurface);
+        previewHolder();
 
-        previewHolder = preview.getHolder();
-        previewHolder.addCallback(surfaceCallback);
-        previewHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
 
         rv_product.setLayoutManager(new GridLayoutManager(this,2));
         gridAdapter = new GridProductAdapter(DipsWaitingRoom.this,gambar);
@@ -179,14 +178,12 @@ public class DipsWaitingRoom extends AppCompatActivity {
 
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-
-        camera = Camera.open(useFacing);
-        startPreview();
-
+    private void previewHolder(){
+        previewHolder = preview.getHolder();
+        previewHolder.addCallback(surfaceCallback);
+        previewHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
     }
+
 
     @Override
     protected void onPause() {
@@ -232,7 +229,6 @@ public class DipsWaitingRoom extends AppCompatActivity {
             }
         }, 2500, 2500);
     }
-
     private void initializeSdk() {
         ZoomVideoSDKInitParams params = new ZoomVideoSDKInitParams();
         params.domain = AuthConstants.WEB_DOMAIN; // Required
@@ -253,7 +249,6 @@ public class DipsWaitingRoom extends AppCompatActivity {
         }
 
     }
-
     private void initPreview(int width, int height) {
         if (camera != null && previewHolder.getSurface() != null) {
             try {
@@ -289,14 +284,12 @@ public class DipsWaitingRoom extends AppCompatActivity {
             }
         }
     }
-
     private void startPreview() {
         if (cameraConfigured && camera != null) {
             camera.startPreview();
             inPreview = true;
         }
     }
-
     private Camera.Size getOptimalPreviewSize(List<Camera.Size> sizes, int w, int h) {
         final double ASPECT_TOLERANCE = 0.1;
         double targetRatio=(double)h / w;
@@ -328,7 +321,6 @@ public class DipsWaitingRoom extends AppCompatActivity {
         }
         return optimalSize;
     }
-
     private void PopUpSchedule(){
         inflater = getLayoutInflater();
         dialogView = inflater.inflate(R.layout.item_schedule,null);
@@ -500,7 +492,6 @@ public class DipsWaitingRoom extends AppCompatActivity {
 
         }
     };
-
     protected boolean requestPermission() {
         if (Build.VERSION.SDK_INT >= 23 && (checkSelfPermission(Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED ||
                 checkSelfPermission(Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED ||
@@ -511,8 +502,6 @@ public class DipsWaitingRoom extends AppCompatActivity {
         }
         return true;
     }
-
-
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -524,11 +513,9 @@ public class DipsWaitingRoom extends AppCompatActivity {
             }
         }
     }
-
     protected void onPermissionGranted() {
         processJoinVideo();
     }
-
     private void processJoinVideo() {
         if (!requestPermission())
             return;
@@ -544,7 +531,6 @@ public class DipsWaitingRoom extends AppCompatActivity {
 
         processSignature();
     }
-
     private void processSignature() {
         JSONObject jsons = new JSONObject();
         try {
@@ -588,7 +574,6 @@ public class DipsWaitingRoom extends AppCompatActivity {
             }
         });
     }
-
     private void processCreateVideo(String signatures) {
         JWT jwt = new JWT(signatures);
         Map<String, Claim> allClaims = jwt.getClaims();
@@ -625,5 +610,11 @@ public class DipsWaitingRoom extends AppCompatActivity {
         intent.putExtra("sessionName", sessionName);
         intent.putExtra("render_type", renderType);
         startActivity(intent);
+    }
+    @Override
+    protected void onResume() {
+        super.onResume();
+        camera = Camera.open(useFacing);
+        startPreview();
     }
 }

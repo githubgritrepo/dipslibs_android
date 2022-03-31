@@ -8,6 +8,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.Toast;
 
@@ -41,7 +42,6 @@ public class DipsVideoConfren extends BaseMeetingActivity {
     RawDataRenderer rawDataRenderer;
 
     private FrameLayout videoContain;
-
     private AudioRawDataUtil audioRawDataUtil;
     private CmdHandler mFeedbackPushHandler = new CmdHandler() {
         @Override
@@ -51,6 +51,7 @@ public class DipsVideoConfren extends BaseMeetingActivity {
             }
         }
     };
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,26 +73,6 @@ public class DipsVideoConfren extends BaseMeetingActivity {
 //        audioRawDataUtil.subscribeAudio();
         startMeetingService();
     }
-
-//    @Override
-//    public void onCommandChannelConnectResult(boolean isSuccess) {
-//        super.onCommandChannelConnectResult(isSuccess);
-//        if (isSuccess) {
-//            String name = SharePreferenceUtil.readString(this, LowerThirdSettingFragment.NAME_KEY, "");
-//            if (name != null && !name.isEmpty()) {
-//                String company = SharePreferenceUtil.readString(this, LowerThirdSettingFragment.COMPANY_KEY, "");
-//                int rgbIndex = SharePreferenceUtil.readInt(this, LowerThirdSettingFragment.RGB_KEY, 0);
-//
-//                final CmdLowerThirdRequest request = new CmdLowerThirdRequest();
-//                request.user = null;
-//                request.name = name;
-//                request.companyName = company;
-//                request.rgb = CmdLowerThirdRequest.getColorTypeFromIndex(rgbIndex);
-//
-//                CmdHelper.getInstance().sendCommand(request);
-//            }
-//        }
-//    }
 
     private void startMeetingService() {
         Intent intent = new Intent(this, NotificationService.class);
@@ -131,9 +112,10 @@ public class DipsVideoConfren extends BaseMeetingActivity {
     @Override
     protected void initView() {
         super.initView();
+
         videoContain = findViewById(R.id.big_video_contain);
         videoContain.setOnClickListener(onEmptyContentClick);
-//        chatListView.setOnClickListener(onEmptyContentClick);
+
     }
 
     View.OnClickListener onEmptyContentClick = new View.OnClickListener() {
@@ -188,6 +170,7 @@ public class DipsVideoConfren extends BaseMeetingActivity {
 //        refreshFps();
 //        CmdHelper.getInstance().addListener(lowerThirdHandler);
 //        CmdHelper.getInstance().addListener(emojiHandler);
+
     }
 
     protected void unSubscribe() {

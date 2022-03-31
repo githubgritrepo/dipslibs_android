@@ -19,10 +19,12 @@ import android.view.Display;
 import android.view.Gravity;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -30,10 +32,14 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.evo.mitzoom.Adapter.UserVideoAdapter;
+import com.evo.mitzoom.Fragments.frag_conferee_agree;
+import com.evo.mitzoom.Fragments.frag_inputdata;
 import com.evo.mitzoom.Helper.NotificationMgr;
 import com.evo.mitzoom.Helper.NotificationService;
 import com.evo.mitzoom.screenshare.ShareToolbar;
@@ -103,12 +109,11 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
     private View shareViewGroup;
     private ImageView shareImageView;
     protected ImageView videoOffView;
-
     protected KeyBoardLayout keyBoardLayout;
-
     protected Display display;
     protected DisplayMetrics displayMetrics;
     protected boolean renderWithSurfaceView=true;
+    private RelativeLayout rlprogress;
 
     protected Handler handler = new Handler(Looper.getMainLooper());
 
@@ -133,12 +138,22 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
         initView();
         initMeeting();
         updateSessionInfo();
+        showProgress(true);
+
     }
 
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
         parseIntent();
+    }
+
+    private void getFragmentPage(Fragment fragment){
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.layout_frame, fragment)
+                .addToBackStack(null)
+                .commit();
     }
 
     @Override
@@ -379,6 +394,7 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
     }
 
     protected void initView() {
+        rlprogress = (RelativeLayout) findViewById(R.id.rlprogress);
         userVideoList = findViewById(R.id.userVideoList);
         videoListContain = findViewById(R.id.video_list_contain);
         adapter = new UserVideoAdapter(this, this, renderType);
@@ -387,7 +403,6 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
         layoutManager.setItemPrefetchEnabled(false);
         userVideoList.setLayoutManager(layoutManager);
         userVideoList.setAdapter(adapter);
-
         actionBar = findViewById(R.id.action_bar);
         actionBarScroll = findViewById(R.id.action_bar_scroll);
         iconAudio = findViewById(R.id.icon_audio);
@@ -436,9 +451,15 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
                 }
             }
         });
-
     }
+    private void showProgress(Boolean bool){
 
+        if (bool){
+            rlprogress.setVisibility(View.VISIBLE);
+        }else {
+            rlprogress.setVisibility(View.GONE);
+        }
+    }
     public void onClickAudio(View view) {
         ZoomVideoSDKUser zoomSDKUserInfo = session.getMySelf();
         if (null == zoomSDKUserInfo)
@@ -453,10 +474,8 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
             }
         }
     }
-
     public void onClickEnd(View view) {
         ZoomVideoSDKUser userInfo = session.getMySelf();
-
         final Dialog builder = new Dialog(this, R.style.MyDialog);
         builder.setCanceledOnTouchOutside(true);
         builder.setCancelable(true);
@@ -470,7 +489,6 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
                 Log.d(TAG, "leaveSession ret = " + ret);
             }
         });
-
         boolean end = false;
         if (null != userInfo && userInfo.isHost()) {
             ((TextView) builder.findViewById(R.id.btn_end)).setText(getString(R.string.leave_end_text));
@@ -489,8 +507,8 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
             }
         });
         builder.show();
-
     }
+
 
     private void releaseResource() {
         unSubscribe();
@@ -680,7 +698,9 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
 
     @Override
     public void onSessionJoin() {
+        showProgress(false);
         updateSessionInfo();
+        getFragmentPage(new frag_conferee_agree());
         actionBar.setVisibility(View.VISIBLE);
         if (ZoomVideoSDK.getInstance().getShareHelper().isSharingOut()) {
             ZoomVideoSDK.getInstance().getShareHelper().stopShare();
