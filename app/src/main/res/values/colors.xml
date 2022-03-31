@@ -15,6 +15,7 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="bg">#F3F1F1</color>
+    <color name="bg2">#F0F3F8</color>
     <color name="transparent">#00FFFFFF</color>
     <color name="setting_background">#fff2f2f2</color>
     <color name="preference_primary_text">#ff000000</color>

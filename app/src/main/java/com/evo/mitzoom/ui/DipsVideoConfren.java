@@ -143,7 +143,7 @@ public class DipsVideoConfren extends BaseMeetingActivity {
                 return;
             }
             boolean isShow = actionBar.getVisibility() == View.VISIBLE;
-            toggleView(!isShow);
+            //toggleView(!isShow);
 //            if (BuildConfig.DEBUG) {
 //                changeResolution();
 //            }
@@ -188,7 +188,6 @@ public class DipsVideoConfren extends BaseMeetingActivity {
 //        refreshFps();
 //        CmdHelper.getInstance().addListener(lowerThirdHandler);
 //        CmdHelper.getInstance().addListener(emojiHandler);
-        Log.d(TAG,"AKHIR initMeeting");
     }
 
     protected void unSubscribe() {

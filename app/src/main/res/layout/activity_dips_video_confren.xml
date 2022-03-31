@@ -4,19 +4,20 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.DipsVideoConfren">
+    tools:context=".ui.DipsVideoConfren"
+    android:background="@color/bg2">
 
     <FrameLayout
         android:id="@+id/big_video_contain"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-
+        android:layout_height="match_parent"
+        android:background="@color/bg2">
     </FrameLayout>
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:background="@color/bg2">
 
         <LinearLayout
             android:id="@+id/llUsersVideo"

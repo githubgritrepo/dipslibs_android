@@ -397,7 +397,7 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
         userVideoList.addItemDecoration(new RecyclerView.ItemDecoration() {
             @Override
             public void getItemOffsets(@NonNull Rect outRect, @NonNull View view, @NonNull RecyclerView parent, @NonNull RecyclerView.State state) {
-                outRect.set(margin, 0, margin, 0);
+                outRect.set(0, 0, 0, 0);
             }
         });
 
@@ -437,6 +437,21 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
             }
         });
 
+    }
+
+    public void onClickAudio(View view) {
+        ZoomVideoSDKUser zoomSDKUserInfo = session.getMySelf();
+        if (null == zoomSDKUserInfo)
+            return;
+        if (zoomSDKUserInfo.getAudioStatus().getAudioType() == ZoomVideoSDKAudioStatus.ZoomVideoSDKAudioType.ZoomVideoSDKAudioType_None) {
+            ZoomVideoSDK.getInstance().getAudioHelper().startAudio();
+        } else {
+            if (zoomSDKUserInfo.getAudioStatus().isMuted()) {
+                ZoomVideoSDK.getInstance().getAudioHelper().unMuteAudio(zoomSDKUserInfo);
+            } else {
+                ZoomVideoSDK.getInstance().getAudioHelper().muteAudio(zoomSDKUserInfo);
+            }
+        }
     }
 
     public void onClickEnd(View view) {
@@ -484,17 +499,14 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
     }
 
     protected void updateSessionInfo() {
-        Log.d(TAG,"MASUK updateSessionInfo");
         ZoomVideoSDKSession sessionInfo = ZoomVideoSDK.getInstance().getSession();
         if (ZoomVideoSDK.getInstance().isInSession()) {
-            Log.d(TAG,"MASUK isInSession");
             int size = UserHelper.getAllUsers().size();
             if (size <= 0) {
                 size = 1;
             }
             if (sessionInfo != null) meetingPwd = sessionInfo.getSessionPassword();
         } else {
-            Log.d(TAG,"MASUK else isInSession");
             actionBar.setVisibility(View.GONE);
         }
         //if (sessionInfo != null) sessionNameText.setText(sessionInfo.getSessionName());
@@ -595,7 +607,9 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
         int size = UserHelper.getAllUsers().size();
         LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) userVideoList.getLayoutParams();
         int preWidth = params.width;
+
         int width = LinearLayout.LayoutParams.WRAP_CONTENT;
+
         if (size - 1 >= 3) {
             int maxWidth = (int) (325 * displayMetrics.scaledDensity);
             width = maxWidth;
@@ -666,7 +680,6 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
 
     @Override
     public void onSessionJoin() {
-        Log.d(TAG, "onSessionJoin ");
         updateSessionInfo();
         actionBar.setVisibility(View.VISIBLE);
         if (ZoomVideoSDK.getInstance().getShareHelper().isSharingOut()) {
@@ -679,7 +692,6 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
 
     @Override
     public void onSessionLeave() {
-        Log.d(TAG, "onSessionLeave");
         finish();
     }
 
