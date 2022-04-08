@@ -115,6 +115,8 @@ public class DipsWaitingRoom extends AppCompatActivity {
     private String tanggal, waktu;
     String [] time = {"08.00 - 10.00", "10.00 - 12.00", "12.00 - 14.00", "14.00 - 16.00", "16.00 - 17.00"};
     SmoothBottomBar smoothBottomBar;
+    String NameSession;
+    String SessionPass;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -126,6 +128,9 @@ public class DipsWaitingRoom extends AppCompatActivity {
         getSupportActionBar().hide();
 
         int isCust = getIntent().getExtras().getInt("ISCUSTOMER");
+        NameSession = getIntent().getExtras().getString("SessionName");
+        SessionPass = getIntent().getExtras().getString("SessionPass");
+
 
         mContext = this;
 
@@ -534,9 +539,9 @@ public class DipsWaitingRoom extends AppCompatActivity {
     private void processSignature() {
         JSONObject jsons = new JSONObject();
         try {
-            jsons.put("sessionName","mobile01");
+            jsons.put("sessionName",NameSession);
             jsons.put("role",0);
-            jsons.put("sessionKey","123456");
+            jsons.put("sessionKey",SessionPass);
             jsons.put("userIdentity","Customer");
         } catch (JSONException e) {
             e.printStackTrace();

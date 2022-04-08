@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:background="@color/bg"
+    android:theme="@style/Theme.MaterialComponents.DayNight.DarkActionBar"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <RelativeLayout
+        android:gravity="end"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <ImageView
+            android:background="@drawable/circle_icon"
+            android:layout_margin="10dp"
+            android:id="@+id/btn_close_chat"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:src="@drawable/ic_close"/>
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/chat_list"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginBottom="74dp"
+            tools:listitem="@layout/item_chat_msg">
+
+        </androidx.recyclerview.widget.RecyclerView>
+
+    </RelativeLayout>
+    <LinearLayout
+        android:layout_below="@+id/chat_list"
+        android:layout_gravity="bottom"
+        android:background="@color/input_chat"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_margin="10dp"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+            <EditText
+                android:autofillHints="@string/enter_your_message"
+                android:textColor="@color/black"
+                android:inputType="text"
+                android:padding="10dp"
+                android:background="@drawable/oval_background_10dp"
+                android:id="@+id/et_input_chat"
+                android:textSize="20sp"
+                android:layout_width="match_parent"
+                android:layout_height="45dp"/>
+        </com.google.android.material.textfield.TextInputLayout>
+        <ImageView
+            android:backgroundTint="@color/Blue"
+            android:id="@+id/btn_send_chat"
+            android:layout_gravity="center_vertical"
+            android:layout_width="0dp"
+            android:layout_weight="0.2"
+            android:layout_height="35dp"
+            android:src="@drawable/ic_baseline_send_24"/>
+    </LinearLayout>
+
+</FrameLayout>

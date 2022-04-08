@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout android:theme="@style/Theme.MaterialComponents.DayNight.DarkActionBar"
+<FrameLayout
+    android:theme="@style/Theme.MaterialComponents.DayNight.DarkActionBar"
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_below="@id/llUsersVideo"
@@ -15,7 +16,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/name"
-            android:textStyle="bold"
             android:textAppearance="@style/TextAppearance.AppCompat.Body2"
             android:textSize="27sp"/>
         <com.google.android.material.textfield.TextInputLayout
@@ -28,6 +28,7 @@
             app:boxCornerRadiusBottomStart="10dp"
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
             <EditText
+                android:background="@drawable/bg_textinput"
                 android:inputType="text"
                 android:padding="10dp"
                 android:id="@+id/et_nama"
@@ -39,7 +40,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/nik"
-            android:textStyle="bold"
             android:textAppearance="@style/TextAppearance.AppCompat.Body2"
             android:textSize="27sp"/>
         <com.google.android.material.textfield.TextInputLayout
@@ -52,6 +52,7 @@
             app:boxCornerRadiusBottomStart="10dp"
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
             <EditText
+                android:background="@drawable/bg_textinput"
                 android:inputType="number"
                 android:padding="10dp"
                 android:id="@+id/et_nik"
@@ -69,7 +70,8 @@
             android:textStyle="bold"
             android:textSize="18sp"
             android:padding="10dp"
-            android:backgroundTint="@color/Blue"
+            app:backgroundTint="@color/Blue"
+            android:background="@drawable/oval_background_10dp"
             android:textAppearance="@style/TextAppearance.AppCompat.Button"
             android:text="@string/btn_continue"
             android:textColor="@color/white"/>

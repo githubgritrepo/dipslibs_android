@@ -396,6 +396,7 @@ public class DipsCapture extends AppCompatActivity implements CameraSource.Pictu
                         //JSONObject jsObj = new JSONObject(dataS);
                         String msg = response.body().getMessage();
 
+
                         //if (jsObj.has("err_code")) {
                             int errCode = response.body().getErr_code();
                             if (errCode == 0) {
@@ -421,9 +422,13 @@ public class DipsCapture extends AppCompatActivity implements CameraSource.Pictu
                             }
 
                             boolean isCust = response.body().isCustomer();
-
+                            String sessionName = response.body().getDataSession().getNameSession();
+                            Log.d("CEK", "sessionName = "+sessionName );
+                            String sessionPass = response.body().getDataSession().getPass();
                             Intent intent = new Intent(DipsCapture.this,DipsWaitingRoom.class);
                             intent.putExtra("ISCUSTOMER",isCust);
+                            intent.putExtra("SessionName", sessionName);
+                            intent.putExtra("SessionPass", sessionPass);
                             startActivity(intent);
 
 //                        } else {

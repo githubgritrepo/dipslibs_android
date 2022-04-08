@@ -38,6 +38,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.evo.mitzoom.Adapter.UserVideoAdapter;
+import com.evo.mitzoom.Fragments.frag_chat;
 import com.evo.mitzoom.Fragments.frag_conferee_agree;
 import com.evo.mitzoom.Fragments.frag_inputdata;
 import com.evo.mitzoom.Helper.NotificationMgr;
@@ -114,6 +115,7 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
     protected DisplayMetrics displayMetrics;
     protected boolean renderWithSurfaceView=true;
     private RelativeLayout rlprogress;
+    private Button btnChat;
 
     protected Handler handler = new Handler(Looper.getMainLooper());
 
@@ -407,6 +409,7 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
         actionBarScroll = findViewById(R.id.action_bar_scroll);
         iconAudio = findViewById(R.id.icon_audio);
         videoOffView = findViewById(R.id.video_off_tips);
+        btnChat = findViewById(R.id.icon_chat);
 
         final int margin = (int) (5 * displayMetrics.scaledDensity);
         userVideoList.addItemDecoration(new RecyclerView.ItemDecoration() {
@@ -508,7 +511,10 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
         });
         builder.show();
     }
-
+    public void onClickChat(View view) {
+        btnChat.setFocusable(true);
+        getFragmentPage(new frag_chat());
+    }
 
     private void releaseResource() {
         unSubscribe();

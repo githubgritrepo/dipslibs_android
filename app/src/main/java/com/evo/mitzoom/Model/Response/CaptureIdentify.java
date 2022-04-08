@@ -1,5 +1,6 @@
 package com.evo.mitzoom.Model.Response;
 
+import com.evo.mitzoom.Model.Request.dataSession;
 import com.google.gson.annotations.SerializedName;
 
 public class CaptureIdentify {
@@ -21,6 +22,17 @@ public class CaptureIdentify {
 
     @SerializedName("name")
     private String name;
+
+    @SerializedName("session")
+    private dataSession dataSession;
+
+    public com.evo.mitzoom.Model.Request.dataSession getDataSession() {
+        return dataSession;
+    }
+
+    public void setDataSession(com.evo.mitzoom.Model.Request.dataSession dataSession) {
+        this.dataSession = dataSession;
+    }
 
     public int getErr_code() {
         return err_code;

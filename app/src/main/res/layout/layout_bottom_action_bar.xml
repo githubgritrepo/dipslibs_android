@@ -43,6 +43,7 @@
                 android:backgroundTint="@color/Blue"
                 android:drawableStart="@drawable/ic_chat"
                 android:text="@string/chat"
+                android:onClick="onClickChat"
                 android:textColor="@color/white"
                 android:textStyle="bold" />
 
