@@ -172,7 +172,6 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
         refreshRotation();
         Log.d(TAG,"RESUME");
         updateActionBarLayoutParams();
-        Fragment currentFrag = getSupportFragmentManager().findFragmentById(R.id.layout_frame);
         //updateChatLayoutParams();
     }
 
