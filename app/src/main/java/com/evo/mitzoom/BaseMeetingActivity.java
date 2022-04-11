@@ -94,6 +94,7 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
     protected String myDisplayName = "";
     protected String meetingPwd = "";
     protected String sessionName;
+    protected boolean isCust;
     protected int renderType;
 
     protected RecyclerView userVideoList;
@@ -115,7 +116,7 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
     protected DisplayMetrics displayMetrics;
     protected boolean renderWithSurfaceView=true;
     private RelativeLayout rlprogress;
-    private Button btnChat;
+    public static Button btnChat;
 
     protected Handler handler = new Handler(Looper.getMainLooper());
 
@@ -151,6 +152,9 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
     }
 
     private void getFragmentPage(Fragment fragment){
+        Bundle bundle = new Bundle();
+        bundle.putBoolean("ISCUST",isCust);
+        fragment.setArguments(bundle);
         getSupportFragmentManager()
                 .beginTransaction()
                 .replace(R.id.layout_frame, fragment)
@@ -392,6 +396,7 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
             meetingPwd = bundle.getString("password");
             sessionName = bundle.getString("sessionName");
             renderType = bundle.getInt("render_type", RENDER_TYPE_ZOOMRENDERER);
+            isCust = bundle.getBoolean("ISCUSTOMER");
         }
     }
 
@@ -704,7 +709,9 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
 
     @Override
     public void onSessionJoin() {
+        btnChat.setBackgroundTintList(BaseMeetingActivity.this.getResources().getColorStateList(R.color.btnFalse));
         showProgress(false);
+        btnChat.setClickable(false);
         updateSessionInfo();
         getFragmentPage(new frag_conferee_agree());
         actionBar.setVisibility(View.VISIBLE);

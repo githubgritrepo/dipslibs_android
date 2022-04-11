@@ -14,7 +14,7 @@
         app:expansion_toggleOnClick="true">
 
         <RelativeLayout
-            android:background="@android:color/white"
+            android:background="@color/bg"
             android:layout_height="50dp"
             android:layout_width="match_parent"
             android:paddingLeft="16dp"
@@ -37,13 +37,13 @@
                 android:textStyle="bold" />
 
             <androidx.appcompat.widget.AppCompatImageView
-                android:adjustViewBounds="true"
                 android:id="@+id/headerIndicator"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:layout_alignParentRight="true"
                 android:layout_centerVertical="true"
-                android:layout_height="wrap_content"
                 android:layout_marginLeft="16dp"
-                android:layout_width="wrap_content"
+                android:adjustViewBounds="true"
                 app:srcCompat="@drawable/ic_expansion_header_indicator_grey_24dp" />
 
         </RelativeLayout>
@@ -52,6 +52,7 @@
     <com.github.florent37.expansionpanel.ExpansionLayout
         android:id="@+id/expansionLayout"
         app:expansion_expanded="false"
+        android:background="#FBFBFB"
         android:layout_height="wrap_content"
         android:layout_width="match_parent">
 
@@ -62,7 +63,6 @@
             android:orientation="vertical">
 
             <TextView
-                android:background="#EEE"
                 android:gravity="center"
                 android:layout_height="100dp"
                 android:layout_width="match_parent"

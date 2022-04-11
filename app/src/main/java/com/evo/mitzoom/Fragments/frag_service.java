@@ -13,12 +13,13 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.evo.mitzoom.Adapter.ItemBankAdapter;
+import com.evo.mitzoom.Adapter.ItemServiceAdapter;
 import com.evo.mitzoom.Model.ItemModel;
 import com.evo.mitzoom.R;
 
 import java.util.ArrayList;
 
-public class frag_item extends Fragment {
+public class frag_service extends Fragment {
     private Context context;
     RecyclerView recyclerView;
     RecyclerView.Adapter recyclerViewAdapter;
@@ -33,7 +34,7 @@ public class frag_item extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.frag_item_bank, container, false);
+        View view = inflater.inflate(R.layout.frag_services, container, false);
         recyclerView = view.findViewById(R.id.rv_item);
         return view;
     }
@@ -41,7 +42,7 @@ public class frag_item extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         addData();
-        recyclerViewAdapter = new ItemBankAdapter(context, data);
+        recyclerViewAdapter = new ItemServiceAdapter(context, data);
         recylerViewLayoutManager = new LinearLayoutManager(context);
         recyclerView.setLayoutManager(recylerViewLayoutManager);
         recyclerView.setAdapter(recyclerViewAdapter);
@@ -49,6 +50,7 @@ public class frag_item extends Fragment {
 
     private void addData(){
         data = new ArrayList<>();
-        data.add(new ItemModel("2",getResources().getString(R.string.create_new_account),R.drawable.item2));
+        data.add(new ItemModel("1",getResources().getString(R.string.credit_simulation),R.drawable.item3));
+        data.add(new ItemModel("2",getResources().getString(R.string.call_center),R.drawable.item4));
        }
 }

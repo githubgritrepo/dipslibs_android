@@ -19,11 +19,13 @@ import com.evo.mitzoom.R;
 public class frag_conferee_agree extends Fragment {
     private Context context;
     private Button btn_Setuju,btn_tidak;
+    private boolean isCust;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         context = getContext();
+        isCust = getArguments().getBoolean("ISCUST");
     }
 
     @Nullable
@@ -42,11 +44,16 @@ public class frag_conferee_agree extends Fragment {
             @Override
             public void onClick(View v) {
                 getFragmentPage(new frag_inputdata());
+                BaseMeetingActivity.btnChat.setBackgroundTintList(context.getResources().getColorStateList(R.color.Blue));
+                BaseMeetingActivity.btnChat.setClickable(true);
             }
         });
     }
 
     private void getFragmentPage(Fragment fragment){
+        Bundle bundle = new Bundle();
+        bundle.putBoolean("ISCUST",isCust);
+        fragment.setArguments(bundle);
         getActivity().getSupportFragmentManager()
                 .beginTransaction()
                 .replace(R.id.layout_frame, fragment)

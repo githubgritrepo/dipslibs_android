@@ -4,7 +4,6 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -14,19 +13,18 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.evo.mitzoom.Fragments.frag_list_produk;
 import com.evo.mitzoom.Fragments.frag_opening_account;
 import com.evo.mitzoom.Model.ItemModel;
 import com.evo.mitzoom.R;
 
 import java.util.ArrayList;
 
-public class ItemBankAdapter extends RecyclerView.Adapter<ItemBankAdapter.ItemHolder> {
+public class ItemServiceAdapter extends RecyclerView.Adapter<ItemServiceAdapter.ItemHolder> {
     private ArrayList<ItemModel> dataList;
     private Context ctx;
 
 
-    public ItemBankAdapter(Context ctx, ArrayList<ItemModel> dataList){
+    public ItemServiceAdapter(Context ctx, ArrayList<ItemModel> dataList){
         this.dataList = dataList;
         this.ctx = ctx;
     }
@@ -44,7 +42,10 @@ public class ItemBankAdapter extends RecyclerView.Adapter<ItemBankAdapter.ItemHo
         holder.parent_layout.setOnClickListener(v -> {
             switch (dataList.get(position).getId()){
                 case "1" :
-                    getFragmentPage(new frag_opening_account());
+                    Toast.makeText(ctx, R.string.credit_simulation, Toast.LENGTH_SHORT).show();
+                    return;
+                case "2" :
+                    Toast.makeText(ctx, R.string.call_center, Toast.LENGTH_SHORT).show();
                     return;
             }
         });

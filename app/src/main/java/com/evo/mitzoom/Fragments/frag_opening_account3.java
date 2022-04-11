@@ -67,10 +67,12 @@ public class frag_opening_account3 extends Fragment {
     }
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        btnNext.setClickable(false);
+        btnNext.setBackgroundTintList(context.getResources().getColorStateList(R.color.btnFalse));
         Bundle arg = ((Activity)context).getIntent().getExtras();
         KTP = arg.getByteArray("KTP");
         NPWP = arg.getByteArray("NPWP");
-        super.onViewCreated(view, savedInstanceState);
         iconKtp.setBackgroundTintList(context.getResources().getColorStateList(R.color.bg_cif_success));
         iconNpwp.setBackgroundTintList(context.getResources().getColorStateList(R.color.bg_cif_success));
         iconSignature.setBackgroundTintList(context.getResources().getColorStateList(R.color.bg_cif));

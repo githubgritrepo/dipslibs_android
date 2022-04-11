@@ -32,6 +32,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.evo.mitzoom.R;
+import com.evo.mitzoom.ui.DipsWaitingRoom;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -39,6 +40,8 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+
+import cn.pedant.SweetAlert.SweetAlertDialog;
 
 public class frag_opening_account extends Fragment {
     private Context context;
@@ -74,6 +77,9 @@ public class frag_opening_account extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        btnNext.setClickable(false);
+        btnNext.setBackgroundTintList(context.getResources().getColorStateList(R.color.btnFalse));
+        PopUp();
         iconKtp.setBackgroundTintList(context.getResources().getColorStateList(R.color.bg_cif));
         btnCamera.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -113,6 +119,12 @@ public class frag_opening_account extends Fragment {
         File f = new File(android.os.Environment.getExternalStorageDirectory(), "temp.png");
         intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(f));
         startActivityForResult(intent, 1);
+    }
+    private void PopUp(){
+        SweetAlertDialog sweetAlertDialog = new SweetAlertDialog(context, SweetAlertDialog.WARNING_TYPE);
+        sweetAlertDialog.setContentText(getResources().getString(R.string.popupktp));
+        sweetAlertDialog.hideConfirmButton();
+        sweetAlertDialog.show();
     }
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {

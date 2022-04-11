@@ -41,7 +41,7 @@
     <string name="nik">NIK</string>
     <string name="enter_your_message">Masukkan pesan anda</string>
     <string name="products_information">Informasi Produk</string>
-    <string name="create_new_account">Pembukaan Rekening Baru / CIF</string>
+    <string name="create_new_account">Informasi &amp; Pembukaan Rekening</string>
     <string name="credit_simulation">Simulasi Kredit</string>
     <string name="call_center">Keluhan Pelanggan</string>
     <string name="product_list">Daftar Produk</string>
@@ -69,4 +69,5 @@
     <string name="pastikan_gambar_atau_foto_ktp_sudah_jelas_dan_tidak_buram">Pastikan gambar atau foto sudah jelas dan tidak buram.</string>
     <string name="pilih_dari_galeri">Pilih Dari Galeri</string>
     <string name="email">Email</string>
+    <string name="popupktp">Harap menyiapkan dokumen data diri berupa KTP, NPWP, dan foto tanda tangan untuk di upload</string>
 </resources>

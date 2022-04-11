@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.app.ActivityCompat;
+import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.ViewPager;
@@ -48,6 +49,9 @@ import com.evo.mitzoom.Adapter.GridAdapter;
 import com.evo.mitzoom.Adapter.GridProductAdapter;
 import com.evo.mitzoom.BaseMeetingActivity;
 import com.evo.mitzoom.Constants.AuthConstants;
+import com.evo.mitzoom.Fragments.frag_berita;
+import com.evo.mitzoom.Fragments.frag_list_produk;
+import com.evo.mitzoom.Fragments.frag_service;
 import com.evo.mitzoom.R;
 import com.evo.mitzoom.util.ErrorMsgUtil;
 import com.evo.mitzoom.util.NetworkUtil;
@@ -67,6 +71,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import cn.pedant.SweetAlert.SweetAlertDialog;
+import me.ibrahimsn.lib.OnItemSelectedListener;
 import me.ibrahimsn.lib.SmoothBottomBar;
 import me.relex.circleindicator.CircleIndicator;
 import okhttp3.MediaType;
@@ -88,9 +93,6 @@ public class DipsWaitingRoom extends AppCompatActivity {
     private Context mContext;
     protected final static int REQUEST_VIDEO_AUDIO_CODE = 1010;
     protected int renderType = BaseMeetingActivity.RENDER_TYPE_ZOOMRENDERER;
-    private ViewPager mPager;
-    private ArrayList<Integer> imgArray = new ArrayList<Integer>();
-    private int currentPage;
     private static final Integer[] img = {R.drawable.adsv1, R.drawable.adsv2, R.drawable.adsv3};
     public static int CAM_ID = 0;
     private static final String KEY_USE_FACING = "use_facing";
@@ -101,11 +103,7 @@ public class DipsWaitingRoom extends AppCompatActivity {
     private SurfaceView preview = null;
     private SurfaceHolder previewHolder = null;
     private static int degreeFront = 0;
-    int [] gambar = {R.drawable.ads1, R.drawable.ads2, R.drawable.ads3, R.drawable.ads4,R.drawable.ads1, R.drawable.ads2, R.drawable.ads3, R.drawable.ads4,R.drawable.ads1, R.drawable.ads2, R.drawable.ads3, R.drawable.ads4,R.drawable.ads1, R.drawable.ads2, R.drawable.ads3, R.drawable.ads4};
-
-    private RecyclerView rv_product;
-    private GridProductAdapter gridAdapter;
-    private MaterialButton btnSchedule,btnSchedule2, btnEndCall;
+     private MaterialButton btnSchedule,btnSchedule2, btnEndCall;
     private LayoutInflater inflater;
     private View dialogView;
     private ImageView btnclose;
@@ -114,53 +112,33 @@ public class DipsWaitingRoom extends AppCompatActivity {
     private int year, month, day, waktu_tunggu = 5000;
     private String tanggal, waktu;
     String [] time = {"08.00 - 10.00", "10.00 - 12.00", "12.00 - 14.00", "14.00 - 16.00", "16.00 - 17.00"};
-    SmoothBottomBar smoothBottomBar;
+    public static SmoothBottomBar smoothBottomBar;
     String NameSession;
     String SessionPass;
     boolean isCust;
+    String custName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dips_waiting_room);
-
+        getFragmentPage(new frag_berita());
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
         getSupportActionBar().hide();
 
         isCust = getIntent().getExtras().getBoolean("ISCUSTOMER");
+        custName = getIntent().getExtras().getString("CUSTNAME");
         NameSession = getIntent().getExtras().getString("SessionName");
         SessionPass = getIntent().getExtras().getString("SessionPass");
 
         mContext = this;
-
-        initPager();
         initializeSdk();
-
-        rv_product = (RecyclerView) findViewById(R.id.rv_product);
         btnSchedule = (MaterialButton) findViewById(R.id.btnSchedule);
         btnEndCall = findViewById(R.id.end_call);
         smoothBottomBar = findViewById(R.id.BottomBar);
-
         preview = (SurfaceView) findViewById(R.id.mySurface);
         previewHolder();
-
-
-        rv_product.setLayoutManager(new GridLayoutManager(this,2));
-        gridAdapter = new GridProductAdapter(DipsWaitingRoom.this,gambar);
-        rv_product.setAdapter(gridAdapter);
-        rv_product.addOnScrollListener(new RecyclerView.OnScrollListener() {
-            @Override
-            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
-                if (dy > 0 ){
-                    smoothBottomBar.setVisibility(View.INVISIBLE);
-
-                }
-                else if (dy < 0){
-                   smoothBottomBar.setVisibility(View.VISIBLE);
-                }
-            }
-        });
 
         Intent intent = getIntent();
         useFacing = intent.getIntExtra(KEY_USE_FACING, Camera.CameraInfo.CAMERA_FACING_FRONT);
@@ -180,7 +158,7 @@ public class DipsWaitingRoom extends AppCompatActivity {
 
         //PopUpWaiting();
         PopUpSucces();
-
+        BottomNavigation();
     }
 
     private void previewHolder(){
@@ -188,7 +166,6 @@ public class DipsWaitingRoom extends AppCompatActivity {
         previewHolder.addCallback(surfaceCallback);
         previewHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
     }
-
 
     @Override
     protected void onPause() {
@@ -204,35 +181,25 @@ public class DipsWaitingRoom extends AppCompatActivity {
 
         super.onPause();
     }
-
-    private void initPager() {
-        for (int i = 0; i < img.length; i++) {
-            imgArray.add(img[i]);
-            mPager = (ViewPager) findViewById(R.id.pager);
-            mPager.setAdapter(new AdapterSlide(imgArray, mContext));
-            CircleIndicator circleIndicator = (CircleIndicator) findViewById(R.id.indicator);
-            circleIndicator.setViewPager(mPager);
-        }
-
-        Handler handler = new Handler();
-        Runnable updates = new Runnable() {
+    private void BottomNavigation(){
+        smoothBottomBar.setOnItemSelectedListener(new OnItemSelectedListener() {
             @Override
-            public void run() {
-                if (currentPage == img.length) {
-                    currentPage = 0;
+            public boolean onItemSelect(int i) {
+                switch (i){
+                    case 0:
+                        getFragmentPage(new frag_berita());
+                        return true;
+                    case 1:
+                        getFragmentPage(new frag_list_produk());
+                        return true;
+                    case 2:
+                        getFragmentPage(new frag_service());
+                        return true;
+
                 }
-                mPager.setCurrentItem(currentPage, true);
-                currentPage++;
+                return false;
             }
-        };
-
-        Timer timer = new Timer();
-        timer.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                handler.post(updates);
-            }
-        }, 2500, 2500);
+        });
     }
     private void initializeSdk() {
         ZoomVideoSDKInitParams params = new ZoomVideoSDKInitParams();
@@ -542,7 +509,7 @@ public class DipsWaitingRoom extends AppCompatActivity {
             jsons.put("sessionName",NameSession);
             jsons.put("role",0);
             jsons.put("sessionKey",SessionPass);
-            jsons.put("userIdentity","Customer");
+            jsons.put("userIdentity", custName);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -614,6 +581,7 @@ public class DipsWaitingRoom extends AppCompatActivity {
         intent.putExtra("password", sessionPass);
         intent.putExtra("sessionName", sessionName);
         intent.putExtra("render_type", renderType);
+        intent.putExtra("ISCUSTOMER", isCust);
         startActivity(intent);
     }
     @Override
@@ -621,5 +589,16 @@ public class DipsWaitingRoom extends AppCompatActivity {
         super.onResume();
         camera = Camera.open(useFacing);
         startPreview();
+        getFragmentPage(new frag_berita());
+    }
+    private void getFragmentPage(Fragment fragment){
+        Bundle bundle = new Bundle();
+        bundle.putBoolean("ISCUST",isCust);
+        fragment.setArguments(bundle);
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.layout_frame, fragment)
+                .addToBackStack(null)
+                .commit();
     }
 }

@@ -14,7 +14,7 @@
         app:expansion_toggleOnClick="true">
 
         <RelativeLayout
-            android:background="@android:color/white"
+            android:background="@color/bg"
             android:layout_height="50dp"
             android:layout_width="match_parent"
             android:paddingLeft="16dp"
@@ -52,7 +52,7 @@
     <com.github.florent37.expansionpanel.ExpansionLayout
         android:id="@+id/expansionLayout"
         app:expansion_expanded="false"
-        android:background="#EEE"
+        android:background="#FBFBFB"
         android:layout_height="wrap_content"
         android:layout_width="match_parent">
 
