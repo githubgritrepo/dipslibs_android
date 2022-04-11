@@ -117,6 +117,7 @@ public class DipsWaitingRoom extends AppCompatActivity {
     SmoothBottomBar smoothBottomBar;
     String NameSession;
     String SessionPass;
+    boolean isCust;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -127,10 +128,9 @@ public class DipsWaitingRoom extends AppCompatActivity {
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
         getSupportActionBar().hide();
 
-        int isCust = getIntent().getExtras().getInt("ISCUSTOMER");
+        isCust = getIntent().getExtras().getBoolean("ISCUSTOMER");
         NameSession = getIntent().getExtras().getString("SessionName");
         SessionPass = getIntent().getExtras().getString("SessionPass");
-
 
         mContext = this;
 

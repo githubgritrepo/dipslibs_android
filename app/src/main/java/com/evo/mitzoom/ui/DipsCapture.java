@@ -423,7 +423,6 @@ public class DipsCapture extends AppCompatActivity implements CameraSource.Pictu
 
                             boolean isCust = response.body().isCustomer();
                             String sessionName = response.body().getDataSession().getNameSession();
-                            Log.d("CEK", "sessionName = "+sessionName );
                             String sessionPass = response.body().getDataSession().getPass();
                             Intent intent = new Intent(DipsCapture.this,DipsWaitingRoom.class);
                             intent.putExtra("ISCUSTOMER",isCust);
