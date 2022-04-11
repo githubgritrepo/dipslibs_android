@@ -127,7 +127,7 @@ public class DipsWaitingRoom extends AppCompatActivity {
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
         getSupportActionBar().hide();
 
-        int isCust = getIntent().getExtras().getInt("ISCUSTOMER");
+        boolean isCust = getIntent().getExtras().getBoolean("ISCUSTOMER");
         NameSession = getIntent().getExtras().getString("SessionName");
         SessionPass = getIntent().getExtras().getString("SessionPass");
 

@@ -98,12 +98,7 @@ public class frag_opening_account2 extends Fragment {
         btnNext.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (bitmapz != null){
-                    imgSend(bitmapz,"NPWP", new frag_opening_account3());
-                }
-                else {
-                    Toast.makeText(context, "Gambar gagal diproses", Toast.LENGTH_SHORT).show();
-                }
+                getFragmentPage(new frag_opening_account3());
             }
         });
     }

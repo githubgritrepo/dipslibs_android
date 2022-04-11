@@ -49,9 +49,6 @@ public class frag_form_opening extends Fragment {
         Status = view.findViewById(R.id.et_status);
         adapterAgama = new ArrayAdapter<String>(context,R.layout.list_item, ListAgama);
         adapterStatus = new ArrayAdapter<String>(context,R.layout.list_item, ListStatus);
-        preview_ktp = view.findViewById(R.id.preview_ktp);
-        preview_npwp = view.findViewById(R.id.preview_npwp);
-        preview_signature = view.findViewById(R.id.preview_signature);
         return view;
     }
     @Override

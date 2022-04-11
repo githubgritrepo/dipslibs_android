@@ -304,46 +304,6 @@
                     android:text="@string/savings"
                     android:textSize="17sp"
                     android:textColor="@color/black"/>
-                <TextView
-                    android:layout_marginBottom="10dp"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="KTP"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-                    android:textSize="27sp" />
-                <ImageView
-                    android:id="@+id/preview_ktp"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:scaleType="centerCrop"
-                    android:layout_marginBottom="10dp"/>
-                <TextView
-                    android:layout_marginBottom="10dp"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="NPWP"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-                    android:textSize="27sp" />
-                <ImageView
-                    android:src="@drawable/ktp"
-                    android:id="@+id/preview_npwp"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:scaleType="centerCrop"
-                    android:layout_marginBottom="10dp"/>
-                <TextView
-                    android:layout_marginBottom="10dp"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Tanda Tangan"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-                    android:textSize="27sp" />
-                <ImageView
-                    android:id="@+id/preview_signature"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:scaleType="centerCrop"
-                    android:layout_marginBottom="10dp"/>
                 <Button
                     android:id="@+id/btnNext"
                     android:layout_width="match_parent"
