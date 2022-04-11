@@ -20,13 +20,16 @@
         <entry key="..\:/Project Mobile Apps/DiPS361/app/src/main/res/drawable/video_item_bg.xml" value="0.1715" />
         <entry key="..\:/Project Mobile Apps/DiPS361/app/src/main/res/drawable/video_list_bg.xml" value="0.1715" />
         <entry key="..\:/Project Mobile Apps/DiPS361/app/src/main/res/drawable/zm_toolbar_stopshare_bgcolor.xml" value="0.1795" />
+        <entry key="..\:/Project Mobile Apps/DiPS361/app/src/main/res/layout/activity_dashboard.xml" value="0.22826086956521738" />
         <entry key="..\:/Project Mobile Apps/DiPS361/app/src/main/res/layout/activity_dips_capture.xml" value="0.24682971014492755" />
         <entry key="..\:/Project Mobile Apps/DiPS361/app/src/main/res/layout/activity_dips_splash_screen.xml" value="0.24682971014492755" />
         <entry key="..\:/Project Mobile Apps/DiPS361/app/src/main/res/layout/activity_dips_video_confren.xml" value="0.264" />
-        <entry key="..\:/Project Mobile Apps/DiPS361/app/src/main/res/layout/activity_dips_waiting_room.xml" value="0.536" />
+        <entry key="..\:/Project Mobile Apps/DiPS361/app/src/main/res/layout/activity_dips_waiting_room.xml" value="0.513840830449827" />
+        <entry key="..\:/Project Mobile Apps/DiPS361/app/src/main/res/layout/activity_form_transfer.xml" value="0.22826086956521738" />
         <entry key="..\:/Project Mobile Apps/DiPS361/app/src/main/res/layout/activity_main.xml" value="0.24682971014492755" />
         <entry key="..\:/Project Mobile Apps/DiPS361/app/src/main/res/layout/dialog_leave_alert.xml" value="0.13451086956521738" />
         <entry key="..\:/Project Mobile Apps/DiPS361/app/src/main/res/layout/dialog_session_input_pwd.xml" value="0.22826086956521738" />
+        <entry key="..\:/Project Mobile Apps/DiPS361/app/src/main/res/layout/frag_item_bank.xml" value="0.22826086956521738" />
         <entry key="..\:/Project Mobile Apps/DiPS361/app/src/main/res/layout/grid.xml" value="0.48377125193199383" />
         <entry key="..\:/Project Mobile Apps/DiPS361/app/src/main/res/layout/item_schedule.xml" value="0.24682971014492755" />
         <entry key="..\:/Project Mobile Apps/DiPS361/app/src/main/res/layout/item_user_video.xml" value="0.22826086956521738" />
@@ -94,44 +97,42 @@
         <entry key="..\:/Users/Mohammad Rafii B/AndroidStudioProjects/Zoom DiPS361/app/src/main/res/layout/activity_dips_video_confren.xml" value="0.25" />
         <entry key="..\:/Users/Mohammad Rafii B/AndroidStudioProjects/Zoom DiPS361/app/src/main/res/layout/activity_dips_waiting_room.xml" value="0.2" />
         <entry key="..\:/Users/Mohammad Rafii B/AndroidStudioProjects/Zoom DiPS361/app/src/main/res/layout/dialog_leave_alert.xml" value="0.22" />
-        <entry key="..\:/Users/Mohammad Rafii B/AndroidStudioProjects/Zoom DiPS361/app/src/main/res/layout/frag_berita.xml" value="0.2" />
         <entry key="..\:/Users/Mohammad Rafii B/AndroidStudioProjects/Zoom DiPS361/app/src/main/res/layout/frag_chat.xml" value="0.22" />
-        <entry key="..\:/Users/Mohammad Rafii B/AndroidStudioProjects/Zoom DiPS361/app/src/main/res/layout/frag_daftar_produk.xml" value="0.2" />
-        <entry key="..\:/Users/Mohammad Rafii B/AndroidStudioProjects/Zoom DiPS361/app/src/main/res/layout/frag_form_opening_account.xml" value="0.15" />
+        <entry key="..\:/Users/Mohammad Rafii B/AndroidStudioProjects/Zoom DiPS361/app/src/main/res/layout/frag_daftar_produk.xml" value="0.25" />
+        <entry key="..\:/Users/Mohammad Rafii B/AndroidStudioProjects/Zoom DiPS361/app/src/main/res/layout/frag_form_opening_account.xml" value="0.1" />
         <entry key="..\:/Users/Mohammad Rafii B/AndroidStudioProjects/Zoom DiPS361/app/src/main/res/layout/frag_input_nik_nama.xml" value="0.22" />
         <entry key="..\:/Users/Mohammad Rafii B/AndroidStudioProjects/Zoom DiPS361/app/src/main/res/layout/frag_item_bank.xml" value="0.22" />
         <entry key="..\:/Users/Mohammad Rafii B/AndroidStudioProjects/Zoom DiPS361/app/src/main/res/layout/frag_opening_account.xml" value="0.25" />
         <entry key="..\:/Users/Mohammad Rafii B/AndroidStudioProjects/Zoom DiPS361/app/src/main/res/layout/frag_opening_account2.xml" value="0.2" />
         <entry key="..\:/Users/Mohammad Rafii B/AndroidStudioProjects/Zoom DiPS361/app/src/main/res/layout/frag_opening_account3.xml" value="0.2" />
         <entry key="..\:/Users/Mohammad Rafii B/AndroidStudioProjects/Zoom DiPS361/app/src/main/res/layout/frag_opening_account4.xml" value="0.2" />
-        <entry key="..\:/Users/Mohammad Rafii B/AndroidStudioProjects/Zoom DiPS361/app/src/main/res/layout/frag_services.xml" value="0.2" />
         <entry key="..\:/Users/Mohammad Rafii B/AndroidStudioProjects/Zoom DiPS361/app/src/main/res/layout/frag_start_conferee.xml" value="0.2" />
-        <entry key="..\:/Users/Mohammad Rafii B/AndroidStudioProjects/Zoom DiPS361/app/src/main/res/layout/frag_tabungan.xml" value="0.2" />
+        <entry key="..\:/Users/Mohammad Rafii B/AndroidStudioProjects/Zoom DiPS361/app/src/main/res/layout/frag_tabungan.xml" value="0.33" />
         <entry key="..\:/Users/Mohammad Rafii B/AndroidStudioProjects/Zoom DiPS361/app/src/main/res/layout/grid.xml" value="0.2" />
         <entry key="..\:/Users/Mohammad Rafii B/AndroidStudioProjects/Zoom DiPS361/app/src/main/res/layout/item_ads.xml" value="0.1" />
         <entry key="..\:/Users/Mohammad Rafii B/AndroidStudioProjects/Zoom DiPS361/app/src/main/res/layout/item_bank.xml" value="0.33" />
         <entry key="..\:/Users/Mohammad Rafii B/AndroidStudioProjects/Zoom DiPS361/app/src/main/res/layout/item_chat_msg.xml" value="0.5" />
         <entry key="..\:/Users/Mohammad Rafii B/AndroidStudioProjects/Zoom DiPS361/app/src/main/res/layout/item_cif.xml" value="0.2" />
         <entry key="..\:/Users/Mohammad Rafii B/AndroidStudioProjects/Zoom DiPS361/app/src/main/res/layout/item_deposito.xml" value="0.2" />
-        <entry key="..\:/Users/Mohammad Rafii B/AndroidStudioProjects/Zoom DiPS361/app/src/main/res/layout/item_giro.xml" value="0.22" />
+        <entry key="..\:/Users/Mohammad Rafii B/AndroidStudioProjects/Zoom DiPS361/app/src/main/res/layout/item_giro.xml" value="0.5" />
         <entry key="..\:/Users/Mohammad Rafii B/AndroidStudioProjects/Zoom DiPS361/app/src/main/res/layout/item_insurance.xml" value="0.2" />
         <entry key="..\:/Users/Mohammad Rafii B/AndroidStudioProjects/Zoom DiPS361/app/src/main/res/layout/item_reksadana.xml" value="0.33" />
         <entry key="..\:/Users/Mohammad Rafii B/AndroidStudioProjects/Zoom DiPS361/app/src/main/res/layout/item_schedule.xml" value="0.25" />
         <entry key="..\:/Users/Mohammad Rafii B/AndroidStudioProjects/Zoom DiPS361/app/src/main/res/layout/item_tabungan.xml" value="0.25" />
         <entry key="..\:/Users/Mohammad Rafii B/AndroidStudioProjects/Zoom DiPS361/app/src/main/res/layout/item_tnc.xml" value="0.25" />
         <entry key="..\:/Users/Mohammad Rafii B/AndroidStudioProjects/Zoom DiPS361/app/src/main/res/layout/item_user_video.xml" value="0.25" />
-        <entry key="..\:/Users/Mohammad Rafii B/AndroidStudioProjects/Zoom DiPS361/app/src/main/res/layout/layout_bottom_action_bar.xml" value="0.2" />
+
+        <entry key="..\:/Users/Mohammad Rafii B/AndroidStudioProjects/Zoom DiPS361/app/src/main/res/layout/layout_bottom_action_bar.xml" value="0.25" />
+
         <entry key="..\:/Users/Mohammad Rafii B/AndroidStudioProjects/Zoom DiPS361/app/src/main/res/layout/layout_bottomsheetdialog.xml" value="0.2" />
         <entry key="..\:/Users/Mohammad Rafii B/AndroidStudioProjects/Zoom DiPS361/app/src/main/res/layout/layout_bottomsheetlogin.xml" value="0.2" />
         <entry key="..\:/Users/Mohammad Rafii B/AndroidStudioProjects/Zoom DiPS361/app/src/main/res/layout/list_item.xml" value="0.2" />
         <entry key="..\:/Users/Mohammad Rafii B/AndroidStudioProjects/Zoom DiPS361/app/src/main/res/layout/progress_loading.xml" value="0.2" />
         <entry key="..\:/Users/Mohammad Rafii B/AndroidStudioProjects/Zoom DiPS361/app/src/main/res/layout/slide.xml" value="0.2" />
         <entry key="..\:/Users/Mohammad Rafii B/AndroidStudioProjects/Zoom DiPS361/app/src/main/res/layout/top_bar_cif.xml" value="0.23314606741573032" />
-        <entry key="..\:/Users/Mohammad Rafii B/AndroidStudioProjects/Zoom DiPS361/app/src/main/res/menu/navigation_waitingroom.xml" value="0.2" />
       </map>
     </option>
   </component>
-  <component name="ExternalStorageConfigurationManager" enabled="true" />
   <component name="ProjectRootManager" version="2" languageLevel="JDK_11" default="true" project-jdk-name="1.8" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/build/classes" />
   </component>
