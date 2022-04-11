@@ -24,11 +24,14 @@ public class frag_inputdata extends Fragment {
     private Context context;
     private EditText et_NamaNasabah, et_NikNasabah;
     private MaterialButton btnNext;
+    private boolean isCust;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         context = getContext();
+
+        isCust = getArguments().getBoolean("ISCUST");
     }
 
     @Nullable
@@ -47,7 +50,12 @@ public class frag_inputdata extends Fragment {
         btnNext.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Choose();
+                if (isCust == false) {
+                    getFragmentPage(new frag_item()); //untuk menu non Customer
+                } else {
+                    //untuk Menu Customer
+                }
+                //Choose();
             }
         });
     }

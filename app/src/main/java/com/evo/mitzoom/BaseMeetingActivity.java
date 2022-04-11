@@ -94,6 +94,7 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
     protected String myDisplayName = "";
     protected String meetingPwd = "";
     protected String sessionName;
+    protected boolean isCust;
     protected int renderType;
 
     protected RecyclerView userVideoList;
@@ -151,6 +152,9 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
     }
 
     private void getFragmentPage(Fragment fragment){
+        Bundle bundle = new Bundle();
+        bundle.putBoolean("ISCUST",isCust);
+        fragment.setArguments(bundle);
         getSupportFragmentManager()
                 .beginTransaction()
                 .replace(R.id.layout_frame, fragment)
@@ -392,6 +396,7 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
             meetingPwd = bundle.getString("password");
             sessionName = bundle.getString("sessionName");
             renderType = bundle.getInt("render_type", RENDER_TYPE_ZOOMRENDERER);
+            isCust = bundle.getBoolean("ISCUSTOMER");
         }
     }
 

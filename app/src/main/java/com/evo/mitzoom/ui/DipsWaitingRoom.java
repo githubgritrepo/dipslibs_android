@@ -118,6 +118,7 @@ public class DipsWaitingRoom extends AppCompatActivity {
     String NameSession;
     String SessionPass;
     boolean isCust;
+    String custName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -128,11 +129,8 @@ public class DipsWaitingRoom extends AppCompatActivity {
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
         getSupportActionBar().hide();
 
-<<<<<<< HEAD
-        boolean isCust = getIntent().getExtras().getBoolean("ISCUSTOMER");
-=======
         isCust = getIntent().getExtras().getBoolean("ISCUSTOMER");
->>>>>>> d35f19c98a1a1149334ec8fb6eecc736814f7d47
+        custName = getIntent().getExtras().getString("CUSTNAME");
         NameSession = getIntent().getExtras().getString("SessionName");
         SessionPass = getIntent().getExtras().getString("SessionPass");
 
@@ -546,7 +544,7 @@ public class DipsWaitingRoom extends AppCompatActivity {
             jsons.put("sessionName",NameSession);
             jsons.put("role",0);
             jsons.put("sessionKey",SessionPass);
-            jsons.put("userIdentity","Customer");
+            jsons.put("userIdentity", custName);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -618,6 +616,7 @@ public class DipsWaitingRoom extends AppCompatActivity {
         intent.putExtra("password", sessionPass);
         intent.putExtra("sessionName", sessionName);
         intent.putExtra("render_type", renderType);
+        intent.putExtra("ISCUSTOMER", isCust);
         startActivity(intent);
     }
     @Override
