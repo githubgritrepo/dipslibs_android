@@ -150,7 +150,6 @@ public class frag_chat extends Fragment  implements ZoomVideoSDKDelegate {
     @Override
     public void onChatNewMessageNotify(ZoomVideoSDKChatHelper zoomVideoSDKChatHelper, ZoomVideoSDKChatMessage messageItem) {
         chatMsgAdapter.onReceive(messageItem);
-
         updateChatLayoutParams();
 
     }
