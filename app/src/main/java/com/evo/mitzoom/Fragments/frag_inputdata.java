@@ -54,6 +54,7 @@ public class frag_inputdata extends Fragment {
                     getFragmentPage(new frag_item()); //untuk menu non Customer
                 } else {
                     //untuk Menu Customer
+                    Toast.makeText(context, "Ini Customer", Toast.LENGTH_SHORT).show();
                 }
                 //Choose();
             }

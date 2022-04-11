@@ -10,7 +10,7 @@
     <LinearLayout
         android:id="@+id/llHead"
         android:layout_width="match_parent"
-        android:layout_height="350dp"
+        android:layout_height="320dp"
         android:background="@drawable/head_background"
         android:orientation="vertical">
 
@@ -24,11 +24,11 @@
                 android:layout_height="match_parent"
                 android:layout_gravity="center">
 
-            <SurfaceView
-                android:id="@+id/mySurface"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="@android:color/transparent"/>
+                <SurfaceView
+                    android:id="@+id/mySurface"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@android:color/transparent" />
             <LinearLayout
                 android:layout_marginBottom="20dp"
                 android:layout_alignParentBottom="true"
@@ -51,36 +51,11 @@
 
     </LinearLayout>
 
-    <LinearLayout
+    <FrameLayout
+        android:id="@+id/layout_frame"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:padding="10dp"
-        android:layout_below="@id/llHead">
-
-        <androidx.viewpager.widget.ViewPager
-            android:id="@+id/pager"
-            android:layout_width="match_parent"
-            android:layout_height="125dp"
-            android:focusableInTouchMode="true"
-            tools:ignore="SpeakableTextPresentCheck" />
-        <me.relex.circleindicator.CircleIndicator
-            android:id="@+id/indicator"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="6dp"
-            android:layout_gravity="center"
-            app:ci_drawable="@drawable/circleindicator_round"/>
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/rv_product"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginBottom="50dp"
-            tools:ignore="SpeakableTextPresentCheck"
-            tools:listitem="@layout/grid" />
-
-    </LinearLayout>
+        android:layout_below="@id/llHead" />
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -151,5 +126,4 @@
         </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
     </RelativeLayout>
-
 </RelativeLayout>

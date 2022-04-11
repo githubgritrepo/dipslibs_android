@@ -116,7 +116,7 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
     protected DisplayMetrics displayMetrics;
     protected boolean renderWithSurfaceView=true;
     private RelativeLayout rlprogress;
-    private Button btnChat;
+    public static Button btnChat;
 
     protected Handler handler = new Handler(Looper.getMainLooper());
 
@@ -710,7 +710,9 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
 
     @Override
     public void onSessionJoin() {
+        btnChat.setBackgroundTintList(BaseMeetingActivity.this.getResources().getColorStateList(R.color.btnFalse));
         showProgress(false);
+        btnChat.setClickable(false);
         updateSessionInfo();
         getFragmentPage(new frag_conferee_agree());
         actionBar.setVisibility(View.VISIBLE);

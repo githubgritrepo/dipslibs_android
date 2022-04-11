@@ -10,13 +10,15 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.Fragment;
 
 import com.evo.mitzoom.R;
+import com.evo.mitzoom.ui.DipsWaitingRoom;
 
 public class frag_list_produk extends Fragment {
     private Context context;
-    private ImageView btnBack;
+    private NestedScrollView nested;
     private TextView btn_tabungan_a, btn_tabungan_b;
 
     @Override
@@ -28,19 +30,24 @@ public class frag_list_produk extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.frag_daftar_produk, container, false);
-        btnBack = view.findViewById(R.id.btn_back);
         btn_tabungan_a = view.findViewById(R.id.btn_tabungan_a);
         btn_tabungan_b = view.findViewById(R.id.btn_tabungan_b);
+        nested = view.findViewById(R.id.nested);
         return view;
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        btnBack.setOnClickListener(new View.OnClickListener() {
+        nested.setOnScrollChangeListener(new NestedScrollView.OnScrollChangeListener() {
             @Override
-            public void onClick(View v) {
-                getFragmentPage(new frag_item());
+            public void onScrollChange(@NonNull NestedScrollView v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
+                if (scrollY > 0){
+                    DipsWaitingRoom.smoothBottomBar.setVisibility(View.INVISIBLE);
+                }
+                else {
+                    DipsWaitingRoom.smoothBottomBar.setVisibility(View.VISIBLE);
+                }
             }
         });
         btn_tabungan_a.setOnClickListener(new View.OnClickListener() {

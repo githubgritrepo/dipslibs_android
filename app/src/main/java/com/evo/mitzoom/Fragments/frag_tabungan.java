@@ -16,6 +16,7 @@ import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.Fragment;
 
 import com.evo.mitzoom.R;
+import com.evo.mitzoom.ui.DipsWaitingRoom;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 
@@ -30,7 +31,6 @@ public class frag_tabungan extends Fragment {
     private LayoutInflater inflater;
     private View dialogView;
     private NestedScrollView nestedScrollView;
-    private ExtendedFloatingActionButton btnCompare;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -46,14 +46,15 @@ public class frag_tabungan extends Fragment {
         btnCreateAccount = view.findViewById(R.id.btnNewRek);
         tnc = view.findViewById(R.id.tnc);
         nestedScrollView = view.findViewById(R.id.Nested);
-        btnCompare = view.findViewById(R.id.btncompare);
         return view;
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        DipsWaitingRoom.smoothBottomBar.setVisibility(View.INVISIBLE);
         Bundle arg = getArguments();
+        btnCreateAccount.setBackgroundTintList(context.getResources().getColorStateList(R.color.bg_cif));
         headline = arg.getString("headline");
         Headline.setText(headline);
         tnc.setOnClickListener(new View.OnClickListener() {
@@ -65,18 +66,8 @@ public class frag_tabungan extends Fragment {
         btnBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                DipsWaitingRoom.smoothBottomBar.setVisibility(View.VISIBLE);
                 getFragmentPage(new frag_list_produk());
-            }
-        });
-        nestedScrollView.setOnScrollChangeListener(new NestedScrollView.OnScrollChangeListener() {
-            @Override
-            public void onScrollChange(@NonNull NestedScrollView v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
-                if (scrollY > 0 ){
-                    btnCompare.setVisibility(View.INVISIBLE);
-                }
-                else {
-                    btnCompare.setVisibility(View.VISIBLE);
-                }
             }
         });
         btnCreateAccount.setOnClickListener(new View.OnClickListener() {

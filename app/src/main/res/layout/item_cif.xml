@@ -118,6 +118,7 @@
             android:textAppearance="@style/TextAppearance.AppCompat.Headline"/>
     </LinearLayout>
     <androidx.core.widget.NestedScrollView
+        android:layout_marginBottom="45dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/TopBar2">

@@ -25,7 +25,6 @@ public class frag_conferee_agree extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         context = getContext();
-
         isCust = getArguments().getBoolean("ISCUST");
     }
 
@@ -45,6 +44,8 @@ public class frag_conferee_agree extends Fragment {
             @Override
             public void onClick(View v) {
                 getFragmentPage(new frag_inputdata());
+                BaseMeetingActivity.btnChat.setBackgroundTintList(context.getResources().getColorStateList(R.color.Blue));
+                BaseMeetingActivity.btnChat.setClickable(true);
             }
         });
     }
