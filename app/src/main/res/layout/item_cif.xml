@@ -213,7 +213,7 @@
                                 android:layout_gravity="center_vertical"
                                 android:layout_marginStart="10dp"
                                 android:layout_marginEnd="10dp"
-                                android:textSize="19sp"
+                                android:textSize="16sp"
                                 android:text="@string/pilih_dari_galeri" />
                         </LinearLayout>
                     </LinearLayout>
