@@ -43,8 +43,6 @@ public class frag_tabungan extends Fragment {
         View view = inflater.inflate(R.layout.frag_tabungan, container, false);
         btnBack = view.findViewById(R.id.btn_back3);
         Headline = view.findViewById(R.id.nama_tabungan);
-        btnCreateAccount = view.findViewById(R.id.btnNewRek);
-        tnc = view.findViewById(R.id.tnc);
         nestedScrollView = view.findViewById(R.id.Nested);
         return view;
     }
@@ -54,26 +52,13 @@ public class frag_tabungan extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         DipsWaitingRoom.smoothBottomBar.setVisibility(View.INVISIBLE);
         Bundle arg = getArguments();
-        btnCreateAccount.setBackgroundTintList(context.getResources().getColorStateList(R.color.bg_cif));
         headline = arg.getString("headline");
         Headline.setText(headline);
-        tnc.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                tnc();
-            }
-        });
         btnBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 DipsWaitingRoom.smoothBottomBar.setVisibility(View.VISIBLE);
                 getFragmentPage(new frag_list_produk());
-            }
-        });
-        btnCreateAccount.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                getFragmentPage(new frag_opening_account());
             }
         });
     }
@@ -83,19 +68,5 @@ public class frag_tabungan extends Fragment {
                 .replace(R.id.layout_frame, fragment)
                 .addToBackStack(null)
                 .commit();
-    }
-    private void tnc(){
-        inflater = getLayoutInflater();
-        dialogView = inflater.inflate(R.layout.item_tnc,null);
-        SweetAlertDialog sweetAlertDialog = new SweetAlertDialog(context, SweetAlertDialog.NORMAL_TYPE);
-        sweetAlertDialog.setCustomView(dialogView);
-        sweetAlertDialog.show();
-        ImageView btnClose = dialogView.findViewById(R.id.btn_close_tnc);
-        btnClose.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                sweetAlertDialog.dismiss();
-            }
-        });
     }
 }

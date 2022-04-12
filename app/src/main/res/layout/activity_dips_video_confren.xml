@@ -44,7 +44,7 @@
         </LinearLayout>
 
         <FrameLayout
-            android:id="@+id/layout_frame"
+            android:id="@+id/layout_frame2"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_below="@id/llUsersVideo"

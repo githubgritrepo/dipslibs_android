@@ -521,37 +521,6 @@
                     android:layout_height="wrap_content"
                     android:text="@string/lorem2"
                     android:textSize="16sp" />
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
-                    <CheckBox
-                        android:layout_marginEnd="4dp"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/checkbox_tnc"
-                        android:textSize="14sp"
-                        android:textColor="@color/black"/>
-                    <TextView
-                        android:id="@+id/tnc"
-                        android:textColor="@color/blue_pressed"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="@string/terms_condition"
-                        android:textSize="14sp" />
-                </LinearLayout>
-                <Button
-                    android:layout_marginTop="20dp"
-                    android:layout_gravity="center"
-                    android:id="@+id/btnNewRek"
-                    android:layout_width="wrap_content"
-                    android:layout_height="40dp"
-                    android:layout_margin="5dp"
-                    android:background="@drawable/oval_background_10dp"
-                    android:backgroundTint="@color/Blue"
-                    android:text="@string/new_account2"
-                    android:textColor="@color/white"
-                    android:textStyle="bold" />
             </LinearLayout>
         </androidx.core.widget.NestedScrollView>
     </RelativeLayout>

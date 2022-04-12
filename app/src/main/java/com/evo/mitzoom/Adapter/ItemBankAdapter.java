@@ -69,7 +69,7 @@ public class ItemBankAdapter extends RecyclerView.Adapter<ItemBankAdapter.ItemHo
     private void getFragmentPage(Fragment fragment){
         ((FragmentActivity)ctx).getSupportFragmentManager()
                 .beginTransaction()
-                .replace(R.id.layout_frame, fragment)
+                .replace(R.id.layout_frame2, fragment)
                 .addToBackStack(null)
                 .commit();
     }

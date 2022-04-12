@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -126,12 +127,10 @@ public class DipsWaitingRoom extends AppCompatActivity {
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
         getSupportActionBar().hide();
-
         isCust = getIntent().getExtras().getBoolean("ISCUSTOMER");
         custName = getIntent().getExtras().getString("CUSTNAME");
         NameSession = getIntent().getExtras().getString("SessionName");
         SessionPass = getIntent().getExtras().getString("SessionPass");
-
         mContext = this;
         initializeSdk();
         btnSchedule = (MaterialButton) findViewById(R.id.btnSchedule);
@@ -160,7 +159,13 @@ public class DipsWaitingRoom extends AppCompatActivity {
         PopUpSucces();
         BottomNavigation();
     }
-
+    @Override
+    protected void onResume() {
+        super.onResume();
+        camera = Camera.open(useFacing);
+        startPreview();
+        getFragmentPage(new frag_berita());
+    }
     private void previewHolder(){
         previewHolder = preview.getHolder();
         previewHolder.addCallback(surfaceCallback);
@@ -465,9 +470,7 @@ public class DipsWaitingRoom extends AppCompatActivity {
         }
     };
     protected boolean requestPermission() {
-        if (Build.VERSION.SDK_INT >= 23 && (checkSelfPermission(Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED ||
-                checkSelfPermission(Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED ||
-                checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)) {
+        if (checkSelfPermission(Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED || checkSelfPermission(Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED || checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.CAMERA,
                     Manifest.permission.RECORD_AUDIO, Manifest.permission.READ_EXTERNAL_STORAGE}, REQUEST_VIDEO_AUDIO_CODE);
             return false;
@@ -478,9 +481,7 @@ public class DipsWaitingRoom extends AppCompatActivity {
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == REQUEST_VIDEO_AUDIO_CODE) {
-            if (Build.VERSION.SDK_INT >= 23 && (checkSelfPermission(Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED
-                    && checkSelfPermission(Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED)) {
-
+            if (checkSelfPermission(Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED && checkSelfPermission(Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED) {
                 onPermissionGranted();
             }
         }
@@ -583,13 +584,6 @@ public class DipsWaitingRoom extends AppCompatActivity {
         intent.putExtra("render_type", renderType);
         intent.putExtra("ISCUSTOMER", isCust);
         startActivity(intent);
-    }
-    @Override
-    protected void onResume() {
-        super.onResume();
-        camera = Camera.open(useFacing);
-        startPreview();
-        getFragmentPage(new frag_berita());
     }
     private void getFragmentPage(Fragment fragment){
         Bundle bundle = new Bundle();

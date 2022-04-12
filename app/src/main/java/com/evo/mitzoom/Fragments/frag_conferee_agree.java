@@ -56,7 +56,7 @@ public class frag_conferee_agree extends Fragment {
         fragment.setArguments(bundle);
         getActivity().getSupportFragmentManager()
                 .beginTransaction()
-                .replace(R.id.layout_frame, fragment)
+                .replace(R.id.layout_frame2, fragment)
                 .addToBackStack(null)
                 .commit();
     }

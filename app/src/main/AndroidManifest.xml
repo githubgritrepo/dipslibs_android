@@ -9,6 +9,7 @@
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE" />
 
     <uses-feature android:glEsVersion="0x00020000" />
     <uses-feature android:name="android.hardware.camera" />
@@ -17,16 +18,20 @@
     <application
         android:icon="@mipmap/dips361"
         android:label="@string/app_name"
+        android:requestLegacyExternalStorage="true"
         android:roundIcon="@mipmap/dips361_round"
         android:supportsRtl="true"
         android:usesCleartextTraffic="true">
         <activity
+            android:name=".ui.RatingActivity"
+            android:exported="false" />
+        <activity
             android:name=".ui.DipsVideoConfren"
+            android:configChanges="screenSize|orientation|keyboardHidden|keyboard"
             android:exported="false"
             android:screenOrientation="portrait"
-            android:configChanges="screenSize|orientation|keyboardHidden|keyboard"
             android:theme="@style/ZMTheme.SubWindow"
-            android:windowSoftInputMode="adjustPan"/>
+            android:windowSoftInputMode="adjustPan" />
         <activity
             android:name=".ui.DipsWaitingRoom"
             android:exported="false"
