@@ -41,7 +41,6 @@ public class frag_opening_account2 extends Fragment {
     private TextView filename;
     private Button btnNext;
     private byte[] KTP;
-    private Bitmap bitmapz = null;
     private LinearLayout chooseImage, delete;
 
     @Override
@@ -131,20 +130,17 @@ public class frag_opening_account2 extends Fragment {
                     BitmapFactory.Options bitmapOptions = new BitmapFactory.Options();
                     bitmap = BitmapFactory.decodeFile(f.getAbsolutePath(),
                             bitmapOptions);
-                    btnNext.setBackgroundTintList(context.getResources().getColorStateList(R.color.bg_cif));
-                    btnNext.setClickable(true);
-                    delete.setVisibility(View.VISIBLE);
-                    viewImage.setVisibility(View.VISIBLE);
-                    chooseImage.setVisibility(View.GONE);
                     viewImage.setImageBitmap(bitmap);
-                    bitmapz = bitmap;
                     String path = Environment
                             .getExternalStorageDirectory()
                             + File.separator
                             + "Phoenix" + File.separator + "default";
                     f.delete();
-                    OutputStream outFile = null;
+                    FileOutputStream outFile = null;
                     File file = new File(path, String.valueOf(System.currentTimeMillis()) + ".png");
+                    if (!file.exists()){
+                        file.mkdirs();
+                    }
                     try {
                         outFile = new FileOutputStream(file);
                         bitmap.compress(Bitmap.CompressFormat.PNG,85,outFile);
@@ -153,30 +149,32 @@ public class frag_opening_account2 extends Fragment {
                     }
                     catch (FileNotFoundException e){
                         e.printStackTrace();
+                        Toast.makeText(context, ""+e.getMessage(), Toast.LENGTH_LONG).show();
                     }
                     catch (IOException e) {
                         e.printStackTrace();
+                        Toast.makeText(context, ""+e.getMessage(), Toast.LENGTH_LONG).show();
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
+                    Toast.makeText(context, ""+e.getMessage(), Toast.LENGTH_LONG).show();
                 }
             }
             else if (requestCode == 2){
-                Uri selectedImage = data.getData();
-                String[] filePath = { MediaStore.Images.Media.DATA };
-                Cursor c = context.getContentResolver().query(selectedImage,filePath, null, null, null);
-                c.moveToFirst();
-                int columnIndex = c.getColumnIndex(filePath[0]);
-                String picturePath = c.getString(columnIndex);
-                c.close();
-                Bitmap thumbnail = (BitmapFactory.decodeFile(picturePath));
-                btnNext.setBackgroundTintList(context.getResources().getColorStateList(R.color.bg_cif));
-                btnNext.setClickable(true);
-                delete.setVisibility(View.VISIBLE);
-                viewImage.setVisibility(View.VISIBLE);
-                chooseImage.setVisibility(View.GONE);
-                viewImage.setImageBitmap(thumbnail);
-                bitmapz = thumbnail;
+                try {
+                    Uri selectedImage = data.getData();
+                    String[] filePath = { MediaStore.Images.Media.DATA };
+                    Cursor c = ((Activity)context).getContentResolver().query(selectedImage,filePath, null, null, null);
+                    c.moveToFirst();
+                    int columnIndex = c.getColumnIndex(filePath[0]);
+                    String picturePath = c.getString(columnIndex);
+                    c.close();
+                    Bitmap thumbnail = (BitmapFactory.decodeFile(picturePath));
+                    viewImage.setImageBitmap(thumbnail);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    Toast.makeText(context,""+e.getMessage(),Toast.LENGTH_LONG).show();
+                }
             }
         }
         }
@@ -186,18 +184,5 @@ public class frag_opening_account2 extends Fragment {
                 .replace(R.id.layout_frame, fragment)
                 .addToBackStack(null)
                 .commit();
-    }
-    private void sendDataFragment(String tag, byte[] Text, Fragment fragment){
-        Bundle bundle = new Bundle();
-        bundle.putByteArray(tag,Text);
-        bundle.putByteArray("KTP",KTP);
-        fragment.setArguments(bundle);
-        getFragmentPage(fragment);
-    }
-    private void imgSend(Bitmap bitmap,String tag, Fragment fragment){
-        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.PNG,100,byteArrayOutputStream);
-        byte[] imageBytes = byteArrayOutputStream.toByteArray();
-        sendDataFragment(tag,imageBytes,fragment);
     }
 }

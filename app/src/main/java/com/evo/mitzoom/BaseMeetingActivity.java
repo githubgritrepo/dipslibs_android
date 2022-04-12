@@ -157,7 +157,7 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
         fragment.setArguments(bundle);
         getSupportFragmentManager()
                 .beginTransaction()
-                .replace(R.id.layout_frame, fragment)
+                .replace(R.id.layout_frame2, fragment)
                 .addToBackStack(null)
                 .commit();
     }

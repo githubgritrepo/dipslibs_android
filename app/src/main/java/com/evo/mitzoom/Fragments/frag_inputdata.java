@@ -56,35 +56,13 @@ public class frag_inputdata extends Fragment {
                     //untuk Menu Customer
                     Toast.makeText(context, "Ini Customer", Toast.LENGTH_SHORT).show();
                 }
-                //Choose();
-            }
-        });
-    }
-    private void Choose(){
-        SweetAlertDialog sweetAlertDialog = new SweetAlertDialog(context, SweetAlertDialog.WARNING_TYPE);
-        sweetAlertDialog.setContentText("Pilih user");
-        sweetAlertDialog.setConfirmText("Nasabah Bank");
-        sweetAlertDialog.setCancelText("Bukan Nasabah");
-        sweetAlertDialog.show();
-        sweetAlertDialog.setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
-            @Override
-            public void onClick(SweetAlertDialog sweetAlertDialog) {
-
-
-            }
-        });
-        sweetAlertDialog.setCancelClickListener(new SweetAlertDialog.OnSweetClickListener() {
-            @Override
-            public void onClick(SweetAlertDialog sweetAlertDialog) {
-                getFragmentPage(new frag_item());
-                sweetAlertDialog.dismiss();
             }
         });
     }
     private void getFragmentPage(Fragment fragment){
         getActivity().getSupportFragmentManager()
                 .beginTransaction()
-                .replace(R.id.layout_frame, fragment)
+                .replace(R.id.layout_frame2, fragment)
                 .addToBackStack(null)
                 .commit();
     }
