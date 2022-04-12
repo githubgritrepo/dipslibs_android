@@ -66,6 +66,12 @@ public class frag_list_produk extends Fragment {
         });
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        DipsWaitingRoom.smoothBottomBar.setVisibility(View.VISIBLE);
+    }
+
     private void getFragmentPage(Fragment fragment){
         getActivity().getSupportFragmentManager()
                 .beginTransaction()
