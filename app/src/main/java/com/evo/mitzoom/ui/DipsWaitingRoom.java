@@ -119,6 +119,9 @@ public class DipsWaitingRoom extends AppCompatActivity {
     String SessionPass;
     boolean isCust;
     String custName;
+    private Handler handlerSuccess;
+    private boolean stopPopSuccess = false;
+    private boolean doubleBackToExitPressedOnce = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -140,7 +143,8 @@ public class DipsWaitingRoom extends AppCompatActivity {
         btnEndCall = findViewById(R.id.end_call);
         smoothBottomBar = findViewById(R.id.BottomBar);
         preview = (SurfaceView) findViewById(R.id.mySurface);
-        previewHolder();
+
+        getFragmentPage(new frag_berita());
 
         Intent intent = getIntent();
         useFacing = intent.getIntExtra(KEY_USE_FACING, Camera.CameraInfo.CAMERA_FACING_FRONT);
@@ -166,13 +170,30 @@ public class DipsWaitingRoom extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         camera = Camera.open(useFacing);
-        startPreview();
-        getFragmentPage(new frag_berita());
+        //startPreview();
+        cameraConfigured = false;
+        previewHolder();
+        stopPopSuccess = false;
     }
-    private void previewHolder(){
-        previewHolder = preview.getHolder();
-        previewHolder.addCallback(surfaceCallback);
-        previewHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
+
+    @Override
+    public void onBackPressed() {
+
+        if (doubleBackToExitPressedOnce) {
+            this.moveTaskToBack(true);
+            stopPopSuccess = true;
+            return;
+        }
+
+        this.doubleBackToExitPressedOnce = true;
+        Toast.makeText(this,"Tekan sekali lagi untuk minimize", Toast.LENGTH_SHORT).show();
+
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                doubleBackToExitPressedOnce = false;
+            }
+        },2000);
     }
 
     @Override
@@ -189,23 +210,31 @@ public class DipsWaitingRoom extends AppCompatActivity {
 
         super.onPause();
     }
+
+    private void previewHolder(){
+        previewHolder = preview.getHolder();
+        previewHolder.addCallback(surfaceCallback);
+        previewHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
+    }
+
     private void BottomNavigation(){
         smoothBottomBar.setOnItemSelectedListener(new OnItemSelectedListener() {
             @Override
             public boolean onItemSelect(int i) {
+                Fragment fragment = null;
                 switch (i){
                     case 0:
-                        getFragmentPage(new frag_berita());
-                        return true;
+                        fragment = new frag_berita();
+                        break;
                     case 1:
-                        getFragmentPage(new frag_list_produk());
-                        return true;
+                        fragment = new frag_list_produk();
+                        break;
                     case 2:
-                        getFragmentPage(new frag_service());
-                        return true;
+                        fragment = new frag_service();
+                        break;
 
                 }
-                return false;
+                return getFragmentPage(fragment);
             }
         });
     }
@@ -407,22 +436,23 @@ public class DipsWaitingRoom extends AppCompatActivity {
         },waktu_tunggu);
     }
     private void PopUpSucces(){
-        new Handler().postDelayed(new Runnable() {
+        handlerSuccess = new Handler();
+        handlerSuccess.postDelayed(new Runnable() {
             @Override
             public void run() {
-                SweetAlertDialog sweetAlertDialog = new SweetAlertDialog(DipsWaitingRoom.this, SweetAlertDialog.SUCCESS_TYPE);
-                sweetAlertDialog.setContentText(getResources().getString(R.string.headline_success));
-                sweetAlertDialog.setConfirmText(getResources().getString(R.string.btn_continue));
-                sweetAlertDialog.show();
-                sweetAlertDialog.setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
-                    @Override
-                    public void onClick(SweetAlertDialog sweetAlertDialog) {
-                        sweetAlertDialog.dismiss();
-                        processJoinVideo();
-                    }
-                });
-                Button btnConfirm = (Button) sweetAlertDialog.findViewById(cn.pedant.SweetAlert.R.id.confirm_button);
-                btnConfirm.setBackgroundTintList(DipsWaitingRoom.this.getResources().getColorStateList(R.color.Blue));
+                if (!stopPopSuccess) {
+                    SweetAlertDialog sweetAlertDialog = new SweetAlertDialog(DipsWaitingRoom.this, SweetAlertDialog.SUCCESS_TYPE);
+                    sweetAlertDialog.setContentText(getResources().getString(R.string.headline_success));
+                    sweetAlertDialog.setConfirmText(getResources().getString(R.string.btn_continue));
+                    sweetAlertDialog.show();
+                    sweetAlertDialog.setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
+                        @Override
+                        public void onClick(SweetAlertDialog sweetAlertDialog) {
+                            sweetAlertDialog.dismiss();
+                            processJoinVideo();
+                        }
+                    });
+                }
             }
         },10000);
     }
@@ -479,7 +509,7 @@ public class DipsWaitingRoom extends AppCompatActivity {
         }
     };
     protected boolean requestPermission() {
-        if (checkSelfPermission(Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED || checkSelfPermission(Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED || checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+        if (ActivityCompat.checkSelfPermission(mContext,Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED || ActivityCompat.checkSelfPermission(mContext,Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED || ActivityCompat.checkSelfPermission(mContext,Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.CAMERA,
                     Manifest.permission.RECORD_AUDIO, Manifest.permission.READ_EXTERNAL_STORAGE}, REQUEST_VIDEO_AUDIO_CODE);
             return false;
@@ -490,7 +520,7 @@ public class DipsWaitingRoom extends AppCompatActivity {
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == REQUEST_VIDEO_AUDIO_CODE) {
-            if (checkSelfPermission(Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED && checkSelfPermission(Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED) {
+            if (ActivityCompat.checkSelfPermission(mContext,Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(mContext,Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED) {
                 onPermissionGranted();
             }
         }
@@ -594,14 +624,18 @@ public class DipsWaitingRoom extends AppCompatActivity {
         intent.putExtra("ISCUSTOMER", isCust);
         startActivity(intent);
     }
-    private void getFragmentPage(Fragment fragment){
-        Bundle bundle = new Bundle();
-        bundle.putBoolean("ISCUST",isCust);
-        fragment.setArguments(bundle);
-        getSupportFragmentManager()
-                .beginTransaction()
-                .replace(R.id.layout_frame, fragment)
-                .addToBackStack(null)
-                .commit();
+    private boolean getFragmentPage(Fragment fragment){
+        if (fragment != null) {
+            Bundle bundle = new Bundle();
+            bundle.putBoolean("ISCUST", isCust);
+            fragment.setArguments(bundle);
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.layout_frame, fragment)
+                    .addToBackStack(null)
+                    .commit();
+            return true;
+        }
+        return false;
     }
 }

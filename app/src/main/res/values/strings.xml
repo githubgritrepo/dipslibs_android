@@ -28,7 +28,7 @@
     <string name="time">Waktu</string>
     <string name="notif_blank">Data belum diisi</string>
     <string name="no">Tidak</string>
-    <string name="headline_endcall">Apakah anda ingin mengkahiri panggilan ?</string>
+    <string name="headline_endcall">Apakah anda ingin mengakhiri panggilan ?</string>
     <string name="headline_waiting">Saat ini customer support sedang dalam proses dengan customer lain. Anda dapat menunggu di ruang tunggu atau menjadwalkan panggilan.</string>
     <string name="waiting">Bersedia menunggu</string>
     <string name="headline_success">Customer Support sudah siap melayani anda.</string>

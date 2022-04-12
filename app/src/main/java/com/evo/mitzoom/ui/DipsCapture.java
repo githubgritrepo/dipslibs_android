@@ -68,6 +68,7 @@ public class DipsCapture extends AppCompatActivity implements CameraSource.Pictu
 
     private Context mContext;
     private static final String KEY_USE_FACING = "use_facing";
+    private boolean doubleBackToExitPressedOnce = false;
     public static Integer useFacing = null;
     private static int degreeFront = 0;
     public static int CAM_ID = 0;
@@ -90,6 +91,8 @@ public class DipsCapture extends AppCompatActivity implements CameraSource.Pictu
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
         getSupportActionBar().hide();
+        getWindow().addFlags(WindowManager.LayoutParams.
+                FLAG_KEEP_SCREEN_ON);
 
         mContext = this;
 
@@ -98,6 +101,12 @@ public class DipsCapture extends AppCompatActivity implements CameraSource.Pictu
         rlprogress = (RelativeLayout) findViewById(R.id.rlprogress);
         LinearLayout llMsg = (LinearLayout) findViewById(R.id.llMsg);
         llMsg.getBackground().setAlpha(150);
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
 
         detector = new FaceDetector.Builder(this)
                 .setProminentFaceOnly(true) // optimize for single, relatively large face
@@ -114,7 +123,31 @@ public class DipsCapture extends AppCompatActivity implements CameraSource.Pictu
                 setupSurfaceHolder();
             }
         }
+    }
 
+    @Override
+    public void onBackPressed() {
+        if (doubleBackToExitPressedOnce) {
+            super.onBackPressed();
+            Intent intent = new Intent(Intent.ACTION_MAIN);
+            intent.addCategory(Intent.CATEGORY_HOME);
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);//***Change Here***
+            startActivity(intent);
+            overridePendingTransition(R.anim.modal_in,R.anim.modal_out);
+            finish();
+            System.exit(0);
+            return;
+        }
+
+        this.doubleBackToExitPressedOnce = true;
+        Toast.makeText(this,"Tekan sekali lagi untuk keluar", Toast.LENGTH_SHORT).show();
+
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                doubleBackToExitPressedOnce = false;
+            }
+        },2000);
     }
 
     private void setupSurfaceHolder() {
@@ -264,6 +297,7 @@ public class DipsCapture extends AppCompatActivity implements CameraSource.Pictu
     @Override
     public void onPictureTaken(@NonNull byte[] dataPhoto) {
         if (dataPhoto.length > 0) {
+            cameraSource.stop();
             processCropImage(dataPhoto);
         }
     }
@@ -418,7 +452,7 @@ public class DipsCapture extends AppCompatActivity implements CameraSource.Pictu
                                     }
                                 });
                                 sweetDialog.show();
-
+                                startCamera();
                                 return;
                             }
 
@@ -441,6 +475,7 @@ public class DipsCapture extends AppCompatActivity implements CameraSource.Pictu
 //                        e.printStackTrace();
 //                    }
                 } else {
+                    startCamera();
                     Toast.makeText(mContext, R.string.msg_error,Toast.LENGTH_SHORT).show();
                 }
             }
@@ -448,6 +483,7 @@ public class DipsCapture extends AppCompatActivity implements CameraSource.Pictu
             @Override
             public void onFailure(Call<CaptureIdentify> call, Throwable t) {
                 showProgress(false);
+                startCamera();
                 Toast.makeText(mContext, t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
