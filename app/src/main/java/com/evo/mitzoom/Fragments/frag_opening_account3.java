@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -113,6 +114,8 @@ public class frag_opening_account3 extends Fragment {
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         File f = new File(Environment.getExternalStorageDirectory(), "temp.png");
         intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(f));
+        intent.putExtra("android.intent.extras.LENS_FACING_FRONT", 1);
+        intent.putExtra("android.intent.extra.USE_FRONT_CAMERA", true);
         startActivityForResult(intent, 1);
     }
     @Override
@@ -137,8 +140,7 @@ public class frag_opening_account3 extends Fragment {
                     delete.setVisibility(View.VISIBLE);
                     viewImage.setVisibility(View.VISIBLE);
                     chooseImage.setVisibility(View.GONE);
-                    viewImage.setImageBitmap(bitmap);
-                    bitmapz = bitmap;
+                    getResizedBitmap(bitmap , (bitmap.getWidth()/2), (bitmap.getHeight()/2));
                     String path = Environment
                             .getExternalStorageDirectory()
                             + File.separator
@@ -176,30 +178,33 @@ public class frag_opening_account3 extends Fragment {
                 delete.setVisibility(View.VISIBLE);
                 viewImage.setVisibility(View.VISIBLE);
                 chooseImage.setVisibility(View.GONE);
-                viewImage.setImageBitmap(thumbnail);
-                bitmapz = thumbnail;
+                getResizedBitmap(thumbnail, (thumbnail.getWidth()/2), (thumbnail.getHeight()/2));
             }
         }
         }
     private void getFragmentPage(Fragment fragment){
         getActivity().getSupportFragmentManager()
                 .beginTransaction()
-                .replace(R.id.layout_frame, fragment)
+                .replace(R.id.layout_frame2, fragment)
                 .addToBackStack(null)
                 .commit();
     }
-    private void sendDataFragment(String tag, byte[] Text, Fragment fragment){
-        Bundle bundle = new Bundle();
-        bundle.putByteArray(tag,Text);
-        bundle.putByteArray("KTP",KTP);
-        bundle.putByteArray("NPWP",NPWP);
-        fragment.setArguments(bundle);
-        getFragmentPage(fragment);
-    }
-    private void imgSend(Bitmap bitmap,String tag, Fragment fragment){
-        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.PNG,100,byteArrayOutputStream);
-        byte[] imageBytes = byteArrayOutputStream.toByteArray();
-        sendDataFragment(tag,imageBytes,fragment);
+    public void getResizedBitmap(Bitmap bm, int newWidth, int newHeight) {
+        int width = bm.getWidth();
+        int height = bm.getHeight();
+        float scaleWidth = ((float) newWidth) / width;
+        float scaleHeight = ((float) newHeight) / height;
+
+        Matrix matrix = new Matrix();
+        // RESIZE THE BIT MAP
+        matrix.postScale(scaleWidth, scaleHeight);
+
+        // "RECREATE" THE NEW BITMAP
+        Bitmap resizedBitmap = Bitmap.createBitmap(
+                bm, 0, 0, width, height, matrix, false);
+        bm.recycle();
+        viewImage.setImageBitmap(resizedBitmap);
+
+        //return resizedBitmap;
     }
 }

@@ -4,124 +4,126 @@
     android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:theme="@style/Theme.MaterialComponents.DayNight.DarkActionBar">
-    <LinearLayout
+
+    <HorizontalScrollView
         android:id="@+id/TopBar"
-        android:gravity="center"
-        android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        android:background="#F0F3F8"
-        android:orientation="horizontal">
-        <ImageView
-            android:id="@+id/icon_ktp"
-            android:layout_gravity="center_vertical"
-            android:background="@drawable/circle_icon"
-            android:backgroundTint="#C8CDD1"
-            android:layout_marginStart="5dp"
-            android:layout_marginEnd="5dp"
-            android:layout_width="36dp"
-            android:layout_height="36dp"
-            android:src="@drawable/ktp"/>
-        <TextView
-            android:textSize="11sp"
-            android:textColor="@color/black"
-            android:layout_gravity="center_vertical"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/Photo_nktp"/>
-        <ImageView
-            android:layout_gravity="center_vertical"
-            android:layout_marginStart="5dp"
-            android:layout_marginEnd="5dp"
-            android:layout_width="12dp"
-            android:layout_height="12dp"
-            android:src="@drawable/ic_baseline_arrow_forward_24"/>
-        <ImageView
-            android:id="@+id/icon_npwp"
-            android:layout_gravity="center_vertical"
-            android:background="@drawable/circle_icon"
-            android:backgroundTint="#C8CDD1"
-            android:layout_marginEnd="5dp"
-            android:layout_width="36dp"
-            android:layout_height="36dp"
-            android:src="@drawable/npwp"/>
-        <TextView
-            android:textSize="11sp"
-            android:textColor="@color/black"
-            android:layout_gravity="center_vertical"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/photo_nnpwp"/>
-        <ImageView
-            android:layout_gravity="center_vertical"
-            android:layout_marginStart="5dp"
-            android:layout_marginEnd="5dp"
-            android:layout_width="12dp"
-            android:layout_height="12dp"
-            android:src="@drawable/ic_baseline_arrow_forward_24"/>
-        <ImageView
-            android:id="@+id/icon_signature"
-            android:layout_gravity="center_vertical"
-            android:background="@drawable/circle_icon"
-            android:backgroundTint="#C8CDD1"
-            android:layout_marginEnd="5dp"
-            android:layout_width="36dp"
-            android:layout_height="36dp"
-            android:src="@drawable/tandatangan"/>
-        <TextView
-            android:textSize="11sp"
-            android:textColor="@color/black"
-            android:layout_gravity="center_vertical"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/foto_ntanda_ntangan"/>
-        <ImageView
-            android:layout_gravity="center_vertical"
-            android:layout_marginStart="5dp"
-            android:layout_marginEnd="5dp"
-            android:layout_width="12dp"
-            android:layout_height="12dp"
-            android:src="@drawable/ic_baseline_arrow_forward_24"/>
-        <ImageView
-            android:id="@+id/icon_form"
-            android:layout_gravity="center_vertical"
-            android:background="@drawable/circle_icon"
-            android:backgroundTint="#C8CDD1"
-            android:layout_marginEnd="5dp"
-            android:layout_width="36dp"
-            android:layout_height="36dp"
-            android:src="@drawable/formulir"/>
-        <TextView
-            android:textSize="11sp"
-            android:textColor="@color/black"
-            android:layout_gravity="center_vertical"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/formulir_npembukaan_nrekening"/>
-    </LinearLayout>
-    <LinearLayout
-        android:gravity="center"
-        android:id="@+id/TopBar2"
-        android:layout_below="@+id/TopBar"
-        android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        android:background="@color/white"
-        android:orientation="horizontal">
-        <TextView
-            android:layout_gravity="center"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/pembukaan_rekening_ntabungan"
-            android:textAlignment="center"
-            android:textColor="#54575C"
-            android:textSize="19sp"
-            android:textStyle="bold"
-            android:textAppearance="@style/TextAppearance.AppCompat.Headline"/>
-    </LinearLayout>
-    <androidx.core.widget.NestedScrollView
-        android:layout_marginBottom="45dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/TopBar2">
+        android:background="@color/white"
+        android:gravity="center"
+        android:scrollbars="none">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="?attr/actionBarSize"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:id="@+id/icon_ktp"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:layout_gravity="center_vertical"
+                android:layout_marginStart="5dp"
+                android:layout_marginEnd="5dp"
+                android:background="@drawable/circle_icon"
+                android:backgroundTint="#C8CDD1"
+                android:src="@drawable/ktp" />
+
+            <TextView
+                android:textAlignment="textStart"
+                android:layout_gravity="start|center_vertical"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/Photo_nktp"
+                android:textColor="@color/black"
+                android:textSize="11sp" />
+
+            <ImageView
+                android:layout_width="12dp"
+                android:layout_height="12dp"
+                android:layout_gravity="center_vertical"
+                android:layout_marginStart="5dp"
+                android:layout_marginEnd="5dp"
+                android:src="@drawable/ic_baseline_arrow_forward_24" />
+
+            <ImageView
+                android:id="@+id/icon_npwp"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:layout_gravity="center_vertical"
+                android:layout_marginEnd="5dp"
+                android:background="@drawable/circle_icon"
+                android:backgroundTint="#C8CDD1"
+                android:src="@drawable/npwp" />
+
+            <TextView
+                android:textAlignment="textStart"
+                android:layout_gravity="start|center_vertical"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/photo_nnpwp"
+                android:textColor="@color/black"
+                android:textSize="11sp" />
+
+            <ImageView
+                android:layout_width="12dp"
+                android:layout_height="12dp"
+                android:layout_gravity="center_vertical"
+                android:layout_marginStart="5dp"
+                android:layout_marginEnd="5dp"
+                android:src="@drawable/ic_baseline_arrow_forward_24" />
+
+            <ImageView
+                android:id="@+id/icon_signature"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:layout_gravity="center_vertical"
+                android:layout_marginEnd="5dp"
+                android:background="@drawable/circle_icon"
+                android:backgroundTint="#C8CDD1"
+                android:src="@drawable/tandatangan" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAlignment="textStart"
+                android:layout_gravity="start|center_vertical"
+                android:text="@string/foto_ntanda_ntangan"
+                android:textColor="@color/black"
+                android:textSize="11sp" />
+
+            <ImageView
+                android:layout_width="12dp"
+                android:layout_height="12dp"
+                android:layout_gravity="center_vertical"
+                android:layout_marginStart="5dp"
+                android:layout_marginEnd="5dp"
+                android:src="@drawable/ic_baseline_arrow_forward_24" />
+
+            <ImageView
+                android:id="@+id/icon_form"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:layout_gravity="center_vertical"
+                android:layout_marginEnd="5dp"
+                android:background="@drawable/circle_icon"
+                android:backgroundTint="#C8CDD1"
+                android:src="@drawable/formulir" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAlignment="textStart"
+                android:layout_gravity="start|center_vertical"
+                android:text="@string/formulir_npembukaan_nrekening"
+                android:textColor="@color/black"
+                android:textSize="11sp" />
+        </LinearLayout>
+    </HorizontalScrollView>
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/TopBar">
         <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -133,6 +135,7 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
                 <TextView
+                    android:textAlignment="center"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_margin="20dp"
@@ -141,23 +144,24 @@
                     android:textSize="16sp" />
                 <LinearLayout
                     android:orientation="vertical"
-                    android:gravity="center"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_width="250dp"
+                    android:layout_height="180dp"
                     android:layout_marginStart="20dp"
                     android:layout_marginEnd="20dp"
                     android:layout_marginBottom="10dp"
                     android:background="@drawable/bg">
                     <LinearLayout
+                        android:layout_marginTop="27dp"
                         android:id="@+id/Choose_Image"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="vertical">
                         <ImageView
-                            android:id="@+id/choose_camera"
-                            android:layout_width="110dp"
-                            android:layout_height="110dp"
                             android:layout_gravity="center"
+                            android:id="@+id/choose_camera"
+                            android:layout_width="50dp"
+                            android:layout_height="50dp"
                             android:layout_marginBottom="15dp"
                             android:src="@drawable/kamera" />
                         <LinearLayout
@@ -190,13 +194,12 @@
                                 android:background="#CCC" />
                         </LinearLayout>
                         <LinearLayout
+                            android:gravity="center"
                             android:id="@+id/choose_gallery"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="20dp"
                             android:layout_marginEnd="20dp"
-                            android:layout_marginBottom="15dp"
-                            android:gravity="center"
                             android:orientation="horizontal">
 
                             <ImageView
@@ -216,11 +219,11 @@
                     </LinearLayout>
                     <ImageView
                         android:visibility="gone"
-                        android:padding="40dp"
-                        android:id="@+id/Imageview"
+                        android:layout_marginTop="16dp"
                         android:layout_gravity="center"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
+                        android:id="@+id/Imageview"
+                        android:layout_width="150dp"
+                        android:layout_height="150dp"
                         android:src="@drawable/photoplaceholder"/>
                 </LinearLayout>
                 <LinearLayout

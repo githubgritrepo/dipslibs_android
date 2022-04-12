@@ -20,7 +20,7 @@
     <string name="cancel">Cancel</string>
     <string name="leave_leave_text">Leave Session</string>
     <string name="leave_end_text">End Session</string>
-    <string name="call_is_being_connected">Panggilan terhubung...</string>
+    <string name="call_is_being_connected">Panggilan terhubung . . .</string>
     <string name="schedule_a_task">Jadwalkan Panggilan</string>
     <string name="end_call">Akhiri</string>
     <string name="headline_schedule">saat ini seluruh petugas kami belum dapat menjawab panggilan Anda, mohon jadwalkan waktu terbaik bagi kami untuk menghubungi Anda kembali.</string>
@@ -64,10 +64,13 @@
     <string name="Photo_nktp">Foto\nKTP</string>
     <string name="photo_nnpwp">Foto\nNPWP</string>
     <string name="foto_ntanda_ntangan">Foto\nTanda\nTangan</string>
-    <string name="formulir_npembukaan_nrekening">Formulir\nPembukaan\nRekening</string>
-    <string name="pembukaan_rekening_ntabungan">Pembukaan Rekening\nTabungan</string>
-    <string name="pastikan_gambar_atau_foto_ktp_sudah_jelas_dan_tidak_buram">Pastikan gambar atau foto sudah jelas dan tidak buram.</string>
+    <string name="formulir_npembukaan_nrekening">Formulir\nPendaftaran</string>
+    <string name="pembukaan_rekening_ntabungan">Pembukaan Rekening Tabungan</string>
+    <string name="pastikan_gambar_atau_foto_ktp_sudah_jelas_dan_tidak_buram">Pastikan gambar atau foto\njelas dan tidak buram.</string>
     <string name="pilih_dari_galeri">Pilih Dari Galeri</string>
     <string name="email">Email</string>
     <string name="popupktp">Harap menyiapkan dokumen data diri berupa KTP, NPWP, dan foto tanda tangan untuk di upload</string>
+    <string name="content_after_schedule">Terima kasih telah menggunakan layanan DiPS. Panggilan anda sudah terjadwalkan. kami akan segera menghubungi anda</string>
+    <string name="done">Selesai</string>
+    <string name="content_input">Demi kenyamanan bersama, percakapan ini akan terekam secara otomatis.</string>
 </resources>

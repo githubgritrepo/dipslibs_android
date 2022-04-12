@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -111,6 +112,8 @@ public class frag_opening_account2 extends Fragment {
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         File f = new File(Environment.getExternalStorageDirectory(), "temp.png");
         intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(f));
+        intent.putExtra("android.intent.extras.LENS_FACING_FRONT", 1);
+        intent.putExtra("android.intent.extra.USE_FRONT_CAMERA", true);
         startActivityForResult(intent, 1);
     }
     @Override
@@ -130,17 +133,19 @@ public class frag_opening_account2 extends Fragment {
                     BitmapFactory.Options bitmapOptions = new BitmapFactory.Options();
                     bitmap = BitmapFactory.decodeFile(f.getAbsolutePath(),
                             bitmapOptions);
-                    viewImage.setImageBitmap(bitmap);
+                    btnNext.setBackgroundTintList(context.getResources().getColorStateList(R.color.bg_cif));
+                    btnNext.setClickable(true);
+                    delete.setVisibility(View.VISIBLE);
+                    viewImage.setVisibility(View.VISIBLE);
+                    chooseImage.setVisibility(View.GONE);
+                    getResizedBitmap(bitmap , (bitmap.getWidth()/2), (bitmap.getHeight()/2));
                     String path = Environment
                             .getExternalStorageDirectory()
                             + File.separator
                             + "Phoenix" + File.separator + "default";
                     f.delete();
-                    FileOutputStream outFile = null;
+                    OutputStream outFile = null;
                     File file = new File(path, String.valueOf(System.currentTimeMillis()) + ".png");
-                    if (!file.exists()){
-                        file.mkdirs();
-                    }
                     try {
                         outFile = new FileOutputStream(file);
                         bitmap.compress(Bitmap.CompressFormat.PNG,85,outFile);
@@ -149,40 +154,55 @@ public class frag_opening_account2 extends Fragment {
                     }
                     catch (FileNotFoundException e){
                         e.printStackTrace();
-                        Toast.makeText(context, ""+e.getMessage(), Toast.LENGTH_LONG).show();
                     }
                     catch (IOException e) {
                         e.printStackTrace();
-                        Toast.makeText(context, ""+e.getMessage(), Toast.LENGTH_LONG).show();
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
-                    Toast.makeText(context, ""+e.getMessage(), Toast.LENGTH_LONG).show();
                 }
             }
             else if (requestCode == 2){
-                try {
-                    Uri selectedImage = data.getData();
-                    String[] filePath = { MediaStore.Images.Media.DATA };
-                    Cursor c = ((Activity)context).getContentResolver().query(selectedImage,filePath, null, null, null);
-                    c.moveToFirst();
-                    int columnIndex = c.getColumnIndex(filePath[0]);
-                    String picturePath = c.getString(columnIndex);
-                    c.close();
-                    Bitmap thumbnail = (BitmapFactory.decodeFile(picturePath));
-                    viewImage.setImageBitmap(thumbnail);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    Toast.makeText(context,""+e.getMessage(),Toast.LENGTH_LONG).show();
-                }
+                Uri selectedImage = data.getData();
+                String[] filePath = { MediaStore.Images.Media.DATA };
+                Cursor c = context.getContentResolver().query(selectedImage,filePath, null, null, null);
+                c.moveToFirst();
+                int columnIndex = c.getColumnIndex(filePath[0]);
+                String picturePath = c.getString(columnIndex);
+                c.close();
+                Bitmap thumbnail = (BitmapFactory.decodeFile(picturePath));
+                btnNext.setBackgroundTintList(context.getResources().getColorStateList(R.color.bg_cif));
+                btnNext.setClickable(true);
+                delete.setVisibility(View.VISIBLE);
+                viewImage.setVisibility(View.VISIBLE);
+                chooseImage.setVisibility(View.GONE);
+                getResizedBitmap(thumbnail, (thumbnail.getWidth()/2), (thumbnail.getHeight()/2));
             }
         }
-        }
+    }
     private void getFragmentPage(Fragment fragment){
         getActivity().getSupportFragmentManager()
                 .beginTransaction()
-                .replace(R.id.layout_frame, fragment)
+                .replace(R.id.layout_frame2, fragment)
                 .addToBackStack(null)
                 .commit();
+    }
+    public void getResizedBitmap(Bitmap bm, int newWidth, int newHeight) {
+        int width = bm.getWidth();
+        int height = bm.getHeight();
+        float scaleWidth = ((float) newWidth) / width;
+        float scaleHeight = ((float) newHeight) / height;
+
+        Matrix matrix = new Matrix();
+        // RESIZE THE BIT MAP
+        matrix.postScale(scaleWidth, scaleHeight);
+
+        // "RECREATE" THE NEW BITMAP
+        Bitmap resizedBitmap = Bitmap.createBitmap(
+                bm, 0, 0, width, height, matrix, false);
+        bm.recycle();
+        viewImage.setImageBitmap(resizedBitmap);
+
+        //return resizedBitmap;
     }
 }

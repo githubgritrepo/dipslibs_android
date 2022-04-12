@@ -34,6 +34,7 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
+import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.GridView;
 import android.widget.ImageButton;
@@ -110,7 +111,7 @@ public class DipsWaitingRoom extends AppCompatActivity {
     private ImageView btnclose;
     private TextView et_Date;
     private AutoCompleteTextView et_time;
-    private int year, month, day, waktu_tunggu = 5000;
+    private int year, month, day, waktu_tunggu = 6000;
     private String tanggal, waktu;
     String [] time = {"08.00 - 10.00", "10.00 - 12.00", "12.00 - 14.00", "14.00 - 16.00", "16.00 - 17.00"};
     public static SmoothBottomBar smoothBottomBar;
@@ -123,6 +124,8 @@ public class DipsWaitingRoom extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dips_waiting_room);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_SECURE, WindowManager.LayoutParams.FLAG_SECURE);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_SECURE, WindowManager.LayoutParams.FLAG_SECURE);
         getFragmentPage(new frag_berita());
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
@@ -155,7 +158,7 @@ public class DipsWaitingRoom extends AppCompatActivity {
             }
         });
 
-        //PopUpWaiting();
+        PopUpWaiting();
         PopUpSucces();
         BottomNavigation();
     }
@@ -325,6 +328,7 @@ public class DipsWaitingRoom extends AppCompatActivity {
                         et_Date.setText(tanggal);
                     }
                 }, year, month, day);
+                datePickerDialog.getDatePicker().setMinDate(System.currentTimeMillis() - 1000);
                 datePickerDialog.show();
             }
         });
@@ -348,10 +352,17 @@ public class DipsWaitingRoom extends AppCompatActivity {
                 else {
                     Toast.makeText(getApplicationContext(), "Jadwal panggilan anda "+tanggal+" jam "+waktu, Toast.LENGTH_LONG).show();
                     sweetAlertDialog.dismiss();
+                    SweetAlertDialog sweetAlertDialog = new SweetAlertDialog(DipsWaitingRoom.this, SweetAlertDialog.SUCCESS_TYPE);
+                    sweetAlertDialog.setContentText(getResources().getString(R.string.content_after_schedule));
+                    sweetAlertDialog.setConfirmText(getResources().getString(R.string.done));
+                    sweetAlertDialog.show();
+                    Button btnConfirm = (Button) sweetAlertDialog.findViewById(cn.pedant.SweetAlert.R.id.confirm_button);
+                    btnConfirm.setBackgroundTintList(DipsWaitingRoom.this.getResources().getColorStateList(R.color.Blue));
                 }
 
             }
         });
+        btnSchedule2.setBackgroundTintList(DipsWaitingRoom.this.getResources().getColorStateList(R.color.Blue));
     }
     private void EndCall(){
         SweetAlertDialog sweetAlertDialog = new SweetAlertDialog(DipsWaitingRoom.this, SweetAlertDialog.WARNING_TYPE);
@@ -367,6 +378,8 @@ public class DipsWaitingRoom extends AppCompatActivity {
 
             }
         });
+        Button btnCancel = (Button) sweetAlertDialog.findViewById(cn.pedant.SweetAlert.R.id.cancel_button);
+        btnCancel.setBackgroundTintList(DipsWaitingRoom.this.getResources().getColorStateList(R.color.Blue));
     }
     private void PopUpWaiting(){
         new Handler().postDelayed(new Runnable() {
@@ -375,7 +388,6 @@ public class DipsWaitingRoom extends AppCompatActivity {
                 SweetAlertDialog sweetAlertDialog = new SweetAlertDialog(DipsWaitingRoom.this, SweetAlertDialog.WARNING_TYPE);
                 sweetAlertDialog.setContentText(getResources().getString(R.string.headline_waiting));
                 sweetAlertDialog.setConfirmText(getResources().getString(R.string.waiting));
-                sweetAlertDialog.setCancelText(getResources().getString(R.string.schedule_a_task));
                 sweetAlertDialog.show();
                 sweetAlertDialog.setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
                     @Override
@@ -389,13 +401,8 @@ public class DipsWaitingRoom extends AppCompatActivity {
                         startActivity(intent);*/
                     }
                 });
-                sweetAlertDialog.setCancelClickListener(new SweetAlertDialog.OnSweetClickListener() {
-                    @Override
-                    public void onClick(SweetAlertDialog sweetAlertDialog) {
-                        sweetAlertDialog.dismiss();
-                        PopUpSchedule();
-                    }
-                });
+                Button btnConfirm = (Button) sweetAlertDialog.findViewById(cn.pedant.SweetAlert.R.id.confirm_button);
+                btnConfirm.setBackgroundTintList(DipsWaitingRoom.this.getResources().getColorStateList(R.color.Blue));
             }
         },waktu_tunggu);
     }
@@ -414,6 +421,8 @@ public class DipsWaitingRoom extends AppCompatActivity {
                         processJoinVideo();
                     }
                 });
+                Button btnConfirm = (Button) sweetAlertDialog.findViewById(cn.pedant.SweetAlert.R.id.confirm_button);
+                btnConfirm.setBackgroundTintList(DipsWaitingRoom.this.getResources().getColorStateList(R.color.Blue));
             }
         },10000);
     }

@@ -18,8 +18,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/bg2">
-
-
         <LinearLayout
             android:id="@+id/llUsersVideo"
             android:layout_width="match_parent"
@@ -29,17 +27,16 @@
             <LinearLayout
                 android:id="@+id/video_list_contain"
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/dp_280"
+                android:layout_height="200dp"
                 android:gravity="center">
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/userVideoList"
                     android:layout_width="wrap_content"
-                    android:layout_height="@dimen/dp_280"
+                    android:layout_height="200dp"
                     android:clipChildren="true">
 
                 </androidx.recyclerview.widget.RecyclerView>
-
             </LinearLayout>
         </LinearLayout>
 
