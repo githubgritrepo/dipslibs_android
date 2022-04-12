@@ -5,124 +5,122 @@
     android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:theme="@style/Theme.MaterialComponents.DayNight.DarkActionBar">
-    <LinearLayout
+    <HorizontalScrollView
         android:id="@+id/TopBar"
-        android:gravity="center"
         android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        android:background="#F0F3F8"
-        android:orientation="horizontal">
-        <ImageView
-            android:id="@+id/icon_ktp"
-            android:layout_gravity="center_vertical"
-            android:background="@drawable/circle_icon"
-            android:backgroundTint="#C8CDD1"
-            android:layout_marginStart="5dp"
-            android:layout_marginEnd="5dp"
-            android:layout_width="36dp"
-            android:layout_height="36dp"
-            android:src="@drawable/ktp"/>
-        <TextView
-            android:textSize="11sp"
-            android:textColor="@color/black"
-            android:layout_gravity="center_vertical"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/Photo_nktp"/>
-        <ImageView
-            android:layout_gravity="center_vertical"
-            android:layout_marginStart="5dp"
-            android:layout_marginEnd="5dp"
-            android:layout_width="12dp"
-            android:layout_height="12dp"
-            android:src="@drawable/ic_baseline_arrow_forward_24"/>
-        <ImageView
-            android:id="@+id/icon_npwp"
-            android:layout_gravity="center_vertical"
-            android:background="@drawable/circle_icon"
-            android:backgroundTint="#C8CDD1"
-            android:layout_marginEnd="5dp"
-            android:layout_width="36dp"
-            android:layout_height="36dp"
-            android:src="@drawable/npwp"/>
-        <TextView
-            android:textSize="11sp"
-            android:textColor="@color/black"
-            android:layout_gravity="center_vertical"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/photo_nnpwp"/>
-        <ImageView
-            android:layout_gravity="center_vertical"
-            android:layout_marginStart="5dp"
-            android:layout_marginEnd="5dp"
-            android:layout_width="12dp"
-            android:layout_height="12dp"
-            android:src="@drawable/ic_baseline_arrow_forward_24"/>
-        <ImageView
-            android:id="@+id/icon_signature"
-            android:layout_gravity="center_vertical"
-            android:background="@drawable/circle_icon"
-            android:backgroundTint="#C8CDD1"
-            android:layout_marginEnd="5dp"
-            android:layout_width="36dp"
-            android:layout_height="36dp"
-            android:src="@drawable/tandatangan"/>
-        <TextView
-            android:textSize="11sp"
-            android:textColor="@color/black"
-            android:layout_gravity="center_vertical"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/foto_ntanda_ntangan"/>
-        <ImageView
-            android:layout_gravity="center_vertical"
-            android:layout_marginStart="5dp"
-            android:layout_marginEnd="5dp"
-            android:layout_width="12dp"
-            android:layout_height="12dp"
-            android:src="@drawable/ic_baseline_arrow_forward_24"/>
-        <ImageView
-            android:id="@+id/icon_form"
-            android:layout_gravity="center_vertical"
-            android:background="@drawable/circle_icon"
-            android:backgroundTint="#C8CDD1"
-            android:layout_marginEnd="5dp"
-            android:layout_width="36dp"
-            android:layout_height="36dp"
-            android:src="@drawable/formulir"/>
-        <TextView
-            android:textSize="11sp"
-            android:textColor="@color/black"
-            android:layout_gravity="center_vertical"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/formulir_npembukaan_nrekening"/>
-    </LinearLayout>
-    <LinearLayout
-        android:gravity="center"
-        android:id="@+id/TopBar2"
-        android:layout_below="@+id/TopBar"
-        android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
+        android:layout_height="wrap_content"
         android:background="@color/white"
-        android:orientation="horizontal">
-        <TextView
-            android:layout_gravity="center"
+        android:gravity="center"
+        android:scrollbars="none">
+
+        <LinearLayout
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/pembukaan_rekening_ntabungan"
-            android:textAlignment="center"
-            android:textColor="#54575C"
-            android:textSize="19sp"
-            android:textStyle="bold"
-            android:textAppearance="@style/TextAppearance.AppCompat.Headline"/>
-    </LinearLayout>
+            android:layout_height="?attr/actionBarSize"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:id="@+id/icon_ktp"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:layout_gravity="center_vertical"
+                android:layout_marginStart="5dp"
+                android:layout_marginEnd="5dp"
+                android:background="@drawable/circle_icon"
+                android:backgroundTint="#C8CDD1"
+                android:src="@drawable/ktp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:text="@string/Photo_nktp"
+                android:textColor="@color/black"
+                android:textSize="11sp" />
+
+            <ImageView
+                android:layout_width="12dp"
+                android:layout_height="12dp"
+                android:layout_gravity="center_vertical"
+                android:layout_marginStart="5dp"
+                android:layout_marginEnd="5dp"
+                android:src="@drawable/ic_baseline_arrow_forward_24" />
+
+            <ImageView
+                android:id="@+id/icon_npwp"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:layout_gravity="center_vertical"
+                android:layout_marginEnd="5dp"
+                android:background="@drawable/circle_icon"
+                android:backgroundTint="#C8CDD1"
+                android:src="@drawable/npwp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:text="@string/photo_nnpwp"
+                android:textColor="@color/black"
+                android:textSize="11sp" />
+
+            <ImageView
+                android:layout_width="12dp"
+                android:layout_height="12dp"
+                android:layout_gravity="center_vertical"
+                android:layout_marginStart="5dp"
+                android:layout_marginEnd="5dp"
+                android:src="@drawable/ic_baseline_arrow_forward_24" />
+
+            <ImageView
+                android:id="@+id/icon_signature"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:layout_gravity="center_vertical"
+                android:layout_marginEnd="5dp"
+                android:background="@drawable/circle_icon"
+                android:backgroundTint="#C8CDD1"
+                android:src="@drawable/tandatangan" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:text="@string/foto_ntanda_ntangan"
+                android:textColor="@color/black"
+                android:textSize="11sp" />
+
+            <ImageView
+                android:layout_width="12dp"
+                android:layout_height="12dp"
+                android:layout_gravity="center_vertical"
+                android:layout_marginStart="5dp"
+                android:layout_marginEnd="5dp"
+                android:src="@drawable/ic_baseline_arrow_forward_24" />
+
+            <ImageView
+                android:id="@+id/icon_form"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:layout_gravity="center_vertical"
+                android:layout_marginEnd="5dp"
+                android:background="@drawable/circle_icon"
+                android:backgroundTint="#C8CDD1"
+                android:src="@drawable/formulir" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:text="@string/formulir_npembukaan_nrekening"
+                android:textColor="@color/black"
+                android:textSize="11sp" />
+        </LinearLayout>
+    </HorizontalScrollView>
 
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/TopBar2">
+        android:layout_below="@+id/TopBar">
 
         <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
@@ -141,7 +139,7 @@
                     android:layout_height="wrap_content"
                     android:text="@string/name"
                     android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-                    android:textSize="27sp" />
+                    android:textSize="20sp" />
                 <com.google.android.material.textfield.TextInputLayout
                     style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                     android:layout_width="match_parent"
@@ -153,13 +151,13 @@
                     app:boxCornerRadiusTopStart="10dp">
 
                     <EditText
+                        android:padding="9dp"
                         android:id="@+id/et_nama"
                         android:layout_width="match_parent"
-                        android:layout_height="55dp"
+                        android:layout_height="35dp"
                         android:background="@drawable/bg_textinput"
                         android:inputType="text"
-                        android:padding="10dp"
-                        android:textSize="23sp"
+                        android:textSize="16sp"
                         tools:ignore="SpeakableTextPresentCheck" />
                 </com.google.android.material.textfield.TextInputLayout>
                 <TextView
@@ -167,7 +165,7 @@
                     android:layout_height="wrap_content"
                     android:text="@string/nik"
                     android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-                    android:textSize="27sp" />
+                    android:textSize="20sp" />
                 <com.google.android.material.textfield.TextInputLayout
                     style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                     android:layout_width="match_parent"
@@ -179,13 +177,13 @@
                     app:boxCornerRadiusTopStart="10dp">
 
                     <EditText
+                        android:padding="9dp"
                         android:id="@+id/et_nik"
                         android:layout_width="match_parent"
-                        android:layout_height="55dp"
+                        android:layout_height="35dp"
                         android:background="@drawable/bg_textinput"
                         android:inputType="number"
-                        android:padding="10dp"
-                        android:textSize="23sp"
+                        android:textSize="18sp"
                         tools:ignore="SpeakableTextPresentCheck" />
                 </com.google.android.material.textfield.TextInputLayout>
                 <TextView
@@ -193,7 +191,7 @@
                     android:layout_height="wrap_content"
                     android:text="@string/email"
                     android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-                    android:textSize="27sp" />
+                    android:textSize="20sp" />
                 <com.google.android.material.textfield.TextInputLayout
                     style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                     android:layout_width="match_parent"
@@ -205,13 +203,13 @@
                     app:boxCornerRadiusTopStart="10dp">
 
                     <EditText
+                        android:padding="9dp"
                         android:id="@+id/et_email"
                         android:layout_width="match_parent"
-                        android:layout_height="55dp"
+                        android:layout_height="35dp"
                         android:background="@drawable/bg_textinput"
                         android:inputType="textEmailAddress"
-                        android:padding="10dp"
-                        android:textSize="23sp"
+                        android:textSize="16sp"
                         tools:ignore="SpeakableTextPresentCheck,SpeakableTextPresentCheck,SpeakableTextPresentCheck" />
                 </com.google.android.material.textfield.TextInputLayout>
                 <TextView
@@ -219,7 +217,7 @@
                     android:layout_height="wrap_content"
                     android:text="Alamat"
                     android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-                    android:textSize="27sp" />
+                    android:textSize="20sp" />
                 <com.google.android.material.textfield.TextInputLayout
                     style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                     android:layout_width="match_parent"
@@ -231,17 +229,17 @@
                     app:boxCornerRadiusTopStart="10dp">
 
                     <EditText
+                        android:padding="9dp"
                         android:id="@+id/et_alamat"
                         android:layout_width="match_parent"
-                        android:layout_height="100dp"
+                        android:layout_height="70dp"
                         android:background="@drawable/bg_textinput"
                         android:inputType="textMultiLine"
                         android:lines="8"
                         android:maxLines="10"
                         android:minLines="6"
-                        android:padding="10dp"
-                        android:scrollbars="vertical"
-                        android:textSize="23sp"
+                        android:scrollbars="none"
+                        android:textSize="16sp"
                         tools:ignore="SpeakableTextPresentCheck,SpeakableTextPresentCheck,SpeakableTextPresentCheck" />
                 </com.google.android.material.textfield.TextInputLayout>
                 <TextView
@@ -249,9 +247,9 @@
                     android:layout_height="wrap_content"
                     android:text="Agama"
                     android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-                    android:textSize="27sp" />
+                    android:textSize="20sp" />
                 <com.google.android.material.textfield.TextInputLayout
-                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="10dp"
@@ -260,14 +258,13 @@
                     app:boxCornerRadiusTopEnd="10dp"
                     app:boxCornerRadiusTopStart="10dp">
 
-                    <AutoCompleteTextView
+                    <EditText
+                        android:padding="9dp"
                         android:id="@+id/et_agama"
                         android:layout_width="match_parent"
-                        android:layout_height="55dp"
+                        android:layout_height="35dp"
                         android:background="@drawable/bg_textinput"
-                        android:inputType="none"
-                        android:padding="10dp"
-                        android:textSize="23sp"
+                        android:textSize="16sp"
                         tools:ignore="SpeakableTextPresentCheck" />
                 </com.google.android.material.textfield.TextInputLayout>
                 <TextView
@@ -275,9 +272,9 @@
                     android:layout_height="wrap_content"
                     android:text="Status"
                     android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-                    android:textSize="27sp" />
+                    android:textSize="20sp" />
                 <com.google.android.material.textfield.TextInputLayout
-                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="10dp"
@@ -286,14 +283,13 @@
                     app:boxCornerRadiusTopEnd="10dp"
                     app:boxCornerRadiusTopStart="10dp">
 
-                    <AutoCompleteTextView
+                    <EditText
+                        android:padding="9dp"
                         android:id="@+id/et_status"
                         android:layout_width="match_parent"
-                        android:layout_height="55dp"
+                        android:layout_height="35dp"
                         android:background="@drawable/bg_textinput"
-                        android:inputType="none"
-                        android:padding="10dp"
-                        android:textSize="23sp" />
+                        android:textSize="16sp" />
                 </com.google.android.material.textfield.TextInputLayout>
                 <CheckBox
                     android:checked="true"

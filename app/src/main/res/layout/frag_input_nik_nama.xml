@@ -63,13 +63,12 @@
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnNext"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:layout_margin="10dp"
+            android:layout_marginTop="30dp"
             android:textStyle="bold"
             android:textSize="18sp"
-            android:padding="10dp"
             app:backgroundTint="@color/Blue"
             android:background="@drawable/oval_background_10dp"
             android:textAppearance="@style/TextAppearance.AppCompat.Button"

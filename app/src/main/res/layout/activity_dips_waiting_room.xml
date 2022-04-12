@@ -30,7 +30,7 @@
                     android:layout_height="match_parent"
                     android:background="@android:color/transparent" />
             <LinearLayout
-                android:layout_marginBottom="20dp"
+                android:layout_marginBottom="10dp"
                 android:layout_alignParentBottom="true"
                 android:layout_centerInParent="true"
                 android:id="@+id/llMsg"
@@ -39,7 +39,7 @@
                 android:layout_gravity="center_horizontal"
                 android:background="@drawable/oval_connecting_call">
                 <TextView
-                    android:textSize="16sp"
+                    android:textSize="12sp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/call_is_being_connected"

@@ -24,7 +24,9 @@
         android:usesCleartextTraffic="true">
         <activity
             android:name=".ui.RatingActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.MITZoom"/>
         <activity
             android:name=".ui.DipsVideoConfren"
             android:configChanges="screenSize|orientation|keyboardHidden|keyboard"

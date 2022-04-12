@@ -49,6 +49,6 @@ public class frag_item extends Fragment {
 
     private void addData(){
         data = new ArrayList<>();
-        data.add(new ItemModel("2",getResources().getString(R.string.create_new_account),R.drawable.item2));
+        data.add(new ItemModel("1",getResources().getString(R.string.create_new_account),R.drawable.item2));
        }
 }

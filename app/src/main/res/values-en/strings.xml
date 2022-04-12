@@ -66,9 +66,12 @@
     <string name="photo_nnpwp">NPWP\nPhoto</string>
     <string name="foto_ntanda_ntangan">Signature\nPhoto</string>
     <string name="formulir_npembukaan_nrekening">Registration\nForm</string>
-    <string name="pembukaan_rekening_ntabungan">Registration Account\nBank</string>
-    <string name="pastikan_gambar_atau_foto_ktp_sudah_jelas_dan_tidak_buram">Make sure images or photo is clear and didn\'t blur</string>
+    <string name="pembukaan_rekening_ntabungan">Registration Account Bank</string>
+    <string name="pastikan_gambar_atau_foto_ktp_sudah_jelas_dan_tidak_buram">Make sure images or photo\n is clear and didn\'t blur</string>
     <string name="pilih_dari_galeri">Choose from gallery</string>
     <string name="email">Email</string>
     <string name="popupktp">Please prepared your personal documents like KTP, NPWP, and Signature images for uploaded</string>
+    <string name="content_after_schedule">Thank you for using Dips Services. Your called is scheduled. We will contact you soon.</string>
+    <string name="done">Done</string>
+    <string name="content_input">For the sake of mutual convenience, this conversation will be recorded automatically.</string>
 </resources>

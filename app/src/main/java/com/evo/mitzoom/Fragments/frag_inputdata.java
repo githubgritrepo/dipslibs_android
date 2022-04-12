@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -47,6 +48,7 @@ public class frag_inputdata extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        Popup();
         btnNext.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -54,10 +56,18 @@ public class frag_inputdata extends Fragment {
                     getFragmentPage(new frag_item()); //untuk menu non Customer
                 } else {
                     //untuk Menu Customer
-                    Toast.makeText(context, "Ini Customer", Toast.LENGTH_SHORT).show();
+                    getFragmentPage(new frag_item());
                 }
             }
         });
+    }
+    private void Popup(){
+        SweetAlertDialog sweetAlertDialog = new SweetAlertDialog(context, SweetAlertDialog.WARNING_TYPE);
+        sweetAlertDialog.setContentText(getResources().getString(R.string.content_input));
+        sweetAlertDialog.setConfirmText(getResources().getString(R.string.btn_continue));
+        sweetAlertDialog.show();
+        Button btnConfirm = (Button) sweetAlertDialog.findViewById(cn.pedant.SweetAlert.R.id.confirm_button);
+        btnConfirm.setBackgroundTintList(context.getResources().getColorStateList(R.color.Blue));
     }
     private void getFragmentPage(Fragment fragment){
         getActivity().getSupportFragmentManager()

@@ -21,12 +21,7 @@ import com.evo.mitzoom.ui.DipsWaitingRoom;
 public class frag_form_opening extends Fragment {
     private Context context;
     private ImageView iconKtp, iconNpwp, iconSignature, iconForm, preview_ktp, preview_npwp, preview_signature;;
-    private TextView Nama,NIK,Email,Alamat;
-    private AutoCompleteTextView Agama,Status;
-    private String [] ListAgama = {"Islam", "Kristen", "Katolik", "Hindu", "Budha", "Konghucu"};
-    private String [] ListStatus = {"Belum Kawin", "Menikah", "Duda", "Janda"};
-    ArrayAdapter<String> adapterAgama;
-    ArrayAdapter<String> adapterStatus;
+    private TextView Nama,NIK,Email,Alamat,Agama,Status;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -47,8 +42,6 @@ public class frag_form_opening extends Fragment {
         Alamat = view.findViewById(R.id.et_alamat);
         Agama = view.findViewById(R.id.et_agama);
         Status = view.findViewById(R.id.et_status);
-        adapterAgama = new ArrayAdapter<String>(context,R.layout.list_item, ListAgama);
-        adapterStatus = new ArrayAdapter<String>(context,R.layout.list_item, ListStatus);
         return view;
     }
     @Override
@@ -62,10 +55,8 @@ public class frag_form_opening extends Fragment {
         Nama.setText("Andi Setiawan");
         NIK.setText("323432342304203");
         Alamat.setText("Rt.15 Rw/20 Maju, Kecamatan Suka Mulya, DKI Jakarta, Jawa Barat 12345");
-        Agama.setText("Islam",false);
-        Status.setText("Belum Kawin",false);
-        Agama.setAdapter(adapterAgama);
-        Status.setAdapter(adapterStatus);
+        Agama.setText("Islam");
+        Status.setText("Belum Kawin");
     }
 
 }
