@@ -12,7 +12,6 @@
         android:background="@color/white"
         android:gravity="center"
         android:scrollbars="none">
-
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="?attr/actionBarSize"
@@ -116,12 +115,10 @@
                 android:textSize="11sp" />
         </LinearLayout>
     </HorizontalScrollView>
-
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/TopBar">
-
         <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -342,7 +339,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Tanda Tangan"
+                    android:text="@string/tanda_tangan"
                     android:textAppearance="@style/TextAppearance.AppCompat.Body2"
                     android:textSize="20sp" />
                 <ImageView

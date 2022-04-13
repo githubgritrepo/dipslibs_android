@@ -4,8 +4,7 @@
     android:layout_height="match_parent"
     xmlns:tools="http://schemas.android.com/tools"
     android:background="@color/bg"
-    android:theme="@style/Theme.MaterialComponents.DayNight.DarkActionBar"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    android:theme="@style/Theme.MaterialComponents.DayNight.DarkActionBar">
 
     <RelativeLayout
         android:gravity="end"
@@ -26,7 +25,7 @@
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/chat_list"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:layout_marginBottom="74dp"
@@ -49,16 +48,17 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="10dp"
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
             <EditText
+                android:id="@+id/et_input_chat"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:autofillHints="@string/enter_your_message"
-                android:textColor="@color/black"
+                android:background="@drawable/oval_background_10dp"
                 android:inputType="text"
                 android:padding="10dp"
-                android:background="@drawable/oval_background_10dp"
-                android:id="@+id/et_input_chat"
-                android:textSize="20sp"
-                android:layout_width="match_parent"
-                android:layout_height="45dp"/>
+                android:textColor="@color/black"
+                android:textSize="20sp" />
         </com.google.android.material.textfield.TextInputLayout>
         <ImageView
             android:backgroundTint="@color/Blue"

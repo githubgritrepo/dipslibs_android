@@ -208,6 +208,7 @@ public class frag_opening_account extends Fragment {
                     delete.setVisibility(View.VISIBLE);
                     viewImage.setVisibility(View.VISIBLE);
                     chooseImage.setVisibility(View.GONE);
+
                     /*String path = Environment
                             .getExternalStorageDirectory()
                             + File.separator
