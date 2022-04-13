@@ -86,7 +86,7 @@ public class frag_form_opening extends Fragment {
     private void PopUp(){
         inflater = getLayoutInflater();
         dialogView = inflater.inflate(R.layout.item_otp,null);
-        SweetAlertDialog sweetAlertDialog = new SweetAlertDialog(context, SweetAlertDialog.NORMAL_TYPE);
+        SweetAlertDialog sweetAlertDialog = new SweetAlertDialog(context, SweetAlertDialog.WARNING_TYPE);
         sweetAlertDialog.setCustomView(dialogView);
         sweetAlertDialog.hideConfirmButton();
         sweetAlertDialog.setCancelable(false);
@@ -103,6 +103,7 @@ public class frag_form_opening extends Fragment {
                 }
                 else {
                     editTextPin.getPin().toString();
+                    sweetAlertDialog.dismiss();
                     PopUpSuccesOtp();
                 }
             }
@@ -113,6 +114,7 @@ public class frag_form_opening extends Fragment {
         sweetAlertDialog.setTitleText("Kode OTP Sesuai");
         sweetAlertDialog.setContentText("Formulir sedang dalam proses.\nHarap menunggu beberapa saat");
         sweetAlertDialog.setCancelable(false);
+        sweetAlertDialog.hideConfirmButton();
         sweetAlertDialog.show();
     }
     private void PopUpSuccesRegistration(){

@@ -7,6 +7,6 @@ dependencyResolutionManagement {
         maven {url("https://jitpack.io")}
     }
 }
-rootProject.name = "MIT Zoom"
+rootProject.name = "DiPS361"
 include ':app'
 include ':mobilertc'
