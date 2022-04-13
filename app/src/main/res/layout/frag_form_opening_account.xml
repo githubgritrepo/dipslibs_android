@@ -215,7 +215,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Alamat"
+                    android:text="@string/address"
                     android:textAppearance="@style/TextAppearance.AppCompat.Body2"
                     android:textSize="20sp" />
                 <com.google.android.material.textfield.TextInputLayout
@@ -245,7 +245,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Agama"
+                    android:text="@string/religion"
                     android:textAppearance="@style/TextAppearance.AppCompat.Body2"
                     android:textSize="20sp" />
                 <com.google.android.material.textfield.TextInputLayout
@@ -270,7 +270,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Status"
+                    android:text="@string/status"
                     android:textAppearance="@style/TextAppearance.AppCompat.Body2"
                     android:textSize="20sp" />
                 <com.google.android.material.textfield.TextInputLayout
@@ -291,22 +291,84 @@
                         android:background="@drawable/bg_textinput"
                         android:textSize="16sp" />
                 </com.google.android.material.textfield.TextInputLayout>
-                <CheckBox
-                    android:checked="true"
-                    android:focusable="false"
-                    android:layout_marginBottom="10dp"
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+                    <CheckBox
+                        android:layout_marginBottom="10dp"
+                        android:layout_marginEnd="15dp"
+                        android:focusable="false"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Tabungan A"
+                        android:textSize="17sp"
+                        android:textColor="@color/black"/>
+                    <CheckBox
+                        android:layout_marginBottom="10dp"
+                        android:focusable="false"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Tabungan B"
+                        android:textSize="17sp"
+                        android:textColor="@color/black"/>
+                </LinearLayout>
+                <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/savings"
-                    android:textSize="17sp"
+                    android:text="KTP"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+                    android:textSize="20sp" />
+                <ImageView
+                    android:layout_marginBottom="10dp"
+                    android:layout_gravity="start"
+                    android:id="@+id/Imageview_ktp"
+                    android:layout_width="200dp"
+                    android:layout_height="140dp"
+                    android:src="@drawable/photoplaceholder"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="NPWP"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+                    android:textSize="20sp" />
+                <ImageView
+                    android:layout_marginBottom="10dp"
+                    android:layout_gravity="start"
+                    android:id="@+id/Imageview_npwp"
+                    android:layout_width="200dp"
+                    android:layout_height="140dp"
+                    android:src="@drawable/photoplaceholdernpwp"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Tanda Tangan"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+                    android:textSize="20sp" />
+                <ImageView
+                    android:layout_marginBottom="20dp"
+                    android:layout_gravity="start"
+                    android:id="@+id/Imageview_tanda_tangan"
+                    android:layout_width="200dp"
+                    android:layout_height="140dp"
+                    android:src="@drawable/ttd"/>
+                <CheckBox
+                    android:layout_marginBottom="10dp"
+                    android:layout_marginEnd="15dp"
+                    android:focusable="false"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAlignment="textStart"
+                    android:text="@string/content_form_bottom"
+                    android:textSize="13sp"
                     android:textColor="@color/black"/>
                 <Button
-                    android:id="@+id/btnNext"
+                    android:id="@+id/btnProses"
                     android:layout_width="match_parent"
                     android:layout_height="40dp"
                     android:background="@drawable/oval_background_10dp"
                     android:backgroundTint="@color/bg_cif"
-                    android:text="@string/btn_continue"
+                    android:text="@string/process"
                     android:textColor="@color/white"
                     android:textStyle="bold" />
             </LinearLayout>

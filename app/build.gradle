@@ -27,6 +27,7 @@ android {
 }
 
 dependencies {
+    implementation 'com.github.hexdecimal16:EditTextPin:0.1.5'
     implementation 'androidx.core:core-ktx:1.7.0'
     implementation 'com.github.florent37:expansionpanel:1.2.4'
     implementation 'com.github.javiersantos:MaterialStyledDialogs:2.1'

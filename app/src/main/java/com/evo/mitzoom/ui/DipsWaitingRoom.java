@@ -445,6 +445,8 @@ public class DipsWaitingRoom extends AppCompatActivity {
                     sweetAlertDialog.setContentText(getResources().getString(R.string.headline_success));
                     sweetAlertDialog.setConfirmText(getResources().getString(R.string.btn_continue));
                     sweetAlertDialog.show();
+                    Button btnConfirm = (Button) sweetAlertDialog.findViewById(cn.pedant.SweetAlert.R.id.confirm_button);
+                    btnConfirm.setBackgroundTintList(DipsWaitingRoom.this.getResources().getColorStateList(R.color.Blue));
                     sweetAlertDialog.setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
                         @Override
                         public void onClick(SweetAlertDialog sweetAlertDialog) {

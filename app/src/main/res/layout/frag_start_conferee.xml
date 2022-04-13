@@ -15,7 +15,7 @@
             android:layout_width="match_parent"
             android:layout_height="150dp"
             android:layout_marginTop="@dimen/dp_30"
-            android:src="@drawable/ads_info1" />
+            android:src="@drawable/agree" />
 
         <TextView
             android:layout_width="250dp"

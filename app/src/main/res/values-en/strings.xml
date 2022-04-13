@@ -74,4 +74,8 @@
     <string name="content_after_schedule">Thank you for using Dips Services. Your called is scheduled. We will contact you soon.</string>
     <string name="done">Done</string>
     <string name="content_input">For the sake of mutual convenience, this conversation will be recorded automatically.</string>
+    <string name="address">Address</string>
+    <string name="religion">Religion</string>
+    <string name="status">Status</string>
+    <string name="content_form_bottom">I declare that all\ndata i have provided in this account\nopening form are correct.</string>
 </resources>

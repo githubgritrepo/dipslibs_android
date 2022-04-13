@@ -73,4 +73,9 @@
     <string name="content_after_schedule">Terima kasih telah menggunakan layanan DiPS. Panggilan anda sudah terjadwalkan. kami akan segera menghubungi anda</string>
     <string name="done">Selesai</string>
     <string name="content_input">Demi kenyamanan bersama, percakapan ini akan terekam secara otomatis.</string>
+    <string name="address">Alamat</string>
+    <string name="religion">Agama</string>
+    <string name="status">Status</string>
+    <string name="content_form_bottom">Saya menyatakan bahwa seluruh\ndata yang saya berikan di formulir\npembukaan rekekning ini benar.</string>
+    <string name="process">Proses</string>
 </resources>
