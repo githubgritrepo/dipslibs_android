@@ -52,7 +52,7 @@ public class NotificationMgr {
         clickIntent.setAction(IntegrationActivity.ACTION_RETURN_TO_CONF);
         PendingIntent contentIntent = PendingIntent.getActivity(context, 0, clickIntent, PendingIntent.FLAG_CANCEL_CURRENT);
 
-        String contentTitle = context.getString(R.string.app_name);
+        String contentTitle = context.getString(R.string.app_name_dips);
         String contentText = "Meeting in progress";
         int smallIcon = R.mipmap.ic_launcher;
         int color = context.getResources().getColor(R.color.zm_notification_icon_bg);

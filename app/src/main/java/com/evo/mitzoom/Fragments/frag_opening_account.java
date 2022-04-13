@@ -35,6 +35,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
 
 import com.evo.mitzoom.R;
@@ -45,10 +46,15 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 
 import cn.pedant.SweetAlert.SweetAlertDialog;
 
 public class frag_opening_account extends Fragment {
+
+    public static final int REQUEST_WRITE_PERMISSION = 786;
     private Context context;
     private ImageView iconKtp, iconNpwp, iconSignature, iconForm,btnCamera, viewImage;
     private LinearLayout btnGallery;
@@ -56,6 +62,7 @@ public class frag_opening_account extends Fragment {
     private Button btnNext;
     private Bitmap bitmapz = null;
     private LinearLayout chooseImage, delete;
+    private File photo = null;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -87,12 +94,19 @@ public class frag_opening_account extends Fragment {
         btnCamera.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (!requestPermission()){
+                    Log.d("CEK","MASUK PERMISSION");
+                    return;
+                }
                 chooseFromCamera();
             }
         });
         btnGallery.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (!requestPermission()){
+                    return;
+                }
                 chooseFromSD();
             }
         });
@@ -114,6 +128,26 @@ public class frag_opening_account extends Fragment {
         });
     }
 
+    protected boolean requestPermission() {
+        if (ActivityCompat.checkSelfPermission(context,Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED || ActivityCompat.checkSelfPermission(context,Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                    Manifest.permission.READ_PHONE_STATE}, REQUEST_WRITE_PERMISSION);
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == REQUEST_WRITE_PERMISSION) {
+            if (ActivityCompat.checkSelfPermission(context,Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED &&
+             ActivityCompat.checkSelfPermission(context,Manifest.permission.READ_PHONE_STATE) == PackageManager.PERMISSION_GRANTED) {
+                btnCamera.performClick();
+            }
+        }
+    }
+
     private void PopUp(){
         SweetAlertDialog sweetAlertDialog = new SweetAlertDialog(context, SweetAlertDialog.WARNING_TYPE);
         sweetAlertDialog.setContentText(getResources().getString(R.string.popupktp));
@@ -127,41 +161,58 @@ public class frag_opening_account extends Fragment {
         startActivityForResult(intent, 2);
     }
     private void chooseFromCamera() {
-        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        File f = new File(Environment.getExternalStorageDirectory(), "temp.png");
-        intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(f));
-        intent.putExtra("android.intent.extras.LENS_FACING_FRONT", 1);
-        intent.putExtra("android.intent.extra.USE_FRONT_CAMERA", true);
+        Intent intent = new Intent("android.media.action.IMAGE_CAPTURE");
+        try {
+            photo = createTemporaryFile("temp", ".jpg");
+            photo.delete();
+        } catch (Exception e) {
+            e.printStackTrace();
+            Toast.makeText(getActivity(), "Please check SD Card! Image shot is impossible!", Toast.LENGTH_LONG).show();
+        }
+        Uri uriImage = FileProvider.getUriForFile(context,context.getApplicationContext().getPackageName()+".provider",photo);
+        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        intent.putExtra(MediaStore.EXTRA_OUTPUT, uriImage);
+
         startActivityForResult(intent, 1);
     }
+
+    private File createTemporaryFile(String part, String ext) throws Exception {
+        String IMAGE_DIRECTORY_NAME = getString(R.string.app_name_dips);
+        File mediaStorageDir = new File(
+                Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), IMAGE_DIRECTORY_NAME);
+        if (!mediaStorageDir.exists()) {
+            if (!mediaStorageDir.mkdirs()) {
+                return null;
+            }
+        }
+        File mediaFile;
+        mediaFile = new File(mediaStorageDir.getPath() + File.separator +
+                "IMG_" + part + ext);
+
+        return mediaFile;
+    }
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == RESULT_OK) {
             if (requestCode == 1){
-                File f = new File(Environment.getExternalStorageDirectory().toString());
-                for (File temp : f.listFiles()){
-                    if (temp.getName().equals("temp.png")){
-                        f = temp;
-                        break;
-                    }
-                }
+                //File f = new File(Environment.getExternalStorageDirectory().toString());
+                String URL_IMAGE = photo.getAbsolutePath();
                 try {
                     Bitmap bitmap;
-                    BitmapFactory.Options bitmapOptions = new BitmapFactory.Options();
-                    bitmap = BitmapFactory.decodeFile(f.getAbsolutePath(),
-                            bitmapOptions);
+                    bitmap = BitmapFactory.decodeFile(URL_IMAGE);
+                    getResizedBitmap(bitmap , (bitmap.getWidth()/2), (bitmap.getHeight()/2));
                     btnNext.setBackgroundTintList(context.getResources().getColorStateList(R.color.bg_cif));
                     btnNext.setClickable(true);
                     delete.setVisibility(View.VISIBLE);
                     viewImage.setVisibility(View.VISIBLE);
                     chooseImage.setVisibility(View.GONE);
-                    getResizedBitmap(bitmap , (bitmap.getWidth()/2), (bitmap.getHeight()/2));
-                    String path = Environment
+                    /*String path = Environment
                             .getExternalStorageDirectory()
                             + File.separator
                             + "Phoenix" + File.separator + "default";
-                    f.delete();
+
                     OutputStream outFile = null;
                     File file = new File(path, String.valueOf(System.currentTimeMillis()) + ".png");
                     try {
@@ -175,7 +226,7 @@ public class frag_opening_account extends Fragment {
                     }
                     catch (IOException e) {
                         e.printStackTrace();
-                    }
+                    }*/
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -208,6 +259,8 @@ public class frag_opening_account extends Fragment {
     public void getResizedBitmap(Bitmap bm, int newWidth, int newHeight) {
         int width = bm.getWidth();
         int height = bm.getHeight();
+        Log.d("CEK","width : "+width);
+        Log.d("CEK","height : "+height);
         float scaleWidth = ((float) newWidth) / width;
         float scaleHeight = ((float) newHeight) / height;
 

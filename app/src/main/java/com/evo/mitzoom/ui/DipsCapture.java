@@ -133,7 +133,6 @@ public class DipsCapture extends AppCompatActivity implements CameraSource.Pictu
             intent.addCategory(Intent.CATEGORY_HOME);
             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);//***Change Here***
             startActivity(intent);
-            overridePendingTransition(R.anim.modal_in,R.anim.modal_out);
             finish();
             System.exit(0);
             return;
@@ -344,7 +343,7 @@ public class DipsCapture extends AppCompatActivity implements CameraSource.Pictu
     }
 
     private File createTemporaryFile(byte[] byteImage) throws Exception {
-        String appName = getString(R.string.app_name);
+        String appName = getString(R.string.app_name_dips);
         String IMAGE_DIRECTORY_NAME = appName;
         File mediaStorageDir = new File(
                 Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), IMAGE_DIRECTORY_NAME);

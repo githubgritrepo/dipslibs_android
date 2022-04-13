@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">DiPS361</string>
+    <string name="app_name_dips">DiPS361</string>
     <string name="tab_text_1">Inter Account</string>
     <string name="tab_text_2">Inter Bank</string>
     <string name="home">Home</string>
