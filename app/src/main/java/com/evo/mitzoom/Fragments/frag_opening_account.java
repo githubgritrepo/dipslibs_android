@@ -95,7 +95,7 @@ public class frag_opening_account extends Fragment {
             @Override
             public void onClick(View v) {
                 if (!requestPermission()){
-                    Log.d("CEK","MASUK PERMISSION");
+                    Toast.makeText(context, "Permission denied",Toast.LENGTH_SHORT).show();
                     return;
                 }
                 chooseFromCamera();
@@ -105,6 +105,7 @@ public class frag_opening_account extends Fragment {
             @Override
             public void onClick(View v) {
                 if (!requestPermission()){
+                    Toast.makeText(context, "Permission denied",Toast.LENGTH_SHORT).show();
                     return;
                 }
                 chooseFromSD();
@@ -143,7 +144,7 @@ public class frag_opening_account extends Fragment {
         if (requestCode == REQUEST_WRITE_PERMISSION) {
             if (ActivityCompat.checkSelfPermission(context,Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED &&
              ActivityCompat.checkSelfPermission(context,Manifest.permission.READ_PHONE_STATE) == PackageManager.PERMISSION_GRANTED) {
-                btnCamera.performClick();
+
             }
         }
     }
