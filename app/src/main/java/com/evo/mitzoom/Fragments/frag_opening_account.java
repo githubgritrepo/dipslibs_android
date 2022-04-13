@@ -151,12 +151,12 @@ public class frag_opening_account extends Fragment {
                     BitmapFactory.Options bitmapOptions = new BitmapFactory.Options();
                     bitmap = BitmapFactory.decodeFile(f.getAbsolutePath(),
                             bitmapOptions);
+                    getResizedBitmap(bitmap , (bitmap.getWidth()/2), (bitmap.getHeight()/2));
                     btnNext.setBackgroundTintList(context.getResources().getColorStateList(R.color.bg_cif));
                     btnNext.setClickable(true);
                     delete.setVisibility(View.VISIBLE);
                     viewImage.setVisibility(View.VISIBLE);
                     chooseImage.setVisibility(View.GONE);
-                    getResizedBitmap(bitmap , (bitmap.getWidth()/2), (bitmap.getHeight()/2));
                     String path = Environment
                             .getExternalStorageDirectory()
                             + File.separator

@@ -110,32 +110,44 @@ public class frag_form_opening extends Fragment {
         });
     }
     private void PopUpSuccesOtp(){
-        SweetAlertDialog sweetAlertDialog = new SweetAlertDialog(context, SweetAlertDialog.SUCCESS_TYPE);
-        sweetAlertDialog.setTitleText("Kode OTP Sesuai");
-        sweetAlertDialog.setContentText("Formulir sedang dalam proses.\nHarap menunggu beberapa saat");
-        sweetAlertDialog.setCancelable(false);
-        sweetAlertDialog.hideConfirmButton();
-        sweetAlertDialog.show();
+            SweetAlertDialog sweetAlertDialog = new SweetAlertDialog(context, SweetAlertDialog.SUCCESS_TYPE);
+            sweetAlertDialog.setTitleText(getResources().getString(R.string.otp_title));
+            sweetAlertDialog.setContentText(getResources().getString(R.string.otp_content));
+            sweetAlertDialog.setCancelable(false);
+            sweetAlertDialog.hideConfirmButton();
+            sweetAlertDialog.show();
+            handlerSuccess = new Handler();
+            handlerSuccess.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    PopUpSuccesRegistration();
+                    sweetAlertDialog.dismiss();
+                }
+            },10000);
     }
     private void PopUpSuccesRegistration(){
-        handlerSuccess = new Handler();
-        handlerSuccess.postDelayed(new Runnable() {
-            @Override
-            public void run() {
                     SweetAlertDialog sweetAlertDialog = new SweetAlertDialog(context, SweetAlertDialog.SUCCESS_TYPE);
-                    sweetAlertDialog.setContentText(getResources().getString(R.string.headline_success));
-                    sweetAlertDialog.setConfirmText(getResources().getString(R.string.btn_continue));
+                    sweetAlertDialog.setTitleText(getResources().getString(R.string.reg_title));
+                    sweetAlertDialog.setContentText(getResources().getString(R.string.reg_content));
+                    sweetAlertDialog.setConfirmText(getResources().getString(R.string.activation));
+                    sweetAlertDialog.setCancelable(false);
                     sweetAlertDialog.show();
                     Button btnConfirm = (Button) sweetAlertDialog.findViewById(cn.pedant.SweetAlert.R.id.confirm_button);
                     btnConfirm.setBackgroundTintList(context.getResources().getColorStateList(R.color.Blue));
                     sweetAlertDialog.setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
                         @Override
                         public void onClick(SweetAlertDialog sweetAlertDialog) {
+                            getFragmentPage(new frag_aktivasi_ibmb());
                             sweetAlertDialog.dismiss();
                         }
                     });
-            }
-        },10000);
+    }
+    private void getFragmentPage(Fragment fragment){
+        getActivity().getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.layout_frame2, fragment)
+                .addToBackStack(null)
+                .commit();
     }
 
 }

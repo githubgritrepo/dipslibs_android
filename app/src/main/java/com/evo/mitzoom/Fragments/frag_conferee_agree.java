@@ -1,6 +1,8 @@
 package com.evo.mitzoom.Fragments;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -40,6 +42,12 @@ public class frag_conferee_agree extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        btn_tidak.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                OutApps();
+            }
+        });
         btn_Setuju.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -49,7 +57,6 @@ public class frag_conferee_agree extends Fragment {
             }
         });
     }
-
     private void getFragmentPage(Fragment fragment){
         Bundle bundle = new Bundle();
         bundle.putBoolean("ISCUST",isCust);
@@ -59,5 +66,14 @@ public class frag_conferee_agree extends Fragment {
                 .replace(R.id.layout_frame2, fragment)
                 .addToBackStack(null)
                 .commit();
+    }
+    private void OutApps(){
+        Intent intent = new Intent(Intent.ACTION_MAIN);
+        intent.addCategory(Intent.CATEGORY_HOME);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(intent);
+        ((Activity)context).overridePendingTransition(0,0);
+        ((Activity)context).finish();
+        System.exit(0);
     }
 }

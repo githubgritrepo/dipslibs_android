@@ -3,6 +3,8 @@ package com.evo.mitzoom.ui;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.view.WindowManager;
@@ -12,7 +14,10 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import com.evo.mitzoom.Fragments.frag_aktivasi_ibmb;
 import com.evo.mitzoom.R;
+
+import cn.pedant.SweetAlert.SweetAlertDialog;
 
 public class RatingActivity extends AppCompatActivity {
     private ImageView thumbs_up, thumbs_down, star1, star2, star3, star4, star5,star1_2, star2_2, star3_2, star4_2, star5_2;
@@ -190,5 +195,36 @@ public class RatingActivity extends AppCompatActivity {
                 star5.setVisibility(View.VISIBLE);
             }
         });
+       btnSend.setOnClickListener(new View.OnClickListener() {
+           @Override
+           public void onClick(View v) {
+               PopUp();
+           }
+       });
+    }
+    private void PopUp(){
+        SweetAlertDialog sweetAlertDialog = new SweetAlertDialog(RatingActivity.this, SweetAlertDialog.SUCCESS_TYPE);
+        sweetAlertDialog.setTitleText(getResources().getString(R.string.rating_pop_up_content));
+        sweetAlertDialog.setCancelable(false);
+        sweetAlertDialog.setConfirmText(getResources().getString(R.string.done));
+        sweetAlertDialog.show();
+        Button btnConfirm = (Button) sweetAlertDialog.findViewById(cn.pedant.SweetAlert.R.id.confirm_button);
+        btnConfirm.setBackgroundTintList(RatingActivity.this.getResources().getColorStateList(R.color.Blue));
+        sweetAlertDialog.setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
+            @Override
+            public void onClick(SweetAlertDialog sweetAlertDialog) {
+                sweetAlertDialog.dismiss();
+                OutApps();
+            }
+        });
+    }
+    private void OutApps(){
+        Intent intent = new Intent(Intent.ACTION_MAIN);
+        intent.addCategory(Intent.CATEGORY_HOME);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(intent);
+        overridePendingTransition(0,0);
+        finish();
+        System.exit(0);
     }
 }

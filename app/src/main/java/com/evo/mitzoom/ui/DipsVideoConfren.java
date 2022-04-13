@@ -113,7 +113,6 @@ public class DipsVideoConfren extends BaseMeetingActivity {
     @Override
     protected void initView() {
         super.initView();
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_SECURE, WindowManager.LayoutParams.FLAG_SECURE);
         videoContain = findViewById(R.id.big_video_contain);
         videoContain.setOnClickListener(onEmptyContentClick);
 
