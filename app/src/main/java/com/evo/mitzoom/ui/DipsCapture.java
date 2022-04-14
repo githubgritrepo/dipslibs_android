@@ -89,9 +89,7 @@ public class DipsCapture extends AppCompatActivity implements CameraSource.Pictu
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
         getSupportActionBar().hide();
-        getWindow().addFlags(WindowManager.LayoutParams.
-                FLAG_KEEP_SCREEN_ON);
-
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         mContext = this;
 
         preview = (SurfaceView) findViewById(R.id.mySurface);
