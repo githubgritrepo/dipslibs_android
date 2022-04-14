@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Rect;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -132,11 +133,13 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         if (savedInstanceState != null) {
             seconds = savedInstanceState.getInt("seconds");
             running = savedInstanceState.getBoolean("running");
             wasRunning = savedInstanceState.getBoolean("wasRunning");
         }
+
         if (!renderWithSurfaceView) {
             getWindow().setFlags(WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED, WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED);
         }
@@ -208,8 +211,9 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
         }
         isActivityPaused = false;
         refreshRotation();
-        Log.d(TAG,"RESUME");
         updateActionBarLayoutParams();
+        StartVidoes startVideo = new StartVidoes();
+        startVideo.execute();
         //updateChatLayoutParams();
 
         if (wasRunning) {
@@ -252,7 +256,6 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        Log.d(TAG,"requestCode : "+requestCode);
         switch (requestCode) {
             case REQUEST_SHARE_SCREEN_PERMISSION:
                 if (resultCode != RESULT_OK) {
@@ -284,7 +287,6 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
                                 shareImageView.setImageURI(selectedImage);
                                 shareViewGroup.setVisibility(View.VISIBLE);
                                 int ret = ZoomVideoSDK.getInstance().getShareHelper().startShareView(shareImageView);
-                                Log.d(TAG, "start share " + ret);
                                 if (ret == ZoomVideoSDKErrors.Errors_Success) {
                                     onStartShareView();
                                 } else {
@@ -341,22 +343,18 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
     }
 
     private void updateActionBarLayoutParams() {
-        Log.d(TAG,"updateActionBarLayoutParams");
         FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) actionBar.getLayoutParams();
         if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            Log.d(TAG,"MASUK IF");
             params.topMargin = (int) (35 * displayMetrics.scaledDensity);
 //            params.gravity = Gravity.RIGHT | Gravity.BOTTOM;
 //            params.bottomMargin = (int) (22 * displayMetrics.scaledDensity);
             actionBarScroll.scrollTo(0, 0);
         } else {
-            Log.d(TAG,"MASUK ELSE");
             params.topMargin = 0;
 //            params.gravity = Gravity.RIGHT | Gravity.BOTTOM;
 //            params.bottomMargin = getResources().getDimensionPixelSize(R.dimen.toolbar_bottom_margin);
         }
         actionBar.setLayoutParams(params);
-        Log.d(TAG,"AKHIR updateActionBarLayoutParams");
 
     }
 
@@ -457,6 +455,7 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
         actionBar = findViewById(R.id.action_bar);
         actionBarScroll = findViewById(R.id.action_bar_scroll);
         iconAudio = findViewById(R.id.icon_audio);
+        iconVideo = findViewById(R.id.icon_video);
         videoOffView = findViewById(R.id.video_off_tips);
         btnChat = findViewById(R.id.icon_chat);
 
@@ -526,6 +525,18 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
             }
         }
     }
+
+    public void onClickVideo(View view) {
+        ZoomVideoSDKUser zoomSDKUserInfo = session.getMySelf();
+        if (null == zoomSDKUserInfo)
+            return;
+        if (zoomSDKUserInfo.getVideoStatus().isOn()) {
+            ZoomVideoSDK.getInstance().getVideoHelper().stopVideo();
+        } else {
+            ZoomVideoSDK.getInstance().getVideoHelper().startVideo();
+        }
+    }
+
     public void onClickEnd(View view) {
         ZoomVideoSDKUser userInfo = session.getMySelf();
         final Dialog builder = new Dialog(this, R.style.MyDialog);
@@ -854,36 +865,37 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
 
     @Override
     public void onUserShareStatusChanged(ZoomVideoSDKShareHelper zoomVideoSDKShareHelper, ZoomVideoSDKUser zoomVideoSDKUser, ZoomVideoSDKShareStatus zoomVideoSDKShareStatus) {
-
+        Log.d(TAG, "onUserShareStatusChanged ");
     }
 
     @Override
     public void onLiveStreamStatusChanged(ZoomVideoSDKLiveStreamHelper zoomVideoSDKLiveStreamHelper, ZoomVideoSDKLiveStreamStatus zoomVideoSDKLiveStreamStatus) {
-
+        Log.d(TAG, "onLiveStreamStatusChanged ");
     }
 
     @Override
     public void onChatNewMessageNotify(ZoomVideoSDKChatHelper zoomVideoSDKChatHelper, ZoomVideoSDKChatMessage zoomVideoSDKChatMessage) {
-
+        Log.d(TAG, "onChatNewMessageNotify ");
     }
 
     @Override
     public void onUserHostChanged(ZoomVideoSDKUserHelper zoomVideoSDKUserHelper, ZoomVideoSDKUser zoomVideoSDKUser) {
-
+        Log.d(TAG, "onUserHostChanged ");
     }
 
     @Override
     public void onUserManagerChanged(ZoomVideoSDKUser zoomVideoSDKUser) {
-
+        Log.d(TAG, "onUserManagerChanged ");
     }
 
     @Override
     public void onUserNameChanged(ZoomVideoSDKUser zoomVideoSDKUser) {
-
+        Log.d(TAG, "onUserNameChanged ");
     }
 
     @Override
     public void onUserActiveAudioChanged(ZoomVideoSDKAudioHelper zoomVideoSDKAudioHelper, List<ZoomVideoSDKUser> list) {
+        Log.d(TAG, "onUserActiveAudioChanged ");
         adapter.onUserActiveAudioChanged(list, userVideoList);
     }
 
@@ -917,12 +929,12 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
 
     @Override
     public void onCommandReceived(ZoomVideoSDKUser zoomVideoSDKUser, String s) {
-
+        Log.d(TAG, "onCommandReceived ");
     }
 
     @Override
     public void onCommandChannelConnectResult(boolean b) {
-
+        Log.d(TAG, "onCommandChannelConnectResult ");
     }
 
     @Override
@@ -937,16 +949,44 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
 
     @Override
     public void onInviteByPhoneStatus(ZoomVideoSDKPhoneStatus zoomVideoSDKPhoneStatus, ZoomVideoSDKPhoneFailedReason zoomVideoSDKPhoneFailedReason) {
-
+        Log.d(TAG, "onInviteByPhoneStatus ");
     }
 
     @Override
     public void onSingleTap(ZoomVideoSDKUser user) {
+        Log.d(TAG, "onSingleTap ");
         subscribeVideoByUser(user);
     }
 
     @Override
     public void onPointerCaptureChanged(boolean hasCapture) {
+        Log.d(TAG, "onPointerCaptureChanged ");
         super.onPointerCaptureChanged(hasCapture);
+    }
+
+    private class StartVidoes extends AsyncTask<Void,Void,Void> {
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            int checkStart = 0;
+            for (int i = 0; i < 20; i++) {
+                try {
+                    ZoomVideoSDKUser zoomSDKUserInfo = session.getMySelf();
+                    if (zoomSDKUserInfo.getVideoStatus().isOn()) {
+                        ZoomVideoSDK.getInstance().getVideoHelper().stopVideo();
+                    } else {
+                        ZoomVideoSDK.getInstance().getVideoHelper().startVideo();
+                        checkStart++;
+                        if (checkStart > 2) {
+                            break;
+                        }
+                    }
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+            return null;
+        }
     }
 }

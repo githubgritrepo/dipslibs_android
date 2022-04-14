@@ -17,6 +17,7 @@ import android.graphics.DashPathEffect;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.PixelFormat;
+import android.graphics.RectF;
 import android.hardware.Camera;
 import android.hardware.camera2.CameraAccessException;
 import android.hardware.camera2.CameraManager;
@@ -257,10 +258,13 @@ public class DipsCapture extends AppCompatActivity implements CameraSource.Pictu
             } else if (width > 1000) {
                 MarginSurf = 240;
             }
-            double cx = Math.ceil(width / 2);
+            //double cx = Math.ceil(width / 2);
+            double leftright = Math.ceil(width / 4);
+            double cTop = Math.ceil(height / 4);
+            double marginTop = Math.ceil((cTop * 3) / 4);
             int margins = MarginSurf * 2;
             double rad = Math.ceil((width - margins) / 2);
-            double cy = rad + MarginSurf;
+            //double cy = rad + MarginSurf;
 
             int NUM_DASHES = 20;
             float DASH_PORTION = (float) 0.75;
@@ -278,7 +282,10 @@ public class DipsCapture extends AppCompatActivity implements CameraSource.Pictu
             p.setStyle(Paint.Style.STROKE);
             p.setStrokeWidth(10);
 
-            canvas.drawCircle((float) cx,(float) cy,(float) rad,p);
+            //canvas.drawCircle((float) cx,(float) cy,(float) rad,p);
+
+            RectF rect = new RectF((float) leftright,(float) marginTop,(float) (width-leftright),(float) (height-margins));
+            canvas.drawOval(rect,p);
 
             transHolder.unlockCanvasAndPost(canvas);
         }
