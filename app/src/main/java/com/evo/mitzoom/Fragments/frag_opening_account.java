@@ -39,6 +39,7 @@ import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
 
 import com.evo.mitzoom.R;
+import com.evo.mitzoom.ui.DipsCameraActivity;
 import com.evo.mitzoom.ui.DipsWaitingRoom;
 
 import java.io.File;
@@ -162,7 +163,9 @@ public class frag_opening_account extends Fragment {
         startActivityForResult(intent, 2);
     }
     private void chooseFromCamera() {
-        Intent intent = new Intent("android.media.action.IMAGE_CAPTURE");
+        Intent intent = new Intent(context, DipsCameraActivity.class);
+        startActivityForResult(intent, 1);
+        /*Intent intent = new Intent("android.media.action.IMAGE_CAPTURE");
         try {
             photo = createTemporaryFile("temp", ".jpg");
             photo.delete();
@@ -174,7 +177,7 @@ public class frag_opening_account extends Fragment {
         intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
         intent.putExtra(MediaStore.EXTRA_OUTPUT, uriImage);
 
-        startActivityForResult(intent, 1);
+        startActivityForResult(intent, 1);*/
     }
 
     private File createTemporaryFile(String part, String ext) throws Exception {
@@ -198,8 +201,17 @@ public class frag_opening_account extends Fragment {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == RESULT_OK) {
             if (requestCode == 1){
-                //File f = new File(Environment.getExternalStorageDirectory().toString());
-                String URL_IMAGE = photo.getAbsolutePath();
+                byte[] resultCamera = data.getByteArrayExtra("result_camera");
+                Bitmap bitmap = BitmapFactory.decodeByteArray(resultCamera, 0, resultCamera.length);
+                Log.d("CEK","bitmap.getWidth() : "+bitmap.getWidth());
+                Log.d("CEK","bitmap.getHeight() : "+bitmap.getHeight());
+                viewImage.setImageBitmap(bitmap);
+                btnNext.setBackgroundTintList(context.getResources().getColorStateList(R.color.bg_cif));
+                btnNext.setClickable(true);
+                delete.setVisibility(View.VISIBLE);
+                viewImage.setVisibility(View.VISIBLE);
+                chooseImage.setVisibility(View.GONE);
+                /*String URL_IMAGE = photo.getAbsolutePath();
                 try {
                     Bitmap bitmap;
                     bitmap = BitmapFactory.decodeFile(URL_IMAGE);
@@ -209,29 +221,9 @@ public class frag_opening_account extends Fragment {
                     delete.setVisibility(View.VISIBLE);
                     viewImage.setVisibility(View.VISIBLE);
                     chooseImage.setVisibility(View.GONE);
-
-                    /*String path = Environment
-                            .getExternalStorageDirectory()
-                            + File.separator
-                            + "Phoenix" + File.separator + "default";
-
-                    OutputStream outFile = null;
-                    File file = new File(path, String.valueOf(System.currentTimeMillis()) + ".png");
-                    try {
-                        outFile = new FileOutputStream(file);
-                        bitmap.compress(Bitmap.CompressFormat.PNG,85,outFile);
-                        outFile.flush();
-                        outFile.close();
-                    }
-                    catch (FileNotFoundException e){
-                        e.printStackTrace();
-                    }
-                    catch (IOException e) {
-                        e.printStackTrace();
-                    }*/
                 } catch (Exception e) {
                     e.printStackTrace();
-                }
+                }*/
             }
             else if (requestCode == 2){
                 Uri selectedImage = data.getData();
@@ -261,8 +253,6 @@ public class frag_opening_account extends Fragment {
     public void getResizedBitmap(Bitmap bm, int newWidth, int newHeight) {
         int width = bm.getWidth();
         int height = bm.getHeight();
-        Log.d("CEK","width : "+width);
-        Log.d("CEK","height : "+height);
         float scaleWidth = ((float) newWidth) / width;
         float scaleHeight = ((float) newHeight) / height;
 

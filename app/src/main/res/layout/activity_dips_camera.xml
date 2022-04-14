@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.DipsCameraActivity">
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center">
+
+            <SurfaceView
+                android:id="@+id/mySurface"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+            <SurfaceView
+                android:id="@+id/transSurface"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:layout_gravity="bottom"
+            android:background="#4D000000">
+
+            <ImageView
+                android:id="@+id/takePicture"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:background="@drawable/ic_capture"
+                android:paddingBottom="5dp"
+                android:layout_centerInParent="true"
+                android:backgroundTint="@color/red_btn_bg_pressed_color"/>
+
+            <ImageView
+                android:id="@+id/imgSwitch"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:background="@drawable/ic_switch"
+                android:backgroundTintMode="multiply"
+                android:backgroundTint="@color/colorUtama"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true" />
+
+        </RelativeLayout>
+
+    </FrameLayout>
+</LinearLayout>
