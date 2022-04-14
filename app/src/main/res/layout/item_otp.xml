@@ -28,7 +28,7 @@
         android:layout_marginTop="10dp"
         android:background="@drawable/oval_background_10dp"
         android:backgroundTint="@color/bg_cif"
-        android:text="Verifikasi"
+        android:text="@string/verifikasi"
         android:textColor="@color/white"
         android:textStyle="bold" />
     <LinearLayout
@@ -37,22 +37,24 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal">
         <TextView
+            android:clickable="false"
             android:id="@+id/btn_resend_otp"
             android:layout_width="0dp"
             android:layout_weight="1"
+            android:maxLines="2"
             android:layout_height="wrap_content"
             android:text="@string/kirim_ulang_kode_otp"
             android:textSize="15sp"
-            android:textAlignment="center"
-            android:textColor="@color/bg_cif"/>
+            android:textAlignment="textStart"
+            android:textColor="@color/btnFalse"/>
         <TextView
             android:id="@+id/timer_otp"
             android:layout_width="0dp"
-            android:layout_weight="1"
+            android:layout_weight="0.4"
             android:layout_height="wrap_content"
-            android:text="00:30"
-            android:textSize="15sp"
+            android:text="00:00"
+            android:textSize="19sp"
             android:textAlignment="center"
-            android:textColor="#686868"/>
+            android:textColor="@color/Blue"/>
     </LinearLayout>
 </LinearLayout>

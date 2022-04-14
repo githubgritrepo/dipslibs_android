@@ -47,9 +47,15 @@ public class frag_aktivasi_berhasil extends Fragment {
         btnSelesai.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(context, RatingActivity.class));
-                ((Activity)context).overridePendingTransition(0,0);
+                getFragmentPage(new frag_portfolio());
             }
         });
+    }
+    private void getFragmentPage(Fragment fragment){
+        getActivity().getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.layout_frame2, fragment)
+                .addToBackStack(null)
+                .commit();
     }
 }

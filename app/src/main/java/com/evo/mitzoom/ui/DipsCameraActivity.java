@@ -89,10 +89,6 @@ public class DipsCameraActivity extends AppCompatActivity {
 
         mContext = this;
 
-        previewHolder = preview.getHolder();
-        previewHolder.addCallback(surfaceCallback);
-        previewHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
-
         transHolder = transPreview.getHolder();
         transHolder.setFormat(PixelFormat.TRANSPARENT);
         transHolder.addCallback(surfaceCallbackTrans);
@@ -223,7 +219,15 @@ public class DipsCameraActivity extends AppCompatActivity {
             }
         }
 
+        cameraConfigured = false;
+        previewHolder();
         OrientationEvent();
+    }
+
+    private void previewHolder(){
+        previewHolder = preview.getHolder();
+        previewHolder.addCallback(surfaceCallback);
+        previewHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
     }
 
     private void OrientationEvent() {
@@ -232,6 +236,7 @@ public class DipsCameraActivity extends AppCompatActivity {
 
                 @Override
                 public void onOrientationChanged(int orientation) {
+                    Log.d("CEK","orientation : "+orientation);
                     // determine our orientation based on sensor response
                     int lastOrientation = mOrientation;
 
@@ -256,8 +261,11 @@ public class DipsCameraActivity extends AppCompatActivity {
                         }
                     }
 
+                    Log.d("CEK","mOrientation : "+mOrientation);
                     if (lastOrientation != mOrientation) {
-                        //changeRotation(mOrientation, lastOrientation);
+                        Log.d("CEK","MASUK IF : "+mOrientation);
+                        cameraConfigured = false;
+                        previewHolder();
                     }
                 }
             };

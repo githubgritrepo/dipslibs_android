@@ -18,11 +18,10 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/bg2">
-        <LinearLayout
+        <RelativeLayout
             android:id="@+id/llUsersVideo"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:layout_height="wrap_content">
 
             <LinearLayout
                 android:id="@+id/video_list_contain"
@@ -38,8 +37,50 @@
 
                 </androidx.recyclerview.widget.RecyclerView>
             </LinearLayout>
-        </LinearLayout>
 
+            <ImageView
+                android:visibility="gone"
+                android:id="@+id/logo_company"
+                android:layout_width="60dp"
+                android:layout_height="20dp"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginEnd="10dp"
+                android:layout_marginBottom="10dp"
+                android:src="@drawable/company_logo" />
+            <LinearLayout
+                android:visibility="gone"
+                android:id="@+id/timer"
+                android:background="@drawable/oval_background_timer"
+                android:layout_margin="10dp"
+                android:layout_width="50dp"
+                android:layout_height="20dp"
+                android:orientation="horizontal"
+                android:layout_alignParentEnd="true">
+                <TextView
+                    android:id="@+id/text_timer"
+                    android:layout_gravity="center_vertical"
+                    android:textSize="11sp"
+                    android:textColor="@color/white"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"/>
+                <ImageView
+                    android:layout_gravity="center_vertical"
+                    android:layout_width="0dp"
+                    android:layout_weight="0.4"
+                    android:layout_height="15dp"
+                    android:src="@drawable/icon_timer" />
+            </LinearLayout>
+
+            <ImageView
+                android:layout_width="65dp"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_marginTop="180dp"
+                android:layout_marginEnd="10dp"
+                android:src="@drawable/zm_watermark_sdk" />
+        </RelativeLayout>
         <FrameLayout
             android:id="@+id/layout_frame2"
             android:layout_width="match_parent"

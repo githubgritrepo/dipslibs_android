@@ -7,20 +7,33 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical">
-
-    <ImageView
-        android:id="@+id/btn_close_tnc"
-        android:layout_gravity="end"
-        android:layout_width="30dp"
-        android:layout_height="30dp"
-        android:src="@drawable/ic_close"/>
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal|end"
         android:text="@string/tnc_content"
         android:textColor="@color/black"
-        android:textSize="17sp"
+        android:textSize="15sp"
         android:layout_marginBottom="25dp"/>
+    <CheckBox
+        android:layout_marginBottom="10dp"
+        android:layout_marginEnd="15dp"
+        android:focusable="false"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/checkbox_tnc"
+        android:textSize="13sp"
+        android:textColor="@color/black"/>
+    <Button
+        android:layout_gravity="center"
+        android:id="@+id/btnnexttnc"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:background="@drawable/oval_background_10dp"
+        android:backgroundTint="@color/bg_cif"
+        android:text="@string/btn_continue"
+        android:textColor="@color/white"
+        android:textStyle="bold" />
 </LinearLayout>
 </androidx.core.widget.NestedScrollView>

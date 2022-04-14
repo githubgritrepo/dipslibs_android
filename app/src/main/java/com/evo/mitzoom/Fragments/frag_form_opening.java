@@ -22,6 +22,10 @@ import com.dhairytripathi.library.EditTextPin;
 import com.evo.mitzoom.R;
 import com.evo.mitzoom.ui.DipsWaitingRoom;
 
+import org.w3c.dom.Text;
+
+import java.util.Locale;
+
 import cn.pedant.SweetAlert.SweetAlertDialog;
 
 public class frag_form_opening extends Fragment {
@@ -34,6 +38,9 @@ public class frag_form_opening extends Fragment {
     private Button btnVerifikasi;
     private EditTextPin editTextPin;
     private Handler handlerSuccess;
+    public int seconds = 60;
+    public boolean running = true;
+    public boolean clickable = true;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -86,7 +93,7 @@ public class frag_form_opening extends Fragment {
     private void PopUp(){
         inflater = getLayoutInflater();
         dialogView = inflater.inflate(R.layout.item_otp,null);
-        SweetAlertDialog sweetAlertDialog = new SweetAlertDialog(context, SweetAlertDialog.WARNING_TYPE);
+        SweetAlertDialog sweetAlertDialog = new SweetAlertDialog(context, SweetAlertDialog.NORMAL_TYPE);
         sweetAlertDialog.setCustomView(dialogView);
         sweetAlertDialog.hideConfirmButton();
         sweetAlertDialog.setCancelable(false);
@@ -105,6 +112,15 @@ public class frag_form_opening extends Fragment {
                     editTextPin.getPin().toString();
                     sweetAlertDialog.dismiss();
                     PopUpSuccesOtp();
+                }
+            }
+        });
+        runTimer(Timer, Resend_Otp);
+        Resend_Otp.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (seconds==0){
+                    Toast.makeText(context, "Kode Terkirim", Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -148,6 +164,33 @@ public class frag_form_opening extends Fragment {
                 .replace(R.id.layout_frame2, fragment)
                 .addToBackStack(null)
                 .commit();
+    }
+
+    public void runTimer(TextView timer_run, TextView resend) {
+        Handler handler = new Handler();
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+                int minutes = 0;
+                int secs = seconds % 60;
+                String time = String.format(Locale.getDefault(),"%02d:%02d", minutes, secs);
+                timer_run.setText(time);
+                if (running) {
+                    seconds--;
+                }
+                if (seconds == 0){
+                    running = false;
+                    resend.setClickable(true);
+                    resend.setTextColor(getResources().getColorStateList(R.color.Blue));
+                    timer_run.setTextColor(getResources().getColorStateList(R.color.btnFalse));
+                }
+                else {
+                    resend.setTextColor(getResources().getColorStateList(R.color.btnFalse));
+                    timer_run.setTextColor(getResources().getColorStateList(R.color.Blue));
+                }
+                handler.postDelayed(this,1000);
+            }
+        });
     }
 
 }

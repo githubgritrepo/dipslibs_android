@@ -187,7 +187,9 @@
             tools:ignore="SpeakableTextPresentCheck,SpeakableTextPresentCheck,SpeakableTextPresentCheck" />
     </com.google.android.material.textfield.TextInputLayout>
     <Button
-        android:layout_margin="30dp"
+        android:layout_marginStart="30dp"
+        android:layout_marginEnd="30dp"
+        android:layout_marginBottom="20dp"
         android:id="@+id/btnSend"
         android:layout_width="match_parent"
         android:layout_height="40dp"

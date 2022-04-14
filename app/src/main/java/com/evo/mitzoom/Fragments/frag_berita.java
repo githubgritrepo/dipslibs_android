@@ -33,6 +33,7 @@ public class frag_berita extends Fragment {
     private ViewPager mPager;
     private GridProductAdapter gridAdapter;
     private static final Integer[] img = {R.drawable.adsv1, R.drawable.adsv2, R.drawable.adsv3};
+    private static final String [] nama ={"","",""};
     private ArrayList<Integer> imgArray = new ArrayList<Integer>();
     private CircleIndicator circleIndicator;
     private int currentPage;

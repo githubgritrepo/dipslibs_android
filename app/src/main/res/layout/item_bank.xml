@@ -12,7 +12,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:cardCornerRadius="15dp">
-    <TextView
+        <TextView
         android:maxLines="2"
         android:id="@+id/nama_item"
         android:layout_width="150dp"

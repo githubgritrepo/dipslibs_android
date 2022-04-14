@@ -6,11 +6,15 @@ import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.evo.mitzoom.BaseMeetingActivity;
@@ -25,6 +29,7 @@ import com.evo.mitzoom.util.AudioRawDataUtil;
 import com.evo.mitzoom.util.SharePreferenceUtil;
 
 import java.util.List;
+import java.util.Locale;
 
 import us.zoom.sdk.ZoomVideoSDK;
 import us.zoom.sdk.ZoomVideoSDKErrors;
@@ -41,6 +46,10 @@ public class DipsVideoConfren extends BaseMeetingActivity {
     ZoomVideoSDKVideoView zoomCanvas;
 
     RawDataRenderer rawDataRenderer;
+
+    public static ImageView LogoCompany;
+    public static LinearLayout timer;
+    public static TextView text_timer;
 
     private FrameLayout videoContain;
     private AudioRawDataUtil audioRawDataUtil;
@@ -115,6 +124,9 @@ public class DipsVideoConfren extends BaseMeetingActivity {
         super.initView();
         videoContain = findViewById(R.id.big_video_contain);
         videoContain.setOnClickListener(onEmptyContentClick);
+        LogoCompany = findViewById(R.id.logo_company);
+        text_timer = findViewById(R.id.text_timer);
+        timer = findViewById(R.id.timer);
 
     }
 
