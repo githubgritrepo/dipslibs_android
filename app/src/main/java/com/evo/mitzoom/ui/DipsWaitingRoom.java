@@ -226,10 +226,8 @@ public class DipsWaitingRoom extends AppCompatActivity {
                         fragment = new frag_berita();
                         break;
                     case 1:
-                        fragment = new frag_list_produk();
                         break;
                     case 2:
-                        fragment = new frag_service();
                         break;
 
                 }

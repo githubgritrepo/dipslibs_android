@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -25,6 +26,7 @@ public class frag_service extends Fragment {
     RecyclerView.Adapter recyclerViewAdapter;
     RecyclerView.LayoutManager recylerViewLayoutManager;
     ArrayList<ItemModel> data;
+    ImageView btnBack;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -36,6 +38,7 @@ public class frag_service extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.frag_services, container, false);
         recyclerView = view.findViewById(R.id.rv_item);
+        btnBack = view.findViewById(R.id.btn_back4);
         return view;
     }
     @Override
@@ -46,11 +49,25 @@ public class frag_service extends Fragment {
         recylerViewLayoutManager = new LinearLayoutManager(context);
         recyclerView.setLayoutManager(recylerViewLayoutManager);
         recyclerView.setAdapter(recyclerViewAdapter);
+        btnBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getFragmentPage(new frag_portfolio());
+            }
+        });
     }
 
     private void addData(){
         data = new ArrayList<>();
-        data.add(new ItemModel("1",getResources().getString(R.string.credit_simulation),R.drawable.item3));
-        data.add(new ItemModel("2",getResources().getString(R.string.call_center),R.drawable.item4));
-       }
+        data.add(new ItemModel("1","Transaksi RTGS",R.drawable.item1));
+        data.add(new ItemModel("2","Transaksi SKN",R.drawable.item2));
+        data.add(new ItemModel("3","Transaksi Valas",R.drawable.item2));
+    }
+    private void getFragmentPage(Fragment fragment){
+        getActivity().getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.layout_frame2, fragment)
+                .addToBackStack(null)
+                .commit();
+    }
 }

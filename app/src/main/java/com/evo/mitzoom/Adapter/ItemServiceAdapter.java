@@ -42,10 +42,6 @@ public class ItemServiceAdapter extends RecyclerView.Adapter<ItemServiceAdapter.
         holder.parent_layout.setOnClickListener(v -> {
             switch (dataList.get(position).getId()){
                 case "1" :
-                    Toast.makeText(ctx, R.string.credit_simulation, Toast.LENGTH_SHORT).show();
-                    return;
-                case "2" :
-                    Toast.makeText(ctx, R.string.call_center, Toast.LENGTH_SHORT).show();
                     return;
             }
         });

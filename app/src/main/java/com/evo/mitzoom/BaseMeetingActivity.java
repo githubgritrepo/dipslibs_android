@@ -1,6 +1,9 @@
 package com.evo.mitzoom;
 
+import static com.evo.mitzoom.ui.DipsVideoConfren.text_timer;
+
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.app.Dialog;
 import android.app.Service;
 import android.content.Intent;
@@ -44,6 +47,8 @@ import com.evo.mitzoom.Fragments.frag_inputdata;
 import com.evo.mitzoom.Helper.NotificationMgr;
 import com.evo.mitzoom.Helper.NotificationService;
 import com.evo.mitzoom.screenshare.ShareToolbar;
+import com.evo.mitzoom.ui.DipsVideoConfren;
+import com.evo.mitzoom.ui.RatingActivity;
 import com.evo.mitzoom.util.ErrorMsgUtil;
 import com.evo.mitzoom.util.UserHelper;
 import com.evo.mitzoom.util.ZMAdapterOsBugHelper;
@@ -51,6 +56,7 @@ import com.evo.mitzoom.view.KeyBoardLayout;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import us.zoom.sdk.ZoomVideoSDK;
 import us.zoom.sdk.ZoomVideoSDKAudioHelper;
@@ -117,13 +123,20 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
     protected boolean renderWithSurfaceView=true;
     private RelativeLayout rlprogress;
     public static Button btnChat;
+    public int seconds = 0;
+    public boolean running = true;
+    public boolean wasRunning;
 
     protected Handler handler = new Handler(Looper.getMainLooper());
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        if (savedInstanceState != null) {
+            seconds = savedInstanceState.getInt("seconds");
+            running = savedInstanceState.getBoolean("running");
+            wasRunning = savedInstanceState.getBoolean("wasRunning");
+        }
         if (!renderWithSurfaceView) {
             getWindow().setFlags(WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED, WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED);
         }
@@ -146,9 +159,34 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
     }
 
     @Override
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putInt("seconds", seconds);
+        outState.putBoolean("running", running);
+        outState.putBoolean("wasRunning", wasRunning);
+    }
+
+    @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
         parseIntent();
+    }
+
+    public void runTimer(TextView timer_run) {
+        Handler handler = new Handler();
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+                int minutes = (seconds % 3600) / 60;
+                int secs = seconds % 60;
+                String time = String.format(Locale.getDefault(),"%02d:%02d", minutes, secs);
+                timer_run.setText(time);
+                if (running) {
+                    seconds++;
+                }
+                handler.postDelayed(this,1000);
+            }
+        });
     }
 
     private void getFragmentPage(Fragment fragment){
@@ -173,11 +211,17 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
         Log.d(TAG,"RESUME");
         updateActionBarLayoutParams();
         //updateChatLayoutParams();
+
+        if (wasRunning) {
+            running = true;
+        }
     }
 
     @Override
     protected void onPause() {
         super.onPause();
+        wasRunning = running;
+        running = false;
         isActivityPaused = true;
         unSubscribe();
         adapter.clear(false);
@@ -495,6 +539,8 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
                 releaseResource();
                 int ret = ZoomVideoSDK.getInstance().leaveSession(false);
                 Log.d(TAG, "leaveSession ret = " + ret);
+                startActivity(new Intent(getApplicationContext(), RatingActivity.class));
+                ((Activity)getApplicationContext()).overridePendingTransition(0,0);
             }
         });
         boolean end = false;
@@ -712,6 +758,7 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
         btnChat.setBackgroundTintList(BaseMeetingActivity.this.getResources().getColorStateList(R.color.btnFalse));
         showProgress(false);
         btnChat.setClickable(false);
+        DipsVideoConfren.LogoCompany.setVisibility(View.VISIBLE);
         updateSessionInfo();
         getFragmentPage(new frag_conferee_agree());
         actionBar.setVisibility(View.VISIBLE);

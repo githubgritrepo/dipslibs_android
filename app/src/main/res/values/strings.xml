@@ -58,7 +58,7 @@
     <string name="terms_condition"><u><![CDATA[syarat & ketentuan]]></u></string>
     <string name="terms_condition2"><![CDATA[Syarat & Ketentuan]]></string>
     <string name="new_account2">Buka Rekening</string>
-    <string name="checkbox_tnc">Saya setuju dengan</string>
+    <string name="checkbox_tnc">Saya setuju dengan syarat &amp; ketentuan berlaku</string>
     <string name="tnc_content"><![CDATA[Syarat & Ketentuan]]>\n\nSyarat dan Ketentuan Umum PT Bank XYZ mengatur mengenai hubungan hukum antara PT XYZ dengan individu/korporasi yang menggunakan jasa/layanan PT Bank XYZ yang merupakan calon atau pemilik rekening di PT Bank XYZ sehubungan dengan segala produk, fasilitas dan/atau layanan yang tersedia bagi nasabah. Berikut ini merupakan poin - poin yang perlu diperhatikan sebelum melakukan pendaftaran ataupun transaksi.\n\n1.Hanya untuk nasabah perorangan Warga Negara Indonesia dan tidak berlaku Rekening Join\n2.Setoran awal pembukaan rekening Rp 20.000,-\n3.Setoran tunai selanjutnya Rp 10.000,-\n4.Saldo minimum rekening Rp 20.000,-\n5.Biaya apabila rekening tidak aktif Rp 2.000,- per bulan\n6.Apabila saldo rekening kurang dari Rp 20.000,- maka rekening akan ditutup secara otomatis oleh sistem\n7.Biaya penutupan rekening Rp 20.000,-\n8.Jumlah minimum penarikan di teller Rp 100.000,- kecuali pada saat nasabah ingin tutup rekening</string>
     <string name="compare">Bandingkan</string>
     <string name="Photo_nktp">Foto\nKTP</string>
@@ -105,4 +105,7 @@
     <string name="reg_content">Harap aktivasi akun anda</string>
     <string name="activation">Aktivasi</string>
     <string name="rating_pop_up_content">Terima kasih atas penilaian anda. Pendapat anda sangat berharga bagi kami.</string>
+    <string name="produk_layanan"><![CDATA[Produk & Layanan]]></string>
+    <string name="btn_produk_nlayanan"><![CDATA[Produk &\nLayanan]]></string>
+    <string name="verifikasi">Verifikasi</string>
 </resources>

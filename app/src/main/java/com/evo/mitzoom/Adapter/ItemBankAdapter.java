@@ -1,10 +1,12 @@
 package com.evo.mitzoom.Adapter;
 
+import android.app.Activity;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -21,9 +23,13 @@ import com.evo.mitzoom.R;
 
 import java.util.ArrayList;
 
+import cn.pedant.SweetAlert.SweetAlertDialog;
+
 public class ItemBankAdapter extends RecyclerView.Adapter<ItemBankAdapter.ItemHolder> {
     private ArrayList<ItemModel> dataList;
     private Context ctx;
+    private LayoutInflater inflater;
+    private View dialogView;
 
 
     public ItemBankAdapter(Context ctx, ArrayList<ItemModel> dataList){
@@ -44,7 +50,7 @@ public class ItemBankAdapter extends RecyclerView.Adapter<ItemBankAdapter.ItemHo
         holder.parent_layout.setOnClickListener(v -> {
             switch (dataList.get(position).getId()){
                 case "1" :
-                    getFragmentPage(new frag_opening_account());
+                    PopUpTnc();
                     return;
             }
         });
@@ -72,5 +78,22 @@ public class ItemBankAdapter extends RecyclerView.Adapter<ItemBankAdapter.ItemHo
                 .replace(R.id.layout_frame2, fragment)
                 .addToBackStack(null)
                 .commit();
+    }
+    private void PopUpTnc(){
+        inflater = ((Activity)ctx).getLayoutInflater();
+        dialogView = inflater.inflate(R.layout.item_tnc,null);
+        SweetAlertDialog sweetAlertDialog = new SweetAlertDialog(ctx, SweetAlertDialog.NORMAL_TYPE);
+        sweetAlertDialog.setCustomView(dialogView);
+        sweetAlertDialog.hideConfirmButton();
+        sweetAlertDialog.setCancelable(false);
+        sweetAlertDialog.show();
+        Button btn = dialogView.findViewById(R.id.btnnexttnc);
+        btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                sweetAlertDialog.dismiss();
+                getFragmentPage(new frag_opening_account());
+            }
+        });
     }
 }
