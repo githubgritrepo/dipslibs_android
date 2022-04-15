@@ -81,6 +81,7 @@
                 android:layout_marginEnd="10dp"
                 android:src="@drawable/zm_watermark_sdk" />
         </RelativeLayout>
+
         <FrameLayout
             android:id="@+id/layout_frame2"
             android:layout_width="match_parent"
