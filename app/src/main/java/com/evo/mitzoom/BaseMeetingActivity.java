@@ -971,32 +971,27 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
 
         @Override
         protected Void doInBackground(Void... voids) {
-            try {
+            /*try {
                 Thread.sleep(2000);
                 ZoomVideoSDK.getInstance().getVideoHelper().stopVideo();
                 Thread.sleep(2000);
                 ZoomVideoSDK.getInstance().getVideoHelper().startVideo();
             } catch (InterruptedException e) {
                 e.printStackTrace();
-            }
-            /*int checkStart = 0;
-            for (int i = 0; i < 20; i++) {
+            }*/
+            for (int i = 0; i < 3; i++) {
                 try {
                     ZoomVideoSDKUser zoomSDKUserInfo = session.getMySelf();
                     if (zoomSDKUserInfo.getVideoStatus().isOn()) {
                         ZoomVideoSDK.getInstance().getVideoHelper().stopVideo();
                     } else {
                         ZoomVideoSDK.getInstance().getVideoHelper().startVideo();
-                        checkStart++;
-                        if (checkStart > 2) {
-                            break;
-                        }
                     }
-                    Thread.sleep(1000);
+                    Thread.sleep(2000);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-            }*/
+            }
             return null;
         }
     }
