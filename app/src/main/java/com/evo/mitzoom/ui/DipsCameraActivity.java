@@ -25,6 +25,7 @@ import android.hardware.camera2.CameraAccessException;
 import android.hardware.camera2.CameraCharacteristics;
 import android.hardware.camera2.CameraManager;
 import android.media.ExifInterface;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
@@ -50,6 +51,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+import us.zoom.sdk.ZoomVideoSDK;
+
 public class DipsCameraActivity extends AppCompatActivity {
 
     public static final int REQUEST_WRITE_PERMISSION = 786;
@@ -71,6 +74,9 @@ public class DipsCameraActivity extends AppCompatActivity {
     private Context mContext;
     private OrientationEventListener morientationEventListener;
     private int mOrientation =  -1;
+    private int rotationInDegree = 1;
+    private int optimalWidth = 0;
+    private int optimalHeight = 0;
 
     private static final int ORIENTATION_PORTRAIT_NORMAL =  1;
     private static final int ORIENTATION_PORTRAIT_INVERTED =  2;
@@ -84,6 +90,7 @@ public class DipsCameraActivity extends AppCompatActivity {
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
         getSupportActionBar().hide();
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
         initialElements();
 
@@ -111,7 +118,6 @@ public class DipsCameraActivity extends AppCompatActivity {
                             Log.d("CEK","bitmap height : "+bitmap.getHeight());
                             Bitmap bitmapCrop = resizeAndCropCenter(bitmap, 320, false);
 
-                            int rotationInDegree = 1;
                             try {
                                 File mediaFile = createTemporaryFile(dataImage);
                                 try {
@@ -140,9 +146,8 @@ public class DipsCameraActivity extends AppCompatActivity {
                                 e.printStackTrace();
                             }
 
-                            String imgBase64 = imageRotateBase64(bitmapCrop, rotationInDegree);
+                            String imgBase64 = imageRotateBase64(bitmapCrop);
 
-                            //String imgBase64 = processToBase64(rotationInDegree);
                             byte[] bytePhoto = Base64.decode(imgBase64, Base64.NO_WRAP);
                             Intent returnIntent = getIntent();
                             returnIntent.putExtra("result_camera",bytePhoto);
@@ -225,6 +230,7 @@ public class DipsCameraActivity extends AppCompatActivity {
     }
 
     private void previewHolder(){
+        Log.d("CEK","previewHolder");
         previewHolder = preview.getHolder();
         previewHolder.addCallback(surfaceCallback);
         previewHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
@@ -236,7 +242,6 @@ public class DipsCameraActivity extends AppCompatActivity {
 
                 @Override
                 public void onOrientationChanged(int orientation) {
-                    Log.d("CEK","orientation : "+orientation);
                     // determine our orientation based on sensor response
                     int lastOrientation = mOrientation;
 
@@ -261,11 +266,9 @@ public class DipsCameraActivity extends AppCompatActivity {
                         }
                     }
 
-                    Log.d("CEK","mOrientation : "+mOrientation);
                     if (lastOrientation != mOrientation) {
-                        Log.d("CEK","MASUK IF : "+mOrientation);
-                        cameraConfigured = false;
-                        previewHolder();
+                        AsyncChangeRotation asyncChangeRotation = new AsyncChangeRotation();
+                        asyncChangeRotation.execute(mOrientation);
                     }
                 }
             };
@@ -294,25 +297,76 @@ public class DipsCameraActivity extends AppCompatActivity {
         super.onPause();
     }
 
+    private void changeRotation(int orientation) {
+        //Camera.Parameters parameters = camera.getParameters();
+        switch (orientation) {
+            case ORIENTATION_PORTRAIT_NORMAL:
+                Log.v("CameraActivity", "Orientation = 90");
+                /*parameters.setPreviewSize(optimalWidth, optimalHeight);
+                camera.setParameters(parameters);*/
+                rotationInDegree = 90;
+                break;
+            case ORIENTATION_LANDSCAPE_NORMAL:
+                Log.v("CameraActivity", "Orientation = 0");
+                /*parameters.setPreviewSize(optimalHeight, optimalWidth);
+                camera.setParameters(parameters);*/
+                rotationInDegree = 0;
+                break;
+            case ORIENTATION_PORTRAIT_INVERTED:
+                Log.v("CameraActivity", "Orientation = 270");
+                /*parameters.setPreviewSize(optimalWidth, optimalHeight);
+                camera.setParameters(parameters);*/
+                rotationInDegree = 270;
+                break;
+            case ORIENTATION_LANDSCAPE_INVERTED:
+                Log.v("CameraActivity", "Orientation = 180");
+                /*parameters.setPreviewSize(optimalHeight, optimalWidth);
+                camera.setParameters(parameters);*/
+                rotationInDegree = 180;
+                break;
+        }
+    }
+
+    private class AsyncChangeRotation extends AsyncTask<Integer,Void,Void> {
+
+        @Override
+        protected Void doInBackground(Integer... integers) {
+            Log.d("CEK","integers :"+integers);
+            int orientation = integers[0];
+            Log.d("CEK","orientation :"+orientation);
+            changeRotation(orientation);
+            return null;
+        }
+    }
+
     private Camera.Size getOptimalPreviewSize(List<Camera.Size> sizes, int w, int h) {
         final double ASPECT_TOLERANCE = 0.1;
         double targetRatio=(double)h / w;
-
+        Log.d("CEK","targetRatio : "+targetRatio);
         if (sizes == null) return null;
 
         Camera.Size optimalSize = null;
         double minDiff = Double.MAX_VALUE;
+        Log.d("CEK","minDiff : "+minDiff);
 
         int targetHeight = h;
 
         for (Camera.Size size : sizes) {
+            Log.d("CEK","size.width : "+size.width);
+            Log.d("CEK","size.height : "+size.height);
             double ratio = (double) size.width / size.height;
+            Log.d("CEK","ratio : "+ratio);
             if (Math.abs(ratio - targetRatio) > ASPECT_TOLERANCE) continue;
             if (Math.abs(size.height - targetHeight) < minDiff) {
+                Log.d("CEK","MASUK IF");
                 optimalSize = size;
                 minDiff = Math.abs(size.height - targetHeight);
+                break;
             }
         }
+
+        Log.d("CEK","optimalSize : "+optimalSize);
+        Log.d("CEK","minDiff 2 : "+minDiff);
 
         if (optimalSize == null) {
             minDiff = Double.MAX_VALUE;
@@ -323,10 +377,14 @@ public class DipsCameraActivity extends AppCompatActivity {
                 }
             }
         }
+
+        Log.d("CEK","minDiff results : "+minDiff);
+        Log.d("CEK","optimalSize results : "+optimalSize);
         return optimalSize;
     }
 
     private void initPreview(int width, int height) {
+        Log.d("CEK","initPreview width : "+width+" | height : "+height);
         if (camera != null && previewHolder.getSurface() != null) {
             try {
                 camera.setPreviewDisplay(previewHolder);
@@ -340,16 +398,24 @@ public class DipsCameraActivity extends AppCompatActivity {
                     for (String id: manager.getCameraIdList()) {
                         CAM_ID = Integer.valueOf(id);
                         setCameraDisplayOrientation();
-                        /*CameraCharacteristics characteristics = manager.getCameraCharacteristics(id);
+                        CameraCharacteristics characteristics = manager.getCameraCharacteristics(id);
                         Integer orientation = characteristics.get(CameraCharacteristics.SENSOR_ORIENTATION);
                         Log.d("CEK","orientation initPreview : "+orientation);
                         int idCamera = Integer.parseInt(id);
                         Log.d("CEK","idCamera initPreview : "+idCamera);
                         if (idCamera == Camera.CameraInfo.CAMERA_FACING_FRONT) {
+                            Log.d("CEK","MASUK DEPAN");
                             if (orientation == 90) {
                                 camera.setDisplayOrientation(270);
+                            } else {
+                                camera.setDisplayOrientation(orientation);
                             }
-                        }*/
+                            break;
+                        } else if (idCamera == Camera.CameraInfo.CAMERA_FACING_BACK) {
+                            Log.d("CEK","MASUK BELAKANG");
+                            camera.setDisplayOrientation(orientation);
+                            break;
+                        }
 
                     }
                 } catch (CameraAccessException e) {
@@ -366,10 +432,12 @@ public class DipsCameraActivity extends AppCompatActivity {
                 Camera.Parameters parameters = camera.getParameters();
                 List<Camera.Size> sizes = parameters.getSupportedPreviewSizes();
                 Camera.Size size = getOptimalPreviewSize(sizes, width, height);
-                Log.d("CEK","size width : "+size.width);
-                Log.d("CEK","size height : "+size.height);
+                optimalWidth = size.width;
+                optimalHeight = size.height;
+                Log.d("CEK","size width : "+optimalWidth);
+                Log.d("CEK","size height : "+optimalHeight);
                 if (size != null) {
-                    parameters.setPreviewSize(size.width, size.height);
+                    parameters.setPreviewSize(optimalWidth, optimalHeight);
                     camera.setParameters(parameters);
                     cameraConfigured = true;
                 }
@@ -387,18 +455,19 @@ public class DipsCameraActivity extends AppCompatActivity {
     SurfaceHolder.Callback surfaceCallback = new SurfaceHolder.Callback() {
         @Override
         public void surfaceCreated(@NonNull SurfaceHolder holder) {
-
+            Log.d("CEK","surfaceCreated");
         }
 
         @Override
         public void surfaceChanged(@NonNull SurfaceHolder holder, int format, int width, int height) {
+            Log.d("CEK","surfaceChanged");
             initPreview(width, height);
             startPreview();
         }
 
         @Override
         public void surfaceDestroyed(@NonNull SurfaceHolder holder) {
-
+            Log.d("CEK","surfaceDestroyed");
         }
     };
 
@@ -418,7 +487,7 @@ public class DipsCameraActivity extends AppCompatActivity {
 
             double diffH = Math.ceil(height / 4);
 
-            RectF rect = new RectF((float) 100,(float) 100,(float) width-100,(float) (height-diffH));
+            RectF rect = new RectF((float) 100,(float) diffH,(float) width-100,(float) (height-diffH));
 
             Canvas canvas = transHolder.lockCanvas();
             canvas.drawRect(rect,paint);
@@ -432,11 +501,15 @@ public class DipsCameraActivity extends AppCompatActivity {
         }
     };
 
-    private String imageRotateBase64(Bitmap bitmap, int rotationInDegree) {
+    private String imageRotateBase64(Bitmap bitmap) {
         int w = bitmap.getWidth();
         int h = bitmap.getHeight();
 
         Matrix matrix = new Matrix();
+        Log.d("CEK","rotationInDegree : "+rotationInDegree);
+        if(rotationInDegree != 0) {
+            matrix.postRotate(rotationInDegree);
+        }
         /*if (useFacing == Camera.CameraInfo.CAMERA_FACING_FRONT) {
             matrix.setRotate(rotationInDegree);
         } else {

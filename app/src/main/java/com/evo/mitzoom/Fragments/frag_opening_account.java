@@ -203,8 +203,6 @@ public class frag_opening_account extends Fragment {
             if (requestCode == 1){
                 byte[] resultCamera = data.getByteArrayExtra("result_camera");
                 Bitmap bitmap = BitmapFactory.decodeByteArray(resultCamera, 0, resultCamera.length);
-                Log.d("CEK","bitmap.getWidth() : "+bitmap.getWidth());
-                Log.d("CEK","bitmap.getHeight() : "+bitmap.getHeight());
                 viewImage.setImageBitmap(bitmap);
                 btnNext.setBackgroundTintList(context.getResources().getColorStateList(R.color.bg_cif));
                 btnNext.setClickable(true);

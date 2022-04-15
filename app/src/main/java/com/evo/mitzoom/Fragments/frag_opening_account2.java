@@ -27,6 +27,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.evo.mitzoom.R;
+import com.evo.mitzoom.ui.DipsCameraActivity;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -109,19 +110,29 @@ public class frag_opening_account2 extends Fragment {
         startActivityForResult(intent, 2);
     }
     private void chooseFromCamera() {
-        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        Intent intent = new Intent(context, DipsCameraActivity.class);
+        startActivityForResult(intent, 1);
+        /*Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         File f = new File(Environment.getExternalStorageDirectory(), "temp.png");
         intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(f));
         intent.putExtra("android.intent.extras.LENS_FACING_FRONT", 1);
         intent.putExtra("android.intent.extra.USE_FRONT_CAMERA", true);
-        startActivityForResult(intent, 1);
+        startActivityForResult(intent, 1);*/
     }
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == RESULT_OK) {
             if (requestCode == 1){
-                File f = new File(Environment.getExternalStorageDirectory().toString());
+                byte[] resultCamera = data.getByteArrayExtra("result_camera");
+                Bitmap bitmap = BitmapFactory.decodeByteArray(resultCamera, 0, resultCamera.length);
+                viewImage.setImageBitmap(bitmap);
+                btnNext.setBackgroundTintList(context.getResources().getColorStateList(R.color.bg_cif));
+                btnNext.setClickable(true);
+                delete.setVisibility(View.VISIBLE);
+                viewImage.setVisibility(View.VISIBLE);
+                chooseImage.setVisibility(View.GONE);
+                /*File f = new File(Environment.getExternalStorageDirectory().toString());
                 for (File temp : f.listFiles()){
                     if (temp.getName().equals("temp.png")){
                         f = temp;
@@ -160,7 +171,7 @@ public class frag_opening_account2 extends Fragment {
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
-                }
+                }*/
             }
             else if (requestCode == 2){
                 Uri selectedImage = data.getData();
