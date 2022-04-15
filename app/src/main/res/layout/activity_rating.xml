@@ -14,17 +14,17 @@
     android:orientation="vertical">
 
     <ImageView
-        android:layout_marginTop="40dp"
+        android:layout_marginTop="20dp"
         android:layout_gravity="center"
         android:layout_width="200dp"
-        android:layout_height="100dp"
+        android:layout_height="90dp"
         android:src="@drawable/companylogo2"/>
     <ImageView
         android:layout_marginTop="15dp"
         android:layout_gravity="center"
-        android:layout_width="120dp"
-        android:layout_height="120dp"
-        android:src="@drawable/backgroundrating"/>
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:src="@drawable/info"/>
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

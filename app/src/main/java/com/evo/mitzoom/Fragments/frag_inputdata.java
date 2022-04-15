@@ -96,7 +96,7 @@ public class frag_inputdata extends Fragment {
         sweetAlertDialog.setContentText(getResources().getString(R.string.content_input));
         sweetAlertDialog.setConfirmText(getResources().getString(R.string.btn_continue));
         sweetAlertDialog.show();
-        sweetAlertDialog.setCancelable(true);
+        sweetAlertDialog.setCancelable(false);
         Button btnConfirm = (Button) sweetAlertDialog.findViewById(cn.pedant.SweetAlert.R.id.confirm_button);
         btnConfirm.setBackgroundTintList(context.getResources().getColorStateList(R.color.Blue));
         btnConfirm.setOnClickListener(new View.OnClickListener() {

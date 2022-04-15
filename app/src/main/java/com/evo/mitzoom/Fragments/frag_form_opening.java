@@ -31,7 +31,7 @@ import cn.pedant.SweetAlert.SweetAlertDialog;
 public class frag_form_opening extends Fragment {
     private Context context;
     private ImageView iconKtp, iconNpwp, iconSignature, iconForm, preview_ktp, preview_npwp, preview_signature;;
-    private TextView Nama,NIK,Email,Alamat,Agama,Status, Timer, Resend_Otp;
+    private TextView Nama,NIK,Email,Alamat,Agama,Status;
     private Button btnProcess;
     private LayoutInflater inflater;
     private View dialogView;
@@ -85,62 +85,12 @@ public class frag_form_opening extends Fragment {
             @Override
             public void onClick(View v) {
                 iconForm.setBackgroundTintList(context.getResources().getColorStateList(R.color.bg_cif_success));
-                PopUp();
+                PopUpSuccesRegistration();
             }
         });
     }
 
-    private void PopUp(){
-        inflater = getLayoutInflater();
-        dialogView = inflater.inflate(R.layout.item_otp,null);
-        SweetAlertDialog sweetAlertDialog = new SweetAlertDialog(context, SweetAlertDialog.NORMAL_TYPE);
-        sweetAlertDialog.setCustomView(dialogView);
-        sweetAlertDialog.hideConfirmButton();
-        sweetAlertDialog.setCancelable(false);
-        sweetAlertDialog.show();
-        btnVerifikasi = dialogView.findViewById(R.id.btnVerifikasi);
-        Timer = dialogView.findViewById(R.id.timer_otp);
-        Resend_Otp = dialogView.findViewById(R.id.btn_resend_otp);
-        editTextPin = dialogView.findViewById(R.id.kode_otp);
-        btnVerifikasi.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (editTextPin.getPin().equalsIgnoreCase("")){
-                    Toast.makeText(context, "Kode Otp masih kosong", Toast.LENGTH_SHORT).show();
-                }
-                else {
-                    editTextPin.getPin().toString();
-                    sweetAlertDialog.dismiss();
-                    PopUpSuccesOtp();
-                }
-            }
-        });
-        runTimer(Timer, Resend_Otp);
-        Resend_Otp.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (seconds==0){
-                    Toast.makeText(context, "Kode Terkirim", Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
-    }
-    private void PopUpSuccesOtp(){
-            SweetAlertDialog sweetAlertDialog = new SweetAlertDialog(context, SweetAlertDialog.SUCCESS_TYPE);
-            sweetAlertDialog.setTitleText(getResources().getString(R.string.otp_title));
-            sweetAlertDialog.setContentText(getResources().getString(R.string.otp_content));
-            sweetAlertDialog.setCancelable(false);
-            sweetAlertDialog.hideConfirmButton();
-            sweetAlertDialog.show();
-            handlerSuccess = new Handler();
-            handlerSuccess.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    PopUpSuccesRegistration();
-                    sweetAlertDialog.dismiss();
-                }
-            },10000);
-    }
+
     private void PopUpSuccesRegistration(){
                     SweetAlertDialog sweetAlertDialog = new SweetAlertDialog(context, SweetAlertDialog.SUCCESS_TYPE);
                     sweetAlertDialog.setTitleText(getResources().getString(R.string.reg_title));
@@ -166,31 +116,6 @@ public class frag_form_opening extends Fragment {
                 .commit();
     }
 
-    public void runTimer(TextView timer_run, TextView resend) {
-        Handler handler = new Handler();
-        handler.post(new Runnable() {
-            @Override
-            public void run() {
-                int minutes = 0;
-                int secs = seconds % 60;
-                String time = String.format(Locale.getDefault(),"%02d:%02d", minutes, secs);
-                timer_run.setText(time);
-                if (running) {
-                    seconds--;
-                }
-                if (seconds == 0){
-                    running = false;
-                    resend.setClickable(true);
-                    resend.setTextColor(getResources().getColorStateList(R.color.Blue));
-                    timer_run.setTextColor(getResources().getColorStateList(R.color.btnFalse));
-                }
-                else {
-                    resend.setTextColor(getResources().getColorStateList(R.color.btnFalse));
-                    timer_run.setTextColor(getResources().getColorStateList(R.color.Blue));
-                }
-                handler.postDelayed(this,1000);
-            }
-        });
-    }
+
 
 }

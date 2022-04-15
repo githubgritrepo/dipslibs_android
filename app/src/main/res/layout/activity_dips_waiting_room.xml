@@ -29,26 +29,43 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:background="@android:color/transparent" />
+
                 <LinearLayout
-                    android:layout_marginTop="45dp"
-                    android:layout_marginStart="20dp"
-                    android:layout_alignParentTop="true"
-                    android:layout_alignParentStart="true"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_alignParentStart="true"
+                    android:layout_alignParentTop="true"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginTop="45dp"
                     android:orientation="horizontal">
+
                     <ImageView
-                        android:layout_marginEnd="5dp"
-                        app:tint="@color/white"
                         android:layout_width="20dp"
                         android:layout_height="20dp"
-                        android:src="@drawable/ic_people"/>
+                        android:layout_marginEnd="5dp"
+                        android:src="@drawable/icon_timer" />
                     <TextView
-                        android:textSize="15sp"
-                        android:layout_width="match_parent"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="A015"
+                        android:text="A015(-6)"
                         android:textColor="@color/white"
+                        android:textSize="15sp"
+                        android:textStyle="bold"
+                        android:layout_marginEnd="10dp"/>
+
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:layout_marginEnd="5dp"
+                        android:src="@drawable/ic_people"
+                        app:tint="@color/white" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="A021"
+                        android:textColor="@color/white"
+                        android:textSize="15sp"
                         android:textStyle="bold" />
                 </LinearLayout>
             <LinearLayout
