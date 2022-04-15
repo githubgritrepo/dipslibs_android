@@ -212,8 +212,11 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
         isActivityPaused = false;
         refreshRotation();
         updateActionBarLayoutParams();
-        StartVidoes startVideo = new StartVidoes();
-        startVideo.execute();
+        boolean isNotStartVideo = adapter.isNotStartVideo();
+        if (isNotStartVideo) {
+            StartVidoes startVideo = new StartVidoes();
+            startVideo.execute();
+        }
         //updateChatLayoutParams();
 
         if (wasRunning) {
@@ -968,7 +971,15 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
 
         @Override
         protected Void doInBackground(Void... voids) {
-            int checkStart = 0;
+            try {
+                Thread.sleep(2000);
+                ZoomVideoSDK.getInstance().getVideoHelper().stopVideo();
+                Thread.sleep(2000);
+                ZoomVideoSDK.getInstance().getVideoHelper().startVideo();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            /*int checkStart = 0;
             for (int i = 0; i < 20; i++) {
                 try {
                     ZoomVideoSDKUser zoomSDKUserInfo = session.getMySelf();
@@ -985,7 +996,7 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-            }
+            }*/
             return null;
         }
     }
