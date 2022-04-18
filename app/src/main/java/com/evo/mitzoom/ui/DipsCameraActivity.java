@@ -110,8 +110,6 @@ public class DipsCameraActivity extends AppCompatActivity {
                             dataImage = data;
 
                             Bitmap bitmap = BitmapFactory.decodeByteArray(dataImage, 0, dataImage.length);
-                            Log.d("CEK", "bitmap width : " + bitmap.getWidth());
-                            Log.d("CEK", "bitmap height : " + bitmap.getHeight());
                             Bitmap bitmapCrop = resizeAndCropCenter(bitmap, 320, false);
 
                             int rotation = 0;

@@ -127,6 +127,7 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
     public int seconds = 0;
     public boolean running = true;
     public boolean wasRunning;
+    private int isOn = 0;
 
     protected Handler handler = new Handler(Looper.getMainLooper());
 
@@ -212,13 +213,31 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
         isActivityPaused = false;
         refreshRotation();
         updateActionBarLayoutParams();
-        StartVidoes startVideo = new StartVidoes();
-        startVideo.execute();
+        startVideoHandler();
         //updateChatLayoutParams();
 
         if (wasRunning) {
             running = true;
         }
+    }
+
+    private void startVideoHandler() {
+        Handler handler = new Handler();
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+                boolean isNotStartVideo = adapter.isNotStartVideo();
+                if (isOn == 1 && isNotStartVideo == false) {
+                    ZoomVideoSDK.getInstance().getVideoHelper().stopVideo();
+                    isOn = 0;
+                } else if ((isOn == 2 && isNotStartVideo == true) || (isOn == 2 && isNotStartVideo == false)) {
+                    ZoomVideoSDK.getInstance().getVideoHelper().startVideo();
+                    isOn = 0;
+                }
+
+                handler.postDelayed(this,1000);
+            }
+        });
     }
 
     @Override
@@ -838,7 +857,16 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
 
         ZoomVideoSDKUser zoomSDKUserInfo = session.getMySelf();
         if (null != zoomSDKUserInfo) {
-            iconVideo.setImageResource(zoomSDKUserInfo.getVideoStatus().isOn() ? R.drawable.icon_video_off : R.drawable.icon_video_on);
+            if (zoomSDKUserInfo.getVideoStatus().isOn()) {
+                isOn = 1;
+                Log.d(TAG,"MASUK ON");
+                iconVideo.setImageResource(R.drawable.icon_video_off);
+            } else {
+                isOn = 2;
+                Log.d(TAG,"MASUK OFF");
+                iconVideo.setImageResource(R.drawable.icon_video_on);
+            }
+            //iconVideo.setImageResource(zoomSDKUserInfo.getVideoStatus().isOn() ? R.drawable.icon_video_off : R.drawable.icon_video_on);
             if (userList.contains(zoomSDKUserInfo)) {
                 //checkMoreAction();
             }
@@ -964,29 +992,4 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
         super.onPointerCaptureChanged(hasCapture);
     }
 
-    private class StartVidoes extends AsyncTask<Void,Void,Void> {
-
-        @Override
-        protected Void doInBackground(Void... voids) {
-            boolean isNotStartVideo = adapter.isNotStartVideo();
-            Log.d("CEK", "isNotStartVideo : "+isNotStartVideo);
-            if (isNotStartVideo) {
-                for (int i = 0; i < 2; i++) {
-                    try {
-                        Thread.sleep(1000);
-                        ZoomVideoSDK.getInstance().getVideoHelper().stopVideo();
-                        isNotStartVideo = adapter.isNotStartVideo();
-                        Log.d("CEK", "isNotStartVideo ke-"+i+" STOP : "+isNotStartVideo);
-                        Thread.sleep(1000);
-                        ZoomVideoSDK.getInstance().getVideoHelper().startVideo();
-                        isNotStartVideo = adapter.isNotStartVideo();
-                        Log.d("CEK", "isNotStartVideo ke-"+i+" START : "+isNotStartVideo);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-            return null;
-        }
-    }
 }
