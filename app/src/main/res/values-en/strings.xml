@@ -107,6 +107,19 @@
     <string name="activation">Activation</string>
     <string name="rating_pop_up_content">Thank you for your rating. Your opinion is very valuable to us.</string>
     <string name="produk_layanan"><![CDATA[Product & Service]]></string>
-    <string name="btn_produk_nlayanan"><![CDATA[Product &\nService]]></string>
+    <string name="btn_produk_nlayanan"><![CDATA[Product & Service]]></string>
     <string name="verifikasi">Verified</string>
+    <string name="RTGS">RTGS Transaction</string>
+    <string name="SKN">SKN Transaction</string>
+    <string name="FOREX">Forex Transaction</string>
+    <string name="BankName">Bank\'s Name</string>
+    <string name="ReceiverAccount">Receiver Account</string>
+    <string name="ReceiverName">Receiver Name</string>
+    <string name="Amount">Amount</string>
+    <string name="ResidentType">Resident\'s Type</string>
+    <string name="penduduk">Civilians</string>
+    <string name="bukan_penduduk">Not Civilians</string>
+    <string name="berita">Description</string>
+    <string name="emptyFields">The fields is empty</string>
+    <string name="successTransaction">Your transaction is succes</string>
 </resources>

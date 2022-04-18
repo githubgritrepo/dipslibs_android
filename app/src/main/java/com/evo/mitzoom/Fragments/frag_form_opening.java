@@ -1,8 +1,12 @@
 package com.evo.mitzoom.Fragments;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Base64;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -33,14 +37,7 @@ public class frag_form_opening extends Fragment {
     private ImageView iconKtp, iconNpwp, iconSignature, iconForm, preview_ktp, preview_npwp, preview_signature;;
     private TextView Nama,NIK,Email,Alamat,Agama,Status;
     private Button btnProcess;
-    private LayoutInflater inflater;
-    private View dialogView;
-    private Button btnVerifikasi;
-    private EditTextPin editTextPin;
-    private Handler handlerSuccess;
-    public int seconds = 60;
-    public boolean running = true;
-    public boolean clickable = true;
+    private byte[] KTP, NPWP, TTD;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -75,6 +72,21 @@ public class frag_form_opening extends Fragment {
         iconSignature.setBackgroundTintList(context.getResources().getColorStateList(R.color.bg_cif_success));
         iconForm.setBackgroundTintList(context.getResources().getColorStateList(R.color.bg_cif));
 
+        Bundle arg = getArguments();
+        KTP = arg.getByteArray("ktp");
+        NPWP = arg.getByteArray("npwp");
+        TTD = arg.getByteArray("ttd");
+        arg.clear();
+
+        ByteArraytoimg(KTP,preview_ktp);
+        ByteArraytoimg(NPWP,preview_npwp);
+        ByteArraytoimg(TTD,preview_signature);
+
+
+        Log.d("BYTE ARRAY KTP = ", String.valueOf(KTP));
+        Log.d("BYTE ARRAY NPWP = ", String.valueOf(NPWP));
+        Log.d("BYTE ARRAY TTD = ", String.valueOf(TTD));
+
         Nama.setText("Andi Setiawan");
         NIK.setText("323432342304203");
         Alamat.setText("Rt.15 Rw/20 Maju, Kecamatan Suka Mulya, DKI Jakarta, Jawa Barat 12345");
@@ -90,7 +102,10 @@ public class frag_form_opening extends Fragment {
         });
     }
 
-
+    private void ByteArraytoimg(byte[] byteArray, ImageView gambar_profile){
+        Bitmap decodedBitmap = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
+        gambar_profile.setImageBitmap(decodedBitmap);
+    }
     private void PopUpSuccesRegistration(){
                     SweetAlertDialog sweetAlertDialog = new SweetAlertDialog(context, SweetAlertDialog.SUCCESS_TYPE);
                     sweetAlertDialog.setTitleText(getResources().getString(R.string.reg_title));

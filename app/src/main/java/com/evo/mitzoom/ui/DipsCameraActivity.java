@@ -402,7 +402,6 @@ public class DipsCameraActivity extends AppCompatActivity {
         bitmap.compress(Bitmap.CompressFormat.JPEG,100, baos);
         byte[] imageBytes = baos.toByteArray();
         String encodedImage = Base64.encodeToString(imageBytes, Base64.NO_WRAP);
-
         return encodedImage;
     }
 

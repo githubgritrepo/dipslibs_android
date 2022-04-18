@@ -173,6 +173,7 @@
         app:boxCornerRadiusTopStart="10dp">
 
         <EditText
+            android:gravity="top"
             android:id="@+id/et_kritik"
             android:layout_width="match_parent"
             android:layout_height="100dp"

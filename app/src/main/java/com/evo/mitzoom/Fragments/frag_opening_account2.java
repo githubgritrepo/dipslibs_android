@@ -13,6 +13,8 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.util.Base64;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -42,7 +44,7 @@ public class frag_opening_account2 extends Fragment {
     private LinearLayout btnGallery;
     private TextView filename;
     private Button btnNext;
-    private byte[] KTP;
+    private byte[] KTP, NPWP;
     private LinearLayout chooseImage, delete;
 
     @Override
@@ -70,10 +72,11 @@ public class frag_opening_account2 extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        Bundle arg = getArguments();
+        KTP = arg.getByteArray("ktp");
+        arg.clear();
         btnNext.setClickable(false);
         btnNext.setBackgroundTintList(context.getResources().getColorStateList(R.color.btnFalse));
-        Bundle arg = ((Activity)context).getIntent().getExtras();
-        KTP = arg.getByteArray("KTP");
         iconKtp.setBackgroundTintList(context.getResources().getColorStateList(R.color.bg_cif_success));
         iconNpwp.setBackgroundTintList(context.getResources().getColorStateList(R.color.bg_cif));
         btnCamera.setOnClickListener(new View.OnClickListener() {
@@ -101,10 +104,24 @@ public class frag_opening_account2 extends Fragment {
         btnNext.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                getFragmentPage(new frag_opening_account3());
+                if (NPWP == null){
+                    getFragmentPage(new frag_opening_account3());
+                    Toast.makeText(context, "Image is null", Toast.LENGTH_SHORT).show();
+                }
+                else{
+                    Fragment fragment = new frag_opening_account3();
+                    Bundle bundle = new Bundle();
+                    bundle.putByteArray("ktp",KTP);
+                    bundle.putByteArray("npwp",NPWP);
+                    fragment.setArguments(bundle);
+                    getFragmentPage(fragment);
+                }
             }
         });
     }
+
+
+
     private void chooseFromSD() {
         Intent intent = new   Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
         startActivityForResult(intent, 2);
@@ -213,7 +230,13 @@ public class frag_opening_account2 extends Fragment {
                 bm, 0, 0, width, height, matrix, false);
         bm.recycle();
         viewImage.setImageBitmap(resizedBitmap);
-
+        imgtoByteArray(resizedBitmap);
         //return resizedBitmap;
+    }
+    private void imgtoByteArray(Bitmap bitmap) {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.JPEG,100, baos);
+        byte[] imageBytes = baos.toByteArray();
+        NPWP = imageBytes;
     }
 }

@@ -226,6 +226,7 @@
                     app:boxCornerRadiusTopStart="10dp">
 
                     <EditText
+                        android:gravity="top"
                         android:padding="9dp"
                         android:id="@+id/et_alamat"
                         android:layout_width="match_parent"
@@ -235,7 +236,7 @@
                         android:lines="8"
                         android:maxLines="10"
                         android:minLines="6"
-                        android:scrollbars="none"
+                        android:scrollbars="vertical"
                         android:textSize="16sp"
                         tools:ignore="SpeakableTextPresentCheck,SpeakableTextPresentCheck,SpeakableTextPresentCheck" />
                 </com.google.android.material.textfield.TextInputLayout>

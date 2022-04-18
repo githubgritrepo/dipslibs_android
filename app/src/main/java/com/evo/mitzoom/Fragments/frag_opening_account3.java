@@ -13,6 +13,8 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.util.Base64;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -41,9 +43,7 @@ public class frag_opening_account3 extends Fragment {
     private ImageView iconKtp, iconNpwp, iconSignature, iconForm, btnCamera, viewImage;
     private LinearLayout btnGallery;
     private Button btnNext;
-    private byte[] KTP;
-    private byte[] NPWP;
-    private Bitmap bitmapz = null;
+    private byte[] KTP, NPWP, TTD;
     private LinearLayout chooseImage, delete;
 
     @Override
@@ -72,9 +72,10 @@ public class frag_opening_account3 extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         btnNext.setClickable(false);
         btnNext.setBackgroundTintList(context.getResources().getColorStateList(R.color.btnFalse));
-        Bundle arg = ((Activity)context).getIntent().getExtras();
-        KTP = arg.getByteArray("KTP");
-        NPWP = arg.getByteArray("NPWP");
+        Bundle arg = getArguments();
+        KTP = arg.getByteArray("ktp");
+        NPWP = arg.getByteArray("npwp");
+        arg.clear();
         iconKtp.setBackgroundTintList(context.getResources().getColorStateList(R.color.bg_cif_success));
         iconNpwp.setBackgroundTintList(context.getResources().getColorStateList(R.color.bg_cif_success));
         iconSignature.setBackgroundTintList(context.getResources().getColorStateList(R.color.bg_cif));
@@ -103,7 +104,19 @@ public class frag_opening_account3 extends Fragment {
         btnNext.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                getFragmentPage(new frag_form_opening());
+                if (TTD == null){
+                    getFragmentPage(new frag_opening_account3());
+                    Toast.makeText(context, "Image is null", Toast.LENGTH_SHORT).show();
+                }
+                else{
+                    Fragment fragment = new frag_form_opening();
+                    Bundle bundle = new Bundle();
+                    bundle.putByteArray("ktp",KTP);
+                    bundle.putByteArray("npwp",NPWP);
+                    bundle.putByteArray("ttd",TTD);
+                    fragment.setArguments(bundle);
+                    getFragmentPage(fragment);
+                }
             }
         });
     }
@@ -215,7 +228,13 @@ public class frag_opening_account3 extends Fragment {
                 bm, 0, 0, width, height, matrix, false);
         bm.recycle();
         viewImage.setImageBitmap(resizedBitmap);
-
+        imgtoByteArray(resizedBitmap);
         //return resizedBitmap;
+    }
+    private void imgtoByteArray(Bitmap bitmap) {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.JPEG,100, baos);
+        byte[] imageBytes = baos.toByteArray();
+        TTD = imageBytes;
     }
 }

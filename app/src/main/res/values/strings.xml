@@ -76,7 +76,7 @@
     <string name="address">Alamat</string>
     <string name="religion">Agama</string>
     <string name="status">Status</string>
-    <string name="content_form_bottom">Saya menyatakan bahwa seluruh\ndata yang saya berikan di formulir\npembukaan rekekning ini benar.</string>
+    <string name="content_form_bottom">Saya menyatakan bahwa seluruh data yang saya berikan di formulir pembukaan rekening ini benar.</string>
     <string name="process">Proses</string>
     <string name="headline_rating">Terima kasih telah mempercayakan\n transaksi perbankan anda pada\n bank xyz.</string>
     <string name="apakah_permasalahan_anda_n_selesai_dengan_baik">Apakah permasalahan anda\n selesai dengan baik?</string>
@@ -106,6 +106,19 @@
     <string name="activation">Aktivasi</string>
     <string name="rating_pop_up_content">Terima kasih atas penilaian anda. Pendapat anda sangat berharga bagi kami.</string>
     <string name="produk_layanan"><![CDATA[Produk & Layanan]]></string>
-    <string name="btn_produk_nlayanan"><![CDATA[Produk &\nLayanan]]></string>
+    <string name="btn_produk_nlayanan"><![CDATA[Produk & Layanan]]></string>
     <string name="verifikasi">Verifikasi</string>
+    <string name="RTGS">Transaksi RTGS</string>
+    <string name="SKN">Transaksi SKN</string>
+    <string name="FOREX">Transaksi Valas</string>
+    <string name="BankName">Nama Bank</string>
+    <string name="ReceiverAccount">Rekening Penerima</string>
+    <string name="ReceiverName">Nama Penerima</string>
+    <string name="Amount">Nominal Transaksi</string>
+    <string name="ResidentType">Jenis Penduduk</string>
+    <string name="penduduk">Penduduk</string>
+    <string name="bukan_penduduk">Bukan Penduduk</string>
+    <string name="berita">Berita</string>
+    <string name="emptyFields">Kolom tidak boleh kosong</string>
+    <string name="successTransaction">Anda berhasil melakukan transaksi</string>
 </resources>
