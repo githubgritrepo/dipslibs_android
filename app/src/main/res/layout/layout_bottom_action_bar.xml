@@ -31,7 +31,8 @@
                 android:layout_height="50dp"
                 android:layout_margin="5dp"
                 android:onClick="onClickVideo"
-                android:src="@drawable/icon_video_off" />
+                android:src="@drawable/icon_video_off"
+                android:visibility="gone"/>
 
             <ImageView
                 android:contentDescription="btnmute"

@@ -143,12 +143,12 @@ public class frag_opening_account2 extends Fragment {
             if (requestCode == 1){
                 byte[] resultCamera = data.getByteArrayExtra("result_camera");
                 Bitmap bitmap = BitmapFactory.decodeByteArray(resultCamera, 0, resultCamera.length);
-                viewImage.setImageBitmap(bitmap);
                 btnNext.setBackgroundTintList(context.getResources().getColorStateList(R.color.bg_cif));
                 btnNext.setClickable(true);
                 delete.setVisibility(View.VISIBLE);
                 viewImage.setVisibility(View.VISIBLE);
                 chooseImage.setVisibility(View.GONE);
+                getResizedBitmap(bitmap, (bitmap.getWidth()/2), (bitmap.getHeight()/2));
                 /*File f = new File(Environment.getExternalStorageDirectory().toString());
                 for (File temp : f.listFiles()){
                     if (temp.getName().equals("temp.png")){

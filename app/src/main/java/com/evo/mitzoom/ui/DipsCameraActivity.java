@@ -110,7 +110,12 @@ public class DipsCameraActivity extends AppCompatActivity {
                             dataImage = data;
 
                             Bitmap bitmap = BitmapFactory.decodeByteArray(dataImage, 0, dataImage.length);
-                            Bitmap bitmapCrop = resizeAndCropCenter(bitmap, 320, false);
+                            /*Log.d("CEK","bitmap width : "+bitmap.getWidth());
+                            Log.d("CEK","bitmap height : "+bitmap.getHeight());*/
+                            Bitmap bitmapCrop = resizeAndCropCenter(bitmap, 640, false);
+                            //Bitmap bitmapCrop = getResizedBitmap(bitmap, (bitmap.getWidth() / 8), (bitmap.getHeight() / 8));
+                            /*Log.d("CEK","bitmapCrop width : "+bitmapCrop.getWidth());
+                            Log.d("CEK","bitmapCrop height : "+bitmapCrop.getHeight());*/
 
                             int rotation = 0;
                             try {
@@ -517,6 +522,31 @@ public class DipsCameraActivity extends AppCompatActivity {
         canvas.drawBitmap(bitmap, 0, 0, paint);
         if (recycle) bitmap.recycle();
         return target;
+    }
+
+    private Bitmap getResizedBitmap(Bitmap bm, int newWidth, int newHeight) {
+        int width = bm.getWidth();
+        int height = bm.getHeight();
+        float sx = 0;
+        float sy = 0;
+        if (useFacing == Camera.CameraInfo.CAMERA_FACING_FRONT) {
+            sx = ((float) newWidth) / width;
+            sy = ((float) newHeight) / height;
+        } else {
+            sx = ((float) newHeight) / height;
+            sy = ((float) newWidth) / width;
+        }
+
+        Matrix matrix = new Matrix();
+        // RESIZE THE BIT MAP
+        matrix.postScale(sx, sy);
+
+        // "RECREATE" THE NEW BITMAP
+        Bitmap resizedBitmap = Bitmap.createBitmap(
+                bm, 0, 0, width, height, matrix, false);
+        bm.recycle();
+
+        return resizedBitmap;
     }
 
     private static Bitmap.Config getConfig(Bitmap bitmap) {
