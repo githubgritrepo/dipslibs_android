@@ -14,6 +14,7 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.evo.mitzoom.Fragments.frag_opening_account;
+import com.evo.mitzoom.Fragments.frag_rtgs;
 import com.evo.mitzoom.Model.ItemModel;
 import com.evo.mitzoom.R;
 
@@ -42,6 +43,13 @@ public class ItemServiceAdapter extends RecyclerView.Adapter<ItemServiceAdapter.
         holder.parent_layout.setOnClickListener(v -> {
             switch (dataList.get(position).getId()){
                 case "1" :
+                    getFragmentPage(new frag_rtgs());
+                    return;
+                case "2" :
+                    Toast.makeText(ctx, R.string.SKN, Toast.LENGTH_SHORT).show();
+                    return;
+                case "3" :
+                    Toast.makeText(ctx, R.string.FOREX, Toast.LENGTH_SHORT).show();
                     return;
             }
         });
@@ -66,7 +74,7 @@ public class ItemServiceAdapter extends RecyclerView.Adapter<ItemServiceAdapter.
     private void getFragmentPage(Fragment fragment){
         ((FragmentActivity)ctx).getSupportFragmentManager()
                 .beginTransaction()
-                .replace(R.id.layout_frame, fragment)
+                .replace(R.id.layout_frame2, fragment)
                 .addToBackStack(null)
                 .commit();
     }

@@ -42,6 +42,7 @@ import com.evo.mitzoom.R;
 import com.evo.mitzoom.ui.DipsCameraActivity;
 import com.evo.mitzoom.ui.DipsWaitingRoom;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -61,9 +62,8 @@ public class frag_opening_account extends Fragment {
     private LinearLayout btnGallery;
     private TextView filename;
     private Button btnNext;
-    private Bitmap bitmapz = null;
     private LinearLayout chooseImage, delete;
-    private File photo = null;
+    private byte[] KTP;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -125,7 +125,14 @@ public class frag_opening_account extends Fragment {
         btnNext.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-               getFragmentPage(new frag_opening_account2());
+                if (KTP == null){
+                    getFragmentPage(new frag_opening_account2());
+                    Toast.makeText(context, "Image is null", Toast.LENGTH_SHORT).show();
+                }
+                else{
+                    sendDataFragment("ktp",KTP,new frag_opening_account2());
+                }
+
             }
         });
     }
@@ -137,6 +144,13 @@ public class frag_opening_account extends Fragment {
             return false;
         }
         return true;
+    }
+
+    private void sendDataFragment(String tag, byte[] Text, Fragment fragment){
+        Bundle bundle = new Bundle();
+        bundle.putByteArray(tag,Text);
+        fragment.setArguments(bundle);
+        getFragmentPage(fragment);
     }
 
     @Override
@@ -263,7 +277,13 @@ public class frag_opening_account extends Fragment {
                 bm, 0, 0, width, height, matrix, false);
         bm.recycle();
         viewImage.setImageBitmap(resizedBitmap);
-
         //return resizedBitmap;
+        imgtoByteArray(resizedBitmap);
+    }
+    private void imgtoByteArray(Bitmap bitmap) {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.JPEG,100, baos);
+        byte[] imageBytes = baos.toByteArray();
+        KTP = imageBytes;
     }
 }
