@@ -212,11 +212,8 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
         isActivityPaused = false;
         refreshRotation();
         updateActionBarLayoutParams();
-        boolean isNotStartVideo = adapter.isNotStartVideo();
-        if (isNotStartVideo) {
-            StartVidoes startVideo = new StartVidoes();
-            startVideo.execute();
-        }
+        StartVidoes startVideo = new StartVidoes();
+        startVideo.execute();
         //updateChatLayoutParams();
 
         if (wasRunning) {
@@ -971,29 +968,22 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
 
         @Override
         protected Void doInBackground(Void... voids) {
-            /*try {
-                Thread.sleep(2000);
-                ZoomVideoSDK.getInstance().getVideoHelper().stopVideo();
-                Thread.sleep(2000);
-                ZoomVideoSDK.getInstance().getVideoHelper().startVideo();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }*/
-            for (int i = 0; i < 2; i++) {
-                try {
-                    Thread.sleep(2000);
-                    ZoomVideoSDK.getInstance().getVideoHelper().stopVideo();
-                    Thread.sleep(2000);
-                    ZoomVideoSDK.getInstance().getVideoHelper().startVideo();
-                    /*ZoomVideoSDKUser zoomSDKUserInfo = session.getMySelf();
-                    if (zoomSDKUserInfo.getVideoStatus().isOn()) {
+            boolean isNotStartVideo = adapter.isNotStartVideo();
+            Log.d("CEK", "isNotStartVideo : "+isNotStartVideo);
+            if (isNotStartVideo) {
+                for (int i = 0; i < 2; i++) {
+                    try {
+                        Thread.sleep(1000);
                         ZoomVideoSDK.getInstance().getVideoHelper().stopVideo();
-                    } else {
+                        isNotStartVideo = adapter.isNotStartVideo();
+                        Log.d("CEK", "isNotStartVideo ke-"+i+" STOP : "+isNotStartVideo);
+                        Thread.sleep(1000);
                         ZoomVideoSDK.getInstance().getVideoHelper().startVideo();
+                        isNotStartVideo = adapter.isNotStartVideo();
+                        Log.d("CEK", "isNotStartVideo ke-"+i+" START : "+isNotStartVideo);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
                     }
-                    Thread.sleep(2000);*/
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
                 }
             }
             return null;
