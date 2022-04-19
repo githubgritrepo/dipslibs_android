@@ -78,6 +78,12 @@ public class DipsCameraActivity extends AppCompatActivity {
     private int rotationInDegree = 1;
     private int optimalWidth = 0;
     private int optimalHeight = 0;
+    private int surfWIdth = 0;
+    private int surfHeight = 0;
+    private double surfLeft = 0;
+    private double surfTop = 0;
+    private double surfRight = 0;
+    private double surfBottom = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -110,12 +116,8 @@ public class DipsCameraActivity extends AppCompatActivity {
                             dataImage = data;
 
                             Bitmap bitmap = BitmapFactory.decodeByteArray(dataImage, 0, dataImage.length);
-                            /*Log.d("CEK","bitmap width : "+bitmap.getWidth());
-                            Log.d("CEK","bitmap height : "+bitmap.getHeight());*/
-                            Bitmap bitmapCrop = resizeAndCropCenter(bitmap, 640, false);
-                            //Bitmap bitmapCrop = getResizedBitmap(bitmap, (bitmap.getWidth() / 8), (bitmap.getHeight() / 8));
-                            /*Log.d("CEK","bitmapCrop width : "+bitmapCrop.getWidth());
-                            Log.d("CEK","bitmapCrop height : "+bitmapCrop.getHeight());*/
+                            //Bitmap bitmapCrop = resizeAndCropCenter2(bitmap, 640, false);
+                            Bitmap bitmapCrop = getResizedBitmap(bitmap, (bitmap.getWidth() / 2), (bitmap.getHeight() / 2));
 
                             int rotation = 0;
                             try {
@@ -293,7 +295,6 @@ public class DipsCameraActivity extends AppCompatActivity {
     }
 
     private void initPreview(int width, int height) {
-        Log.d("CEK","initPreview width : "+width+" | height : "+height);
         if (camera != null && previewHolder.getSurface() != null) {
             CameraManager manager = (CameraManager) getSystemService(Context.CAMERA_SERVICE);
             if (manager == null) {
@@ -369,7 +370,14 @@ public class DipsCameraActivity extends AppCompatActivity {
             double diffH = Math.ceil(height / 2.8);
             double diffw = Math.ceil(width / 14);
 
-            RectF rect = new RectF((float) diffw,(float) diffH,(float) (width-diffw),(float) (height-diffH));
+            surfWIdth = width;
+            surfHeight = height;
+            surfLeft = diffw;
+            surfTop = diffH;
+            surfRight = (width-diffw);
+            surfBottom = (height-diffH);
+
+            RectF rect = new RectF((float) diffw,(float) diffH,(float) surfRight,(float) surfBottom);
 
             Canvas canvas = transHolder.lockCanvas();
             canvas.drawRect(rect,paint);
@@ -537,13 +545,17 @@ public class DipsCameraActivity extends AppCompatActivity {
             sy = ((float) newWidth) / width;
         }
 
+        int cx = (int) (width / 2.77);
+        int cy = (int) (height / 5.2);
+        int diffH = cy * 2;
+
         Matrix matrix = new Matrix();
         // RESIZE THE BIT MAP
         matrix.postScale(sx, sy);
 
         // "RECREATE" THE NEW BITMAP
         Bitmap resizedBitmap = Bitmap.createBitmap(
-                bm, 0, 0, width, height, matrix, false);
+                bm, cx, cy, (int) (width * 0.3), (height-diffH), matrix, false);
         bm.recycle();
 
         return resizedBitmap;

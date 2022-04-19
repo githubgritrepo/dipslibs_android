@@ -65,5 +65,6 @@
     <color name="setting_text">#232333</color>
     <color name="blue_normal">#0E71EB</color>
     <color name="blue_pressed">#0C63CE</color>
+    <color name="dips_yellow">#FFF500</color>
 
 </resources>

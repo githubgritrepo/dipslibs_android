@@ -227,6 +227,8 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
             @Override
             public void run() {
                 boolean isNotStartVideo = adapter.isNotStartVideo();
+                Log.d(TAG,"isOn : "+isOn);
+                Log.d(TAG,"isNotStartVideo : "+isNotStartVideo);
                 if (isOn == 1 && isNotStartVideo == false) {
                     ZoomVideoSDK.getInstance().getVideoHelper().stopVideo();
                     isOn = 0;
@@ -234,6 +236,8 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
                     ZoomVideoSDK.getInstance().getVideoHelper().startVideo();
                     isOn = 0;
                 }
+
+                Log.d(TAG,"#########################");
 
                 handler.postDelayed(this,1000);
             }
@@ -247,7 +251,7 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
         running = false;
         isActivityPaused = true;
         unSubscribe();
-        adapter.clear(false);
+        //adapter.clear(false);
         Log.d(TAG, "onPause");
     }
 
@@ -859,11 +863,9 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
         if (null != zoomSDKUserInfo) {
             if (zoomSDKUserInfo.getVideoStatus().isOn()) {
                 isOn = 1;
-                Log.d(TAG,"MASUK ON");
                 iconVideo.setImageResource(R.drawable.icon_video_off);
             } else {
                 isOn = 2;
-                Log.d(TAG,"MASUK OFF");
                 iconVideo.setImageResource(R.drawable.icon_video_on);
             }
             //iconVideo.setImageResource(zoomSDKUserInfo.getVideoStatus().isOn() ? R.drawable.icon_video_off : R.drawable.icon_video_on);
