@@ -3,6 +3,7 @@ package com.evo.mitzoom.Fragments;
 import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
+import android.os.Handler;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -19,6 +20,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.dhairytripathi.library.EditTextPin;
 import com.evo.mitzoom.R;
 
 import java.math.BigDecimal;
@@ -32,7 +34,9 @@ public class frag_rtgs extends Fragment {
     private ImageView btnBack;
     private EditText et_NamaBank, et_RekPenerima, et_NamaPenerima, et_Berita, et_Nominal;
     private Context context;
+
     private Button btnProses;
+
     private String NamaBank, RekPenerima, NamaPenerima, Berita, Nominal;
     public static final NumberFormat numberFormat = NumberFormat.getCurrencyInstance(new Locale("id", "ID"));
 
@@ -102,7 +106,15 @@ public class frag_rtgs extends Fragment {
                     Toast.makeText(context, getResources().getString(R.string.emptyFields), Toast.LENGTH_SHORT).show();
                 }
                 else {
-                    popUpBerhasil();
+                    Fragment fragment = new frag_summary_rtgs();
+                    Bundle bundle = new Bundle();
+                    bundle.putString("namaBank",NamaBank);
+                    bundle.putString("rekPenerima",RekPenerima);
+                    bundle.putString("namaPenerima",NamaPenerima);
+                    bundle.putString("nominal",Nominal);
+                    bundle.putString("berita",Berita);
+                    fragment.setArguments(bundle);
+                    getFragmentPage(fragment);
                 }
             }
         });
@@ -130,20 +142,5 @@ public class frag_rtgs extends Fragment {
         }
         return BigDecimal.ZERO;
     }
-    private void popUpBerhasil(){
-        SweetAlertDialog sweetAlertDialog = new SweetAlertDialog(context, SweetAlertDialog.SUCCESS_TYPE);
-        sweetAlertDialog.setContentText(getResources().getString(R.string.successTransaction));
-        sweetAlertDialog.setConfirmText(getResources().getString(R.string.btn_continue));
-        sweetAlertDialog.setCancelable(false);
-        sweetAlertDialog.show();
-        Button btnConfirm = (Button) sweetAlertDialog.findViewById(cn.pedant.SweetAlert.R.id.confirm_button);
-        btnConfirm.setBackgroundTintList(context.getResources().getColorStateList(R.color.Blue));
-        sweetAlertDialog.setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
-            @Override
-            public void onClick(SweetAlertDialog sweetAlertDialog) {
-                getFragmentPage(new frag_service());
-                sweetAlertDialog.dismiss();
-            }
-        });
-    }
+
 }

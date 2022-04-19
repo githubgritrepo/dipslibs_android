@@ -5,23 +5,12 @@
     android:layout_height="wrap_content"
     android:layout_gravity="bottom|center_horizontal"
     android:background="@color/white"
-    android:gravity="center_horizontal"
-    android:paddingTop="@dimen/dp_10"
     android:scrollbars="none">
-
-    <ScrollView
-        android:id="@+id/action_bar_scroll"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:orientation="vertical"
-        android:padding="0dp"
-        android:scrollbars="none">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center_horizontal"
+            android:gravity="center|center_vertical"
             android:minWidth="56dp"
             android:orientation="horizontal">
 
@@ -29,25 +18,25 @@
                 android:id="@+id/icon_video"
                 android:layout_width="wrap_content"
                 android:layout_height="50dp"
-                android:layout_margin="5dp"
+                android:layout_margin="10dp"
                 android:onClick="onClickVideo"
                 android:src="@drawable/icon_video_off"
                 android:visibility="gone"/>
 
             <ImageView
+                android:layout_margin="5dp"
                 android:contentDescription="btnmute"
                 android:id="@+id/icon_audio"
                 android:layout_width="wrap_content"
-                android:layout_height="50dp"
-                android:layout_margin="5dp"
+                android:layout_height="35dp"
                 android:onClick="onClickAudio"
                 android:src="@drawable/icon_unmute" />
 
             <Button
                 android:id="@+id/icon_chat"
                 android:layout_width="wrap_content"
-                android:layout_height="40dp"
-                android:layout_margin="5dp"
+                android:layout_height="35dp"
+                android:layout_margin="10dp"
                 android:background="@drawable/oval_background_10dp"
                 android:backgroundTint="@color/Blue"
                 android:drawableStart="@drawable/ic_chat"
@@ -59,8 +48,8 @@
             <Button
                 android:id="@+id/icon_close"
                 android:layout_width="wrap_content"
-                android:layout_height="40dp"
-                android:layout_margin="5dp"
+                android:layout_height="35dp"
+                android:layout_margin="10dp"
                 android:background="@drawable/oval_background_10dp"
                 android:backgroundTint="@color/zm_v1_red_A100"
                 android:onClick="onClickEnd"
@@ -69,6 +58,4 @@
                 android:textStyle="bold" />
 
         </LinearLayout>
-    </ScrollView>
-
 </LinearLayout>

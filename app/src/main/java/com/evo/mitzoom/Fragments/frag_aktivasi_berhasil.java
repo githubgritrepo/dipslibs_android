@@ -18,7 +18,7 @@ import com.evo.mitzoom.R;
 import com.evo.mitzoom.ui.RatingActivity;
 
 public class frag_aktivasi_berhasil extends Fragment {
-    private Button btnUnduh, btnSelesai;
+    private Button btnSelesai;
     private Context context;
 
     @Override
@@ -31,19 +31,12 @@ public class frag_aktivasi_berhasil extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.aktivasi_berhasil, container, false);
-        btnUnduh = view.findViewById(R.id.btnUnduhData);
         btnSelesai = view.findViewById(R.id.btnSelesai);
         return view;
     }
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        btnUnduh.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Toast.makeText(context, "Data selesai diunduh", Toast.LENGTH_SHORT).show();
-            }
-        });
         btnSelesai.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

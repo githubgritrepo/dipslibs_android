@@ -33,7 +33,6 @@ public class frag_berita extends Fragment {
     private ViewPager mPager;
     private GridProductAdapter gridAdapter;
     private static final Integer[] img = {R.drawable.adsv1, R.drawable.adsv2, R.drawable.adsv3};
-    private static final String [] nama ={"","",""};
     private ArrayList<Integer> imgArray = new ArrayList<Integer>();
     private CircleIndicator circleIndicator;
     private int currentPage;
@@ -63,18 +62,6 @@ public class frag_berita extends Fragment {
         gridAdapter = new GridProductAdapter(context,gambar);
         rv_product.setAdapter(gridAdapter);
         initPager();
-        rv_product.addOnScrollListener(new RecyclerView.OnScrollListener() {
-            @Override
-            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
-                if (dy > 0 ){
-                    DipsWaitingRoom.smoothBottomBar.setVisibility(View.INVISIBLE);
-
-                }
-                else if (dy < 0){
-                    DipsWaitingRoom.smoothBottomBar.setVisibility(View.VISIBLE);
-                }
-            }
-        });
     }
     private void initPager() {
         for (int i = 0; i < img.length; i++) {

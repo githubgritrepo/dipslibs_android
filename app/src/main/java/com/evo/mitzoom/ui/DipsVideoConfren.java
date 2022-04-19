@@ -47,7 +47,7 @@ public class DipsVideoConfren extends BaseMeetingActivity {
 
     RawDataRenderer rawDataRenderer;
 
-    public static ImageView LogoCompany;
+    public static ImageView LogoCompany, Zoom;
     public static LinearLayout timer;
     public static TextView text_timer;
 
@@ -127,6 +127,7 @@ public class DipsVideoConfren extends BaseMeetingActivity {
         LogoCompany = findViewById(R.id.logo_company);
         text_timer = findViewById(R.id.text_timer);
         timer = findViewById(R.id.timer);
+        Zoom = findViewById(R.id.poweredbyzoom);
 
     }
 

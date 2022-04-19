@@ -7,8 +7,6 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
-
-
     <LinearLayout
         android:id="@+id/TopBar"
         android:background="@color/white"
@@ -34,6 +32,7 @@
     </LinearLayout>
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rv_item"
+        android:layout_marginBottom="10dp"
         android:layout_below="@+id/TopBar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

@@ -15,6 +15,7 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -34,8 +35,9 @@ import cn.pedant.SweetAlert.SweetAlertDialog;
 
 public class frag_form_opening extends Fragment {
     private Context context;
-    private ImageView iconKtp, iconNpwp, iconSignature, iconForm, preview_ktp, preview_npwp, preview_signature;;
+    private ImageView preview_ktp, preview_npwp, preview_signature;
     private TextView Nama,NIK,Email,Alamat,Agama,Status;
+    private LinearLayout iconKtp, iconNpwp, iconSignature, iconForm;
     private Button btnProcess;
     private byte[] KTP, NPWP, TTD;
 
