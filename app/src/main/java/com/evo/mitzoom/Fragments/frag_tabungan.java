@@ -50,14 +50,12 @@ public class frag_tabungan extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        DipsWaitingRoom.smoothBottomBar.setVisibility(View.INVISIBLE);
         Bundle arg = getArguments();
         headline = arg.getString("headline");
         Headline.setText(headline);
         btnBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                DipsWaitingRoom.smoothBottomBar.setVisibility(View.VISIBLE);
                 getFragmentPage(new frag_list_produk());
             }
         });

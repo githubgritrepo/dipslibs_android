@@ -58,7 +58,8 @@ public class frag_opening_account extends Fragment {
 
     public static final int REQUEST_WRITE_PERMISSION = 786;
     private Context context;
-    private ImageView iconKtp, iconNpwp, iconSignature, iconForm,btnCamera, viewImage;
+    private LinearLayout iconKtp, iconNpwp, iconSignature, iconForm;
+    private ImageView viewImage,btnCamera;
     private LinearLayout btnGallery;
     private TextView filename;
     private Button btnNext;
@@ -126,8 +127,7 @@ public class frag_opening_account extends Fragment {
             @Override
             public void onClick(View v) {
                 if (KTP == null){
-                    getFragmentPage(new frag_opening_account2());
-                    Toast.makeText(context, "Image is null", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context, "Silahkan Upload Foto KTP Anda", Toast.LENGTH_SHORT).show();
                 }
                 else{
                     sendDataFragment("ktp",KTP,new frag_opening_account2());

@@ -114,7 +114,6 @@ public class DipsWaitingRoom extends AppCompatActivity {
     private int year, month, day, waktu_tunggu = 6000;
     private String tanggal, waktu;
     String [] time = {"08.00 - 10.00", "10.00 - 12.00", "12.00 - 14.00", "14.00 - 16.00", "16.00 - 17.00"};
-    public static SmoothBottomBar smoothBottomBar;
     String NameSession;
     String SessionPass;
     boolean isCust;
@@ -140,7 +139,6 @@ public class DipsWaitingRoom extends AppCompatActivity {
         initializeSdk();
         btnSchedule = (MaterialButton) findViewById(R.id.btnSchedule);
         btnEndCall = findViewById(R.id.end_call);
-        smoothBottomBar = findViewById(R.id.BottomBar);
         preview = (SurfaceView) findViewById(R.id.mySurface);
 
         getFragmentPage(new frag_berita());
@@ -163,7 +161,6 @@ public class DipsWaitingRoom extends AppCompatActivity {
 
         PopUpWaiting();
         PopUpSucces();
-        BottomNavigation();
     }
     @Override
     protected void onResume() {
@@ -214,26 +211,6 @@ public class DipsWaitingRoom extends AppCompatActivity {
         previewHolder = preview.getHolder();
         previewHolder.addCallback(surfaceCallback);
         previewHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
-    }
-
-    private void BottomNavigation(){
-        smoothBottomBar.setOnItemSelectedListener(new OnItemSelectedListener() {
-            @Override
-            public boolean onItemSelect(int i) {
-                Fragment fragment = null;
-                switch (i){
-                    case 0:
-                        fragment = new frag_berita();
-                        break;
-                    case 1:
-                        break;
-                    case 2:
-                        break;
-
-                }
-                return getFragmentPage(fragment);
-            }
-        });
     }
     private void initializeSdk() {
         ZoomVideoSDKInitParams params = new ZoomVideoSDKInitParams();
@@ -441,14 +418,24 @@ public class DipsWaitingRoom extends AppCompatActivity {
                     SweetAlertDialog sweetAlertDialog = new SweetAlertDialog(DipsWaitingRoom.this, SweetAlertDialog.SUCCESS_TYPE);
                     sweetAlertDialog.setContentText(getResources().getString(R.string.headline_success));
                     sweetAlertDialog.setConfirmText(getResources().getString(R.string.btn_continue));
+                    sweetAlertDialog.setCancelText(getResources().getString(R.string.cancel));
                     sweetAlertDialog.show();
                     Button btnConfirm = (Button) sweetAlertDialog.findViewById(cn.pedant.SweetAlert.R.id.confirm_button);
+                    Button btnCancel = (Button) sweetAlertDialog.findViewById(cn.pedant.SweetAlert.R.id.cancel_button);
                     btnConfirm.setBackgroundTintList(DipsWaitingRoom.this.getResources().getColorStateList(R.color.Blue));
+                    btnCancel.setBackgroundTintList(DipsWaitingRoom.this.getResources().getColorStateList(R.color.button_end_call));
                     sweetAlertDialog.setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
                         @Override
                         public void onClick(SweetAlertDialog sweetAlertDialog) {
                             sweetAlertDialog.dismiss();
                             processJoinVideo();
+                        }
+                    });
+                    sweetAlertDialog.setCancelClickListener(new SweetAlertDialog.OnSweetClickListener() {
+                        @Override
+                        public void onClick(SweetAlertDialog sweetAlertDialog) {
+                            sweetAlertDialog.dismiss();
+                            PopUpSchedule();
                         }
                     });
                 }

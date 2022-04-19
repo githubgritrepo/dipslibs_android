@@ -13,7 +13,6 @@
         android:layout_height="320dp"
         android:background="@drawable/head_background"
         android:orientation="vertical">
-
         <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -87,39 +86,16 @@
             </LinearLayout>
             </RelativeLayout>
         </androidx.cardview.widget.CardView>
-
     </LinearLayout>
-
     <FrameLayout
         android:id="@+id/layout_frame"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@id/llHead" />
-
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true">
-
-        <me.ibrahimsn.lib.SmoothBottomBar
-            android:id="@+id/BottomBar"
-            android:layout_width="match_parent"
-            android:layout_height="55dp"
-            android:layout_marginStart="20dp"
-            android:layout_marginEnd="20dp"
-            android:layout_marginBottom="10dp"
-            app:backgroundColor="@color/white"
-            app:cornerRadius="100dp"
-            app:corners="all"
-            app:iconSize="20dp"
-            app:iconTint="@color/_grey_605E5C"
-            app:iconTintActive="@color/black"
-            app:indicatorColor="@color/gray_blue"
-            app:indicatorRadius="25dp"
-            app:menu="@menu/navigation_waitingroom"
-            app:textColor="@color/black"
-            tools:ignore="SpeakableTextPresentCheck" />
-
         <androidx.coordinatorlayout.widget.CoordinatorLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -163,6 +139,5 @@
             </com.google.android.material.bottomappbar.BottomAppBar>
 
         </androidx.coordinatorlayout.widget.CoordinatorLayout>
-
     </RelativeLayout>
 </RelativeLayout>

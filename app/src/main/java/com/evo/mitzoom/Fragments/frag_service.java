@@ -61,8 +61,11 @@ public class frag_service extends Fragment {
         data = new ArrayList<>();
         data.add(new ItemModel("1",getResources().getString(R.string.RTGS),R.drawable.item1));
         data.add(new ItemModel("2",getResources().getString(R.string.SKN),R.drawable.item2));
-        data.add(new ItemModel("3",getResources().getString(R.string.FOREX),R.drawable.item2));
+        data.add(new ItemModel("3",getResources().getString(R.string.FOREX),R.drawable.item1));
+        data.add(new ItemModel("4",getResources().getString(R.string.BI_FAST),R.drawable.item4));
+        data.add(new ItemModel("5",getResources().getString(R.string.ONLINE_TRANSACTION),R.drawable.item2));
     }
+
     private void getFragmentPage(Fragment fragment){
         getActivity().getSupportFragmentManager()
                 .beginTransaction()

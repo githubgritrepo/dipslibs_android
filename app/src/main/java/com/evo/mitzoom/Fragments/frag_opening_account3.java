@@ -40,7 +40,8 @@ import java.io.OutputStream;
 
 public class frag_opening_account3 extends Fragment {
     private Context context;
-    private ImageView iconKtp, iconNpwp, iconSignature, iconForm, btnCamera, viewImage;
+    private LinearLayout iconKtp, iconNpwp, iconSignature, iconForm;
+    private ImageView btnCamera, viewImage;
     private LinearLayout btnGallery;
     private Button btnNext;
     private byte[] KTP, NPWP, TTD;
@@ -105,8 +106,7 @@ public class frag_opening_account3 extends Fragment {
             @Override
             public void onClick(View v) {
                 if (TTD == null){
-                    getFragmentPage(new frag_opening_account3());
-                    Toast.makeText(context, "Image is null", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context, "Silahkan Upload Foto Tanda Tangan Anda", Toast.LENGTH_SHORT).show();
                 }
                 else{
                     Fragment fragment = new frag_form_opening();

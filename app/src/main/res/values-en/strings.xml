@@ -88,7 +88,7 @@
     <string name="no_rekening">Account Number</string>
     <string name="kantor_cabang">Branch Office</string>
     <string name="mohon_aktifkan_rekening_anda_dengan_menyetorkan_dana_maksimal_90_hari_kedepan">Please activate your account by depositing funds up to 90 days ahead.</string>
-    <string name="terima_kasih_telah_mempercayakan_transaksi_perbankan_anda_pada_bank_xyz_gunakan_aplikasi_xyz_mobile_banking_untuk_pengalaman_bertransaksi_penuh_keuntungan">Thank you for trusting your banking transactions to XYZ bank. Use the XYZ Mobile Banking Application for a profitable transaction experience.</string>
+    <string name="terima_kasih_telah_mempercayakan_transaksi_perbankan_anda_pada_bank_xyz_gunakan_aplikasi_xyz_mobile_banking_untuk_pengalaman_bertransaksi_penuh_keuntungan">Thank you for trusting your banking transactions to XYZ bank. Details of your information account have been sent via email</string>
     <string name="unduh_data">Download Data</string>
     <string name="selesai">Done</string>
     <string name="user_id">User ID</string>
@@ -122,4 +122,7 @@
     <string name="berita">Description</string>
     <string name="emptyFields">The fields is empty</string>
     <string name="successTransaction">Your transaction is succes</string>
+    <string name="aktivasi_m_banking">M-Banking Activation</string>
+    <string name="BI_FAST">BI Fast Transaction</string>
+    <string name="ONLINE_TRANSACTION">Online Transaksi</string>
 </resources>

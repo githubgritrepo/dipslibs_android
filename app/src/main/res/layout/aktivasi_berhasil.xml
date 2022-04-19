@@ -27,7 +27,7 @@
                     android:layout_height="wrap_content"
                     android:text="@string/selamat_naktivasi_berhasil_rekening_n_tabungan_anda_sudah_aktif"
                     android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-                    android:textSize="18sp" />
+                    android:textSize="17sp" />
                     <RelativeLayout
                         android:layout_marginTop="20dp"
                         android:background="@drawable/bg_textinput"
@@ -43,18 +43,19 @@
                             android:text="@string/nama"
                             android:textAlignment="textStart"
                             android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-                            android:textSize="17sp"
+                            android:textSize="16sp"
                             android:textStyle="bold" />
+
                         <TextView
                             android:id="@+id/nama"
-                            android:layout_marginStart="15dp"
-                            android:layout_below="@+id/text_nama"
-                            android:textAlignment="textStart"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
+                            android:layout_below="@+id/text_nama"
+                            android:layout_marginStart="15dp"
                             android:text="Andi Setiawan"
+                            android:textAlignment="textStart"
                             android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-                            android:textSize="17sp" />
+                            android:textSize="16sp" />
 
                         <TextView
                             android:id="@+id/text_norek"
@@ -66,18 +67,19 @@
                             android:text="@string/no_rekening"
                             android:textAlignment="textStart"
                             android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-                            android:textSize="17sp"
+                            android:textSize="16sp"
                             android:textStyle="bold" />
+
                         <TextView
                             android:id="@+id/norek"
-                            android:layout_marginStart="15dp"
-                            android:layout_below="@+id/text_norek"
-                            android:textAlignment="textStart"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
+                            android:layout_below="@+id/text_norek"
+                            android:layout_marginStart="15dp"
                             android:text="XXXX XXXX XXXX"
+                            android:textAlignment="textStart"
                             android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-                            android:textSize="17sp" />
+                            android:textSize="16sp" />
 
                         <TextView
                             android:id="@+id/text_kantor_cabang"
@@ -89,7 +91,7 @@
                             android:text="@string/kantor_cabang"
                             android:textAlignment="textStart"
                             android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-                            android:textSize="17sp"
+                            android:textSize="16sp"
                             android:textStyle="bold" />
 
                         <TextView
@@ -102,7 +104,7 @@
                             android:text="XXXX XXXX XXXX"
                             android:textAlignment="textStart"
                             android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-                            android:textSize="17sp" />
+                            android:textSize="16sp" />
                     </RelativeLayout>
                 <TextView
                     android:textColor="#FF1212"
@@ -113,7 +115,7 @@
                     android:textStyle="italic"
                     android:text="@string/mohon_aktifkan_rekening_anda_dengan_menyetorkan_dana_maksimal_90_hari_kedepan"
                     android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-                    android:textSize="14sp" />
+                    android:textSize="13sp" />
                 <TextView
                     android:layout_marginTop="15dp"
                     android:textAlignment="textStart"
@@ -121,28 +123,15 @@
                     android:layout_height="wrap_content"
                     android:text="@string/terima_kasih_telah_mempercayakan_transaksi_perbankan_anda_pada_bank_xyz_gunakan_aplikasi_xyz_mobile_banking_untuk_pengalaman_bertransaksi_penuh_keuntungan"
                     android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-                    android:textSize="14sp" />
+                    android:textSize="13sp" />
                 <LinearLayout
-                    android:layout_marginTop="15dp"
+                    android:layout_marginTop="10dp"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal">
                     <Button
-                        android:id="@+id/btnUnduhData"
-                        android:layout_width="0dp"
-                        android:layout_weight="1"
-                        android:layout_marginEnd="10dp"
-                        android:layout_height="40dp"
-                        android:background="@drawable/oval_background_10dp"
-                        android:backgroundTint="@color/bg_cif"
-                        android:text="@string/unduh_data"
-                        android:textColor="@color/white"
-                        android:textStyle="bold" />
-                    <Button
-                        android:layout_marginStart="10dp"
                         android:id="@+id/btnSelesai"
-                        android:layout_width="0dp"
-                        android:layout_weight="1"
+                        android:layout_width="match_parent"
                         android:layout_height="40dp"
                         android:background="@drawable/oval_background_10dp"
                         android:backgroundTint="@color/bg_cif"

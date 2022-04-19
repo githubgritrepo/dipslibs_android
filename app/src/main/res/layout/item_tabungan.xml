@@ -14,7 +14,7 @@
         app:expansion_toggleOnClick="true">
 
         <RelativeLayout
-            android:background="@color/bg"
+            android:background="@color/white"
             android:layout_height="50dp"
             android:layout_width="match_parent"
             android:paddingLeft="16dp"

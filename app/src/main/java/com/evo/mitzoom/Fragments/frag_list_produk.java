@@ -20,6 +20,7 @@ public class frag_list_produk extends Fragment {
     private Context context;
     private NestedScrollView nested;
     private TextView btn_tabungan_a, btn_tabungan_b;
+    private ImageView btnBack;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -32,6 +33,7 @@ public class frag_list_produk extends Fragment {
         View view = inflater.inflate(R.layout.frag_daftar_produk, container, false);
         btn_tabungan_a = view.findViewById(R.id.btn_tabungan_a);
         btn_tabungan_b = view.findViewById(R.id.btn_tabungan_b);
+        btnBack = view.findViewById(R.id.btn_back6);
         nested = view.findViewById(R.id.nested);
         return view;
     }
@@ -39,15 +41,10 @@ public class frag_list_produk extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        nested.setOnScrollChangeListener(new NestedScrollView.OnScrollChangeListener() {
+        btnBack.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onScrollChange(@NonNull NestedScrollView v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
-                if (scrollY > 0){
-                    DipsWaitingRoom.smoothBottomBar.setVisibility(View.INVISIBLE);
-                }
-                else {
-                    DipsWaitingRoom.smoothBottomBar.setVisibility(View.VISIBLE);
-                }
+            public void onClick(View v) {
+                getFragmentPage(new frag_berita());
             }
         });
         btn_tabungan_a.setOnClickListener(new View.OnClickListener() {
@@ -64,12 +61,6 @@ public class frag_list_produk extends Fragment {
                 sendDataFragment("headline",Tabungan,new frag_tabungan());
             }
         });
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        DipsWaitingRoom.smoothBottomBar.setVisibility(View.VISIBLE);
     }
 
     private void getFragmentPage(Fragment fragment){

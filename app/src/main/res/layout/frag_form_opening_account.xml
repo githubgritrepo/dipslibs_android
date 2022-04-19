@@ -5,116 +5,113 @@
     android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:theme="@style/Theme.MaterialComponents.DayNight.DarkActionBar">
-    <HorizontalScrollView
+    <LinearLayout
         android:id="@+id/TopBar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
         android:background="@color/white"
         android:gravity="center"
-        android:scrollbars="none">
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:orientation="horizontal">
         <LinearLayout
+            android:orientation="horizontal"
+            android:id="@+id/icon_ktp"
+            android:layout_width="12dp"
+            android:layout_height="12dp"
+            android:layout_gravity="center_vertical"
+            android:layout_marginEnd="10dp"
+            android:background="@drawable/circle_icon"
+            android:backgroundTint="#C8CDD1" />
+
+        <TextView
+            android:textAlignment="textStart"
+            android:layout_gravity="start|center_vertical"
             android:layout_width="wrap_content"
-            android:layout_height="?attr/actionBarSize"
-            android:orientation="horizontal">
+            android:layout_height="wrap_content"
+            android:text="@string/Photo_nktp"
+            android:textColor="@color/black"
+            android:textSize="10sp" />
 
-            <ImageView
-                android:id="@+id/icon_ktp"
-                android:layout_width="36dp"
-                android:layout_height="36dp"
-                android:layout_gravity="center_vertical"
-                android:layout_marginStart="5dp"
-                android:layout_marginEnd="5dp"
-                android:background="@drawable/circle_icon"
-                android:backgroundTint="#C8CDD1"
-                android:src="@drawable/ktp" />
+        <ImageView
+            android:layout_width="12dp"
+            android:layout_height="12dp"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="10dp"
+            android:src="@drawable/ic_baseline_arrow_forward_24" />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:text="@string/Photo_nktp"
-                android:textColor="@color/black"
-                android:textSize="11sp" />
+        <LinearLayout
+            android:orientation="horizontal"
+            android:id="@+id/icon_npwp"
+            android:layout_width="12dp"
+            android:layout_height="12dp"
+            android:layout_gravity="center_vertical"
+            android:layout_marginEnd="10dp"
+            android:background="@drawable/circle_icon"
+            android:backgroundTint="#C8CDD1" />
 
-            <ImageView
-                android:layout_width="12dp"
-                android:layout_height="12dp"
-                android:layout_gravity="center_vertical"
-                android:layout_marginStart="5dp"
-                android:layout_marginEnd="5dp"
-                android:src="@drawable/ic_baseline_arrow_forward_24" />
+        <TextView
+            android:textAlignment="textStart"
+            android:layout_gravity="start|center_vertical"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/photo_nnpwp"
+            android:textColor="@color/black"
+            android:textSize="10sp" />
 
-            <ImageView
-                android:id="@+id/icon_npwp"
-                android:layout_width="36dp"
-                android:layout_height="36dp"
-                android:layout_gravity="center_vertical"
-                android:layout_marginEnd="5dp"
-                android:background="@drawable/circle_icon"
-                android:backgroundTint="#C8CDD1"
-                android:src="@drawable/npwp" />
+        <ImageView
+            android:layout_width="12dp"
+            android:layout_height="12dp"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="10dp"
+            android:src="@drawable/ic_baseline_arrow_forward_24" />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:text="@string/photo_nnpwp"
-                android:textColor="@color/black"
-                android:textSize="11sp" />
+        <LinearLayout
+            android:orientation="horizontal"
+            android:id="@+id/icon_signature"
+            android:layout_width="12dp"
+            android:layout_height="12dp"
+            android:layout_gravity="center_vertical"
+            android:layout_marginEnd="10dp"
+            android:background="@drawable/circle_icon"
+            android:backgroundTint="#C8CDD1" />
 
-            <ImageView
-                android:layout_width="12dp"
-                android:layout_height="12dp"
-                android:layout_gravity="center_vertical"
-                android:layout_marginStart="5dp"
-                android:layout_marginEnd="5dp"
-                android:src="@drawable/ic_baseline_arrow_forward_24" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAlignment="textStart"
+            android:layout_gravity="start|center_vertical"
+            android:text="@string/foto_ntanda_ntangan"
+            android:textColor="@color/black"
+            android:textSize="10sp" />
 
-            <ImageView
-                android:id="@+id/icon_signature"
-                android:layout_width="36dp"
-                android:layout_height="36dp"
-                android:layout_gravity="center_vertical"
-                android:layout_marginEnd="5dp"
-                android:background="@drawable/circle_icon"
-                android:backgroundTint="#C8CDD1"
-                android:src="@drawable/tandatangan" />
+        <ImageView
+            android:layout_width="12dp"
+            android:layout_height="12dp"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="10dp"
+            android:src="@drawable/ic_baseline_arrow_forward_24" />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:text="@string/foto_ntanda_ntangan"
-                android:textColor="@color/black"
-                android:textSize="11sp" />
+        <LinearLayout
+            android:orientation="horizontal"
+            android:id="@+id/icon_form"
+            android:layout_width="12dp"
+            android:layout_height="12dp"
+            android:layout_gravity="center_vertical"
+            android:layout_marginEnd="10dp"
+            android:background="@drawable/circle_icon"
+            android:backgroundTint="#C8CDD1" />
 
-            <ImageView
-                android:layout_width="12dp"
-                android:layout_height="12dp"
-                android:layout_gravity="center_vertical"
-                android:layout_marginStart="5dp"
-                android:layout_marginEnd="5dp"
-                android:src="@drawable/ic_baseline_arrow_forward_24" />
-
-            <ImageView
-                android:id="@+id/icon_form"
-                android:layout_width="36dp"
-                android:layout_height="36dp"
-                android:layout_gravity="center_vertical"
-                android:layout_marginEnd="5dp"
-                android:background="@drawable/circle_icon"
-                android:backgroundTint="#C8CDD1"
-                android:src="@drawable/formulir" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:text="@string/formulir_npembukaan_nrekening"
-                android:textColor="@color/black"
-                android:textSize="11sp" />
-        </LinearLayout>
-    </HorizontalScrollView>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAlignment="textStart"
+            android:layout_gravity="start|center_vertical"
+            android:text="@string/formulir_npembukaan_nrekening"
+            android:textColor="@color/black"
+            android:textSize="10sp" />
+    </LinearLayout>
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -136,7 +133,7 @@
                     android:layout_height="wrap_content"
                     android:text="@string/name"
                     android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-                    android:textSize="20sp" />
+                    android:textSize="16sp" />
                 <com.google.android.material.textfield.TextInputLayout
                     style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                     android:layout_width="match_parent"
@@ -148,12 +145,12 @@
                     app:boxCornerRadiusTopStart="10dp">
 
                     <EditText
-                        android:padding="9dp"
                         android:id="@+id/et_nama"
                         android:layout_width="match_parent"
                         android:layout_height="35dp"
                         android:background="@drawable/bg_textinput"
                         android:inputType="text"
+                        android:padding="9dp"
                         android:textSize="16sp"
                         tools:ignore="SpeakableTextPresentCheck" />
                 </com.google.android.material.textfield.TextInputLayout>
@@ -162,7 +159,7 @@
                     android:layout_height="wrap_content"
                     android:text="@string/nik"
                     android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-                    android:textSize="20sp" />
+                    android:textSize="16sp" />
                 <com.google.android.material.textfield.TextInputLayout
                     style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                     android:layout_width="match_parent"
@@ -188,7 +185,7 @@
                     android:layout_height="wrap_content"
                     android:text="@string/email"
                     android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-                    android:textSize="20sp" />
+                    android:textSize="16sp" />
                 <com.google.android.material.textfield.TextInputLayout
                     style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                     android:layout_width="match_parent"
@@ -214,7 +211,7 @@
                     android:layout_height="wrap_content"
                     android:text="@string/address"
                     android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-                    android:textSize="20sp" />
+                    android:textSize="16sp" />
                 <com.google.android.material.textfield.TextInputLayout
                     style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                     android:layout_width="match_parent"
@@ -245,7 +242,7 @@
                     android:layout_height="wrap_content"
                     android:text="@string/religion"
                     android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-                    android:textSize="20sp" />
+                    android:textSize="16sp" />
                 <com.google.android.material.textfield.TextInputLayout
                     style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                     android:layout_width="match_parent"
@@ -270,7 +267,7 @@
                     android:layout_height="wrap_content"
                     android:text="@string/status"
                     android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-                    android:textSize="20sp" />
+                    android:textSize="16sp" />
                 <com.google.android.material.textfield.TextInputLayout
                     style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                     android:layout_width="match_parent"
@@ -300,7 +297,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Tabungan A"
-                        android:textSize="17sp"
+                        android:textSize="16sp"
                         android:textColor="@color/black"/>
                     <CheckBox
                         android:layout_marginBottom="10dp"
@@ -308,7 +305,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Tabungan B"
-                        android:textSize="17sp"
+                        android:textSize="16sp"
                         android:textColor="@color/black"/>
                 </LinearLayout>
                 <TextView
@@ -316,7 +313,7 @@
                     android:layout_height="wrap_content"
                     android:text="KTP"
                     android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-                    android:textSize="20sp" />
+                    android:textSize="16sp" />
                 <ImageView
                     android:layout_marginBottom="10dp"
                     android:layout_gravity="start"
@@ -329,7 +326,7 @@
                     android:layout_height="wrap_content"
                     android:text="NPWP"
                     android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-                    android:textSize="20sp" />
+                    android:textSize="16sp" />
                 <ImageView
                     android:layout_marginBottom="10dp"
                     android:layout_gravity="start"
@@ -342,7 +339,7 @@
                     android:layout_height="wrap_content"
                     android:text="@string/tanda_tangan"
                     android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-                    android:textSize="20sp" />
+                    android:textSize="16sp" />
                 <ImageView
                     android:layout_marginBottom="20dp"
                     android:layout_gravity="start"
@@ -363,7 +360,7 @@
                 <Button
                     android:id="@+id/btnProses"
                     android:layout_width="match_parent"
-                    android:layout_height="40dp"
+                    android:layout_height="35dp"
                     android:background="@drawable/oval_background_10dp"
                     android:backgroundTint="@color/bg_cif"
                     android:text="@string/process"

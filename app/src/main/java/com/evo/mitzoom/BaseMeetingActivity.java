@@ -472,7 +472,6 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
         userVideoList.setLayoutManager(layoutManager);
         userVideoList.setAdapter(adapter);
         actionBar = findViewById(R.id.action_bar);
-        actionBarScroll = findViewById(R.id.action_bar_scroll);
         iconAudio = findViewById(R.id.icon_audio);
         iconVideo = findViewById(R.id.icon_video);
         videoOffView = findViewById(R.id.video_off_tips);
@@ -789,6 +788,7 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
         showProgress(false);
         btnChat.setClickable(false);
         DipsVideoConfren.LogoCompany.setVisibility(View.VISIBLE);
+        DipsVideoConfren.Zoom.setVisibility(View.VISIBLE);
         updateSessionInfo();
         getFragmentPage(new frag_conferee_agree());
         actionBar.setVisibility(View.VISIBLE);
