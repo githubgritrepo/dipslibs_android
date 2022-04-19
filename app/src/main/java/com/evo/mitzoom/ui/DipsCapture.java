@@ -151,6 +151,7 @@ public class DipsCapture extends AppCompatActivity implements CameraSource.Pictu
         cameraSource = new CameraSource.Builder(this, detector)
                 .setFacing(useFacing)
                 .setRequestedFps(2.0f)
+                .setRequestedPreviewSize(1024,768)
                 .setAutoFocusEnabled(true)
                 .build();
 
@@ -252,15 +253,15 @@ public class DipsCapture extends AppCompatActivity implements CameraSource.Pictu
         public void surfaceChanged(@NonNull SurfaceHolder holder, int format, int width, int height) {
             Canvas canvas = transHolder.lockCanvas();
 
-            int MarginSurf = 160;
+            int MarginSurf = 220;
             if (width < 680) {
-                MarginSurf = 80;
+                MarginSurf = 140;
             } else if (width > 1000) {
-                MarginSurf = 240;
+                MarginSurf = 340;
             }
             //double cx = Math.ceil(width / 2);
             double leftright = Math.ceil(width / 4);
-            double cTop = Math.ceil(height / 4);
+            double cTop = Math.ceil(height / 3.2);
             double marginTop = Math.ceil((cTop * 3) / 4);
             int margins = MarginSurf * 2;
             double rad = Math.ceil((width - margins) / 2);
