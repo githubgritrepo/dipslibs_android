@@ -126,4 +126,5 @@
     <string name="BI_FAST">BI Fast Transaction</string>
     <string name="ONLINE_TRANSACTION">Online Transaksi</string>
     <string name="portofolio_saya">My Portfolio</string>
+    <string name="informasi_portofolio">Portfolio Information</string>
 </resources>

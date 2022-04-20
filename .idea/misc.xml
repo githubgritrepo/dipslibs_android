@@ -86,6 +86,7 @@
         <entry key="..\:/Users/Mohammad Rafii B/AndroidStudioProjects/ZOOMFIX/app/src/main/res/menu/navigation_waitingroom.xml" value="0.2" />
         <entry key="..\:/Users/Mohammad Rafii B/AndroidStudioProjects/Zoom DiPS361/app/src/main/res/drawable-hdpi/ic_back.xml" value="0.1935" />
         <entry key="..\:/Users/Mohammad Rafii B/AndroidStudioProjects/Zoom DiPS361/app/src/main/res/drawable/bg_otp.xml" value="0.1" />
+        <entry key="..\:/Users/Mohammad Rafii B/AndroidStudioProjects/Zoom DiPS361/app/src/main/res/drawable/bg_porto.xml" value="0.2075" />
         <entry key="..\:/Users/Mohammad Rafii B/AndroidStudioProjects/Zoom DiPS361/app/src/main/res/drawable/bg_textinput.xml" value="0.135" />
         <entry key="..\:/Users/Mohammad Rafii B/AndroidStudioProjects/Zoom DiPS361/app/src/main/res/drawable/bg_textinput_false.xml" value="0.144" />
         <entry key="..\:/Users/Mohammad Rafii B/AndroidStudioProjects/Zoom DiPS361/app/src/main/res/drawable/chat_drawable.xml" value="0.1145" />
@@ -133,7 +134,7 @@
         <entry key="..\:/Users/Mohammad Rafii B/AndroidStudioProjects/Zoom DiPS361/app/src/main/res/layout/item_giro.xml" value="0.5" />
         <entry key="..\:/Users/Mohammad Rafii B/AndroidStudioProjects/Zoom DiPS361/app/src/main/res/layout/item_insurance.xml" value="0.2" />
         <entry key="..\:/Users/Mohammad Rafii B/AndroidStudioProjects/Zoom DiPS361/app/src/main/res/layout/item_otp.xml" value="0.2" />
-        <entry key="..\:/Users/Mohammad Rafii B/AndroidStudioProjects/Zoom DiPS361/app/src/main/res/layout/item_portfolio.xml" value="0.5" />
+        <entry key="..\:/Users/Mohammad Rafii B/AndroidStudioProjects/Zoom DiPS361/app/src/main/res/layout/item_portfolio.xml" value="0.48484848484848486" />
         <entry key="..\:/Users/Mohammad Rafii B/AndroidStudioProjects/Zoom DiPS361/app/src/main/res/layout/item_reksadana.xml" value="0.33" />
         <entry key="..\:/Users/Mohammad Rafii B/AndroidStudioProjects/Zoom DiPS361/app/src/main/res/layout/item_schedule.xml" value="0.25" />
         <entry key="..\:/Users/Mohammad Rafii B/AndroidStudioProjects/Zoom DiPS361/app/src/main/res/layout/item_tabungan.xml" value="0.25" />
@@ -143,7 +144,7 @@
         <entry key="..\:/Users/Mohammad Rafii B/AndroidStudioProjects/Zoom DiPS361/app/src/main/res/layout/layout_bottomsheetdialog.xml" value="0.2" />
         <entry key="..\:/Users/Mohammad Rafii B/AndroidStudioProjects/Zoom DiPS361/app/src/main/res/layout/layout_bottomsheetlogin.xml" value="0.2" />
         <entry key="..\:/Users/Mohammad Rafii B/AndroidStudioProjects/Zoom DiPS361/app/src/main/res/layout/list_item.xml" value="0.2" />
-        <entry key="..\:/Users/Mohammad Rafii B/AndroidStudioProjects/Zoom DiPS361/app/src/main/res/layout/portfolio.xml" value="0.22" />
+        <entry key="..\:/Users/Mohammad Rafii B/AndroidStudioProjects/Zoom DiPS361/app/src/main/res/layout/portfolio.xml" value="0.25" />
         <entry key="..\:/Users/Mohammad Rafii B/AndroidStudioProjects/Zoom DiPS361/app/src/main/res/layout/progress_loading.xml" value="0.2" />
         <entry key="..\:/Users/Mohammad Rafii B/AndroidStudioProjects/Zoom DiPS361/app/src/main/res/layout/slide.xml" value="0.25" />
         <entry key="..\:/Users/Mohammad Rafii B/AndroidStudioProjects/Zoom DiPS361/app/src/main/res/layout/summary_rtgs.xml" value="0.16" />

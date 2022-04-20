@@ -5,10 +5,11 @@
     android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     app:cardCornerRadius="15dp"
-    app:cardElevation="0dp"
+    app:cardElevation="2dp"
     android:layout_marginBottom="10dp"
     android:foreground="?attr/selectableItemBackground">
     <LinearLayout
+        android:background="@drawable/bg_porto"
         android:layout_marginTop="5dp"
         android:layout_marginBottom="5dp"
         android:layout_marginStart="5dp"
@@ -19,6 +20,7 @@
         <ImageView
             android:id="@+id/img_logo_porto"
             android:layout_width="37dp"
+            android:src="@drawable/porto1"
             android:layout_height="match_parent"
              />
         <RelativeLayout
@@ -41,9 +43,10 @@
                     style="@style/TextAppearance.AppCompat.Title"
                     android:layout_width="0dp"
                     android:layout_weight="1"
+                    android:maxlines="2"
                     android:layout_height="wrap_content"
                     android:text="Giro"
-                    android:textSize="16sp"/>
+                    android:textSize="17sp"/>
             </LinearLayout>
 
             <LinearLayout

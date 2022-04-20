@@ -151,23 +151,23 @@ public class frag_portfolio extends Fragment {
     }
     private void addDataDanaPihakKetiga(){
         data = new ArrayList<>();
-        data.add(new PortfolioModel("1","Giro DiPS Rupiah - 021008120","Rp 15.000.000,00",R.drawable.item1));
-        data.add(new PortfolioModel("2","Giro DiPS USD - 022347001","$ 15.000",R.drawable.item1));
-        data.add(new PortfolioModel("3","Tabungan DiPS Rupiah - 011043021","Rp 12.000.000,00",R.drawable.item1));
-        data.add(new PortfolioModel("4","Deposito DiPS Rupiah - 052120987","Rp 100.000.000,00",R.drawable.item1));
-        data.add(new PortfolioModel("5","Deposito DiPS USD - 054999201","$ 80.000",R.drawable.item1));
+        data.add(new PortfolioModel("1","Giro DiPS Rupiah - 021008120","Rp 15.000.000,00",R.drawable.porto1));
+        data.add(new PortfolioModel("2","Giro DiPS USD - 022347001","$ 15.000",R.drawable.porto1));
+        data.add(new PortfolioModel("3","Tabungan DiPS Rupiah - 011043021","Rp 12.000.000,00",R.drawable.porto2));
+        data.add(new PortfolioModel("4","Deposito DiPS Rupiah - 052120987","Rp 100.000.000,00",R.drawable.porto3));
+        data.add(new PortfolioModel("5","Deposito DiPS USD - 054999201","$ 80.000",R.drawable.porto3));
     }
     private void addDataInvestasi(){
         data2 = new ArrayList<>();
-        data2.add(new PortfolioModel("1","DiPS Wealthlink","Rp 15.000.000,00",R.drawable.item1));
-        data2.add(new PortfolioModel("2","DiPS Protect Life","Rp 12.000.000",R.drawable.item1));
-        data2.add(new PortfolioModel("3","DiPS Money Market Fund","Rp 12.000.000,00",R.drawable.item1));
-        data2.add(new PortfolioModel("4","ORI 022","Rp 100.000.000,00",R.drawable.item1));
-        data2.add(new PortfolioModel("5","SR 014","Rp 80.000",R.drawable.item1));
+        data2.add(new PortfolioModel("1","DiPS Wealthlink","Rp 15.000.000,00",R.drawable.porto4));
+        data2.add(new PortfolioModel("2","DiPS Protect Life","Rp 12.000.000",R.drawable.porto5));
+        data2.add(new PortfolioModel("3","DiPS Money Market Fund","Rp 12.000.000,00",R.drawable.porto6));
+        data2.add(new PortfolioModel("4","ORI 022","Rp 100.000.000,00",R.drawable.porto7));
+        data2.add(new PortfolioModel("5","SR 014","Rp 80.000",R.drawable.porto7));
     }
     private void addDataKredit(){
         data3 = new ArrayList<>();
-        data3.add(new PortfolioModel("1","DiPS Kredit Modal Kerja - 992101345","Rp 15.000.000,00",R.drawable.item1));
-        data3.add(new PortfolioModel("2","DiPS Kredit Investasi - 992201209","Rp 12.000.000",R.drawable.item1));
+        data3.add(new PortfolioModel("1","DiPS Kredit Modal Kerja - 992101345","Rp 15.000.000,00",R.drawable.porto8));
+        data3.add(new PortfolioModel("2","DiPS Kredit Investasi - 992201209","Rp 12.000.000",R.drawable.porto8));
     }
 }
