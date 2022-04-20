@@ -13,7 +13,7 @@
         android:layout_height="wrap_content"
         app:cardCornerRadius="15dp">
         <TextView
-        android:maxLines="2"
+        android:maxLines="3"
         android:id="@+id/nama_item"
         android:layout_width="150dp"
         android:layout_height="wrap_content"
