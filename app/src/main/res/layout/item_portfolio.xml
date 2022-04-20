@@ -43,7 +43,7 @@
                     style="@style/TextAppearance.AppCompat.Title"
                     android:layout_width="0dp"
                     android:layout_weight="1"
-                    android:maxlines="2"
+                    android:maxLines="2"
                     android:layout_height="wrap_content"
                     android:text="Giro"
                     android:textSize="17sp"/>
