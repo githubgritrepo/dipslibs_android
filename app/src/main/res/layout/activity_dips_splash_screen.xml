@@ -7,10 +7,11 @@
     tools:context=".ui.DipsSplashScreen">
 
     <ImageView
+        android:id="@+id/imgSplash"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@drawable/company_logo"
         android:layout_centerInParent="true"
-        android:scaleType="fitCenter"/>
+        android:scaleType="fitCenter"
+        android:src="@drawable/company_logo" />
 
 </RelativeLayout>

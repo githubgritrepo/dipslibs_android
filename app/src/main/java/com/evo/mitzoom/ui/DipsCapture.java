@@ -1,5 +1,7 @@
 package com.evo.mitzoom.ui;
 
+import static com.evo.mitzoom.ui.DipsSplashScreen.setLocale;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
@@ -92,6 +94,8 @@ public class DipsCapture extends AppCompatActivity implements CameraSource.Pictu
         getSupportActionBar().hide();
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         mContext = this;
+
+        //setLocale(this,"id");
 
         preview = (SurfaceView) findViewById(R.id.mySurface);
         transPreview = (SurfaceView) findViewById(R.id.transSurface);
