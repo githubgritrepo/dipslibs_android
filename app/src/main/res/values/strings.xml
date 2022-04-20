@@ -124,6 +124,10 @@
     <string name="aktivasi_m_banking">Aktivasi M-Banking</string>
     <string name="BI_FAST">Transaksi BI Fast</string>
     <string name="ONLINE_TRANSACTION">Transaksi Online</string>
+    <string name="pilih_bahasa">Pilih Bahasa</string>
+    <string name="lan_id">Indonesia</string>
+    <string name="lan_en">Inggris</string>
+    <string name="select_language">Silakan pilih Bahasa terlebih dahulu</string>
     <string name="portofolio_saya">Portofolio Saya</string>
     <string name="informasi_portofolio">Informasi Portofolio</string>
 </resources>

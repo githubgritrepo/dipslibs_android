@@ -7,25 +7,43 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
 import android.view.WindowManager;
+import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
+import android.widget.Toast;
 
 import com.evo.mitzoom.R;
+
+import java.util.Locale;
+
+import cn.pedant.SweetAlert.SweetAlertDialog;
 
 public class DipsSplashScreen extends AppCompatActivity {
 
     private Context mContext;
     public static final int REQUEST_WRITE_PERMISSION = 786;
     private static final int MY_CAMERA_PERMISSION_CODE = 100;
+    private ImageView imgSplash;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dips_splash_screen);
+
+        imgSplash = (ImageView) findViewById(R.id.imgSplash);
 
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
@@ -40,11 +58,58 @@ public class DipsSplashScreen extends AppCompatActivity {
                 @Override
                 public void run() {
                     doWork();
-                    startApp();
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            chooseLanguage();
+                        }
+                    });
                 }
             }).start();
         }
 
+    }
+
+    private void chooseLanguage() {
+        imgSplash.setVisibility(View.INVISIBLE);
+        LayoutInflater inflater = getLayoutInflater();
+        View dialogView = inflater.inflate(R.layout.choose_language, null);
+        SweetAlertDialog sweetAlertDialog = new SweetAlertDialog(DipsSplashScreen.this, SweetAlertDialog.NORMAL_TYPE);
+        sweetAlertDialog.setCustomView(dialogView);
+        sweetAlertDialog.hideConfirmButton();
+        sweetAlertDialog.setCancelable(false);
+        sweetAlertDialog.show();
+
+        RadioGroup radioGroup = (RadioGroup) dialogView.findViewById(R.id.groupradio);
+        Button btnNext = (Button) dialogView.findViewById(R.id.btnNext);
+        radioGroup.clearCheck();
+
+        btnNext.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int selectedId = radioGroup.getCheckedRadioButtonId();
+                if (selectedId == -1) {
+                    Toast.makeText(DipsSplashScreen.this,
+                            getResources().getString(R.string.select_language),
+                            Toast.LENGTH_SHORT)
+                            .show();
+                }
+                else {
+                    RadioButton radioButton = (RadioButton) radioGroup.findViewById(selectedId);
+
+                    int idRb = radioButton.getId();
+                    switch(idRb) {
+                        case R.id.rbId:
+                            setLocale(DipsSplashScreen.this,"id");
+                            break;
+                        case R.id.rbEn:
+                            setLocale(DipsSplashScreen.this,"en");
+                            break;
+                    }
+                    startApp();
+                }
+            }
+        });
     }
 
     private void startApp() {
@@ -85,6 +150,29 @@ public class DipsSplashScreen extends AppCompatActivity {
             } else {
                 //Toast.makeText(mContext,"Location Permission Denied", Toast.LENGTH_LONG).show();
             }
+        }
+    }
+
+    public static void setLocale(Activity activity, String languageCode) {
+        Locale locale = new Locale(languageCode);
+        Locale.setDefault(locale);
+        Resources resources = activity.getResources();
+        Configuration config = resources.getConfiguration();
+        config.setLocale(locale);
+        resources.updateConfiguration(config, resources.getDisplayMetrics());
+    }
+
+    public void onRadioButtonClicked(View view) {
+        boolean checked = ((RadioButton) view).isChecked();
+
+        // Check which radio button was clicked
+        switch(view.getId()) {
+            case R.id.rbId:
+                if (checked)
+                    break;
+            case R.id.rbEn:
+                if (checked)
+                    break;
         }
     }
 }
