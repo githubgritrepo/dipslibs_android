@@ -38,7 +38,24 @@ public class GridProductAdapter extends RecyclerView.Adapter<GridProductAdapter.
 
     @Override
     public void onBindViewHolder(@NonNull GridProductAdapter.GriViewHolder holder, int position) {
+        int pos = position;
         holder.ads.setImageResource(gambar[position]);
+        holder.ads.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (pos == 0) {
+                    View view = LayoutInflater.from(ctx).inflate(R.layout.frag_form_rtgs,null);
+                    materialStyledDialog = new MaterialStyledDialog.Builder(ctx)
+                            .setHeaderDrawable(R.drawable.bannerads)
+                            .setCancelable(false)
+                            .setCustomView(view, 20, 20, 20, 0)
+                            .setHeaderScaleType(ImageView.ScaleType.FIT_XY)
+                            .show();
+                } else {
+                    popUpAds();
+                }
+            }
+        });
     }
 
     @Override
@@ -52,12 +69,6 @@ public class GridProductAdapter extends RecyclerView.Adapter<GridProductAdapter.
         public GriViewHolder(@NonNull View itemView) {
             super(itemView);
             ads = (ImageView) itemView.findViewById(R.id.ads);
-            itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    popUpAds();
-                }
-            });
         }
     }
 

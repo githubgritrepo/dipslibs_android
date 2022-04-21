@@ -26,6 +26,7 @@ import android.widget.RadioGroup;
 import android.widget.Toast;
 
 import com.evo.mitzoom.R;
+import com.evo.mitzoom.Session.SessionManager;
 
 import java.util.Locale;
 
@@ -37,6 +38,7 @@ public class DipsSplashScreen extends AppCompatActivity {
     public static final int REQUEST_WRITE_PERMISSION = 786;
     private static final int MY_CAMERA_PERMISSION_CODE = 100;
     private ImageView imgSplash;
+    private SessionManager sessions;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,6 +52,8 @@ public class DipsSplashScreen extends AppCompatActivity {
         getSupportActionBar().hide();
 
         mContext = this;
+
+        sessions = new SessionManager(mContext);
 
         if (ActivityCompat.checkSelfPermission(mContext, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
             PermissionCamera();
@@ -98,12 +102,17 @@ public class DipsSplashScreen extends AppCompatActivity {
                     RadioButton radioButton = (RadioButton) radioGroup.findViewById(selectedId);
 
                     int idRb = radioButton.getId();
+                    String langCode = "";
                     switch(idRb) {
                         case R.id.rbId:
-                            setLocale(DipsSplashScreen.this,"id");
+                            langCode = "id";
+                            sessions.saveLANG(langCode);
+                            setLocale(DipsSplashScreen.this,langCode);
                             break;
                         case R.id.rbEn:
-                            setLocale(DipsSplashScreen.this,"en");
+                            langCode = "en";
+                            sessions.saveLANG(langCode);
+                            setLocale(DipsSplashScreen.this,langCode);
                             break;
                     }
                     startApp();

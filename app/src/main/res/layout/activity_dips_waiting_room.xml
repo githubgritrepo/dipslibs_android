@@ -154,7 +154,6 @@
         <androidx.coordinatorlayout.widget.CoordinatorLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/BottomBar"
             android:layout_gravity="bottom">
 
             <com.google.android.material.bottomappbar.BottomAppBar
