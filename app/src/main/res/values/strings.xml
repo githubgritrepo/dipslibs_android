@@ -133,4 +133,6 @@
     <string name="lanjut_next">Lanjut / Next</string>
     <string name="atau">atau</string>
     <string name="hapus">Hapus</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

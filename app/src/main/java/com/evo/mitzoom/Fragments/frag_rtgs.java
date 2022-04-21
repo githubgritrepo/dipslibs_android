@@ -22,6 +22,7 @@ import androidx.fragment.app.Fragment;
 
 import com.dhairytripathi.library.EditTextPin;
 import com.evo.mitzoom.R;
+import com.evo.mitzoom.Session.SessionManager;
 
 import java.math.BigDecimal;
 import java.text.NumberFormat;
@@ -34,6 +35,8 @@ public class frag_rtgs extends Fragment {
     private ImageView btnBack;
     private EditText et_NamaBank, et_RekPenerima, et_NamaPenerima, et_Berita, et_Nominal;
     private Context context;
+    private TextView tvCurr;
+    private SessionManager sessions;
 
     private Button btnProses;
 
@@ -44,6 +47,8 @@ public class frag_rtgs extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         context = getContext();
+
+        sessions = new SessionManager(context);
     }
     @Nullable
     @Override
@@ -53,6 +58,7 @@ public class frag_rtgs extends Fragment {
         et_NamaBank = view.findViewById(R.id.et_nama_bank);
         et_RekPenerima = view.findViewById(R.id.et_rek_penerima);
         et_NamaPenerima = view.findViewById(R.id.et_nama_penerima);
+        tvCurr = view.findViewById(R.id.tvCurr);
         et_Nominal = view.findViewById(R.id.et_nominal);
         et_Berita = view.findViewById(R.id.et_berita);
         btnProses = view.findViewById(R.id.btnProsesRTGS);
@@ -61,6 +67,14 @@ public class frag_rtgs extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        String lang = sessions.getLANG();
+        if (lang.equals("en")) {
+            tvCurr.setText("IDR");
+        } else {
+            tvCurr.setText("Rp.");
+        }
+
         et_Nominal.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {

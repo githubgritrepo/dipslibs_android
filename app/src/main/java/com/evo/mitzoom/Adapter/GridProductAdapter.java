@@ -6,12 +6,16 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.evo.mitzoom.Fragments.frag_dialog_rtgs;
 import com.evo.mitzoom.R;
+import com.evo.mitzoom.Session.SessionManager;
 import com.github.javiersantos.materialstyleddialogs.MaterialStyledDialog;
 import com.google.android.material.dialog.MaterialDialogs;
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
@@ -23,10 +27,12 @@ public class GridProductAdapter extends RecyclerView.Adapter<GridProductAdapter.
     int position;
     Context ctx;
     MaterialStyledDialog materialStyledDialog;
+    SessionManager sessions;
 
     public GridProductAdapter(Context ctx, int[] gambar) {
         this.ctx = ctx;
         this.gambar = gambar;
+        this.sessions = new SessionManager(this.ctx);
     }
 
     @NonNull
@@ -44,13 +50,11 @@ public class GridProductAdapter extends RecyclerView.Adapter<GridProductAdapter.
             @Override
             public void onClick(View v) {
                 if (pos == 0) {
-                    View view = LayoutInflater.from(ctx).inflate(R.layout.frag_form_rtgs,null);
-                    materialStyledDialog = new MaterialStyledDialog.Builder(ctx)
-                            .setHeaderDrawable(R.drawable.bannerads)
-                            .setCancelable(false)
-                            .setCustomView(view, 20, 20, 20, 0)
-                            .setHeaderScaleType(ImageView.ScaleType.FIT_XY)
-                            .show();
+                    ((FragmentActivity)ctx).getSupportFragmentManager()
+                            .beginTransaction()
+                            .replace(R.id.layout_frame, new frag_dialog_rtgs())
+                            .addToBackStack(null)
+                            .commit();
                 } else {
                     popUpAds();
                 }
