@@ -573,7 +573,6 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
                 int ret = ZoomVideoSDK.getInstance().leaveSession(false);
                 Log.d(TAG, "leaveSession ret = " + ret);
                 startActivity(new Intent(getApplicationContext(), RatingActivity.class));
-                overridePendingTransition(0,0);
             }
         });
         boolean end = false;

@@ -46,7 +46,7 @@
                     android:maxLines="2"
                     android:layout_height="wrap_content"
                     android:text="Giro"
-                    android:textSize="17sp"/>
+                    android:textSize="15sp"/>
             </LinearLayout>
 
             <LinearLayout

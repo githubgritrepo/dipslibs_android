@@ -8,9 +8,21 @@
     android:layout_height="wrap_content"
     android:orientation="vertical">
     <TextView
+        android:layout_width="match_parent"
+        android:textAlignment="center"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal|start"
+        android:text="@string/terms_condition2"
+        android:textColor="@color/black"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:textAppearance="@style/TextAppearance.AppCompat.Headline"
+        android:layout_marginBottom="25dp"/>
+    <TextView
+        android:justificationMode="inter_word"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal|end"
+        android:layout_gravity="center_horizontal|start"
         android:text="@string/tnc_content"
         android:textColor="@color/black"
         android:textSize="15sp"

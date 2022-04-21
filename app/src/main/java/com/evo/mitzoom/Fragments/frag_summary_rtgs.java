@@ -186,4 +186,9 @@ public class frag_summary_rtgs extends Fragment {
             }
         });
     }
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        running = false;
+    }
 }

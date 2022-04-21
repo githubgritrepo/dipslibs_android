@@ -27,7 +27,6 @@ import me.relex.circleindicator.CircleIndicator;
 
 public class frag_berita extends Fragment {
     private Context context;
-    private boolean isCust;
     int [] gambar = {R.drawable.ads1, R.drawable.ads2, R.drawable.ads3, R.drawable.ads4,R.drawable.ads1, R.drawable.ads2, R.drawable.ads3, R.drawable.ads4,R.drawable.ads1, R.drawable.ads2, R.drawable.ads3, R.drawable.ads4,R.drawable.ads1, R.drawable.ads2, R.drawable.ads3, R.drawable.ads4};
     private RecyclerView rv_product;
     private ViewPager mPager;
@@ -42,7 +41,6 @@ public class frag_berita extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         context = getContext();
-        isCust = getArguments().getBoolean("ISCUST");
     }
 
     @Nullable

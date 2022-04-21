@@ -61,9 +61,8 @@ public class frag_opening_account extends Fragment {
     private LinearLayout iconKtp, iconNpwp, iconSignature, iconForm;
     private ImageView viewImage,btnCamera;
     private LinearLayout btnGallery;
-    private TextView filename;
-    private Button btnNext;
-    private LinearLayout chooseImage, delete;
+    private Button btnNext, delete;
+    private LinearLayout chooseImage;
     private byte[] KTP;
 
     @Override
@@ -85,7 +84,6 @@ public class frag_opening_account extends Fragment {
         viewImage = view.findViewById(R.id.Imageview);
         chooseImage = view.findViewById(R.id.Choose_Image);
         delete = view.findViewById(R.id.delete);
-        filename = view.findViewById(R.id.filename);
         return view;
     }
     @Override
