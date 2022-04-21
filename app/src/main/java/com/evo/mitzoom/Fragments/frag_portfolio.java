@@ -121,6 +121,7 @@ public class frag_portfolio extends Fragment {
         });
         pieChart.setUsePercentValues(true);
         pieChart.setDrawHoleEnabled(true);
+        pieChart.setDrawEntryLabels(false);
         pieChart.getDescription().setEnabled(false);
         pieEntryList.add(new PieEntry(3,"Giro"));
         pieEntryList.add(new PieEntry(2,"Tabungan"));

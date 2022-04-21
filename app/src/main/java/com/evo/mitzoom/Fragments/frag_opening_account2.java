@@ -43,10 +43,9 @@ public class frag_opening_account2 extends Fragment {
     private LinearLayout iconKtp, iconNpwp, iconSignature, iconForm;
     private ImageView btnCamera, viewImage;
     private LinearLayout btnGallery;
-    private TextView filename;
-    private Button btnNext;
+    private Button btnNext, delete;
     private byte[] KTP, NPWP;
-    private LinearLayout chooseImage, delete;
+    private LinearLayout chooseImage;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -67,7 +66,6 @@ public class frag_opening_account2 extends Fragment {
         viewImage = view.findViewById(R.id.Imageview);
         chooseImage = view.findViewById(R.id.Choose_Image);
         delete = view.findViewById(R.id.delete);
-        filename = view.findViewById(R.id.filename);
         return view;
     }
     @Override

@@ -153,4 +153,10 @@ public class frag_aktivasi_ibmb extends Fragment {
             }
         });
     }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        running = false;
+    }
 }

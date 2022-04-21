@@ -19,7 +19,7 @@
         android:layout_height="2dp"
         android:layout_marginTop="20dp"
         android:layout_marginBottom="20dp"
-        android:background="#EDEDF4"></View>
+        android:background="#EDEDF4"/>
 
     <RadioGroup
         android:id="@+id/groupradio"
@@ -49,10 +49,10 @@
         android:id="@+id/btnNext"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/btn_continue"
+        android:text="@string/lanjut_next"
         android:textColor="@color/white"
         android:background="@drawable/oval_background_10dp"
-        android:backgroundTint="@color/zm_v1_red_A100"
+        android:backgroundTint="@color/Blue"
         android:layout_gravity="center"
         android:layout_marginTop="@dimen/dp_10"/>
 

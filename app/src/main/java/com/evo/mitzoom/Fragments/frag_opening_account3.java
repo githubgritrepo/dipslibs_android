@@ -43,9 +43,9 @@ public class frag_opening_account3 extends Fragment {
     private LinearLayout iconKtp, iconNpwp, iconSignature, iconForm;
     private ImageView btnCamera, viewImage;
     private LinearLayout btnGallery;
-    private Button btnNext;
+    private Button btnNext, delete;
     private byte[] KTP, NPWP, TTD;
-    private LinearLayout chooseImage, delete;
+    private LinearLayout chooseImage;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {

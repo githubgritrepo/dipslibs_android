@@ -45,6 +45,7 @@
                     android:textSize="14sp" />
             </LinearLayout>
             <LinearLayout
+                android:layout_marginBottom="10dp"
                 android:id="@+id/LL1"
                 android:layout_width="match_parent"
                 android:layout_height="200dp"
@@ -61,7 +62,6 @@
                 android:id="@+id/LLHeadline2"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="10dp"
                 android:gravity="center_vertical"
                 android:orientation="horizontal">
 
@@ -79,7 +79,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/LLHeadline2"
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="10dp"
                 android:orientation="vertical">
 
                 <TextView
@@ -91,13 +91,14 @@
                     android:textColor="@color/red_btn_bg_color"
                     android:textSize="19sp"
                     android:textStyle="bold" />
+
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/rv_item_1"
-                    android:layout_marginBottom="10dp"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginBottom="10dp"
                     tools:ignore="SpeakableTextPresentCheck"
-                    tools:listitem="@layout/item_portfolio"/>
+                    tools:listitem="@layout/item_portfolio" />
             </LinearLayout>
             <LinearLayout
                 android:id="@+id/LL3"
@@ -163,10 +164,10 @@
         android:textSize="13sp"
         app:icon="@drawable/ic_menu"
         app:iconPadding="2dp"
-        app:iconTint="@color/black"
+        app:iconTint="@color/white"
         app:iconSize="24sp"
         android:maxLines="2"
-        android:backgroundTint="@color/white"
-        android:text="@string/btn_produk_nlayanan"
-        android:textColor="@color/black"/>
+        android:backgroundTint="@color/Blue"
+        android:text="@string/produk_layanan"
+        android:textColor="@color/white"/>
 </FrameLayout>
