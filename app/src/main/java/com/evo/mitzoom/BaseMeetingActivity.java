@@ -378,7 +378,6 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
             params.topMargin = (int) (35 * displayMetrics.scaledDensity);
 //            params.gravity = Gravity.RIGHT | Gravity.BOTTOM;
 //            params.bottomMargin = (int) (22 * displayMetrics.scaledDensity);
-            actionBarScroll.scrollTo(0, 0);
         } else {
             params.topMargin = 0;
 //            params.gravity = Gravity.RIGHT | Gravity.BOTTOM;

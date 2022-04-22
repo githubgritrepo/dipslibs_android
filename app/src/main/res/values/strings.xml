@@ -59,7 +59,7 @@
     <string name="terms_condition2"><![CDATA[Syarat & Ketentuan]]></string>
     <string name="new_account2">Buka Rekening</string>
     <string name="checkbox_tnc">Saya setuju dengan syarat &amp; ketentuan berlaku</string>
-    <string name="tnc_content">Syarat dan Ketentuan Umum PT Bank XYZ mengatur mengenai hubungan hukum antara PT XYZ dengan individu/korporasi yang menggunakan jasa/layanan PT Bank XYZ yang merupakan calon atau pemilik rekening di PT Bank XYZ sehubungan dengan segala produk, fasilitas dan/atau layanan yang tersedia bagi nasabah. Berikut ini merupakan poin - poin yang perlu diperhatikan sebelum melakukan pendaftaran ataupun transaksi.\n\n1.Hanya untuk nasabah perorangan Warga Negara Indonesia dan tidak berlaku Rekening Join\n\n2.Setoran awal pembukaan rekening Rp 20.000,-\n\n3.Setoran tunai selanjutnya Rp 10.000,-\n\n4.Saldo minimum rekening Rp 20.000,-\n\n5.Biaya apabila rekening tidak aktif Rp 2.000,- per bulan\n\n6.Apabila saldo rekening kurang dari Rp 20.000,- maka rekening akan ditutup secara otomatis oleh sistem\n\n7.Biaya penutupan rekening Rp 20.000,-\n\n8.Jumlah minimum penarikan di teller Rp 100.000,- kecuali pada saat nasabah ingin tutup rekening</string>
+    <string name="tnc_content">Syarat dan Ketentuan Umum PT Bank XYZ mengatur mengenai hubungan hukum antara PT XYZ dengan individu/korporasi yang menggunakan jasa/layanan PT Bank XYZ yang merupakan calon atau pemilik rekening di PT Bank XYZ sehubungan dengan segala produk, fasilitas dan/atau layanan yang tersedia bagi nasabah. Berikut ini merupakan poin - poin yang perlu diperhatikan sebelum melakukan pendaftaran ataupun transaksi.\n\n<ol><li><![CDATA[Hanya untuk nasabah perorangan Warga Negara Indonesia dan tidak berlaku Rekening Join]]></li>\n\n<li><![CDATA[Setoran awal pembukaan rekening Rp 20.000,-]]></li>\n\n<li><![CDATA[Setoran tunai selanjutnya Rp 10.000,-]]></li>\n\n<li><![CDATA[Saldo minimum rekening Rp 20.000,-]]></li>\n\n<li><![CDATA[Biaya apabila rekening tidak aktif Rp 2.000,- per bulan]]></li>\n\n<li><![CDATA[Apabila saldo rekening kurang dari Rp 20.000,- maka rekening akan ditutup secara otomatis oleh sistem]]></li>\n\n<li><![CDATA[Biaya penutupan rekening Rp 20.000,-]]></li>\n\n<li><![CDATA[Jumlah minimum penarikan di teller Rp 100.000,- kecuali pada saat nasabah ingin tutup rekening]]></li></ol></string>
     <string name="compare">Bandingkan</string>
     <string name="Photo_nktp">Foto\nKTP</string>
     <string name="photo_nnpwp">Foto\nNPWP</string>
@@ -126,7 +126,7 @@
     <string name="aktivasi_m_banking">Aktivasi M-Banking</string>
     <string name="BI_FAST">Transaksi BI Fast</string>
     <string name="ONLINE_TRANSACTION">Transaksi Online</string>
-    <string name="pilih_bahasa">Bahasa / Languages</string>
+    <string name="pilih_bahasa">Bahasa / Language</string>
     <string name="lan_id">Indonesia</string>
     <string name="lan_en">English</string>
     <string name="select_language">Silakan pilih Bahasa terlebih dahulu</string>
@@ -143,4 +143,14 @@
     <string name="penerima_manfaat">Penerima Manfaat</string>
     <string name="submit">Kirimkan</string>
     <string name="add">Tambah (+)</string>
+    <string name="GIRO_DIPS">Giro DiPS Rp - 022347001</string>
+    <string name="TABUNGAN_DIPS">Tabungan DiPS Rp - 011043021</string>
+    <string name="DEPOSITO_DIPS">Deposito DiPS Rp - 054999201</string>
+    <string name="dana_pihak_ketiga">Dana Pihak Ketiga</string>
+    <string name="investasi">Investasi</string>
+    <string name="kredit">Kredit</string>
+    <string name="DIPS_MODAL_KERJA">DiPS Kredit Modal Kerja - 992101345</string>
+    <string name="DIPS_INVESTMENT">DiPS Kredit Investasi - 992201209</string>
+    <string name="antrian_saya">(Antrian Saya)</string>
+    <string name="antrian_sekarang">(Antrian Sekarang)</string>
 </resources>

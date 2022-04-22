@@ -13,12 +13,14 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
 import com.dhairytripathi.library.EditTextPin;
 import com.evo.mitzoom.R;
 
 import java.util.Locale;
+import java.util.Objects;
 
 import cn.pedant.SweetAlert.SweetAlertDialog;
 
@@ -41,6 +43,9 @@ public class frag_summary_rtgs extends Fragment {
         super.onCreate(savedInstanceState);
         context = getContext();
     }
+
+
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -115,6 +120,7 @@ public class frag_summary_rtgs extends Fragment {
                     editTextPin.getPin().toString();
                     sweetAlertDialog.dismiss();
                     PopUpSuccesOtp();
+
                 }
             }
         });
@@ -175,20 +181,10 @@ public class frag_summary_rtgs extends Fragment {
                 if (seconds == 0){
                     running = false;
                     resend.setClickable(true);
-                    resend.setTextColor(getResources().getColorStateList(R.color.Blue));
-                    timer_run.setTextColor(getResources().getColorStateList(R.color.btnFalse));
-                }
-                else {
-                    resend.setTextColor(getResources().getColorStateList(R.color.btnFalse));
-                    timer_run.setTextColor(getResources().getColorStateList(R.color.Blue));
                 }
                 handler.postDelayed(this,1000);
             }
         });
     }
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        running = false;
-    }
+
 }

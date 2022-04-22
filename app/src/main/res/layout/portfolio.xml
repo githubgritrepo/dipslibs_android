@@ -24,25 +24,35 @@
                 android:layout_marginBottom="10dp"
                 android:gravity="center_vertical"
                 android:orientation="horizontal">
-
-                <TextView
-                    android:id="@+id/headline"
+                <RelativeLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
+                    android:layout_weight="1">
+                <TextView
+                    android:id="@+id/headline"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
                     android:text="@string/portofolio_saya"
                     android:textAlignment="textStart"
                     android:textAppearance="@style/TextAppearance.AppCompat.Headline"
                     android:textStyle="bold" />
 
+                    <TextView
+                        android:id="@+id/currency"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/headline"
+                        android:textAlignment="textStart"
+                        android:textSize="14sp" />
+                </RelativeLayout>
                 <TextView
-                    android:id="@+id/date"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="20 April 2000"
-                    android:textAlignment="textEnd"
-                    android:textSize="14sp" />
+                    android:layout_gravity="bottom|end"
+                        android:id="@+id/date"
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:layout_height="wrap_content"
+                        android:textAlignment="textEnd"
+                        android:textSize="14sp" />
             </LinearLayout>
             <LinearLayout
                 android:layout_marginBottom="10dp"
@@ -66,13 +76,26 @@
                 android:orientation="horizontal">
 
                 <TextView
-                    android:layout_width="0dp"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
                     android:text="@string/informasi_portofolio"
                     android:textAlignment="textStart"
                     android:textSize="17sp"
                     android:textStyle="bold" />
+                <ImageView
+                    android:layout_marginStart="10dp"
+                    android:id="@+id/btn_toogle_eye"
+                    android:layout_width="25dp"
+                    android:layout_height="25dp"
+                    android:src="@drawable/ic_eye" />
+                <ImageView
+                    android:visibility="gone"
+                    android:layout_marginStart="10dp"
+                    android:id="@+id/btn_toogle_eye2"
+                    android:layout_width="25dp"
+                    android:layout_height="25dp"
+                    android:src="@drawable/ic_eye2" />
+
             </LinearLayout>
             <LinearLayout
                 android:id="@+id/LL2"
@@ -87,7 +110,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="10dp"
-                    android:text="Dana Pihak Ketiga"
+                    android:text="@string/dana_pihak_ketiga"
                     android:textColor="@color/red_btn_bg_color"
                     android:textSize="19sp"
                     android:textStyle="bold" />
@@ -96,7 +119,7 @@
                     android:id="@+id/rv_item_1"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="10dp"
+                    android:layout_marginBottom="20dp"
                     tools:ignore="SpeakableTextPresentCheck"
                     tools:listitem="@layout/item_portfolio" />
             </LinearLayout>
@@ -113,7 +136,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="10dp"
-                    android:text="Investasi"
+                    android:text="@string/investasi"
                     android:textColor="@color/red_btn_bg_color"
                     android:textSize="19sp"
                     android:textStyle="bold" />
@@ -139,7 +162,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="10dp"
-                    android:text="Kredit"
+                    android:text="@string/kredit"
                     android:textColor="@color/red_btn_bg_color"
                     android:textSize="19sp"
                     android:textStyle="bold" />

@@ -2,6 +2,8 @@ package com.evo.mitzoom.Adapter;
 
 import android.app.Activity;
 import android.content.Context;
+import android.text.Html;
+import android.text.Spanned;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
