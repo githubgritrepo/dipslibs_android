@@ -135,9 +135,9 @@
     <string name="atau">Or</string>
     <string name="hapus">Delete</string>
     <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="GIRO_DIPS">Giro DiPS USD - 022347001</string>
-    <string name="TABUNGAN_DIPS">Tabungan DiPS USD - 011043021</string>
-    <string name="DEPOSITO_DIPS">Deposito DiPS USD - 054999201</string>
+    <string name="GIRO_DIPS">Giro DiPS IDR - 022347001</string>
+    <string name="TABUNGAN_DIPS">Tabungan DiPS IDR - 011043021</string>
+    <string name="DEPOSITO_DIPS">Deposito DiPS IDR - 054999201</string>
     <string name="dana_pihak_ketiga">Third Fund</string>
     <string name="investasi">Investment</string>
     <string name="kredit">Credit</string>

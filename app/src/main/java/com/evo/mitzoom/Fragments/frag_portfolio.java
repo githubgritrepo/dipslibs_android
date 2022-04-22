@@ -89,19 +89,19 @@ public class frag_portfolio extends Fragment {
         Calendar c = Calendar.getInstance();
         System.out.println("Current Time =>"+c.getTime());
         if (bahasa.equalsIgnoreCase("en")){
-            SimpleDateFormat df = new SimpleDateFormat("EEEE dd MMMM YYY", Locale.US);
+            SimpleDateFormat df = new SimpleDateFormat("EEEE dd MMMM yyy", Locale.US);
             TanggalSekarang = df.format(c.getTime());
             tvtanggal.setText(TanggalSekarang);
-            tvCurrency.setText("In USD");
+            tvCurrency.setText("In IDR");
             addDataDanaPihakKetigaUSD();
             addDataInvestasiUSD();
             addDataKreditUSD();
         }
         else if (bahasa.equalsIgnoreCase("id")){
-            SimpleDateFormat df = new SimpleDateFormat("EEEE dd MMMM YYY");
+            SimpleDateFormat df = new SimpleDateFormat("EEEE dd MMMM yyy");
             TanggalSekarang = df.format(c.getTime());
             tvtanggal.setText(TanggalSekarang);
-            tvCurrency.setText("Dalam IDR");
+            tvCurrency.setText("Dalam Rp");
             addDataDanaPihakKetigaIDR();
             addDataInvestasiIDR();
             addDataKreditIDR();
@@ -223,19 +223,19 @@ public class frag_portfolio extends Fragment {
     }
     private void addDataDanaPihakKetigaUSD(){
         data = new ArrayList<>();
-        data.add(new PortfolioModel("2",getResources().getString(R.string.GIRO_DIPS),"$ 15.000",R.drawable.porto1));
-        data.add(new PortfolioModel("3",getResources().getString(R.string.TABUNGAN_DIPS),"$ 35.000",R.drawable.porto2));
-        data.add(new PortfolioModel("5",getResources().getString(R.string.DEPOSITO_DIPS),"$ 80.000",R.drawable.porto3));
+        data.add(new PortfolioModel("2",getResources().getString(R.string.GIRO_DIPS),"IDR 15.000.000",R.drawable.porto1));
+        data.add(new PortfolioModel("3",getResources().getString(R.string.TABUNGAN_DIPS),"IDR 12.000.000",R.drawable.porto2));
+        data.add(new PortfolioModel("5",getResources().getString(R.string.DEPOSITO_DIPS),"IDR 100.000.000",R.drawable.porto3));
     }
 
     /// Data Investasi
     private void addDataInvestasiIDR(){
         data2 = new ArrayList<>();
         data2.add(new PortfolioModel("1","DiPS Wealthlink","Rp 15.000.000,00",R.drawable.porto4));
-        data2.add(new PortfolioModel("2","DiPS Protect Life","Rp 12.000.000",R.drawable.porto5));
+        data2.add(new PortfolioModel("2","DiPS Protect Life","Rp 12.000.000,00",R.drawable.porto5));
         data2.add(new PortfolioModel("3","DiPS Money Market Fund","Rp 12.000.000,00",R.drawable.porto6));
         data2.add(new PortfolioModel("4","ORI 022","Rp 100.000.000,00",R.drawable.porto7));
-        data2.add(new PortfolioModel("5","SR 014","Rp 80.000",R.drawable.porto7));
+        data2.add(new PortfolioModel("5","SR 014","Rp 80.000,00",R.drawable.porto7));
     }
     private void addDataInvestasiMasking(){
         data2 = new ArrayList<>();
@@ -247,18 +247,18 @@ public class frag_portfolio extends Fragment {
     }
     private void addDataInvestasiUSD(){
         data2 = new ArrayList<>();
-        data2.add(new PortfolioModel("1","DiPS Wealthlink","$ 80.000",R.drawable.porto4));
-        data2.add(new PortfolioModel("2","DiPS Protect Life","$ 50.000",R.drawable.porto5));
-        data2.add(new PortfolioModel("3","DiPS Money Market Fund","$ 10.000",R.drawable.porto6));
-        data2.add(new PortfolioModel("4","ORI 022","$ 2.000",R.drawable.porto7));
-        data2.add(new PortfolioModel("5","SR 014","$ 3.000",R.drawable.porto7));
+        data2.add(new PortfolioModel("1","DiPS Wealthlink","IDR 15.000.000",R.drawable.porto4));
+        data2.add(new PortfolioModel("2","DiPS Protect Life","IDR 12.000.000",R.drawable.porto5));
+        data2.add(new PortfolioModel("3","DiPS Money Market Fund","IDR 12.000.000",R.drawable.porto6));
+        data2.add(new PortfolioModel("4","ORI 022","IDR 100.000.000",R.drawable.porto7));
+        data2.add(new PortfolioModel("5","SR 014","IDR 80.000",R.drawable.porto7));
     }
 
     /// Data Kredit
     private void addDataKreditIDR(){
         data3 = new ArrayList<>();
         data3.add(new PortfolioModel("1",getResources().getString(R.string.DIPS_MODAL_KERJA),"Rp 15.000.000,00",R.drawable.porto8));
-        data3.add(new PortfolioModel("2",getResources().getString(R.string.DIPS_INVESTMENT),"Rp 12.000.000",R.drawable.porto8));
+        data3.add(new PortfolioModel("2",getResources().getString(R.string.DIPS_INVESTMENT),"Rp 12.000.000,00",R.drawable.porto8));
     }
     private void addDataKreditMasking(){
         data3 = new ArrayList<>();
@@ -267,7 +267,7 @@ public class frag_portfolio extends Fragment {
     }
     private void addDataKreditUSD(){
         data3 = new ArrayList<>();
-        data3.add(new PortfolioModel("1",getResources().getString(R.string.DIPS_MODAL_KERJA),"$ 2.000",R.drawable.porto8));
-        data3.add(new PortfolioModel("2",getResources().getString(R.string.DIPS_INVESTMENT),"$ 1.000",R.drawable.porto8));
+        data3.add(new PortfolioModel("1",getResources().getString(R.string.DIPS_MODAL_KERJA),"IDR 15.000.000",R.drawable.porto8));
+        data3.add(new PortfolioModel("2",getResources().getString(R.string.DIPS_INVESTMENT),"IDR 12.000.000",R.drawable.porto8));
     }
 }

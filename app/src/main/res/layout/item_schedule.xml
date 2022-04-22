@@ -40,10 +40,11 @@
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
             <EditText
                 android:id="@+id/et_Date"
-                android:focusable="false"
                 android:drawableEnd="@drawable/ic_date"
                 android:drawableTint="@color/black"
                 android:textSize="15sp"
+                android:inputType="none"
+                android:focusable="false"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"/>
         </com.google.android.material.textfield.TextInputLayout>
@@ -72,12 +73,12 @@
             <AutoCompleteTextView
                 android:drawableEnd="@drawable/ic_time"
                 android:drawableTint="@color/black"
-                android:focusable="false"
                 android:id="@+id/et_time"
                 android:textSize="15sp"
+                android:focusable="false"
+                android:inputType="none"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="none" />
+                android:layout_height="wrap_content" />
         </com.google.android.material.textfield.TextInputLayout>
     </LinearLayout>
 

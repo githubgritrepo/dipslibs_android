@@ -135,9 +135,9 @@
     <string name="hapus">Hapus</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="GIRO_DIPS">Giro DiPS IDR - 022347001</string>
-    <string name="TABUNGAN_DIPS">Tabungan DiPS IDR - 011043021</string>
-    <string name="DEPOSITO_DIPS">Deposito DiPS IDR - 054999201</string>
+    <string name="GIRO_DIPS">Giro DiPS Rp - 022347001</string>
+    <string name="TABUNGAN_DIPS">Tabungan DiPS Rp - 011043021</string>
+    <string name="DEPOSITO_DIPS">Deposito DiPS Rp - 054999201</string>
     <string name="dana_pihak_ketiga">Dana Pihak Ketiga</string>
     <string name="investasi">Investasi</string>
     <string name="kredit">Kredit</string>
