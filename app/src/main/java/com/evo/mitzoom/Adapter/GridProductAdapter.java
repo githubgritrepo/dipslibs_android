@@ -55,7 +55,11 @@ public class GridProductAdapter extends RecyclerView.Adapter<GridProductAdapter.
                             .replace(R.id.layout_frame, new frag_dialog_rtgs())
                             .addToBackStack(null)
                             .commit();
-                } else {
+                }
+                else if (pos == 1){
+                    Toast.makeText(ctx, "Transfer Remittance", Toast.LENGTH_SHORT).show();
+                }
+                else {
                     popUpAds();
                 }
             }

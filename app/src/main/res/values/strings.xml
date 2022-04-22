@@ -153,4 +153,6 @@
     <string name="DIPS_INVESTMENT">DiPS Kredit Investasi - 992201209</string>
     <string name="antrian_saya">(Antrian Saya)</string>
     <string name="antrian_sekarang">(Antrian Sekarang)</string>
+    <string name="mata_uang">Rp</string>
+    <string name="currency">Dalam Rp</string>
 </resources>

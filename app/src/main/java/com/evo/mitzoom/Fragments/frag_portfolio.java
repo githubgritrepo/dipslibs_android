@@ -92,20 +92,16 @@ public class frag_portfolio extends Fragment {
             SimpleDateFormat df = new SimpleDateFormat("EEEE dd MMMM yyy", Locale.US);
             TanggalSekarang = df.format(c.getTime());
             tvtanggal.setText(TanggalSekarang);
-            tvCurrency.setText("In IDR");
-            addDataDanaPihakKetigaUSD();
-            addDataInvestasiUSD();
-            addDataKreditUSD();
         }
         else if (bahasa.equalsIgnoreCase("id")){
             SimpleDateFormat df = new SimpleDateFormat("EEEE dd MMMM yyy");
             TanggalSekarang = df.format(c.getTime());
             tvtanggal.setText(TanggalSekarang);
-            tvCurrency.setText("Dalam Rp");
-            addDataDanaPihakKetigaIDR();
-            addDataInvestasiIDR();
-            addDataKreditIDR();
         }
+        tvCurrency.setText(getResources().getString(R.string.currency));
+        addDataDanaPihakKetiga();
+        addDataInvestasi();
+        addDataKredit();
         setRecyler();
         btnToogleShow.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -123,16 +119,9 @@ public class frag_portfolio extends Fragment {
             public void onClick(View v) {
                 btnToogleShow.setVisibility(View.VISIBLE);
                 btnToogleHide.setVisibility(View.GONE);
-                if (bahasa.equalsIgnoreCase("en")){
-                    addDataDanaPihakKetigaUSD();
-                    addDataInvestasiUSD();
-                    addDataKreditUSD();
-                }
-                else if (bahasa.equalsIgnoreCase("id")){
-                    addDataDanaPihakKetigaIDR();
-                    addDataInvestasiIDR();
-                    addDataKreditIDR();
-                }
+                addDataDanaPihakKetiga();
+                addDataInvestasi();
+                addDataKredit();
                 setRecyler();
             }
         });
@@ -209,65 +198,46 @@ public class frag_portfolio extends Fragment {
     }
 
     ///Data Pihak Ketiga
-    private void addDataDanaPihakKetigaIDR(){
+    private void addDataDanaPihakKetiga(){
         data = new ArrayList<>();
-        data.add(new PortfolioModel("1",getResources().getString(R.string.GIRO_DIPS),"Rp 15.000.000,00",R.drawable.porto1));
-        data.add(new PortfolioModel("3",getResources().getString(R.string.TABUNGAN_DIPS),"Rp 12.000.000,00",R.drawable.porto2));
-        data.add(new PortfolioModel("4",getResources().getString(R.string.DEPOSITO_DIPS),"Rp 100.000.000,00",R.drawable.porto3));
+        data.add(new PortfolioModel("1",getResources().getString(R.string.GIRO_DIPS),getResources().getString(R.string.mata_uang)+" 15.000.000",R.drawable.porto1));
+        data.add(new PortfolioModel("3",getResources().getString(R.string.TABUNGAN_DIPS),getResources().getString(R.string.mata_uang)+" 12.000.000",R.drawable.porto2));
+        data.add(new PortfolioModel("4",getResources().getString(R.string.DEPOSITO_DIPS),getResources().getString(R.string.mata_uang)+" 100.000.000",R.drawable.porto3));
     }
     private void addDataDanaPihakKetigaMasking(){
         data = new ArrayList<>();
-        data.add(new PortfolioModel("1",getResources().getString(R.string.GIRO_DIPS),"XXXXXX",R.drawable.porto1));
-        data.add(new PortfolioModel("3",getResources().getString(R.string.TABUNGAN_DIPS),"XXXXXX",R.drawable.porto2));
-        data.add(new PortfolioModel("4",getResources().getString(R.string.DEPOSITO_DIPS),"XXXXXX",R.drawable.porto3));
-    }
-    private void addDataDanaPihakKetigaUSD(){
-        data = new ArrayList<>();
-        data.add(new PortfolioModel("2",getResources().getString(R.string.GIRO_DIPS),"IDR 15.000.000",R.drawable.porto1));
-        data.add(new PortfolioModel("3",getResources().getString(R.string.TABUNGAN_DIPS),"IDR 12.000.000",R.drawable.porto2));
-        data.add(new PortfolioModel("5",getResources().getString(R.string.DEPOSITO_DIPS),"IDR 100.000.000",R.drawable.porto3));
+        data.add(new PortfolioModel("1",getResources().getString(R.string.GIRO_DIPS),getResources().getString(R.string.mata_uang)+" XXXXXX",R.drawable.porto1));
+        data.add(new PortfolioModel("3",getResources().getString(R.string.TABUNGAN_DIPS),getResources().getString(R.string.mata_uang)+" XXXXXX",R.drawable.porto2));
+        data.add(new PortfolioModel("4",getResources().getString(R.string.DEPOSITO_DIPS),getResources().getString(R.string.mata_uang)+" XXXXXX",R.drawable.porto3));
     }
 
     /// Data Investasi
-    private void addDataInvestasiIDR(){
+    private void addDataInvestasi(){
         data2 = new ArrayList<>();
-        data2.add(new PortfolioModel("1","DiPS Wealthlink","Rp 15.000.000,00",R.drawable.porto4));
-        data2.add(new PortfolioModel("2","DiPS Protect Life","Rp 12.000.000,00",R.drawable.porto5));
-        data2.add(new PortfolioModel("3","DiPS Money Market Fund","Rp 12.000.000,00",R.drawable.porto6));
-        data2.add(new PortfolioModel("4","ORI 022","Rp 100.000.000,00",R.drawable.porto7));
-        data2.add(new PortfolioModel("5","SR 014","Rp 80.000,00",R.drawable.porto7));
+        data2.add(new PortfolioModel("1","DiPS Wealthlink",getResources().getString(R.string.mata_uang)+" 15.000.000",R.drawable.porto4));
+        data2.add(new PortfolioModel("2","DiPS Protect Life",getResources().getString(R.string.mata_uang)+" 12.000.000,00",R.drawable.porto5));
+        data2.add(new PortfolioModel("3","DiPS Money Market Fund",getResources().getString(R.string.mata_uang)+" 12.000.000,00",R.drawable.porto6));
+        data2.add(new PortfolioModel("4","ORI 022",getResources().getString(R.string.mata_uang)+" 100.000.000,00",R.drawable.porto7));
+        data2.add(new PortfolioModel("5","SR 014",getResources().getString(R.string.mata_uang)+" 80.000,00",R.drawable.porto7));
     }
     private void addDataInvestasiMasking(){
         data2 = new ArrayList<>();
-        data2.add(new PortfolioModel("1","DiPS Wealthlink","XXXXXX",R.drawable.porto4));
-        data2.add(new PortfolioModel("2","DiPS Protect Life","XXXXXX",R.drawable.porto5));
-        data2.add(new PortfolioModel("3","DiPS Money Market Fund","XXXXXX",R.drawable.porto6));
-        data2.add(new PortfolioModel("4","ORI 022","XXXXXX",R.drawable.porto7));
-        data2.add(new PortfolioModel("5","SR 014","XXXXXX",R.drawable.porto7));
-    }
-    private void addDataInvestasiUSD(){
-        data2 = new ArrayList<>();
-        data2.add(new PortfolioModel("1","DiPS Wealthlink","IDR 15.000.000",R.drawable.porto4));
-        data2.add(new PortfolioModel("2","DiPS Protect Life","IDR 12.000.000",R.drawable.porto5));
-        data2.add(new PortfolioModel("3","DiPS Money Market Fund","IDR 12.000.000",R.drawable.porto6));
-        data2.add(new PortfolioModel("4","ORI 022","IDR 100.000.000",R.drawable.porto7));
-        data2.add(new PortfolioModel("5","SR 014","IDR 80.000",R.drawable.porto7));
+        data2.add(new PortfolioModel("1","DiPS Wealthlink",getResources().getString(R.string.mata_uang)+" XXXXXX",R.drawable.porto4));
+        data2.add(new PortfolioModel("2","DiPS Protect Life",getResources().getString(R.string.mata_uang)+" XXXXXX",R.drawable.porto5));
+        data2.add(new PortfolioModel("3","DiPS Money Market Fund",getResources().getString(R.string.mata_uang)+" XXXXXX",R.drawable.porto6));
+        data2.add(new PortfolioModel("4","ORI 022",getResources().getString(R.string.mata_uang)+" XXXXXX",R.drawable.porto7));
+        data2.add(new PortfolioModel("5","SR 014",getResources().getString(R.string.mata_uang)+" XXXXXX",R.drawable.porto7));
     }
 
     /// Data Kredit
-    private void addDataKreditIDR(){
+    private void addDataKredit(){
         data3 = new ArrayList<>();
-        data3.add(new PortfolioModel("1",getResources().getString(R.string.DIPS_MODAL_KERJA),"Rp 15.000.000,00",R.drawable.porto8));
-        data3.add(new PortfolioModel("2",getResources().getString(R.string.DIPS_INVESTMENT),"Rp 12.000.000,00",R.drawable.porto8));
+        data3.add(new PortfolioModel("1",getResources().getString(R.string.DIPS_MODAL_KERJA),getResources().getString(R.string.mata_uang)+" 15.000.000,00",R.drawable.porto8));
+        data3.add(new PortfolioModel("2",getResources().getString(R.string.DIPS_INVESTMENT),getResources().getString(R.string.mata_uang)+" 12.000.000,00",R.drawable.porto8));
     }
     private void addDataKreditMasking(){
         data3 = new ArrayList<>();
-        data3.add(new PortfolioModel("1",getResources().getString(R.string.DIPS_MODAL_KERJA),"XXXXXX",R.drawable.porto8));
-        data3.add(new PortfolioModel("2",getResources().getString(R.string.DIPS_INVESTMENT),"XXXXXX",R.drawable.porto8));
-    }
-    private void addDataKreditUSD(){
-        data3 = new ArrayList<>();
-        data3.add(new PortfolioModel("1",getResources().getString(R.string.DIPS_MODAL_KERJA),"IDR 15.000.000",R.drawable.porto8));
-        data3.add(new PortfolioModel("2",getResources().getString(R.string.DIPS_INVESTMENT),"IDR 12.000.000",R.drawable.porto8));
+        data3.add(new PortfolioModel("1",getResources().getString(R.string.DIPS_MODAL_KERJA),getResources().getString(R.string.mata_uang)+" XXXXXX",R.drawable.porto8));
+        data3.add(new PortfolioModel("2",getResources().getString(R.string.DIPS_INVESTMENT),getResources().getString(R.string.mata_uang)+" XXXXXX",R.drawable.porto8));
     }
 }

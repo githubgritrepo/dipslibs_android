@@ -154,4 +154,6 @@
     <string name="DIPS_INVESTMENT">DiPS Kredit Investment - 992201209</string>
     <string name="antrian_saya">(My Queue)</string>
     <string name="antrian_sekarang">(Queue now)</string>
+    <string name="mata_uang">IDR</string>
+    <string name="currency">Dalam IDR</string>
 </resources>
