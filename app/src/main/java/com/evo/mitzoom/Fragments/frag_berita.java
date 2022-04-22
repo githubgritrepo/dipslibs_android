@@ -27,7 +27,7 @@ import me.relex.circleindicator.CircleIndicator;
 
 public class frag_berita extends Fragment {
     private Context context;
-    int [] gambar = {R.drawable.ads1, R.drawable.ads2, R.drawable.ads3, R.drawable.ads4,R.drawable.ads1, R.drawable.ads2, R.drawable.ads3, R.drawable.ads4,R.drawable.ads1, R.drawable.ads2, R.drawable.ads3, R.drawable.ads4,R.drawable.ads1, R.drawable.ads2, R.drawable.ads3, R.drawable.ads4};
+    int [] gambar = {R.drawable.rtgs, R.drawable.ads2, R.drawable.ads3, R.drawable.ads4,R.drawable.ads1, R.drawable.ads2, R.drawable.ads3, R.drawable.ads4,R.drawable.ads1, R.drawable.ads2, R.drawable.ads3, R.drawable.ads4,R.drawable.ads1, R.drawable.ads2, R.drawable.ads3, R.drawable.ads4};
     private RecyclerView rv_product;
     private ViewPager mPager;
     private GridProductAdapter gridAdapter;

@@ -142,21 +142,12 @@ public class frag_aktivasi_ibmb extends Fragment {
                 if (seconds == 0){
                     running = false;
                     resend.setClickable(true);
-                    resend.setTextColor(getResources().getColorStateList(R.color.Blue));
-                    timer_run.setTextColor(getResources().getColorStateList(R.color.btnFalse));
-                }
-                else {
-                    resend.setTextColor(getResources().getColorStateList(R.color.btnFalse));
-                    timer_run.setTextColor(getResources().getColorStateList(R.color.Blue));
                 }
                 handler.postDelayed(this,1000);
             }
         });
     }
 
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        running = false;
-    }
+
+
 }

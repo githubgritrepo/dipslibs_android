@@ -86,6 +86,7 @@ public class DipsSplashScreen extends AppCompatActivity {
 
         RadioGroup radioGroup = (RadioGroup) dialogView.findViewById(R.id.groupradio);
         Button btnNext = (Button) dialogView.findViewById(R.id.btnNext);
+        btnNext.setBackgroundTintList(getResources().getColorStateList(R.color.Blue));
         radioGroup.clearCheck();
 
         btnNext.setOnClickListener(new View.OnClickListener() {
@@ -100,7 +101,6 @@ public class DipsSplashScreen extends AppCompatActivity {
                 }
                 else {
                     RadioButton radioButton = (RadioButton) radioGroup.findViewById(selectedId);
-
                     int idRb = radioButton.getId();
                     String langCode = "";
                     switch(idRb) {
