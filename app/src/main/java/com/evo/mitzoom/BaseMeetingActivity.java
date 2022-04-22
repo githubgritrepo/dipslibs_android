@@ -21,6 +21,7 @@ import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Display;
 import android.view.Gravity;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
@@ -221,14 +222,22 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
         }
     }
 
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            //preventing default implementation previous to android.os.Build.VERSION_CODES.ECLAIR
+            return true;
+        }
+        return super.onKeyDown(keyCode, event);
+    }
+
     private void startVideoHandler() {
         Handler handler = new Handler();
         handler.post(new Runnable() {
             @Override
             public void run() {
                 boolean isNotStartVideo = adapter.isNotStartVideo();
-                Log.d(TAG,"isOn : "+isOn);
-                Log.d(TAG,"isNotStartVideo : "+isNotStartVideo);
+
                 if (isOn == 1 && isNotStartVideo == false) {
                     ZoomVideoSDK.getInstance().getVideoHelper().stopVideo();
                     isOn = 0;
@@ -236,8 +245,6 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
                     ZoomVideoSDK.getInstance().getVideoHelper().startVideo();
                     isOn = 0;
                 }
-
-                Log.d(TAG,"#########################");
 
                 handler.postDelayed(this,1000);
             }

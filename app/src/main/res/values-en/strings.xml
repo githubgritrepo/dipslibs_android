@@ -114,7 +114,9 @@
     <string name="FOREX">Forex Transaction</string>
     <string name="BankName">Destination Bank</string>
     <string name="ReceiverAccount">Destination Account</string>
+    <string name="ReceiverAccount2">Receiver Account</string>
     <string name="ReceiverName">Destination Name</string>
+    <string name="ReceiverName2">Receiver Name</string>
     <string name="Amount">Amount</string>
     <string name="ResidentType">Resident\'s Type</string>
     <string name="penduduk">Civilians</string>
@@ -134,4 +136,12 @@
     <string name="lanjut_next">Lanjut / Next</string>
     <string name="atau">Or</string>
     <string name="hapus">Delete</string>
+    <string name="upload_file">Upload File</string>
+    <string name="source_account">Fund Source Account</string>
+    <string name="BankReceive">Bank Penerima</string>
+    <string name="no_formulir">No. Form</string>
+    <string name="jenis_layanan">Service Type</string>
+    <string name="penerima_manfaat">Benefit Recipients</string>
+    <string name="submit">Submit</string>
+    <string name="add">Add (+)</string>
 </resources>

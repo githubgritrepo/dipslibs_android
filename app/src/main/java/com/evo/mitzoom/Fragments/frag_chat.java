@@ -17,6 +17,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.evo.mitzoom.Adapter.ChatMsgAdapter;
+import com.evo.mitzoom.BaseMeetingActivity;
 import com.evo.mitzoom.R;
 
 import java.util.ArrayList;
@@ -55,6 +56,8 @@ public class frag_chat extends Fragment  implements ZoomVideoSDKDelegate {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         context = getContext();
+        BaseMeetingActivity.btnChat.setBackgroundTintList(context.getResources().getColorStateList(R.color.btnFalse));
+        BaseMeetingActivity.btnChat.setClickable(false);
     }
 
     @Nullable
@@ -76,6 +79,8 @@ public class frag_chat extends Fragment  implements ZoomVideoSDKDelegate {
         btnClose.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                BaseMeetingActivity.btnChat.setBackgroundTintList(context.getResources().getColorStateList(R.color.Blue));
+                BaseMeetingActivity.btnChat.setClickable(true);
                 FragmentManager fragmentManager = getFragmentManager();
                 fragmentManager.popBackStack();
             }
@@ -100,7 +105,6 @@ public class frag_chat extends Fragment  implements ZoomVideoSDKDelegate {
             chatListView.scrollToPosition(chatMsgAdapter.getItemCount() - 1);
         }
     }
-
 
     @Override
     public void onSessionJoin() {

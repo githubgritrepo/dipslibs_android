@@ -6,13 +6,16 @@ import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.style.ForegroundColorSpan;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.evo.mitzoom.R;
@@ -29,14 +32,19 @@ public class ChatMsgAdapter extends RecyclerView.Adapter<ChatMsgAdapter.MsgHolde
 
     private Context ctx;
     private List<CharSequence> list;
-    LinearLayout chatBubble;
+    private List<Boolean> isSelf = new ArrayList<>();;
+    private List<Boolean> isHost = new ArrayList<>();;
     protected ZoomVideoSDKSession session;
     public ChatMsgAdapter(Context ctx, List<CharSequence> list) {
         this.ctx = ctx;
         this.list = list;
     }
     public void onReceive(ZoomVideoSDKChatMessage item) {
+        boolean isSelfval = item.isSelfSend();
+        boolean isHostval = item.getSenderUser().isHost();
         String SenderName = item.getSenderUser().getUserName()+"\n";
+        isSelf.add(isSelfval);
+        isHost.add(isHostval);
         String content = item.getContent();
         SpannableStringBuilder builder = new SpannableStringBuilder();
         builder.append(SenderName).append(content);
@@ -56,6 +64,16 @@ public class ChatMsgAdapter extends RecyclerView.Adapter<ChatMsgAdapter.MsgHolde
     public void onBindViewHolder(@NonNull MsgHolder holder, int position) {
         CharSequence item = list.get(position);
         session = ZoomVideoSDK.getInstance().getSession();
+
+        if (isSelf.get(position) == true && isHost.get(position) == false) {
+            holder.LLChat.setGravity(Gravity.RIGHT);
+            holder.chatBubble.setBackgroundTintList(ctx.getResources().getColorStateList(R.color.teal_200));
+            holder.chatBubble.setBackground(ContextCompat.getDrawable(ctx,R.drawable.chat_drawable));
+        } else {
+            holder.LLChat.setGravity(Gravity.LEFT);
+            holder.chatBubble.setBackgroundTintList(ctx.getResources().getColorStateList(R.color.bg_cif));
+            holder.chatBubble.setBackground(ContextCompat.getDrawable(ctx,R.drawable.chat_drawable2));
+        }
         holder.chatMsg.setText(item);
     }
     @Override
@@ -63,9 +81,12 @@ public class ChatMsgAdapter extends RecyclerView.Adapter<ChatMsgAdapter.MsgHolde
         return list.size();
     }
     class MsgHolder extends RecyclerView.ViewHolder {
+        private LinearLayout LLChat;
+        private LinearLayout chatBubble;
         TextView chatMsg;
         MsgHolder(View view) {
             super(view);
+            LLChat = view.findViewById(R.id.LLChat);
             chatBubble = view.findViewById(R.id.chat_bubble);
             chatMsg = view.findViewById(R.id.chat_msg_text);
         }

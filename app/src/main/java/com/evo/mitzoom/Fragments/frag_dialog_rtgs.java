@@ -23,7 +23,7 @@ public class frag_dialog_rtgs extends Fragment {
 
     private ImageView btnBack;
     private TextView tvCurr;
-    private Button btnProsesRTGS;
+    private Button btnProsesRTGS, btnAdd;
     private Context mContext;
     private SessionManager sessions;
 
@@ -42,6 +42,7 @@ public class frag_dialog_rtgs extends Fragment {
 
         btnBack = (ImageView) view.findViewById(R.id.btn_back4);
         btnProsesRTGS = (Button) view.findViewById(R.id.btnProsesRTGS);
+        btnAdd = (Button) view.findViewById(R.id.btnAdd);
         tvCurr = (TextView) view.findViewById(R.id.tvCurr);
 
         return view;
@@ -52,6 +53,7 @@ public class frag_dialog_rtgs extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         btnProsesRTGS.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.bg_cif)));
+        btnAdd.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.button_schedule)));
 
         String lang = sessions.getLANG();
         if (lang.equals("en")) {
