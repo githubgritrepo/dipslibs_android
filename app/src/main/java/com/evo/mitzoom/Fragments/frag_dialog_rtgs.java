@@ -139,6 +139,13 @@ public class frag_dialog_rtgs extends Fragment {
 
         ArrayAdapter<String> adapterPopulation = new ArrayAdapter<String>(mContext,R.layout.list_item, sourcePopulation);
         et_typePopulation.setAdapter(adapterPopulation);
+
+        btnProsesRTGS.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
     }
 
     private void getFragmentPage(Fragment fragment){

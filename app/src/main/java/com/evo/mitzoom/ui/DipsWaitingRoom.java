@@ -440,6 +440,7 @@ public class DipsWaitingRoom extends AppCompatActivity {
                         public void onClick(SweetAlertDialog sweetAlertDialog) {
                             sweetAlertDialog.dismiss();
                             processJoinVideo();
+                            finish();
                         }
                     });
                     sweetAlertDialog.setCancelClickListener(new SweetAlertDialog.OnSweetClickListener() {

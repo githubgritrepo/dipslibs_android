@@ -115,6 +115,7 @@ public class DipsSplashScreen extends AppCompatActivity {
                             setLocale(DipsSplashScreen.this,langCode);
                             break;
                     }
+                    sweetAlertDialog.dismissWithAnimation();
                     startApp();
                 }
             }
