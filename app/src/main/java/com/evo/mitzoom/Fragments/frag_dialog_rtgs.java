@@ -21,6 +21,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -30,6 +31,14 @@ import com.evo.mitzoom.Adapter.AdapterTypeService;
 import com.evo.mitzoom.R;
 import com.evo.mitzoom.Session.SessionManager;
 import com.evo.mitzoom.ui.DipsWaitingRoom;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.math.BigDecimal;
+import java.text.NumberFormat;
+import java.util.Locale;
+import java.util.Objects;
 
 public class frag_dialog_rtgs extends Fragment {
 
@@ -48,6 +57,13 @@ public class frag_dialog_rtgs extends Fragment {
     };
     String[] sourceBenefit = {"Perorangan", "Perusahaan", "Pemerintah"};
     String[] sourcePopulation = {"Penduduk", "Bukan Penduduk"};
+    private JSONObject jsons;
+    private int posSourceAccount, posSourceBank, posSourceTypeService, posSourceBenefit, posSourcePopulation = -1;
+    private EditText et_rek_penerima;
+    private EditText et_nama_penerima;
+    private EditText et_nominal;
+    private EditText et_berita;
+    public static final NumberFormat numberFormat = NumberFormat.getCurrencyInstance(new Locale("id", "ID"));
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -55,6 +71,7 @@ public class frag_dialog_rtgs extends Fragment {
 
         mContext = getContext();
         sessions = new SessionManager(mContext);
+        jsons = new JSONObject();
     }
 
     @Override
@@ -68,6 +85,10 @@ public class frag_dialog_rtgs extends Fragment {
         et_serviceType = (AutoCompleteTextView) view.findViewById(R.id.et_serviceType);
         et_benefitRec = (AutoCompleteTextView) view.findViewById(R.id.et_benefitRec);
         et_typePopulation = (AutoCompleteTextView) view.findViewById(R.id.et_typePopulation);
+        et_rek_penerima = (EditText) view.findViewById(R.id.et_rek_penerima);
+        et_nama_penerima = (EditText) view.findViewById(R.id.et_nama_penerima);
+        et_nominal = (EditText) view.findViewById(R.id.et_nominal);
+        et_berita = (EditText) view.findViewById(R.id.et_berita);
         btnProsesRTGS = (Button) view.findViewById(R.id.btnProsesRTGS);
         btnAdd = (Button) view.findViewById(R.id.btnAdd);
         tvCurr = (TextView) view.findViewById(R.id.tvCurr);
@@ -89,6 +110,28 @@ public class frag_dialog_rtgs extends Fragment {
             tvCurr.setText("Rp.");
         }
 
+        et_nominal.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                et_nominal.removeTextChangedListener(this);
+                BigDecimal parsed = parseCurrencyValue(et_nominal.getText().toString());
+                String formatted = numberFormat.format(parsed);
+                et_nominal.setText(formatted);
+                et_nominal.setSelection(formatted.length());
+                et_nominal.addTextChangedListener(this);
+            }
+        });
+
         btnBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -102,7 +145,8 @@ public class frag_dialog_rtgs extends Fragment {
         et_source_account.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                String selection = (String) parent.getItemAtPosition(position);
+                //String selection = (String) parent.getItemAtPosition(position);
+                posSourceAccount = position;
             }
         });
 
@@ -130,22 +174,52 @@ public class frag_dialog_rtgs extends Fragment {
 
         AdapterBank adapterBank = new AdapterBank(mContext,R.layout.list_item2,sourceBank);
         et_nama_bank.setAdapter(adapterBank);
+        et_nama_bank.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                posSourceBank = position;
+            }
+        });
 
         AdapterTypeService adapterTypeService = new AdapterTypeService(mContext,R.layout.list_item3, sourceTypeService);
         et_serviceType.setAdapter(adapterTypeService);
+        et_serviceType.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                posSourceTypeService = position;
+            }
+        });
 
         ArrayAdapter<String> adapterBenefit = new ArrayAdapter<String>(mContext,R.layout.list_item, sourceBenefit);
         et_benefitRec.setAdapter(adapterBenefit);
+        et_benefitRec.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                posSourceBenefit = position;
+            }
+        });
 
         ArrayAdapter<String> adapterPopulation = new ArrayAdapter<String>(mContext,R.layout.list_item, sourcePopulation);
         et_typePopulation.setAdapter(adapterPopulation);
+        et_typePopulation.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                posSourcePopulation = position;
+            }
+        });
 
         btnProsesRTGS.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                processSavedInstance();
             }
         });
+    }
+
+    @Override
+    public void onDestroy() {
+        processSavedInstance();
+        super.onDestroy();
     }
 
     private void getFragmentPage(Fragment fragment){
@@ -156,9 +230,37 @@ public class frag_dialog_rtgs extends Fragment {
                 .commit();
     }
 
-    @Override
-    public void onDestroy() {
-        Log.d("CEK","MASUK DESTROY");
-        super.onDestroy();
+    public static BigDecimal parseCurrencyValue(String value) {
+        try {
+            String replaceRegex = String.format("[%s,.\\s]", Objects.requireNonNull(numberFormat.getCurrency()).getDisplayName());
+            String currencyValue = value.replaceAll(replaceRegex, "");
+            return new BigDecimal(currencyValue);
+        } catch (Exception e) {
+            Log.e("MyApp", e.getMessage(), e);
+        }
+        return BigDecimal.ZERO;
+    }
+
+    private void processSavedInstance() {
+        String rek_penerima = et_rek_penerima.getText().toString().trim();
+        String nama_penerima = et_nama_penerima.getText().toString().trim();
+        String nominal = et_nominal.getText().toString().trim();
+        String berita = et_berita.getText().toString().trim();
+        try {
+            jsons.put("sourceAccount",posSourceAccount);
+            jsons.put("sourceBank",posSourceBank);
+            jsons.put("sourceTypeService",posSourceTypeService);
+            jsons.put("sourceBenefit",posSourceBenefit);
+            jsons.put("sourcePopulation",posSourcePopulation);
+            jsons.put("rek_penerima",rek_penerima);
+            jsons.put("nama_penerima",nama_penerima);
+            jsons.put("nominal",nama_penerima);
+            jsons.put("berita",berita);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        String dataJs = jsons.toString();
+        sessions.saveRTGS(dataJs);
     }
 }

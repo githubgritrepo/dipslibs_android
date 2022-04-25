@@ -20,6 +20,7 @@ public class SessionManager {
     private static final String PREF_NAME = "PREF_DiPS";
     // All Shared Preferences Keys
     public static final String KEY_LANG = "LANGUAGE";
+    public static final String KEY_RTGS = "RTGS";
 
     // Constructor
     public SessionManager(Context context){
@@ -33,8 +34,16 @@ public class SessionManager {
         editor.commit();
     }
 
+    public void saveRTGS(String data) {
+        editor.putString(KEY_RTGS,data);
+        editor.commit();
+    }
+
     public String getLANG() {
         return pref.getString(KEY_LANG,null);
+    }
+    public String getRTGS() {
+        return pref.getString(KEY_RTGS,null);
     }
 
 }

@@ -24,6 +24,9 @@ import com.dhairytripathi.library.EditTextPin;
 import com.evo.mitzoom.R;
 import com.evo.mitzoom.Session.SessionManager;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.math.BigDecimal;
 import java.text.NumberFormat;
 import java.util.Locale;
@@ -42,6 +45,7 @@ public class frag_rtgs extends Fragment {
 
     private String NamaBank, RekPenerima, NamaPenerima, Berita, Nominal;
     public static final NumberFormat numberFormat = NumberFormat.getCurrencyInstance(new Locale("id", "ID"));
+    private String dataRTGS;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -49,6 +53,8 @@ public class frag_rtgs extends Fragment {
         context = getContext();
 
         sessions = new SessionManager(context);
+        dataRTGS = sessions.getRTGS();
+
     }
     @Nullable
     @Override
@@ -67,6 +73,18 @@ public class frag_rtgs extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        if (dataRTGS != null) {
+            try {
+                JSONObject dataJs = new JSONObject(dataRTGS);
+                String rek_penerima = dataJs.getString("rek_penerima");
+                String nama_penerima = dataJs.getString("nama_penerima");
+                et_RekPenerima.setText(rek_penerima);
+                et_NamaPenerima.setText(nama_penerima);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
 
         String lang = sessions.getLANG();
         if (lang.equals("en")) {
