@@ -40,7 +40,7 @@ public class frag_dialog_rtgs extends Fragment {
     private SessionManager sessions;
     private AutoCompleteTextView et_source_account, et_nama_bank, et_serviceType,et_benefitRec,et_typePopulation;
     String [] sourceAcc = {"Tabungan DiPS Rupiah\n011043021 - Andi\nRp. 18.231,00", "Giro DiPS Rupiah\n021008120 - Andi\nRp. 15.000.000,00"};
-    String[] sourceBank = {"Bank BCA", "Bank Mandiri", "Bank BNI", "Bank BRI"};
+    String[] sourceBank = {"BCA", "Mandiri", "BNI", "BRI", "CIMB Niaga", "ANZ", "Bangkok Bank", "IBK Bank "};
     String[] sourceTypeService = {
             "RTO\nNominal transaksi minimal Rp. 50.000,00 dan maksimal Rp. 50.000.000,00",
             "SKN\nNominal transaksi minimal Rp. 50.000,00 dan maksimal Rp. 1.000.000.000,00 pertransaksi",

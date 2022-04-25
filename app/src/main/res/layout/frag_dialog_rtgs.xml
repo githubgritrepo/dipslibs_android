@@ -135,6 +135,7 @@
                             android:drawableTint="@color/black"
                             android:gravity="center_vertical"
                             android:textSize="12sp"
+                            android:inputType="text"
                             android:paddingStart="@dimen/dp_15"/>
 
                     </com.google.android.material.textfield.TextInputLayout>
