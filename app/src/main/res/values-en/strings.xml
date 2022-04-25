@@ -105,7 +105,7 @@
     <string name="reg_title">Registration Successful</string>
     <string name="reg_content">Please activate your account</string>
     <string name="activation">Activation</string>
-    <string name="rating_pop_up_content">Thank you for your rating. Your opinion is very valuable to us.</string>
+    <string name="rating_pop_up_content">Thank you for your rating. Your rating is very valuable to us.</string>
     <string name="produk_layanan"><![CDATA[Service]]></string>
     <string name="btn_produk_nlayanan"><![CDATA[Product & Service]]></string>
     <string name="verifikasi">Verified</string>
@@ -155,5 +155,8 @@
     <string name="antrian_saya">(My Queue)</string>
     <string name="antrian_sekarang">(Queue now)</string>
     <string name="mata_uang">IDR</string>
-    <string name="currency">Dalam IDR</string>
+    <string name="currency">In IDR</string>
+    <string name="ocr_title">Is your data correct?</string>
+    <string name="ttl">Place of Birth</string>
+    <string name="ttl2">Day of Birth</string>
 </resources>

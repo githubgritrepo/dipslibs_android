@@ -61,9 +61,12 @@ public class frag_opening_account extends Fragment {
     private LinearLayout iconKtp, iconNpwp, iconSignature, iconForm;
     private ImageView viewImage,btnCamera;
     private LinearLayout btnGallery;
-    private Button btnNext, delete;
+    private Button btnNext, delete, btnOCR1, btnOCR2;
     private LinearLayout chooseImage;
     private byte[] KTP;
+    private LayoutInflater inflater;
+    private View dialogView;
+    private TextView NIK, Nama, TTL, TTL2;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -128,9 +131,8 @@ public class frag_opening_account extends Fragment {
                     Toast.makeText(context, "Silahkan Upload Foto KTP Anda", Toast.LENGTH_SHORT).show();
                 }
                 else{
-                    sendDataFragment("ktp",KTP,new frag_opening_account2());
+                    PopUpOCR(KTP);
                 }
-
             }
         });
     }
@@ -259,6 +261,39 @@ public class frag_opening_account extends Fragment {
                 .replace(R.id.layout_frame2, fragment)
                 .addToBackStack(null)
                 .commit();
+    }
+    private void PopUpOCR(byte[] DataKTP){
+        inflater = getLayoutInflater();
+        dialogView = inflater.inflate(R.layout.item_ocr,null);
+        SweetAlertDialog sweetAlertDialog = new SweetAlertDialog(context, SweetAlertDialog.WARNING_TYPE);
+        sweetAlertDialog.setCustomView(dialogView);
+        sweetAlertDialog.hideConfirmButton();
+        sweetAlertDialog.show();
+
+        NIK = dialogView.findViewById(R.id.et_nik_ocr);
+        Nama = dialogView.findViewById(R.id.et_name_ocr);
+        TTL = dialogView.findViewById(R.id.et_ttl_ocr);
+        TTL2= dialogView.findViewById(R.id.et_ttl2_ocr);
+        btnOCR1 = dialogView.findViewById(R.id.btncncl);
+        btnOCR2 = dialogView.findViewById(R.id.btnlnjt);
+        NIK.setText("323432342304203");
+        Nama.setText("Andi Setiawan");
+        TTL.setText("Semarang");
+        TTL2.setText("08 April 2000");
+        btnOCR2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                sweetAlertDialog.dismiss();
+                sendDataFragment("ktp",DataKTP,new frag_opening_account2());
+            }
+        });
+        btnOCR1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                sweetAlertDialog.dismiss();
+            }
+        });
+
     }
     public void getResizedBitmap(Bitmap bm, int newWidth, int newHeight) {
         int width = bm.getWidth();

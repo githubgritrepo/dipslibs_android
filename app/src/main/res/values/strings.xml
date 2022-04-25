@@ -104,7 +104,7 @@
     <string name="reg_title">Registrasi Berhasil</string>
     <string name="reg_content">Harap aktivasi akun Anda</string>
     <string name="activation">Aktivasi</string>
-    <string name="rating_pop_up_content">Terima kasih atas penilaian Anda. Pendapat Anda sangat berharga bagi kami.</string>
+    <string name="rating_pop_up_content">Terima kasih atas penilaian Anda. Penilaian Anda sangat berharga bagi kami.</string>
     <string name="produk_layanan"><![CDATA[Layanan]]></string>
     <string name="btn_produk_nlayanan"><![CDATA[Produk & Layanan]]></string>
     <string name="verifikasi">Verifikasi</string>
@@ -155,4 +155,7 @@
     <string name="antrian_sekarang">(Antrian Sekarang)</string>
     <string name="mata_uang">Rp</string>
     <string name="currency">Dalam Rp</string>
+    <string name="ocr_title">Apakah data anda sudah sesuai ?</string>
+    <string name="ttl">Tempat</string>
+    <string name="ttl2">Tanggal Lahir</string>
 </resources>
