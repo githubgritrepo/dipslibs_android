@@ -155,4 +155,6 @@
     <string name="antrian_sekarang">(Antrian Sekarang)</string>
     <string name="mata_uang">Rp</string>
     <string name="currency">Dalam Rp</string>
+    <string name="formulir_rtgs">Formulir RTGS</string>
+    <string name="please_wait">Harap Menunggu</string>
 </resources>

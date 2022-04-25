@@ -45,6 +45,7 @@ import com.evo.mitzoom.Helper.GraphicFaceTracker;
 import com.evo.mitzoom.Model.Request.JsonCaptureIdentify;
 import com.evo.mitzoom.Model.Response.CaptureIdentify;
 import com.evo.mitzoom.R;
+import com.evo.mitzoom.Session.SessionManager;
 import com.evo.mitzoom.util.NetworkUtil;
 import com.google.android.gms.vision.CameraSource;
 import com.google.android.gms.vision.face.FaceDetector;
@@ -84,6 +85,7 @@ public class DipsCapture extends AppCompatActivity implements CameraSource.Pictu
     private SurfaceHolder transHolder = null;
     private FaceDetector detector;
     private RelativeLayout rlprogress;
+    private SessionManager sessions;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -95,7 +97,9 @@ public class DipsCapture extends AppCompatActivity implements CameraSource.Pictu
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         mContext = this;
 
-        //setLocale(this,"id");
+        sessions = new SessionManager(mContext);
+        String lang = sessions.getLANG();
+        setLocale(this,lang);
 
         preview = (SurfaceView) findViewById(R.id.mySurface);
         transPreview = (SurfaceView) findViewById(R.id.transSurface);
@@ -433,54 +437,40 @@ public class DipsCapture extends AppCompatActivity implements CameraSource.Pictu
             public void onResponse(Call<CaptureIdentify> call, Response<CaptureIdentify> response) {
                 showProgress(false);
                 if (response.isSuccessful() && response.body() != null) {
-                    String dataS = response.body().toString();
-//                    try {
-                        //JSONObject jsObj = new JSONObject(dataS);
-                        String msg = response.body().getMessage();
-
-
-                        //if (jsObj.has("err_code")) {
-                            int errCode = response.body().getErr_code();
-                            if (errCode == 0) {
-                                SweetAlertDialog sweetDialog = new SweetAlertDialog(mContext,SweetAlertDialog.WARNING_TYPE);
-                                sweetDialog.setTitleText("Warning!!!");
-                                sweetDialog.setContentText(getResources().getString(R.string.not_using_dips));
-                                sweetDialog.setConfirmText("OK");
-                                sweetDialog.setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
-                                    @Override
-                                    public void onClick(SweetAlertDialog sweetAlertDialog) {
-                                        sweetDialog.dismissWithAnimation();
-                                        Intent intent = new Intent(Intent.ACTION_MAIN);
-                                        intent.addCategory(Intent.CATEGORY_HOME);
-                                        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);//***Change Here***
-                                        startActivity(intent);
-                                        finish();
-                                        System.exit(0);
-                                    }
-                                });
-                                sweetDialog.show();
-                                startCamera();
-                                return;
+                    int errCode = response.body().getErr_code();
+                    if (errCode == 0) {
+                        SweetAlertDialog sweetDialog = new SweetAlertDialog(mContext,SweetAlertDialog.WARNING_TYPE);
+                        sweetDialog.setTitleText("Warning!!!");
+                        sweetDialog.setContentText(getResources().getString(R.string.not_using_dips));
+                        sweetDialog.setConfirmText("OK");
+                        sweetDialog.setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
+                            @Override
+                            public void onClick(SweetAlertDialog sweetAlertDialog) {
+                                sweetDialog.dismissWithAnimation();
+                                Intent intent = new Intent(Intent.ACTION_MAIN);
+                                intent.addCategory(Intent.CATEGORY_HOME);
+                                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);//***Change Here***
+                                startActivity(intent);
+                                finish();
+                                System.exit(0);
                             }
+                        });
+                        sweetDialog.show();
+                        startCamera();
+                        return;
+                    }
 
-                            boolean isCust = response.body().isCustomer();
-                            String custName = response.body().getName();
-                            String sessionName = response.body().getDataSession().getNameSession();
-                            String sessionPass = response.body().getDataSession().getPass();
-                            Intent intent = new Intent(DipsCapture.this,DipsWaitingRoom.class);
-                            intent.putExtra("ISCUSTOMER",isCust);
-                            intent.putExtra("CUSTNAME",custName);
-                            intent.putExtra("SessionName", sessionName);
-                            intent.putExtra("SessionPass", sessionPass);
-                            startActivity(intent);
+                    boolean isCust = response.body().isCustomer();
+                    String custName = response.body().getName();
+                    String sessionName = response.body().getDataSession().getNameSession();
+                    String sessionPass = response.body().getDataSession().getPass();
+                    Intent intent = new Intent(DipsCapture.this,DipsWaitingRoom.class);
+                    intent.putExtra("ISCUSTOMER",isCust);
+                    intent.putExtra("CUSTNAME",custName);
+                    intent.putExtra("SessionName", sessionName);
+                    intent.putExtra("SessionPass", sessionPass);
+                    startActivity(intent);
 
-//                        } else {
-//                            Toast.makeText(mContext, msg, Toast.LENGTH_SHORT).show();
-//                        }
-
-//                    } catch (JSONException e) {
-//                        e.printStackTrace();
-//                    }
                 } else {
                     startCamera();
                     Toast.makeText(mContext, R.string.msg_error,Toast.LENGTH_SHORT).show();

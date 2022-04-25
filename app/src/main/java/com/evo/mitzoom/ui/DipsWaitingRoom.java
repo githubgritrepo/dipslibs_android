@@ -1,5 +1,7 @@
 package com.evo.mitzoom.ui;
 
+import static com.evo.mitzoom.ui.DipsSplashScreen.setLocale;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
@@ -55,6 +57,7 @@ import com.evo.mitzoom.Fragments.frag_berita;
 import com.evo.mitzoom.Fragments.frag_list_produk;
 import com.evo.mitzoom.Fragments.frag_service;
 import com.evo.mitzoom.R;
+import com.evo.mitzoom.Session.SessionManager;
 import com.evo.mitzoom.util.ErrorMsgUtil;
 import com.evo.mitzoom.util.NetworkUtil;
 import com.google.android.gms.vision.CameraSource;
@@ -121,6 +124,7 @@ public class DipsWaitingRoom extends AppCompatActivity {
     private Handler handlerSuccess;
     private boolean stopPopSuccess = false;
     private boolean doubleBackToExitPressedOnce = false;
+    private SessionManager sessions;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -130,11 +134,19 @@ public class DipsWaitingRoom extends AppCompatActivity {
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
         getSupportActionBar().hide();
+
+        mContext = this;
+
+        sessions = new SessionManager(mContext);
+        String lang = sessions.getLANG();
+        setLocale(this,lang);
+
         isCust = getIntent().getExtras().getBoolean("ISCUSTOMER");
         custName = getIntent().getExtras().getString("CUSTNAME");
         NameSession = getIntent().getExtras().getString("SessionName");
         SessionPass = getIntent().getExtras().getString("SessionPass");
-        mContext = this;
+
+
         initializeSdk();
         btnSchedule = (MaterialButton) findViewById(R.id.btnSchedule);
         btnEndCall = findViewById(R.id.end_call);

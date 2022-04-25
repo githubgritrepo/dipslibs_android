@@ -20,7 +20,7 @@
         android:layout_below="@id/profileimage"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="20dp"
-        android:text="please wait"
+        android:text="@string/please_wait"
         android:textColor="@color/white" />
 
 

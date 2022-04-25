@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:id="@+id/tvContent"
+    android:ellipsize="end"
+    android:textSize="15sp"
+    android:maxLines="3"
+    android:paddingStart="@dimen/dp_15"
+    android:paddingLeft="@dimen/dp_15"
+    android:textAppearance="?attr/textAppearanceSubtitle1"/>

@@ -8,9 +8,6 @@ public class CaptureIdentify {
     @SerializedName("err_code")
     private int err_code;
 
-    @SerializedName("message")
-    private String message;
-
     @SerializedName("similarity")
     private double similarity;
 
@@ -40,14 +37,6 @@ public class CaptureIdentify {
 
     public void setErr_code(int err_code) {
         this.err_code = err_code;
-    }
-
-    public String getMessage() {
-        return message;
-    }
-
-    public void setMessage(String message) {
-        this.message = message;
     }
 
     public double getSimilarity() {
