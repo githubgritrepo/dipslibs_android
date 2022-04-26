@@ -13,24 +13,23 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.evo.mitzoom.Model.BankItem;
-import com.evo.mitzoom.Model.TypeServiceItem;
 import com.evo.mitzoom.R;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class AdapterTypeService extends ArrayAdapter<TypeServiceItem> {
-    private List<TypeServiceItem> typeServiceItemList;
+public class AdapterBank2 extends ArrayAdapter<BankItem> {
+    private List<BankItem> bankItemList;
 
-    public AdapterTypeService (@NonNull Context context, @NonNull List<TypeServiceItem> typeServiceItems){
-        super(context,0,typeServiceItems);
-        typeServiceItemList = new ArrayList<>(typeServiceItems);
+    public AdapterBank2(@NonNull Context context, @NonNull List<BankItem> bankList ){
+        super(context, 0, bankList);
+        bankItemList = new ArrayList<>(bankList);
     }
 
     @NonNull
     @Override
     public Filter getFilter() {
-        return typeServiceFilter;
+        return bankFilter;
     }
 
     @NonNull
@@ -38,36 +37,36 @@ public class AdapterTypeService extends ArrayAdapter<TypeServiceItem> {
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
         if (convertView == null) {
             convertView = LayoutInflater.from(getContext()).inflate(
-                    R.layout.type_service_autocomplete_row, parent, false
+                    R.layout.bank_autocomplete_row, parent, false
             );
         }
 
-        TextView textViewHeadline = convertView.findViewById(R.id.tv_headline);
-        TextView textViewContent = convertView.findViewById(R.id.tv_content);
+        TextView textViewName = convertView.findViewById(R.id.text_view_name);
+        ImageView imageViewFlag = convertView.findViewById(R.id.image_view_flag);
 
-        TypeServiceItem ts = getItem(position);
+        BankItem bankItem = getItem(position);
 
-        if (ts != null) {
-            textViewHeadline.setText(ts.getHeadline());
-            textViewContent.setText(ts.getContent());
+        if (bankItem != null) {
+            textViewName.setText(bankItem.getBankName());
+            imageViewFlag.setImageResource(bankItem.getFlagImage());
         }
 
         return convertView;
     }
 
-    private Filter typeServiceFilter = new Filter() {
+    private Filter bankFilter = new Filter() {
         @Override
         protected FilterResults performFiltering(CharSequence constraint) {
             FilterResults results = new FilterResults();
-            List<TypeServiceItem> suggestions = new ArrayList<>();
+            List<BankItem> suggestions = new ArrayList<>();
 
             if (constraint == null || constraint.length() == 0) {
-                suggestions.addAll(typeServiceItemList);
+                suggestions.addAll(bankItemList);
             } else {
                 String filterPattern = constraint.toString().toLowerCase().trim();
 
-                for (TypeServiceItem item : typeServiceItemList) {
-                    if (item.getHeadline().toLowerCase().contains(filterPattern)) {
+                for (BankItem item : bankItemList) {
+                    if (item.getBankName().toLowerCase().contains(filterPattern)) {
                         suggestions.add(item);
                     }
                 }
@@ -78,19 +77,17 @@ public class AdapterTypeService extends ArrayAdapter<TypeServiceItem> {
 
             return results;
         }
-
         @Override
         protected void publishResults(CharSequence constraint, FilterResults results) {
             clear();
             addAll((List) results.values);
             notifyDataSetChanged();
         }
+
         @Override
         public CharSequence convertResultToString(Object resultValue) {
-            return ((TypeServiceItem) resultValue).getHeadline();
+            return ((BankItem) resultValue).getBankName();
         }
     };
-
-
 
 }

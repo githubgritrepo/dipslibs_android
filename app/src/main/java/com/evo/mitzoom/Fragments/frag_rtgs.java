@@ -1,15 +1,18 @@
 package com.evo.mitzoom.Fragments;
 
-import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
-import android.os.Handler;
 import android.text.Editable;
+import android.text.Spannable;
 import android.text.TextWatcher;
+import android.text.style.StyleSpan;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -20,7 +23,11 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-import com.dhairytripathi.library.EditTextPin;
+import com.evo.mitzoom.Adapter.AdapterBank2;
+import com.evo.mitzoom.Adapter.AdapterSourceAccount;
+import com.evo.mitzoom.Adapter.AdapterTypeService;
+import com.evo.mitzoom.Model.BankItem;
+import com.evo.mitzoom.Model.TypeServiceItem;
 import com.evo.mitzoom.R;
 import com.evo.mitzoom.Session.SessionManager;
 
@@ -29,18 +36,24 @@ import org.json.JSONObject;
 
 import java.math.BigDecimal;
 import java.text.NumberFormat;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 
-import cn.pedant.SweetAlert.SweetAlertDialog;
-
 public class frag_rtgs extends Fragment {
     private ImageView btnBack;
-    private EditText et_NamaBank, et_RekPenerima, et_NamaPenerima, et_Berita, et_Nominal;
+    private EditText et_RekPenerima, et_NamaPenerima, et_Berita, et_Nominal;
     private Context context;
     private TextView tvCurr;
+    private int posSourceAccount, posSourceBank, posSourceTypeService, posSourceBenefit, posSourcePopulation = -1;
+    private AutoCompleteTextView et_source_account, et_NamaBank, et_serviceType, et_benefitRec, et_typePopulation;
     private SessionManager sessions;
-
+    String [] sourceAcc = {"Tabungan DiPS Rupiah\n011043021 - Andi\nRp. 18.231,00", "Giro DiPS Rupiah\n021008120 - Andi\nRp. 15.000.000,00"};
+    private List<BankItem> bankList;
+    private List<TypeServiceItem> typeServiceList;
+    String[] sourceBenefit = {"Perorangan", "Perusahaan", "Pemerintah"};
+    String[] sourcePopulation = {"Penduduk", "Bukan Penduduk"};
     private Button btnProses;
 
     private String NamaBank, RekPenerima, NamaPenerima, Berita, Nominal;
@@ -63,11 +76,15 @@ public class frag_rtgs extends Fragment {
         btnBack = view.findViewById(R.id.btn_back4);
         et_NamaBank = view.findViewById(R.id.et_nama_bank);
         et_RekPenerima = view.findViewById(R.id.et_rek_penerima);
+        et_serviceType = (AutoCompleteTextView) view.findViewById(R.id.et_serviceType);
         et_NamaPenerima = view.findViewById(R.id.et_nama_penerima);
+        et_typePopulation = (AutoCompleteTextView) view.findViewById(R.id.et_typePopulation);
         tvCurr = view.findViewById(R.id.tvCurr);
         et_Nominal = view.findViewById(R.id.et_nominal);
+        et_benefitRec = (AutoCompleteTextView) view.findViewById(R.id.et_benefitRec);
         et_Berita = view.findViewById(R.id.et_berita);
         btnProses = view.findViewById(R.id.btnProsesRTGS);
+        et_source_account = (AutoCompleteTextView) view.findViewById(R.id.et_source_account);
         return view;
     }
     @Override
@@ -156,6 +173,76 @@ public class frag_rtgs extends Fragment {
                 getFragmentPage(new frag_service());
             }
         });
+
+        AdapterSourceAccount adapterSourceAcc = new AdapterSourceAccount(context,R.layout.list_item_souceacc,sourceAcc);
+        et_source_account.setAdapter(adapterSourceAcc);
+        et_source_account.setBackground(context.getResources().getDrawable(R.drawable.blue_button_background));
+        et_source_account.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                //String selection = (String) parent.getItemAtPosition(position);
+                posSourceAccount = position;
+            }
+        });
+        et_source_account.addTextChangedListener(new TextWatcher() {
+            String textContent = "";
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                textContent = s.toString();
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                String[] strings = textContent.split("\\r?\\n");
+                String titleAcc = strings[0]+"\n";
+                s.setSpan(new StyleSpan(android.graphics.Typeface.BOLD), 0, titleAcc.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+            }
+
+
+        });
+
+        fillBankList();
+        AdapterBank2 adapterBank2 = new AdapterBank2(context,bankList);
+        et_NamaBank.setAdapter(adapterBank2);
+        et_NamaBank.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                posSourceBank = position;
+            }
+        });
+
+        fillTypeServiceList();
+        AdapterTypeService adapterTypeService = new AdapterTypeService(context,typeServiceList);
+        et_serviceType.setAdapter(adapterTypeService);
+        et_serviceType.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                posSourceTypeService = position;
+            }
+        });
+
+        ArrayAdapter<String> adapterBenefit = new ArrayAdapter<String>(context,R.layout.list_item, sourceBenefit);
+        et_benefitRec.setAdapter(adapterBenefit);
+        et_benefitRec.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                posSourceBenefit = position;
+            }
+        });
+
+        ArrayAdapter<String> adapterPopulation = new ArrayAdapter<String>(context,R.layout.list_item, sourcePopulation);
+        et_typePopulation.setAdapter(adapterPopulation);
+        et_typePopulation.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                posSourcePopulation = position;
+            }
+        });
     }
     private void getFragmentPage(Fragment fragment){
         getActivity().getSupportFragmentManager()
@@ -175,4 +262,25 @@ public class frag_rtgs extends Fragment {
         return BigDecimal.ZERO;
     }
 
+    private void fillBankList(){
+        bankList = new ArrayList<>();
+        bankList.add(new BankItem("BCA",R.drawable.bca));
+        bankList.add(new BankItem("Mandiri",R.drawable.mandiri));
+        bankList.add(new BankItem("BNI",R.drawable.bni));
+        bankList.add(new BankItem("BRI",R.drawable.bri));
+        bankList.add(new BankItem("CIMB Niaga",R.drawable.cimb));
+        bankList.add(new BankItem("ANZ",R.drawable.anz));
+        bankList.add(new BankItem("Bangkok Bank",R.drawable.bangkok_bank));
+        bankList.add(new BankItem("IBK Bank",R.mipmap.dips361));
+        bankList.add(new BankItem("Bank Amar",R.mipmap.dips361));
+        bankList.add(new BankItem("Bank Artha Graha",R.mipmap.dips361));
+        bankList.add(new BankItem("Bank Banten",R.mipmap.dips361));
+        bankList.add(new BankItem("Bank Bengkulu",R.mipmap.dips361));
+    }
+    private void fillTypeServiceList(){
+        typeServiceList = new ArrayList<>();
+        typeServiceList.add(new TypeServiceItem("RTO", "Nominal transaksi minimal Rp. 50.000,00 dan maksimal Rp. 50.000.000,00"));
+        typeServiceList.add(new TypeServiceItem("SKN","Nominal transaksi minimal Rp. 50.000,00 dan maksimal Rp. 1.000.000.000,00 pertransaksi"));
+        typeServiceList.add(new TypeServiceItem("RTGS", "Nominal transaksi minimal Rp. 100.000.000,00 pertransaksi"));
+    }
 }

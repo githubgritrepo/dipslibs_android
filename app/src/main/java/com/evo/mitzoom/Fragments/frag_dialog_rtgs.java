@@ -2,7 +2,6 @@ package com.evo.mitzoom.Fragments;
 
 import android.content.Context;
 import android.content.res.ColorStateList;
-import android.graphics.Color;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -25,18 +24,21 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.evo.mitzoom.Adapter.AdapterBank;
+import com.evo.mitzoom.Adapter.AdapterBank2;
 import com.evo.mitzoom.Adapter.AdapterSourceAccount;
 import com.evo.mitzoom.Adapter.AdapterTypeService;
+import com.evo.mitzoom.Model.BankItem;
+import com.evo.mitzoom.Model.TypeServiceItem;
 import com.evo.mitzoom.R;
 import com.evo.mitzoom.Session.SessionManager;
-import com.evo.mitzoom.ui.DipsWaitingRoom;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.math.BigDecimal;
 import java.text.NumberFormat;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 
@@ -49,7 +51,7 @@ public class frag_dialog_rtgs extends Fragment {
     private SessionManager sessions;
     private AutoCompleteTextView et_source_account, et_nama_bank, et_serviceType,et_benefitRec,et_typePopulation;
     String [] sourceAcc = {"Tabungan DiPS Rupiah\n011043021 - Andi\nRp. 18.231,00", "Giro DiPS Rupiah\n021008120 - Andi\nRp. 15.000.000,00"};
-    String[] sourceBank = {"BCA", "Mandiri", "BNI", "BRI", "CIMB Niaga", "ANZ", "Bangkok Bank", "IBK Bank "};
+
     String[] sourceTypeService = {
             "RTO\nNominal transaksi minimal Rp. 50.000,00 dan maksimal Rp. 50.000.000,00",
             "SKN\nNominal transaksi minimal Rp. 50.000,00 dan maksimal Rp. 1.000.000.000,00 pertransaksi",
@@ -63,6 +65,8 @@ public class frag_dialog_rtgs extends Fragment {
     private EditText et_nama_penerima;
     private EditText et_nominal;
     private EditText et_berita;
+    private List<BankItem> bankList;
+    private List<TypeServiceItem> typeServiceList;
     public static final NumberFormat numberFormat = NumberFormat.getCurrencyInstance(new Locale("id", "ID"));
 
     @Override
@@ -172,8 +176,9 @@ public class frag_dialog_rtgs extends Fragment {
 
         });
 
-        AdapterBank adapterBank = new AdapterBank(mContext,R.layout.list_item2,sourceBank);
-        et_nama_bank.setAdapter(adapterBank);
+        fillBankList();
+        AdapterBank2 adapterBank2 = new AdapterBank2(mContext,bankList);
+        et_nama_bank.setAdapter(adapterBank2);
         et_nama_bank.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -181,7 +186,8 @@ public class frag_dialog_rtgs extends Fragment {
             }
         });
 
-        AdapterTypeService adapterTypeService = new AdapterTypeService(mContext,R.layout.list_item3, sourceTypeService);
+        fillTypeServiceList();
+        AdapterTypeService adapterTypeService = new AdapterTypeService(mContext,typeServiceList);
         et_serviceType.setAdapter(adapterTypeService);
         et_serviceType.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -262,5 +268,26 @@ public class frag_dialog_rtgs extends Fragment {
 
         String dataJs = jsons.toString();
         sessions.saveRTGS(dataJs);
+    }
+    private void fillBankList(){
+        bankList = new ArrayList<>();
+        bankList.add(new BankItem("BCA",R.drawable.bca));
+        bankList.add(new BankItem("Mandiri",R.drawable.mandiri));
+        bankList.add(new BankItem("BNI",R.drawable.bni));
+        bankList.add(new BankItem("BRI",R.drawable.bri));
+        bankList.add(new BankItem("CIMB Niaga",R.drawable.cimb));
+        bankList.add(new BankItem("ANZ",R.drawable.anz));
+        bankList.add(new BankItem("Bangkok Bank",R.drawable.bangkok_bank));
+        bankList.add(new BankItem("IBK Bank",R.mipmap.dips361));
+        bankList.add(new BankItem("Bank Amar",R.mipmap.dips361));
+        bankList.add(new BankItem("Bank Artha Graha",R.mipmap.dips361));
+        bankList.add(new BankItem("Bank Banten",R.mipmap.dips361));
+        bankList.add(new BankItem("Bank Bengkulu",R.mipmap.dips361));
+    }
+    private void fillTypeServiceList(){
+        typeServiceList = new ArrayList<>();
+        typeServiceList.add(new TypeServiceItem("RTO", "Nominal transaksi minimal Rp. 50.000,00 dan maksimal Rp. 50.000.000,00"));
+        typeServiceList.add(new TypeServiceItem("SKN","Nominal transaksi minimal Rp. 50.000,00 dan maksimal Rp. 1.000.000.000,00 pertransaksi"));
+        typeServiceList.add(new TypeServiceItem("RTGS", "Nominal transaksi minimal Rp. 100.000.000,00 pertransaksi"));
     }
 }
