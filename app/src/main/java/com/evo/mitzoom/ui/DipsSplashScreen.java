@@ -100,6 +100,7 @@ public class DipsSplashScreen extends AppCompatActivity {
                             .show();
                 }
                 else {
+                    sweetAlertDialog.dismissWithAnimation();
                     RadioButton radioButton = (RadioButton) radioGroup.findViewById(selectedId);
                     int idRb = radioButton.getId();
                     String langCode = "";
@@ -108,15 +109,15 @@ public class DipsSplashScreen extends AppCompatActivity {
                             langCode = "id";
                             sessions.saveLANG(langCode);
                             setLocale(DipsSplashScreen.this,langCode);
+                            startApp();
                             break;
                         case R.id.rbEn:
                             langCode = "en";
                             sessions.saveLANG(langCode);
                             setLocale(DipsSplashScreen.this,langCode);
+                            startApp();
                             break;
                     }
-                    sweetAlertDialog.dismissWithAnimation();
-                    startApp();
                 }
             }
         });

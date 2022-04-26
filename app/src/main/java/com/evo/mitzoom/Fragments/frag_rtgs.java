@@ -91,18 +91,6 @@ public class frag_rtgs extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        if (dataRTGS != null) {
-            try {
-                JSONObject dataJs = new JSONObject(dataRTGS);
-                String rek_penerima = dataJs.getString("rek_penerima");
-                String nama_penerima = dataJs.getString("nama_penerima");
-                et_RekPenerima.setText(rek_penerima);
-                et_NamaPenerima.setText(nama_penerima);
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
-
         String lang = sessions.getLANG();
         if (lang.equals("en")) {
             tvCurr.setText("IDR");
@@ -188,16 +176,18 @@ public class frag_rtgs extends Fragment {
             String textContent = "";
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
+                Log.d("CEK","beforeTextChanged");
             }
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 textContent = s.toString();
+                Log.d("CEK","onTextChanged");
             }
 
             @Override
             public void afterTextChanged(Editable s) {
+                Log.d("CEK","afterTextChanged");
                 String[] strings = textContent.split("\\r?\\n");
                 String titleAcc = strings[0]+"\n";
                 s.setSpan(new StyleSpan(android.graphics.Typeface.BOLD), 0, titleAcc.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
@@ -243,7 +233,42 @@ public class frag_rtgs extends Fragment {
                 posSourcePopulation = position;
             }
         });
+
+        getSavedInstance();
     }
+
+    private void getSavedInstance() {
+        if (dataRTGS != null) {
+            try {
+
+                JSONObject dataJs = new JSONObject(dataRTGS);
+                posSourceAccount = dataJs.getInt("sourceAccount");
+                posSourceBank = dataJs.getInt("sourceBank");
+                posSourceTypeService = dataJs.getInt("sourceTypeService");
+                posSourceBenefit = dataJs.getInt("sourceBenefit");
+                posSourcePopulation = dataJs.getInt("sourcePopulation");
+                String rek_penerima = dataJs.getString("rek_penerima");
+                String nama_penerima = dataJs.getString("nama_penerima");
+                String nominal = dataJs.getString("nominal");
+                String berita = dataJs.getString("berita");
+
+                if (posSourceAccount > -1) {
+                    et_source_account.setText(et_source_account.getAdapter().getItem(posSourceAccount).toString(), false);
+                    et_NamaBank.setText(et_NamaBank.getAdapter().getItem(posSourceBank).toString(), false);
+                    et_serviceType.setText(et_serviceType.getAdapter().getItem(posSourceTypeService).toString(), false);
+                    et_benefitRec.setText(et_benefitRec.getAdapter().getItem(posSourceBenefit).toString(), false);
+                    et_typePopulation.setText(et_typePopulation.getAdapter().getItem(posSourcePopulation).toString(), false);
+                }
+                et_RekPenerima.setText(rek_penerima);
+                et_NamaPenerima.setText(nama_penerima);
+                et_Nominal.setText(nominal);
+                et_Berita.setText(berita);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
     private void getFragmentPage(Fragment fragment){
         getActivity().getSupportFragmentManager()
                 .beginTransaction()
