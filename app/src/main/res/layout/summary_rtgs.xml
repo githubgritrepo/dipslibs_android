@@ -25,7 +25,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:layout_marginStart="6dp"
-            android:text="Konfirmasi Transfer"
+            android:text="@string/konfirmasi_transfer"
             android:textAppearance="@style/TextAppearance.AppCompat.Body1"
             android:textSize="20sp"
             android:textStyle="bold" />
@@ -48,141 +48,200 @@
                 android:layout_margin="20dp"
                 android:orientation="vertical">
                 <RelativeLayout
+                    android:layout_marginBottom="20dp"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:background="@drawable/bg_textinput">
 
-                    <TextView
-                        android:id="@+id/text_tujuan"
+                    <LinearLayout
+                        android:id="@+id/LLFROM"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="15dp"
-                        android:text="@string/ReceiverName"
-                        android:textAlignment="textStart"
-                        android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-                        android:textSize="16sp"
-                        android:textStyle="bold" />
+                        android:layout_margin="10dp"
+                        android:background="@drawable/oval_background2"
+                        android:backgroundTint="@color/Blue"
+                        android:orientation="horizontal">
 
-                    <TextView
-                        android:id="@+id/nama_tujuan"
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="start|center_vertical"
+                            android:layout_weight="0.5"
+                            android:text="@string/dari"
+                            android:textAlignment="textStart"
+                            android:textColor="@color/white"
+                            android:textSize="12sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="start|center_vertical"
+                            android:layout_weight="0.1"
+                            android:text=":"
+                            android:textAlignment="textStart"
+                            android:textColor="@color/white"
+                            android:textSize="20sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/RekeningSumber"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="start|center_vertical"
+                            android:layout_weight="1"
+                            android:maxLines="3"
+                            android:text="Tabungan DiPS Rupiah\n011043021 - Andi\nRp. 18.231,00"
+                            android:textAlignment="textStart"
+                            android:textColor="@color/white"
+                            android:textSize="12sp"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+
+                    <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_below="@+id/text_tujuan"
-                        android:layout_marginStart="15dp"
-                        android:text="Susan"
-                        android:textAlignment="textStart"
-                        android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-                        android:textSize="16sp" />
+                        android:layout_below="@+id/LLFROM"
+                        android:layout_marginStart="10dp"
+                        android:layout_marginEnd="10dp"
+                        android:layout_marginBottom="10dp"
+                        android:background="@drawable/oval_background2"
+                        android:backgroundTint="@color/bg_cv_item"
+                        android:orientation="horizontal">
 
-                    <TextView
-                        android:id="@+id/text_bank_tujuan"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_below="@+id/nama_tujuan"
-                        android:layout_marginStart="15dp"
-                        android:layout_marginTop="10dp"
-                        android:text="@string/BankName"
-                        android:textAlignment="textStart"
-                        android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-                        android:textSize="16sp"
-                        android:textStyle="bold" />
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="start|center_vertical"
+                            android:layout_weight="0.5"
+                            android:text="@string/penerima"
+                            android:textAlignment="textStart"
+                            android:textColor="@color/black"
+                            android:textSize="12sp"
+                            android:textStyle="bold" />
 
-                    <TextView
-                        android:id="@+id/nama_bank_tujuan"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_below="@+id/text_bank_tujuan"
-                        android:layout_marginStart="15dp"
-                        android:text="BCA"
-                        android:textAlignment="textStart"
-                        android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-                        android:textSize="16sp" />
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="start|center_vertical"
+                            android:layout_weight="0.1"
+                            android:text=":"
+                            android:textAlignment="textStart"
+                            android:textColor="@color/black"
+                            android:textSize="20sp"
+                            android:textStyle="bold" />
 
-                    <TextView
-                        android:id="@+id/text_norek"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_below="@+id/nama_bank_tujuan"
-                        android:layout_marginStart="15dp"
-                        android:layout_marginTop="10dp"
-                        android:text="@string/ReceiverAccount"
-                        android:textAlignment="textStart"
-                        android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-                        android:textSize="16sp"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        android:id="@+id/norek"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_below="@+id/text_norek"
-                        android:layout_marginStart="15dp"
-                        android:text="XXXX XXXX XXXX"
-                        android:textAlignment="textStart"
-                        android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-                        android:textSize="16sp" />
-
-                    <TextView
-                        android:id="@+id/text_nominal"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_below="@+id/norek"
-                        android:layout_marginStart="15dp"
-                        android:layout_marginTop="10dp"
-                        android:text="@string/Amount"
-                        android:textAlignment="textStart"
-                        android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-                        android:textSize="16sp"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        android:id="@+id/nominal"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_below="@+id/text_nominal"
-                        android:layout_marginStart="15dp"
-                        android:text="Rp.12.000.000"
-                        android:textAlignment="textStart"
-                        android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-                        android:textSize="16sp" />
-
-                    <TextView
-                        android:id="@+id/text_berita"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_below="@+id/nominal"
-                        android:layout_marginStart="15dp"
-                        android:layout_marginTop="10dp"
-                        android:text="@string/berita"
-                        android:textAlignment="textStart"
-                        android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-                        android:textSize="16sp"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        android:id="@+id/berita"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_below="@+id/text_berita"
-                        android:layout_marginStart="15dp"
-                        android:text="Transfer Uang "
-                        android:textAlignment="textStart"
-                        android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-                        android:textSize="16sp" />
-
+                        <TextView
+                            android:id="@+id/RekeningPenerima"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="start|center_vertical"
+                            android:layout_weight="1"
+                            android:maxLines="3"
+                            android:text="BCA\n011043021 - Budi Setiawan"
+                            android:textAlignment="textStart"
+                            android:textColor="@color/black"
+                            android:textSize="12sp"
+                            android:textStyle="bold" />
+                    </LinearLayout>
                 </RelativeLayout>
-
+                <TextView
+                    android:textStyle="bold"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/jenis_layanan"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+                    android:textSize="17sp" />
+                <TextView
+                    android:layout_marginBottom="10dp"
+                    android:id="@+id/JenisLayanan"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+                    android:textSize="16sp" />
+                <TextView
+                    android:textStyle="bold"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/penerima_manfaat"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+                    android:textSize="17sp" />
+                <TextView
+                    android:layout_marginBottom="10dp"
+                    android:id="@+id/PenerimaManfaat"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+                    android:textSize="16sp" />
+                <TextView
+                    android:textStyle="bold"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/ResidentType"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+                    android:textSize="17sp" />
+                <TextView
+                    android:layout_marginBottom="10dp"
+                    android:id="@+id/JenisPenduduk"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+                    android:textSize="16sp" />
+                <TextView
+                    android:textStyle="bold"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/berita"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+                    android:textSize="17sp" />
+                <TextView
+                    android:layout_marginBottom="10dp"
+                    android:id="@+id/Berita"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+                    android:textSize="16sp" />
+                <TextView
+                    android:textStyle="bold"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/biaya"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+                    android:textSize="17sp" />
+                <TextView
+                    android:layout_marginBottom="10dp"
+                    android:id="@+id/Biaya"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+                    android:textSize="16sp" />
+                <TextView
+                    android:textStyle="bold"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/Amount"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+                    android:textSize="17sp" />
+                <TextView
+                    android:layout_marginBottom="10dp"
+                    android:id="@+id/Nominal"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+                    android:textSize="16sp" />
                 <Button
                     android:id="@+id/btnTransfer"
                     android:layout_width="match_parent"
                     android:layout_height="40dp"
-                    android:layout_marginTop="20dp"
+                    android:layout_marginTop="10dp"
                     android:background="@drawable/oval_background_10dp"
                     android:backgroundTint="@color/bg_cif"
-                    android:text="Transfer"
+                    android:text="@string/btn_continue"
                     android:textColor="@color/white"
                     android:textStyle="bold" />
+
             </LinearLayout>
+
         </androidx.cardview.widget.CardView>
     </androidx.core.widget.NestedScrollView>
 </RelativeLayout>

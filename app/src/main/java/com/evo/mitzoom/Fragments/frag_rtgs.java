@@ -56,7 +56,7 @@ public class frag_rtgs extends Fragment {
     String[] sourcePopulation = {"Penduduk", "Bukan Penduduk"};
     private Button btnProses;
 
-    private String NamaBank, RekPenerima, NamaPenerima, Berita, Nominal;
+    private String RekeningSumber, NamaBank, RekPenerima, NamaPenerima, Nominal, JenisLayanan, PenerimaManfaat,JenisPenduduk,Berita;
     public static final NumberFormat numberFormat = NumberFormat.getCurrencyInstance(new Locale("id", "ID"));
     private String dataRTGS;
 
@@ -119,42 +119,7 @@ public class frag_rtgs extends Fragment {
                 et_Nominal.addTextChangedListener(this);
             }
         });
-        btnProses.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                NamaBank = et_NamaBank.getText().toString();
-                RekPenerima = et_RekPenerima.getText().toString();
-                NamaPenerima = et_NamaPenerima.getText().toString();
-                Nominal = et_Nominal.getText().toString();
-                Berita = et_Berita.getText().toString();
-                if(NamaBank.trim().equals("")){
-                    Toast.makeText(context, getResources().getString(R.string.emptyFields), Toast.LENGTH_SHORT).show();
-                }
-                else if (RekPenerima.trim().equals("")){
-                    Toast.makeText(context, getResources().getString(R.string.emptyFields), Toast.LENGTH_SHORT).show();
-                }
-                else if (NamaPenerima.trim().equals("")){
-                    Toast.makeText(context, getResources().getString(R.string.emptyFields), Toast.LENGTH_SHORT).show();
-                }
-                else if (Nominal.equals("")){
-                    Toast.makeText(context, getResources().getString(R.string.emptyFields), Toast.LENGTH_SHORT).show();
-                }
-                else if (Berita.trim().equals("")){
-                    Toast.makeText(context, getResources().getString(R.string.emptyFields), Toast.LENGTH_SHORT).show();
-                }
-                else {
-                    Fragment fragment = new frag_summary_rtgs();
-                    Bundle bundle = new Bundle();
-                    bundle.putString("namaBank",NamaBank);
-                    bundle.putString("rekPenerima",RekPenerima);
-                    bundle.putString("namaPenerima",NamaPenerima);
-                    bundle.putString("nominal",Nominal);
-                    bundle.putString("berita",Berita);
-                    fragment.setArguments(bundle);
-                    getFragmentPage(fragment);
-                }
-            }
-        });
+
         btnBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -235,6 +200,35 @@ public class frag_rtgs extends Fragment {
         });
 
         getSavedInstance();
+        btnProses.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                RekeningSumber = et_source_account.getText().toString();
+                NamaBank = et_NamaBank.getText().toString();
+                RekPenerima = et_RekPenerima.getText().toString();
+                NamaPenerima = et_NamaPenerima.getText().toString();
+                Nominal = et_Nominal.getText().toString();
+                JenisLayanan = et_serviceType.getText().toString();
+                PenerimaManfaat = et_benefitRec.getText().toString();
+                JenisPenduduk = et_typePopulation.getText().toString();
+                Berita = et_Berita.getText().toString();
+
+                Fragment fragment = new frag_summary_rtgs();
+                Bundle bundle = new Bundle();
+                bundle.putString("rekeningSumber",RekeningSumber);
+                bundle.putString("jenisLayanan",JenisLayanan);
+                bundle.putString("namaBank",NamaBank);
+                bundle.putString("namaPenerima",NamaPenerima);
+                bundle.putString("penerimaManfaat",PenerimaManfaat);
+                bundle.putString("jenisPenduduk",JenisPenduduk);
+                bundle.putString("berita",Berita);
+                bundle.putString("nominal",Nominal);
+                bundle.putString("rekPenerima",RekPenerima);
+                fragment.setArguments(bundle);
+                getFragmentPage(fragment);
+
+            }
+        });
     }
 
     private void getSavedInstance() {

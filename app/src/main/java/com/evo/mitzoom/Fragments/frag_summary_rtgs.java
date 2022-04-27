@@ -26,8 +26,8 @@ import cn.pedant.SweetAlert.SweetAlertDialog;
 
 public class frag_summary_rtgs extends Fragment {
     private Context context;
-    private TextView tvNamaTujuan, tvBankTujuan, tvRekeningTujuan, tvNominal, tvBerita,Timer, Resend_Otp;
-    private String NamaTujuan, BankTujuan, RekeningTujuan, JumlahNominal, Berita;
+    private TextView Timer, Resend_Otp, tv_RekeningSumber, tv_RekeningPenerima, tv_JenisLayanan, tv_PenerimaManfaat, tv_JenisPenduduk, tv_Berita, tv_Biaya, tv_Nominal;
+    private String RekeningSumber, JenisLayanan, NamaBank, NamaPenerima, PenerimaManfaat, JenisPenduduk, Berita, Nominal, RekPenerima;
     private ImageView btnBack;
     private Button btnTransfer;
     private LayoutInflater inflater;
@@ -50,13 +50,16 @@ public class frag_summary_rtgs extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.summary_rtgs, container, false);
-        tvNamaTujuan = view.findViewById(R.id.nama_tujuan);
-        tvBankTujuan = view.findViewById(R.id.nama_bank_tujuan);
-        tvRekeningTujuan = view.findViewById(R.id.norek);
-        tvNominal = view.findViewById(R.id.nominal);
-        tvBerita = view.findViewById(R.id.berita);
         btnBack = view.findViewById(R.id.btn_back5);
         btnTransfer = view.findViewById(R.id.btnTransfer);
+        tv_RekeningSumber = view.findViewById(R.id.RekeningSumber);
+        tv_RekeningPenerima = view.findViewById(R.id.RekeningPenerima);
+        tv_JenisLayanan = view.findViewById(R.id.JenisLayanan);
+        tv_PenerimaManfaat = view.findViewById(R.id.PenerimaManfaat);
+        tv_JenisPenduduk = view.findViewById(R.id.JenisPenduduk);
+        tv_Berita = view.findViewById(R.id.Berita);
+        tv_Biaya = view.findViewById(R.id.Biaya);
+        tv_Nominal = view.findViewById(R.id.Nominal);
         return view;
     }
 
@@ -64,11 +67,24 @@ public class frag_summary_rtgs extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         Bundle terima = getArguments();
-        NamaTujuan = terima.getString("namaPenerima");
-        BankTujuan = terima.getString("namaBank");
-        RekeningTujuan = terima.getString("rekPenerima");
-        JumlahNominal = terima.getString("nominal");
+        RekeningSumber = terima.getString("rekeningSumber");
+        JenisLayanan = terima.getString("jenisLayanan");
+        NamaBank = terima.getString("namaBank");
+        NamaPenerima = terima.getString("namaPenerima");
+        PenerimaManfaat = terima.getString("penerimaManfaat");
+        JenisPenduduk = terima.getString("jenisPenduduk");
         Berita = terima.getString("berita");
+        Nominal = terima.getString("nominal");
+        RekPenerima = terima.getString("rekPenerima");
+
+        tv_RekeningSumber.setText(RekeningSumber);
+        tv_RekeningPenerima.setText(NamaBank+"\n"+RekPenerima+" - "+NamaPenerima);
+        tv_JenisLayanan.setText(JenisLayanan);
+        tv_PenerimaManfaat.setText(PenerimaManfaat);
+        tv_JenisPenduduk.setText(JenisPenduduk);
+        tv_Berita.setText(Berita);
+        tv_Biaya.setText("Rp2.500");
+        tv_Nominal.setText(Nominal);
 
         btnBack.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -76,7 +92,6 @@ public class frag_summary_rtgs extends Fragment {
                 getFragmentPage(new frag_rtgs());
             }
         });
-
         btnTransfer.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -85,11 +100,6 @@ public class frag_summary_rtgs extends Fragment {
         });
 
         ///SetText
-        tvNamaTujuan.setText(NamaTujuan);
-        tvBankTujuan.setText(BankTujuan);
-        tvRekeningTujuan.setText(RekeningTujuan);
-        tvNominal.setText(JumlahNominal);
-        tvBerita.setText(Berita);
     }
     private void getFragmentPage(Fragment fragment){
         getActivity().getSupportFragmentManager()

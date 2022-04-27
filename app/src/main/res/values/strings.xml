@@ -160,4 +160,9 @@
     <string name="ocr_title">Apakah data anda sudah sesuai ?</string>
     <string name="ttl">Tempat</string>
     <string name="ttl2">Tanggal Lahir</string>
+    <string name="dari">Dari</string>
+    <string name="penerima">Penerima</string>
+    <string name="biaya">Biaya</string>
+    <string name="konfirmasi_transfer">Konfirmasi Transfer</string>
+    <string name="transaksi_anda_berhasil">Transaksi Anda Berhasil</string>
 </resources>
