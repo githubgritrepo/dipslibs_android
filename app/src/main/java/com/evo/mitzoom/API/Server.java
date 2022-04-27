@@ -2,8 +2,8 @@ package com.evo.mitzoom.API;
 
 public class Server {
 
-    //public static final String BASE_URL_API = "http://103.140.91.46:6514/";
-    public static final String BASE_URL_API = "https://next-backup.vercel.app/";
+   public static final String BASE_URL_API = "http://103.140.91.46:6514/";
+    //public static final String BASE_URL_API = "https://next-backup.vercel.app/";
 
     public static ApiService getAPIService() {
         return Client.getClientUnsafe(BASE_URL_API).create(ApiService.class);

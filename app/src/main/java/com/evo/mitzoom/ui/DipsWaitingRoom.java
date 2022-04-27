@@ -452,7 +452,7 @@ public class DipsWaitingRoom extends AppCompatActivity {
                     });
                 }
             }
-        },10000);
+        },15000);
     }
     public void setCameraDisplayOrientation(){
         if (camera == null)

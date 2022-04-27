@@ -2,12 +2,14 @@ package com.evo.mitzoom.Fragments;
 
 import android.content.Context;
 import android.content.res.ColorStateList;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import android.os.Environment;
 import android.text.Editable;
 import android.text.Spannable;
 import android.text.TextWatcher;
@@ -31,16 +33,29 @@ import com.evo.mitzoom.Model.BankItem;
 import com.evo.mitzoom.Model.TypeServiceItem;
 import com.evo.mitzoom.R;
 import com.evo.mitzoom.Session.SessionManager;
+import com.evo.mitzoom.ui.DipsSplashScreen;
+import com.evo.mitzoom.ui.DipsWaitingRoom;
+import com.google.zxing.BarcodeFormat;
+import com.google.zxing.WriterException;
+import com.journeyapps.barcodescanner.BarcodeEncoder;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.math.BigDecimal;
 import java.text.NumberFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
+
+import cn.pedant.SweetAlert.SweetAlertDialog;
 
 public class frag_dialog_rtgs extends Fragment {
 
@@ -53,8 +68,11 @@ public class frag_dialog_rtgs extends Fragment {
     String [] sourceAcc = {"Tabungan DiPS Rupiah\n011043021 - Andi\nRp. 18.231,00", "Giro DiPS Rupiah\n021008120 - Andi\nRp. 15.000.000,00"};
     String[] sourceBenefit = {"Perorangan", "Perusahaan", "Pemerintah"};
     String[] sourcePopulation = {"Penduduk", "Bukan Penduduk"};
-    private JSONObject jsons;
-    private int posSourceAccount, posSourceBank, posSourceTypeService, posSourceBenefit, posSourcePopulation = -1;
+    private int posSourceAccount = -1;
+    private int posSourceBank = -1;
+    private int posSourceTypeService = -1;
+    private int posSourceBenefit = -1;
+    private int posSourcePopulation = -1;
     private EditText et_rek_penerima;
     private EditText et_nama_penerima;
     private EditText et_nominal;
@@ -62,6 +80,7 @@ public class frag_dialog_rtgs extends Fragment {
     private List<BankItem> bankList;
     private List<TypeServiceItem> typeServiceList;
     public static final NumberFormat numberFormat = NumberFormat.getCurrencyInstance(new Locale("id", "ID"));
+    private TextView tvNoFormulir;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -69,7 +88,6 @@ public class frag_dialog_rtgs extends Fragment {
 
         mContext = getContext();
         sessions = new SessionManager(mContext);
-        jsons = new JSONObject();
     }
 
     @Override
@@ -78,6 +96,7 @@ public class frag_dialog_rtgs extends Fragment {
         View view = inflater.inflate(R.layout.frag_dialog_rtgs, container, false);
 
         btnBack = (ImageView) view.findViewById(R.id.btn_back4);
+        tvNoFormulir = (TextView) view.findViewById(R.id.tvNoFormulir);
         et_source_account = (AutoCompleteTextView) view.findViewById(R.id.et_source_account);
         et_nama_bank = (AutoCompleteTextView) view.findViewById(R.id.et_nama_bank);
         et_serviceType = (AutoCompleteTextView) view.findViewById(R.id.et_serviceType);
@@ -98,6 +117,8 @@ public class frag_dialog_rtgs extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        String noForm = "2103212";
+        tvNoFormulir.setText(noForm);
         btnProsesRTGS.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.bg_cif)));
         btnAdd.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.button_schedule)));
 
@@ -212,6 +233,7 @@ public class frag_dialog_rtgs extends Fragment {
             @Override
             public void onClick(View v) {
                 processSavedInstance();
+                generateBarcode(noForm);
             }
         });
     }
@@ -230,6 +252,87 @@ public class frag_dialog_rtgs extends Fragment {
                 .commit();
     }
 
+    private void generateBarcode(String noForm) {
+        LayoutInflater inflater = getLayoutInflater();
+        View dialogView = inflater.inflate(R.layout.dialog_barcode_rtgs, null);
+        SweetAlertDialog sweetAlertDialog = new SweetAlertDialog(mContext, SweetAlertDialog.NORMAL_TYPE);
+        sweetAlertDialog.setCustomView(dialogView);
+        sweetAlertDialog.setConfirmText("Download");
+        sweetAlertDialog.setCancelText("Tutup");
+        sweetAlertDialog.setCancelable(false);
+        sweetAlertDialog.show();
+
+        Button btnConfirm = (Button) sweetAlertDialog.findViewById(cn.pedant.SweetAlert.R.id.confirm_button);
+        btnConfirm.setBackgroundTintList(mContext.getResources().getColorStateList(R.color.bg_cif));
+
+        byte[] imgByte = null;
+        try {
+            BarcodeEncoder barcodeEncoder = new BarcodeEncoder();
+            Bitmap bitmap = barcodeEncoder.encodeBitmap(noForm, BarcodeFormat.QR_CODE,200,200);
+            ImageView barcodeFormRTGS = (ImageView) dialogView.findViewById(R.id.barcodeFormRTGS);
+            barcodeFormRTGS.setImageBitmap(bitmap);
+
+            imgByte = imgtoByteArray(bitmap);
+        } catch (WriterException e) {
+            e.printStackTrace();
+        }
+
+        byte[] finalImgByte = imgByte;
+        sweetAlertDialog.setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
+            @Override
+            public void onClick(SweetAlertDialog sweetAlertDialog) {
+                sweetAlertDialog.dismissWithAnimation();
+                try {
+                    String filename = "Barcode_No_Formulir-"+noForm + ".jpg";
+                    createTemporaryFile(finalImgByte, filename);
+
+                    String appName = getString(R.string.app_name_dips);
+
+                    String contents = "File disimpan di folder Pictures/" + appName + "/" + filename;
+
+                    SweetAlertDialog sAW = new SweetAlertDialog(mContext, SweetAlertDialog.SUCCESS_TYPE);
+                    sAW.setContentText(contents);
+                    sAW.hideConfirmButton();
+                    sAW.setCancelText("Tutup");
+                    sAW.setCancelable(false);
+                    sAW.show();
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+    }
+
+    private byte[] imgtoByteArray(Bitmap bitmap) {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.JPEG,100, baos);
+        byte[] imageBytes = baos.toByteArray();
+        return imageBytes;
+    }
+
+    private File createTemporaryFile(byte[] byteImage, String filename) throws Exception {
+        String appName = getString(R.string.app_name_dips);
+        String IMAGE_DIRECTORY_NAME = appName;
+        File mediaStorageDir = new File(
+                Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), IMAGE_DIRECTORY_NAME);
+        if (!mediaStorageDir.exists()) {
+            if (!mediaStorageDir.mkdirs()) {
+                return null;
+            }
+        }
+
+        File mediaFile;
+        mediaFile = new File(mediaStorageDir.getPath() + File.separator +
+                filename);
+
+        FileOutputStream fos = new FileOutputStream(mediaFile);
+        fos.write(byteImage);
+        fos.close();
+
+        return mediaFile;
+    }
+
     public static BigDecimal parseCurrencyValue(String value) {
         try {
             String replaceRegex = String.format("[%s,.\\s]", Objects.requireNonNull(numberFormat.getCurrency()).getDisplayName());
@@ -242,11 +345,16 @@ public class frag_dialog_rtgs extends Fragment {
     }
 
     private void processSavedInstance() {
+        String noFormulir = tvNoFormulir.getText().toString().trim();
         String rek_penerima = et_rek_penerima.getText().toString().trim();
         String nama_penerima = et_nama_penerima.getText().toString().trim();
         String nominal = et_nominal.getText().toString().trim();
         String berita = et_berita.getText().toString().trim();
+
+        JSONArray jsonArray = new JSONArray();
+        JSONObject jsons = new JSONObject();
         try {
+            jsons.put("idForm",noFormulir);
             jsons.put("sourceAccount",posSourceAccount);
             jsons.put("sourceBank",posSourceBank);
             jsons.put("sourceTypeService",posSourceTypeService);
@@ -254,13 +362,15 @@ public class frag_dialog_rtgs extends Fragment {
             jsons.put("sourcePopulation",posSourcePopulation);
             jsons.put("rek_penerima",rek_penerima);
             jsons.put("nama_penerima",nama_penerima);
-            jsons.put("nominal",nama_penerima);
+            jsons.put("nominal",nominal);
             jsons.put("berita",berita);
         } catch (JSONException e) {
             e.printStackTrace();
         }
 
-        String dataJs = jsons.toString();
+        jsonArray.put(jsons);
+
+        String dataJs = jsonArray.toString();
         sessions.saveRTGS(dataJs);
     }
     private void fillBankList(){
