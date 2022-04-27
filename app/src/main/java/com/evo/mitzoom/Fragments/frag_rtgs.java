@@ -1,7 +1,15 @@
 package com.evo.mitzoom.Fragments;
 
+import static android.app.Activity.RESULT_OK;
+
 import android.content.Context;
+import android.content.Intent;
+import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.Spannable;
 import android.text.TextWatcher;
@@ -16,6 +24,7 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -30,16 +39,27 @@ import com.evo.mitzoom.Model.BankItem;
 import com.evo.mitzoom.Model.TypeServiceItem;
 import com.evo.mitzoom.R;
 import com.evo.mitzoom.Session.SessionManager;
+import com.google.zxing.BinaryBitmap;
+import com.google.zxing.MultiFormatReader;
+import com.google.zxing.NotFoundException;
+import com.google.zxing.RGBLuminanceSource;
+import com.google.zxing.Result;
+import com.google.zxing.common.HybridBinarizer;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.math.BigDecimal;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
+
+import cn.pedant.SweetAlert.SweetAlertDialog;
 
 public class frag_rtgs extends Fragment {
     private ImageView btnBack;
@@ -59,6 +79,7 @@ public class frag_rtgs extends Fragment {
     private String NamaBank, RekPenerima, NamaPenerima, Berita, Nominal;
     public static final NumberFormat numberFormat = NumberFormat.getCurrencyInstance(new Locale("id", "ID"));
     private String dataRTGS;
+    private LinearLayout choose_gallery;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -74,6 +95,7 @@ public class frag_rtgs extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.frag_form_rtgs, container, false);
         btnBack = view.findViewById(R.id.btn_back4);
+        choose_gallery = (LinearLayout) view.findViewById(R.id.choose_gallery);
         et_NamaBank = view.findViewById(R.id.et_nama_bank);
         et_RekPenerima = view.findViewById(R.id.et_rek_penerima);
         et_serviceType = (AutoCompleteTextView) view.findViewById(R.id.et_serviceType);
@@ -97,6 +119,13 @@ public class frag_rtgs extends Fragment {
         } else {
             tvCurr.setText("Rp.");
         }
+
+        choose_gallery.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                chooseFromSD();
+            }
+        });
 
         et_Nominal.addTextChangedListener(new TextWatcher() {
             @Override
@@ -234,35 +263,117 @@ public class frag_rtgs extends Fragment {
             }
         });
 
-        getSavedInstance();
     }
 
-    private void getSavedInstance() {
+    private void chooseFromSD() {
+        Intent intent = new   Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        startActivityForResult(intent, 2);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == RESULT_OK) {
+            if (requestCode == 2){
+                Uri selectedImage = data.getData();
+
+                barcodeDecoder(selectedImage);
+            }
+        }
+    }
+
+    private void barcodeDecoder(Uri selectedImage) {
+        try {
+            InputStream inputStream = getActivity().getContentResolver().openInputStream(selectedImage);
+            Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
+            if (bitmap == null)
+            {
+                Log.e("CEK", "uri is not a bitmap," + selectedImage.toString());
+                return;
+            }
+            int width = bitmap.getWidth(), height = bitmap.getHeight();
+            int[] pixels = new int[width * height];
+            bitmap.getPixels(pixels, 0, width, 0, 0, width, height);
+            bitmap.recycle();
+
+            RGBLuminanceSource source = new RGBLuminanceSource(width, height, pixels);
+            BinaryBitmap bBitmap = new BinaryBitmap(new HybridBinarizer(source));
+            MultiFormatReader reader = new MultiFormatReader();
+            Result results = reader.decode(bBitmap);
+
+            Log.d("CEK","resulText : "+results.getText());
+            getSavedInstance(results);
+        } catch (FileNotFoundException | NotFoundException e) {
+            messageBarcodeFailed();
+            e.printStackTrace();
+        }
+    }
+
+    private void messageBarcodeFailed() {
+        SweetAlertDialog sWA = new SweetAlertDialog(context, SweetAlertDialog.WARNING_TYPE);
+        sWA.setContentText("File tidak Support");
+        sWA.hideConfirmButton();
+        sWA.setCancelText("Tutup");
+        sWA.setCancelable(false);
+        sWA.show();
+    }
+    
+    private void getSavedInstance(Result results) {
         if (dataRTGS != null) {
             try {
+                String resulText = results.getText();
+                JSONArray jsArr = new JSONArray(dataRTGS);
+                String dataArr = jsArr.get(0).toString();
+                JSONObject dataJs = new JSONObject(dataArr);
+                String idForm = dataJs.getString("idForm");
 
-                JSONObject dataJs = new JSONObject(dataRTGS);
-                posSourceAccount = dataJs.getInt("sourceAccount");
-                posSourceBank = dataJs.getInt("sourceBank");
-                posSourceTypeService = dataJs.getInt("sourceTypeService");
-                posSourceBenefit = dataJs.getInt("sourceBenefit");
-                posSourcePopulation = dataJs.getInt("sourcePopulation");
-                String rek_penerima = dataJs.getString("rek_penerima");
-                String nama_penerima = dataJs.getString("nama_penerima");
-                String nominal = dataJs.getString("nominal");
-                String berita = dataJs.getString("berita");
+                Log.d("CEK","idForm : "+idForm);
 
-                if (posSourceAccount > -1) {
-                    et_source_account.setText(et_source_account.getAdapter().getItem(posSourceAccount).toString(), false);
-                    et_NamaBank.setText(et_NamaBank.getAdapter().getItem(posSourceBank).toString(), false);
-                    et_serviceType.setText(et_serviceType.getAdapter().getItem(posSourceTypeService).toString(), false);
-                    et_benefitRec.setText(et_benefitRec.getAdapter().getItem(posSourceBenefit).toString(), false);
-                    et_typePopulation.setText(et_typePopulation.getAdapter().getItem(posSourcePopulation).toString(), false);
+                if (resulText.equals(idForm)) {
+                    posSourceAccount = dataJs.getInt("sourceAccount");
+                    posSourceBank = dataJs.getInt("sourceBank");
+                    posSourceTypeService = dataJs.getInt("sourceTypeService");
+                    posSourceBenefit = dataJs.getInt("sourceBenefit");
+                    posSourcePopulation = dataJs.getInt("sourcePopulation");
+                    String rek_penerima = dataJs.getString("rek_penerima");
+                    String nama_penerima = dataJs.getString("nama_penerima");
+                    String nominal = dataJs.getString("nominal");
+                    String berita = dataJs.getString("berita");
+
+                    Log.d("CEK","posSourceAccount : "+posSourceAccount);
+                    Log.d("CEK","posSourceBank : "+posSourceBank);
+                    Log.d("CEK","posSourceTypeService : "+posSourceTypeService);
+                    Log.d("CEK","posSourceBenefit : "+posSourceBenefit);
+                    Log.d("CEK","posSourcePopulation : "+posSourcePopulation);
+
+                    if (posSourceAccount > -1) {
+                        et_source_account.setText(et_source_account.getAdapter().getItem(posSourceAccount).toString(), false);
+                    }
+                    if (posSourceBank > -1) {
+                        et_NamaBank.setText(et_NamaBank.getAdapter().getItem(posSourceBank).toString(), false);
+                    }
+                    if (posSourceTypeService > -1) {
+                        et_serviceType.setText(et_serviceType.getAdapter().getItem(posSourceTypeService).toString(), false);
+                    }
+                    if (posSourceBenefit > -1) {
+                        et_benefitRec.setText(et_benefitRec.getAdapter().getItem(posSourceBenefit).toString(), false);
+                    }
+                    if (posSourcePopulation > -1) {
+                        et_typePopulation.setText(et_typePopulation.getAdapter().getItem(posSourcePopulation).toString(), false);
+                    }
+                    et_RekPenerima.setText(rek_penerima);
+                    et_NamaPenerima.setText(nama_penerima);
+                    et_Nominal.setText(nominal);
+                    et_Berita.setText(berita);
+                } else {
+                    SweetAlertDialog sWA = new SweetAlertDialog(context, SweetAlertDialog.WARNING_TYPE);
+                    sWA.setContentText("Data tidak ditemukan");
+                    sWA.hideConfirmButton();
+                    sWA.setCancelText("Tutup");
+                    sWA.setCancelable(false);
+                    sWA.show();
                 }
-                et_RekPenerima.setText(rek_penerima);
-                et_NamaPenerima.setText(nama_penerima);
-                et_Nominal.setText(nominal);
-                et_Berita.setText(berita);
+
             } catch (JSONException e) {
                 e.printStackTrace();
             }

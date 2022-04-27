@@ -419,7 +419,7 @@ public class DipsCameraActivity extends AppCompatActivity {
     }
 
     private File createTemporaryFile(byte[] byteImage) throws Exception {
-        String appName = getString(R.string.app_name);
+        String appName = getString(R.string.app_name_dips);
         String IMAGE_DIRECTORY_NAME = appName;
         File mediaStorageDir = new File(
                 Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), IMAGE_DIRECTORY_NAME);
