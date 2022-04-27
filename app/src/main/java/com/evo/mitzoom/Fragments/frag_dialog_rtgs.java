@@ -68,7 +68,11 @@ public class frag_dialog_rtgs extends Fragment {
     String [] sourceAcc = {"Tabungan DiPS Rupiah\n011043021 - Andi\nRp. 18.231,00", "Giro DiPS Rupiah\n021008120 - Andi\nRp. 15.000.000,00"};
     String[] sourceBenefit = {"Perorangan", "Perusahaan", "Pemerintah"};
     String[] sourcePopulation = {"Penduduk", "Bukan Penduduk"};
-    private int posSourceAccount, posSourceBank, posSourceTypeService, posSourceBenefit, posSourcePopulation = -1;
+    private int posSourceAccount = -1;
+    private int posSourceBank = -1;
+    private int posSourceTypeService = -1;
+    private int posSourceBenefit = -1;
+    private int posSourcePopulation = -1;
     private EditText et_rek_penerima;
     private EditText et_nama_penerima;
     private EditText et_nominal;

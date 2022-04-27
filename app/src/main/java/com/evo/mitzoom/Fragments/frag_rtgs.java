@@ -340,12 +340,6 @@ public class frag_rtgs extends Fragment {
                     String nominal = dataJs.getString("nominal");
                     String berita = dataJs.getString("berita");
 
-                    Log.d("CEK","posSourceAccount : "+posSourceAccount);
-                    Log.d("CEK","posSourceBank : "+posSourceBank);
-                    Log.d("CEK","posSourceTypeService : "+posSourceTypeService);
-                    Log.d("CEK","posSourceBenefit : "+posSourceBenefit);
-                    Log.d("CEK","posSourcePopulation : "+posSourcePopulation);
-
                     if (posSourceAccount > -1) {
                         et_source_account.setText(et_source_account.getAdapter().getItem(posSourceAccount).toString(), false);
                     }
@@ -361,10 +355,20 @@ public class frag_rtgs extends Fragment {
                     if (posSourcePopulation > -1) {
                         et_typePopulation.setText(et_typePopulation.getAdapter().getItem(posSourcePopulation).toString(), false);
                     }
-                    et_RekPenerima.setText(rek_penerima);
-                    et_NamaPenerima.setText(nama_penerima);
-                    et_Nominal.setText(nominal);
-                    et_Berita.setText(berita);
+
+                    if (!rek_penerima.isEmpty()) {
+                        et_RekPenerima.setText(rek_penerima);
+                    }
+                    if (!nama_penerima.isEmpty()) {
+                        et_NamaPenerima.setText(nama_penerima);
+                    }
+                    if (!nominal.isEmpty()) {
+                        et_Nominal.setText(nominal);
+                    }
+                    if (!berita.isEmpty()) {
+                        et_Berita.setText(berita);
+                    }
+
                 } else {
                     SweetAlertDialog sWA = new SweetAlertDialog(context, SweetAlertDialog.WARNING_TYPE);
                     sWA.setContentText("Data tidak ditemukan");
