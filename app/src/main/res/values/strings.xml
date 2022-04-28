@@ -160,4 +160,6 @@
     <string name="ocr_title">Apakah data anda sudah sesuai ?</string>
     <string name="ttl">Tempat</string>
     <string name="ttl2">Tanggal Lahir</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

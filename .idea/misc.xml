@@ -39,7 +39,7 @@
         <entry key="..\:/Project Mobile Apps/DiPS361/app/src/main/res/layout/frag_berita.xml" value="0.22826086956521738" />
         <entry key="..\:/Project Mobile Apps/DiPS361/app/src/main/res/layout/frag_chat.xml" value="0.264" />
         <entry key="..\:/Project Mobile Apps/DiPS361/app/src/main/res/layout/frag_daftar_produk.xml" value="0.22826086956521738" />
-        <entry key="..\:/Project Mobile Apps/DiPS361/app/src/main/res/layout/frag_dialog_rtgs.xml" value="0.4" />
+        <entry key="..\:/Project Mobile Apps/DiPS361/app/src/main/res/layout/frag_dialog_rtgs.xml" value="0.264" />
         <entry key="..\:/Project Mobile Apps/DiPS361/app/src/main/res/layout/frag_form_opening_account.xml" value="0.25416666666666665" />
         <entry key="..\:/Project Mobile Apps/DiPS361/app/src/main/res/layout/frag_form_rtgs.xml" value="0.13451086956521738" />
         <entry key="..\:/Project Mobile Apps/DiPS361/app/src/main/res/layout/frag_input_nik_nama.xml" value="0.25416666666666665" />
@@ -47,6 +47,7 @@
         <entry key="..\:/Project Mobile Apps/DiPS361/app/src/main/res/layout/frag_opening_account.xml" value="0.22826086956521738" />
         <entry key="..\:/Project Mobile Apps/DiPS361/app/src/main/res/layout/frag_services.xml" value="0.25416666666666665" />
         <entry key="..\:/Project Mobile Apps/DiPS361/app/src/main/res/layout/frag_tabungan.xml" value="0.22826086956521738" />
+        <entry key="..\:/Project Mobile Apps/DiPS361/app/src/main/res/layout/fragment_form_rtgs.xml" value="0.22826086956521738" />
         <entry key="..\:/Project Mobile Apps/DiPS361/app/src/main/res/layout/grid.xml" value="0.48377125193199383" />
         <entry key="..\:/Project Mobile Apps/DiPS361/app/src/main/res/layout/item_ads.xml" value="0.25416666666666665" />
         <entry key="..\:/Project Mobile Apps/DiPS361/app/src/main/res/layout/item_chat_msg.xml" value="0.25416666666666665" />
@@ -56,6 +57,7 @@
         <entry key="..\:/Project Mobile Apps/DiPS361/app/src/main/res/layout/item_user_video.xml" value="0.22826086956521738" />
         <entry key="..\:/Project Mobile Apps/DiPS361/app/src/main/res/layout/layout_bottom_action_bar.xml" value="0.264" />
         <entry key="..\:/Project Mobile Apps/DiPS361/app/src/main/res/layout/layout_bottomsheetdialog.xml" value="0.1" />
+        <entry key="..\:/Project Mobile Apps/DiPS361/app/src/main/res/layout/layout_rtgs_pager.xml" value="0.22826086956521738" />
         <entry key="..\:/Project Mobile Apps/DiPS361/app/src/main/res/layout/layout_share_toolbar.xml" value="0.6" />
         <entry key="..\:/Project Mobile Apps/DiPS361/app/src/main/res/layout/list_item.xml" value="0.24682971014492755" />
         <entry key="..\:/Project Mobile Apps/DiPS361/app/src/main/res/layout/list_item2.xml" value="0.25416666666666665" />

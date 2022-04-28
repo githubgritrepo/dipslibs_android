@@ -235,10 +235,8 @@ public class DipsWaitingRoom extends AppCompatActivity {
         int initResult = sdk.initialize(this, params);
         if (initResult == ZoomVideoSDKErrors.Errors_Success) {
             // You have successfully initialized the SDK
-            Log.d("CEK","successfully initialized the SDK");
         } else {
             // Something went wrong, see error code documentation
-            Log.d("CEK","Something went wrong : "+initResult);
             Toast.makeText(this, ErrorMsgUtil.getMsgByErrorCode(initResult), Toast.LENGTH_LONG).show();
         }
 
