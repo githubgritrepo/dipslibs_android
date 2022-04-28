@@ -1,5 +1,6 @@
 package com.evo.mitzoom.Fragments;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.graphics.Bitmap;

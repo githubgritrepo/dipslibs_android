@@ -167,4 +167,7 @@
     <string name="transaksi_anda_berhasil">Transaksi Anda Berhasil</string>
     <string name="resi_ini_akan_otomatis_dikirim_melalui_email_anda">Resi ini akan otomatis dikirim melalui email Anda.</string>
     <string name="resi">Resi</string>
+    <string name="perorangan">Perorangan</string>
+    <string name="perusahaan">Perusahaan</string>
+    <string name="pemerintah">Pemerintah</string>
 </resources>

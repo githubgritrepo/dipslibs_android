@@ -168,4 +168,7 @@
     <string name="transaksi_anda_berhasil">Your Transaction Successfully</string>
     <string name="resi_ini_akan_otomatis_dikirim_melalui_email_anda">This receipt will be automatically sent to your email.</string>
     <string name="resi">Receipt</string>
+    <string name="perorangan">Public</string>
+    <string name="perusahaan">Company</string>
+    <string name="pemerintah">Governor</string>
 </resources>
