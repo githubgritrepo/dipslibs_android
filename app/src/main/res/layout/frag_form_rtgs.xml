@@ -223,12 +223,12 @@
                         android:layout_width="wrap_content"
                         android:layout_height="35dp"
                         android:layout_marginTop="@dimen/dp_5"
-                        android:background="@drawable/bg_textinput"
+                        android:background="@drawable/bg_curr"
                         android:backgroundTint="@color/Blue"
                         android:padding="5dp"
-                        android:text="Rp. "
+                        android:text="Rp."
                         android:textColor="@color/white"
-                        android:textSize="16sp"
+                        android:textSize="17sp"
                         android:textStyle="bold" />
 
                 </RelativeLayout>

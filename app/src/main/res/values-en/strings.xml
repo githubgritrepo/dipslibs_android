@@ -166,4 +166,6 @@
     <string name="biaya">Fees</string>
     <string name="konfirmasi_transfer">Transfer Confirmation</string>
     <string name="transaksi_anda_berhasil">Your Transaction Successfully</string>
+    <string name="resi_ini_akan_otomatis_dikirim_melalui_email_anda">This receipt will be automatically sent to your email.</string>
+    <string name="resi">Receipt</string>
 </resources>

@@ -1,8 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.core.widget.NestedScrollView
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
     android:orientation="vertical">
     <TextView
         android:layout_margin="5dp"
@@ -11,16 +15,16 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textAlignment="center"
-        android:textSize="20sp"
+        android:textSize="17sp"
         android:gravity="center|center_vertical"
-        android:text="RESI"/>
+        android:text="@string/resi"/>
     <TextView
         android:textAppearance="@style/TextAppearance.AppCompat.Headline"
         android:textStyle="bold"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textAlignment="center"
-        android:textSize="20sp"
+        android:textSize="17sp"
         android:textColor="@color/bg_cif_success"
         android:gravity="center|center_vertical"
         android:text="@string/transaksi_anda_berhasil"/>
@@ -45,14 +49,15 @@
                 android:orientation="horizontal">
                 <TextView
                     android:textColor="@color/black"
-                    android:textSize="17sp"
+                    android:textSize="15sp"
                     android:textAlignment="textStart"
                     android:layout_width="0dp"
                     android:layout_weight="1"
                     android:layout_height="wrap_content"
-                    android:text="No.Formulir"/>
+                    android:text="No. Formulir"/>
                 <TextView
-                    android:textSize="17sp"
+                    android:id="@+id/No_Formulir"
+                    android:textSize="15sp"
                     android:textAlignment="textEnd"
                     android:layout_width="0dp"
                     android:layout_weight="1"
@@ -66,14 +71,15 @@
                 android:orientation="horizontal">
                 <TextView
                     android:textColor="@color/black"
-                    android:textSize="17sp"
+                    android:textSize="15sp"
                     android:textAlignment="textStart"
                     android:layout_width="0dp"
                     android:layout_weight="1"
                     android:layout_height="wrap_content"
-                    android:text="No.Referensi"/>
+                    android:text="No. Referensi"/>
                 <TextView
-                    android:textSize="17sp"
+                    android:id="@+id/No_Referensi"
+                    android:textSize="15sp"
                     android:textAlignment="textEnd"
                     android:layout_width="0dp"
                     android:layout_weight="1"
@@ -87,14 +93,15 @@
                 android:orientation="horizontal">
                 <TextView
                     android:textColor="@color/black"
-                    android:textSize="17sp"
+                    android:textSize="15sp"
                     android:textAlignment="textStart"
                     android:layout_width="0dp"
                     android:layout_weight="1"
                     android:layout_height="wrap_content"
                     android:text="Tanggal"/>
                 <TextView
-                    android:textSize="17sp"
+                    android:id="@+id/Tanggal"
+                    android:textSize="15sp"
                     android:textAlignment="textEnd"
                     android:layout_width="0dp"
                     android:layout_weight="1"
@@ -108,14 +115,15 @@
                 android:orientation="horizontal">
                 <TextView
                     android:textColor="@color/black"
-                    android:textSize="17sp"
+                    android:textSize="15sp"
                     android:textAlignment="textStart"
                     android:layout_width="0dp"
                     android:layout_weight="1"
                     android:layout_height="wrap_content"
                     android:text="Jam"/>
                 <TextView
-                    android:textSize="17sp"
+                    android:id="@+id/Jam"
+                    android:textSize="15sp"
                     android:textAlignment="textEnd"
                     android:layout_width="0dp"
                     android:layout_weight="1"
@@ -129,14 +137,15 @@
                 android:orientation="horizontal">
                 <TextView
                     android:textColor="@color/black"
-                    android:textSize="17sp"
+                    android:textSize="15sp"
                     android:textAlignment="textStart"
                     android:layout_width="0dp"
                     android:layout_weight="1"
                     android:layout_height="wrap_content"
-                    android:text="Rekening Sumber Dana"/>
+                    android:text="@string/source_account"/>
                 <TextView
-                    android:textSize="17sp"
+                    android:id="@+id/Rekening_Sumber_Dana"
+                    android:textSize="15sp"
                     android:textAlignment="textEnd"
                     android:layout_width="0dp"
                     android:layout_weight="1"
@@ -150,14 +159,15 @@
                 android:orientation="horizontal">
                 <TextView
                     android:textColor="@color/black"
-                    android:textSize="17sp"
+                    android:textSize="15sp"
                     android:textAlignment="textStart"
                     android:layout_width="0dp"
                     android:layout_weight="1"
                     android:layout_height="wrap_content"
                     android:text="Nama Pemilik Rekening"/>
                 <TextView
-                    android:textSize="17sp"
+                    android:id="@+id/Nama_Pemilik_Rekening"
+                    android:textSize="15sp"
                     android:textAlignment="textEnd"
                     android:layout_width="0dp"
                     android:layout_weight="1"
@@ -171,14 +181,15 @@
                 android:orientation="horizontal">
                 <TextView
                     android:textColor="@color/black"
-                    android:textSize="17sp"
+                    android:textSize="15sp"
                     android:textAlignment="textStart"
                     android:layout_width="0dp"
                     android:layout_weight="1"
                     android:layout_height="wrap_content"
-                    android:text="Jenis Layanan"/>
+                    android:text="@string/jenis_layanan"/>
                 <TextView
-                    android:textSize="17sp"
+                    android:id="@+id/Jenis_Layanan"
+                    android:textSize="15sp"
                     android:textAlignment="textEnd"
                     android:layout_width="0dp"
                     android:layout_weight="1"
@@ -192,14 +203,15 @@
             android:orientation="horizontal">
             <TextView
                 android:textColor="@color/black"
-                android:textSize="17sp"
+                android:textSize="15sp"
                 android:textAlignment="textStart"
                 android:layout_width="0dp"
                 android:layout_weight="1"
                 android:layout_height="wrap_content"
-                android:text="Bank Penerima"/>
+                android:text="@string/BankReceive"/>
             <TextView
-                android:textSize="17sp"
+                android:id="@+id/Bank_Penerima"
+                android:textSize="15sp"
                 android:textAlignment="textEnd"
                 android:layout_width="0dp"
                 android:layout_weight="1"
@@ -213,14 +225,15 @@
                 android:orientation="horizontal">
                 <TextView
                     android:textColor="@color/black"
-                    android:textSize="17sp"
+                    android:textSize="15sp"
                     android:textAlignment="textStart"
                     android:layout_width="0dp"
                     android:layout_weight="1"
                     android:layout_height="wrap_content"
-                    android:text="Nama Penerima"/>
+                    android:text="@string/ReceiverName2"/>
                 <TextView
-                    android:textSize="17sp"
+                    android:id="@+id/Nama_Penerima"
+                    android:textSize="15sp"
                     android:textAlignment="textEnd"
                     android:layout_width="0dp"
                     android:layout_weight="1"
@@ -234,14 +247,15 @@
                 android:orientation="horizontal">
                 <TextView
                     android:textColor="@color/black"
-                    android:textSize="17sp"
+                    android:textSize="15sp"
                     android:textAlignment="textStart"
                     android:layout_width="0dp"
                     android:layout_weight="1"
                     android:layout_height="wrap_content"
-                    android:text="Penerima Manfaat"/>
+                    android:text="@string/penerima_manfaat"/>
                 <TextView
-                    android:textSize="17sp"
+                    android:id="@+id/Penerima_Manfaat"
+                    android:textSize="15sp"
                     android:textAlignment="textEnd"
                     android:layout_width="0dp"
                     android:layout_weight="1"
@@ -255,14 +269,15 @@
                 android:orientation="horizontal">
                 <TextView
                     android:textColor="@color/black"
-                    android:textSize="17sp"
+                    android:textSize="15sp"
                     android:textAlignment="textStart"
                     android:layout_width="0dp"
                     android:layout_weight="1"
                     android:layout_height="wrap_content"
-                    android:text="Jenis Penduduk"/>
+                    android:text="@string/ResidentType"/>
                 <TextView
-                    android:textSize="17sp"
+                    android:id="@+id/Jenis_Penduduk"
+                    android:textSize="15sp"
                     android:textAlignment="textEnd"
                     android:layout_width="0dp"
                     android:layout_weight="1"
@@ -276,14 +291,15 @@
                 android:orientation="horizontal">
                 <TextView
                     android:textColor="@color/black"
-                    android:textSize="17sp"
+                    android:textSize="15sp"
                     android:textAlignment="textStart"
                     android:layout_width="0dp"
                     android:layout_weight="1"
                     android:layout_height="wrap_content"
-                    android:text="Berita"/>
+                    android:text="@string/berita"/>
                 <TextView
-                    android:textSize="17sp"
+                    android:id="@+id/Berita_Resi"
+                    android:textSize="15sp"
                     android:textAlignment="textEnd"
                     android:layout_width="0dp"
                     android:layout_weight="1"
@@ -297,14 +313,15 @@
                 android:orientation="horizontal">
                 <TextView
                     android:textColor="@color/black"
-                    android:textSize="17sp"
+                    android:textSize="15sp"
                     android:textAlignment="textStart"
                     android:layout_width="0dp"
                     android:layout_weight="1"
                     android:layout_height="wrap_content"
-                    android:text="Biaya"/>
+                    android:text="@string/biaya"/>
                 <TextView
-                    android:textSize="17sp"
+                    android:id="@+id/BiayaAdmin"
+                    android:textSize="15sp"
                     android:textAlignment="textEnd"
                     android:layout_width="0dp"
                     android:layout_weight="1"
@@ -318,14 +335,15 @@
                 android:orientation="horizontal">
                 <TextView
                     android:textColor="@color/black"
-                    android:textSize="17sp"
+                    android:textSize="15sp"
                     android:textAlignment="textStart"
                     android:layout_width="0dp"
                     android:layout_weight="1"
                     android:layout_height="wrap_content"
-                    android:text="Nominal Transaksi"/>
+                    android:text="@string/Amount"/>
                 <TextView
-                    android:textSize="17sp"
+                    android:id="@+id/Nominal_Transaksi"
+                    android:textSize="15sp"
                     android:textAlignment="textEnd"
                     android:layout_width="0dp"
                     android:layout_weight="1"
@@ -338,13 +356,22 @@
     </androidx.cardview.widget.CardView>
     <TextView
         android:textColor="@color/black"
-        android:layout_margin="10dp"
         android:textStyle="bold"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textAlignment="center"
-        android:textSize="15sp"
+        android:textSize="16sp"
         android:gravity="center|center_vertical"
-        android:text="Resi ini akan otomatis dikirim melalui email Anda"/>
-
+        android:text="@string/resi_ini_akan_otomatis_dikirim_melalui_email_anda"/>
+    <Button
+        android:layout_margin="15dp"
+        android:id="@+id/btn_done_resi"
+        android:layout_width="match_parent"
+        android:layout_height="35dp"
+        android:background="@drawable/oval_background_10dp"
+        android:backgroundTint="@color/bg_cif"
+        android:text="OK"
+        android:textColor="@color/white"
+        android:textStyle="bold" />
 </LinearLayout>
+</androidx.core.widget.NestedScrollView>

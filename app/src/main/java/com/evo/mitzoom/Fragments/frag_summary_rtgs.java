@@ -171,7 +171,19 @@ public class frag_summary_rtgs extends Fragment {
         sweetAlertDialog.setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
             @Override
             public void onClick(SweetAlertDialog sweetAlertDialog) {
-                getFragmentPage(new frag_portfolio());
+                Fragment fragment = new frag_resi();
+                Bundle bundle = new Bundle();
+                bundle.putString("rekeningSumber",RekeningSumber);
+                bundle.putString("jenisLayanan",JenisLayanan);
+                bundle.putString("namaBank",NamaBank);
+                bundle.putString("namaPenerima",NamaPenerima);
+                bundle.putString("penerimaManfaat",PenerimaManfaat);
+                bundle.putString("jenisPenduduk",JenisPenduduk);
+                bundle.putString("berita",Berita);
+                bundle.putString("nominal",Nominal);
+                bundle.putString("rekPenerima",RekPenerima);
+                fragment.setArguments(bundle);
+                getFragmentPage(fragment);
                 sweetAlertDialog.dismiss();
             }
         });
@@ -196,5 +208,6 @@ public class frag_summary_rtgs extends Fragment {
             }
         });
     }
+
 
 }

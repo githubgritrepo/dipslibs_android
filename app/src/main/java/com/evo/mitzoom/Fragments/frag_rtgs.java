@@ -84,7 +84,6 @@ public class frag_rtgs extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         context = getContext();
-
         sessions = new SessionManager(context);
         dataRTGS = sessions.getRTGS();
 
@@ -133,17 +132,18 @@ public class frag_rtgs extends Fragment {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
                 et_Nominal.removeTextChangedListener(this);
                 BigDecimal parsed = parseCurrencyValue(et_Nominal.getText().toString());
                 String formatted = numberFormat.format(parsed);
                 et_Nominal.setText(formatted);
                 et_Nominal.setSelection(formatted.length());
                 et_Nominal.addTextChangedListener(this);
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
             }
         });
         btnBack.setOnClickListener(new View.OnClickListener() {
