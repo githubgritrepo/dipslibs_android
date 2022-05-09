@@ -161,4 +161,14 @@
     <string name="ocr_title">Is your data correct?</string>
     <string name="ttl">Place of Birth</string>
     <string name="ttl2">Day of Birth</string>
+    <string name="dari">From</string>
+    <string name="penerima">Receiver</string>
+    <string name="biaya">Fees</string>
+    <string name="konfirmasi_transfer">Transfer Confirmation</string>
+    <string name="transaksi_anda_berhasil">Your Transaction Successfully</string>
+    <string name="resi_ini_akan_otomatis_dikirim_melalui_email_anda">This receipt will be automatically sent to your email.</string>
+    <string name="resi">Receipt</string>
+    <string name="perorangan">Public</string>
+    <string name="perusahaan">Company</string>
+    <string name="pemerintah">Governor</string>
 </resources>

@@ -1,5 +1,6 @@
 package com.evo.mitzoom.Fragments;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
@@ -373,6 +374,7 @@ public class frag_dialog_rtgs extends Fragment {
         String dataJs = jsonArray.toString();
         sessions.saveRTGS(dataJs);
     }
+
     private void fillBankList(){
         bankList = new ArrayList<>();
         bankList.add(new BankItem("BCA",R.drawable.bca));

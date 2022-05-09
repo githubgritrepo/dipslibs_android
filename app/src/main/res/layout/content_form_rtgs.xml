@@ -1,38 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:theme="@style/Theme.MaterialComponents.DayNight.DarkActionBar">
-    <LinearLayout
-        android:id="@+id/TopBar"
-        android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        android:background="@color/white"
-        android:orientation="horizontal">
-        <ImageView
-            android:id="@+id/btn_back4"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
-            android:layout_margin="10dp"
-            android:src="@drawable/ic_baseline_arrow_back_24" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:layout_marginStart="6dp"
-            android:text="@string/RTGS"
-            android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-            android:textSize="20sp"
-            android:textStyle="bold" />
-    </LinearLayout>
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/TopBar">
+        android:paddingBottom="50dp">
 
         <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
@@ -47,31 +23,28 @@
                 android:layout_margin="10dp"
                 android:orientation="vertical">
 
-                <LinearLayout
-                    android:id="@+id/choose_gallery"
+                <RelativeLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="10dp"
-                    android:background="@drawable/oval_background_10dp"
-                    android:backgroundTint="@color/color_6b6b6b"
-                    android:gravity="center"
-                    android:orientation="horizontal">
-
-                    <ImageView
-                        android:layout_width="20dp"
-                        android:layout_height="20dp"
-                        android:src="@drawable/galeri" />
+                    android:layout_marginBottom="@dimen/dp_20">
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="center_vertical"
-                        android:layout_marginStart="10dp"
-                        android:layout_marginEnd="10dp"
-                        android:text="@string/upload_file"
-                        android:textColor="@color/white"
+                        android:text="@string/no_formulir"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Body2"
                         android:textSize="16sp" />
-                </LinearLayout>
+
+                    <TextView
+                        android:id="@+id/tvNoFormulir"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentRight="true"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+                        android:textSize="16sp"
+                        tools:text="2103212" />
+
+                </RelativeLayout>
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -113,6 +86,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="10dp"
+                    android:clipToOutline="false"
                     app:boxCornerRadiusBottomEnd="10dp"
                     app:boxCornerRadiusBottomStart="10dp"
                     app:boxCornerRadiusTopEnd="10dp"
@@ -126,10 +100,11 @@
                         android:drawableRight="@android:drawable/ic_menu_search"
                         android:drawablePadding="@dimen/dp_5"
                         android:drawableTint="@color/black"
+                        android:gravity="center_vertical"
+                        android:textSize="12sp"
                         android:inputType="text"
-                        android:padding="9dp"
-                        android:textSize="16sp"
-                        tools:ignore="SpeakableTextPresentCheck" />
+                        android:paddingStart="@dimen/dp_15"/>
+
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <TextView
@@ -154,9 +129,10 @@
                         android:layout_width="match_parent"
                         android:layout_height="35dp"
                         android:inputType="number"
-                        android:padding="9dp"
-                        android:textSize="16sp"
-                        tools:ignore="SpeakableTextPresentCheck" />
+                        android:paddingVertical="@dimen/dp_10"
+                        android:textSize="12sp"
+                        android:includeFontPadding="false"
+                        android:gravity="center_vertical"/>
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <TextView
@@ -180,10 +156,11 @@
                         android:id="@+id/et_nama_penerima"
                         android:layout_width="match_parent"
                         android:layout_height="35dp"
-                        android:inputType="text"
-                        android:padding="9dp"
-                        android:textSize="16sp"
-                        tools:ignore="SpeakableTextPresentCheck,SpeakableTextPresentCheck,SpeakableTextPresentCheck" />
+                        android:paddingVertical="@dimen/dp_10"
+                        android:textSize="12sp"
+                        android:includeFontPadding="false"
+                        android:gravity="center_vertical"/>
+
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <TextView
@@ -213,22 +190,26 @@
                             android:layout_width="match_parent"
                             android:layout_height="35dp"
                             android:inputType="number"
+                            android:textSize="14sp"
                             android:padding="9dp"
-                            android:textSize="16sp"
-                            tools:ignore="SpeakableTextPresentCheck,SpeakableTextPresentCheck,SpeakableTextPresentCheck" />
+                            android:includeFontPadding="false"
+                            android:gravity="center_vertical"/>
+
                     </com.google.android.material.textfield.TextInputLayout>
 
                     <TextView
+                        android:gravity="center|center_vertical"
+                        android:textAlignment="center"
                         android:id="@+id/tvCurr"
                         android:layout_width="wrap_content"
                         android:layout_height="35dp"
                         android:layout_marginTop="@dimen/dp_5"
                         android:background="@drawable/bg_curr"
                         android:backgroundTint="@color/Blue"
-                        android:padding="5dp"
+                        android:padding="@dimen/dp_5"
                         android:text="Rp."
                         android:textColor="@color/white"
-                        android:textSize="17sp"
+                        android:textSize="15.9sp"
                         android:textStyle="bold" />
 
                 </RelativeLayout>
@@ -259,8 +240,8 @@
                         android:drawableRight="@android:drawable/ic_menu_search"
                         android:drawablePadding="@dimen/dp_5"
                         android:drawableTint="@color/black"
-                        android:paddingStart="@dimen/dp_15"
-                        android:textSize="15sp" />
+                        android:textSize="15sp"
+                        android:paddingStart="@dimen/dp_15"/>
 
                 </com.google.android.material.textfield.TextInputLayout>
 
@@ -290,8 +271,8 @@
                         android:drawableRight="@android:drawable/ic_menu_search"
                         android:drawablePadding="@dimen/dp_5"
                         android:drawableTint="@color/black"
-                        android:paddingStart="@dimen/dp_15"
-                        android:textSize="15sp" />
+                        android:textSize="15sp"
+                        android:paddingStart="@dimen/dp_15"/>
 
                 </com.google.android.material.textfield.TextInputLayout>
 
@@ -321,8 +302,8 @@
                         android:drawableRight="@android:drawable/ic_menu_search"
                         android:drawablePadding="@dimen/dp_5"
                         android:drawableTint="@color/black"
-                        android:paddingStart="@dimen/dp_15"
-                        android:textSize="15sp" />
+                        android:textSize="15sp"
+                        android:paddingStart="@dimen/dp_15"/>
 
                 </com.google.android.material.textfield.TextInputLayout>
 
@@ -337,38 +318,63 @@
                     style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="10dp"
+                    android:layout_marginBottom="20dp"
                     app:boxCornerRadiusBottomEnd="10dp"
                     app:boxCornerRadiusBottomStart="10dp"
                     app:boxCornerRadiusTopEnd="10dp"
-                    app:boxCornerRadiusTopStart="10dp">
+                    app:boxCornerRadiusTopStart="10dp"
+                    app:boxStrokeColor="@color/black"
+                    app:boxStrokeWidth="2dp">
 
                     <EditText
                         android:id="@+id/et_berita"
                         android:layout_width="match_parent"
                         android:layout_height="100dp"
-                        android:gravity="top"
+                        android:paddingVertical="@dimen/dp_10"
+                        android:textSize="12sp"
                         android:includeFontPadding="false"
+                        android:gravity="top"
                         android:inputType="textMultiLine"
                         android:lines="8"
                         android:maxLines="10"
                         android:minLines="6"
                         android:padding="10dp"
-                        android:paddingVertical="@dimen/dp_10"
-                        android:scrollbars="vertical"
-                        android:textSize="15sp" />
+                        android:scrollbars="vertical"/>
+
                 </com.google.android.material.textfield.TextInputLayout>
 
-                <Button
-                    android:id="@+id/btnProsesRTGS"
+                <RelativeLayout
                     android:layout_width="match_parent"
-                    android:layout_height="35dp"
-                    android:background="@drawable/oval_background_10dp"
-                    android:backgroundTint="@color/bg_cif"
-                    android:text="@string/btn_continue"
-                    android:textColor="@color/white"
-                    android:textStyle="bold" />
+                    android:layout_height="wrap_content">
+
+                    <Button
+                        android:id="@+id/btnProsesRTGS"
+                        android:layout_width="wrap_content"
+                        android:layout_height="35dp"
+                        android:background="@drawable/oval_background_10dp"
+                        android:backgroundTint="@color/bg_cif"
+                        android:text="@string/submit"
+                        android:textColor="@color/white"
+                        android:textSize="12sp"
+                        android:textStyle="bold" />
+
+                    <Button
+                        android:id="@+id/btnAdd"
+                        android:layout_width="wrap_content"
+                        android:layout_height="35dp"
+                        android:layout_alignParentRight="true"
+                        android:background="@drawable/oval_background_10dp"
+                        android:backgroundTint="@color/button_schedule"
+                        android:text="@string/add"
+                        android:textColor="@color/white"
+                        android:textSize="12sp"
+                        android:textStyle="bold" />
+
+                </RelativeLayout>
+
             </LinearLayout>
         </androidx.cardview.widget.CardView>
+
     </androidx.core.widget.NestedScrollView>
+
 </RelativeLayout>

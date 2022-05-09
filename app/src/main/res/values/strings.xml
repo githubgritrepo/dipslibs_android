@@ -160,6 +160,14 @@
     <string name="ocr_title">Apakah data anda sudah sesuai ?</string>
     <string name="ttl">Tempat</string>
     <string name="ttl2">Tanggal Lahir</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="dari">Dari</string>
+    <string name="penerima">Penerima</string>
+    <string name="biaya">Biaya</string>
+    <string name="konfirmasi_transfer">Konfirmasi Transfer</string>
+    <string name="transaksi_anda_berhasil">Transaksi Anda Berhasil</string>
+    <string name="resi_ini_akan_otomatis_dikirim_melalui_email_anda">Resi ini akan otomatis dikirim melalui email Anda.</string>
+    <string name="resi">Resi</string>
+    <string name="perorangan">Perorangan</string>
+    <string name="perusahaan">Perusahaan</string>
+    <string name="pemerintah">Pemerintah</string>
 </resources>

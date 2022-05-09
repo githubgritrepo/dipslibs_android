@@ -13,6 +13,7 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.evo.mitzoom.Fragments.FormRtgs;
 import com.evo.mitzoom.Fragments.frag_dialog_rtgs;
 import com.evo.mitzoom.R;
 import com.evo.mitzoom.Session.SessionManager;
@@ -52,7 +53,7 @@ public class GridProductAdapter extends RecyclerView.Adapter<GridProductAdapter.
                 if (pos == 0) {
                     ((FragmentActivity)ctx).getSupportFragmentManager()
                             .beginTransaction()
-                            .replace(R.id.layout_frame, new frag_dialog_rtgs())
+                            .replace(R.id.layout_frame, new FormRtgs())
                             .addToBackStack(null)
                             .commit();
                 }
