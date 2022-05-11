@@ -231,12 +231,8 @@ public class DipsWaitingRoom extends AppCompatActivity {
         params.audioRawDataMemoryMode = ZoomVideoSDKRawDataMemoryMode.ZoomVideoSDKRawDataMemoryModeHeap;
         params.shareRawDataMemoryMode = ZoomVideoSDKRawDataMemoryMode.ZoomVideoSDKRawDataMemoryModeHeap;
 
-        ZoomVideoSDK sdk = ZoomVideoSDK.getInstance();
-        int initResult = sdk.initialize(this, params);
-        if (initResult == ZoomVideoSDKErrors.Errors_Success) {
-            // You have successfully initialized the SDK
-        } else {
-            // Something went wrong, see error code documentation
+        int initResult = ZoomVideoSDK.getInstance().initialize(this, params);
+        if (initResult != ZoomVideoSDKErrors.Errors_Success) {
             Toast.makeText(this, ErrorMsgUtil.getMsgByErrorCode(initResult), Toast.LENGTH_LONG).show();
         }
 

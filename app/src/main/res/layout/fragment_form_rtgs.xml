@@ -43,15 +43,50 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:focusableInTouchMode="true" />
-        <me.relex.circleindicator.CircleIndicator
-            android:id="@+id/indicator"
+
+        <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="6dp"
-            android:layout_alignParentBottom="true"
-            android:gravity="center"
-            app:ci_drawable="@drawable/blue_button_background"
-            android:paddingBottom="55dp"/>
+            android:layout_alignParentBottom="true">
+
+            <Button
+                android:id="@+id/btnProsesRTGS"
+                android:layout_width="wrap_content"
+                android:layout_height="35dp"
+                android:background="@drawable/oval_background_10dp"
+                android:backgroundTint="@color/bg_cif"
+                android:text="@string/submit"
+                android:textColor="@color/white"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                android:layout_marginStart="@dimen/dp_10" />
+
+            <Button
+                android:id="@+id/btnAdd"
+                android:layout_width="wrap_content"
+                android:layout_height="35dp"
+                android:layout_alignParentRight="true"
+                android:background="@drawable/oval_background_10dp"
+                android:backgroundTint="@color/button_schedule"
+                android:text="@string/add"
+                android:textColor="@color/white"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                android:layout_marginEnd="@dimen/dp_10"/>
+
+            <me.relex.circleindicator.CircleIndicator
+                android:id="@+id/indicator"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="6dp"
+                android:layout_marginTop="6dp"
+                android:layout_marginEnd="6dp"
+                android:layout_marginBottom="30dp"
+                android:gravity="center"
+                android:paddingBottom="55dp"
+                app:ci_drawable="@drawable/blue_button_background" />
+
+        </RelativeLayout>
 
     </RelativeLayout>
 
