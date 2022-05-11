@@ -1,6 +1,7 @@
 package com.evo.mitzoom.Fragments;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -87,6 +88,11 @@ public class FormRtgs extends Fragment {
         btnBack = (ImageView) view.findViewById(R.id.btn_back4);
         pager = (ViewPager) view.findViewById(R.id.pager);
         circleIndicator = (CircleIndicator) view.findViewById(R.id.indicator);
+        btnProsesRTGS = (Button) view.findViewById(R.id.btnProsesRTGS);
+        btnAdd = (Button) view.findViewById(R.id.btnAdd);
+
+        btnProsesRTGS.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.bg_cif)));
+        btnAdd.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.button_schedule)));
 
         return view;
     }
@@ -101,6 +107,21 @@ public class FormRtgs extends Fragment {
             @Override
             public void onClick(View v) {
                 getFragmentPage(new frag_berita());
+            }
+        });
+
+        btnAdd.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int lens = layouts.size();
+                layouts.add(R.layout.content_form_rtgs);
+                int len = layouts.size();
+                String no_form = noForm.get(lens - 1);
+                int intForm = Integer.valueOf(no_form) + 1;
+                String NoForm = String.valueOf(intForm);
+                noForm.add(NoForm);
+                initPager();
+                pager.setCurrentItem(len-1);
             }
         });
     }
@@ -166,7 +187,8 @@ public class FormRtgs extends Fragment {
 
         @Override
         public void onPageSelected(int position) {
-            Log.d("CEK","onPageSelected position : "+position);
+            Log.d("CEK","onPageSelected position : "+position+" | noForm : "+noForm.get(position));
+            tvNoFormulir.setText(noForm.get(position));
         }
 
         @Override
@@ -204,8 +226,6 @@ public class FormRtgs extends Fragment {
             et_nama_penerima = (EditText) view.findViewById(R.id.et_nama_penerima);
             et_nominal = (EditText) view.findViewById(R.id.et_nominal);
             et_berita = (EditText) view.findViewById(R.id.et_berita);
-            btnProsesRTGS = (Button) view.findViewById(R.id.btnProsesRTGS);
-            btnAdd = (Button) view.findViewById(R.id.btnAdd);
             tvCurr = (TextView) view.findViewById(R.id.tvCurr);
         }
 
@@ -226,11 +246,8 @@ public class FormRtgs extends Fragment {
         }
 
         private void actionView() {
-            Log.d("CEK","getCurrentItem : "+pager.getCurrentItem());
-            int lens = layouts.size();
-            tvNoFormulir.setText(noForm.get(lens-1));
-
-            btnAdd.setOnClickListener(new View.OnClickListener() {
+            tvNoFormulir.setText(noForm.get(0));
+            /*btnAdd.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     Log.d("CEK","MASUK BUTTON ADD");
@@ -243,7 +260,7 @@ public class FormRtgs extends Fragment {
                     initPager();
                     pager.setCurrentItem(len-1);
                 }
-            });
+            });*/
 
             AdapterSourceAccount adapterSourceAcc = new AdapterSourceAccount(mContext,R.layout.list_item_souceacc,sourceAcc);
             et_source_account.setAdapter(adapterSourceAcc);
