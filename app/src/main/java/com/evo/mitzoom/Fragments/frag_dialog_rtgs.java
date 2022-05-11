@@ -169,7 +169,6 @@ public class frag_dialog_rtgs extends Fragment {
                 posSourceAccount = position;
             }
         });
-
         et_source_account.addTextChangedListener(new TextWatcher() {
             String textContent = "";
             @Override

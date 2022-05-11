@@ -155,7 +155,12 @@ public class DipsSplashScreen extends AppCompatActivity {
                     @Override
                     public void run() {
                         doWork();
-                        startApp();
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                chooseLanguage();
+                            }
+                        });
                     }
                 }).start();
             } else {

@@ -53,7 +53,7 @@ public class GridProductAdapter extends RecyclerView.Adapter<GridProductAdapter.
                 if (pos == 0) {
                     ((FragmentActivity)ctx).getSupportFragmentManager()
                             .beginTransaction()
-                            .replace(R.id.layout_frame, new FormRtgs())
+                            .replace(R.id.layout_frame, new frag_dialog_rtgs())
                             .addToBackStack(null)
                             .commit();
                 }
