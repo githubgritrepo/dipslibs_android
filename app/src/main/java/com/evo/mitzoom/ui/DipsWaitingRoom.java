@@ -68,6 +68,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -76,6 +77,9 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import cn.pedant.SweetAlert.SweetAlertDialog;
+import io.socket.client.IO;
+import io.socket.client.Socket;
+import io.socket.emitter.Emitter;
 import me.ibrahimsn.lib.OnItemSelectedListener;
 import me.ibrahimsn.lib.SmoothBottomBar;
 import me.relex.circleindicator.CircleIndicator;
@@ -126,6 +130,13 @@ public class DipsWaitingRoom extends AppCompatActivity {
     private boolean doubleBackToExitPressedOnce = false;
     private SessionManager sessions;
 
+    private Socket mSocket;
+    {
+        try {
+            mSocket = IO.socket(Server.BASE_URL_API);
+        } catch (URISyntaxException e) {}
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -148,6 +159,22 @@ public class DipsWaitingRoom extends AppCompatActivity {
 
 
         initializeSdk();
+
+        JSONObject object = new JSONObject();
+        try {
+            object.put("room", "room1");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        mSocket.emit("call","join",object);
+        mSocket.on("waiting", new Emitter.Listener() {
+            @Override
+            public void call(Object... args) {
+
+            }
+        });
+        mSocket.connect();
+
         btnSchedule = (MaterialButton) findViewById(R.id.btnSchedule);
         btnEndCall = findViewById(R.id.end_call);
         preview = (SurfaceView) findViewById(R.id.mySurface);
