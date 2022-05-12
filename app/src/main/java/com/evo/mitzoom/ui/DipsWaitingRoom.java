@@ -272,23 +272,19 @@ public class DipsWaitingRoom extends AppCompatActivity {
                 Log.d("CEK","dataArr : "+dataArr);
                 int statusCode = dataArr.getInt(0);
                 String lastQueue = dataArr.getString(2);
-                if (statusCode == 0) {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (statusCode == 0) {
                             lastTicket.setText("A"+lastQueue.substring(lastQueue.length()-3,lastQueue.length()));
                             PopUpSucces();
-                        }
-                    });
-                } else {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
+                        } else {
                             lastTicket.setText("A"+lastQueue.substring(lastQueue.length()-3,lastQueue.length()));
                             PopUpWaiting();
                         }
-                    });
-                }
+                    }
+                });
+
             } catch (JSONException e) {
                 e.printStackTrace();
             }
