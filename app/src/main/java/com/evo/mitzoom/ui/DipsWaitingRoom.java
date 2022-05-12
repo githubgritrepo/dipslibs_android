@@ -272,11 +272,15 @@ public class DipsWaitingRoom extends AppCompatActivity {
                 Log.d("CEK","dataArr : "+dataArr);
                 int statusCode = dataArr.getInt(0);
                 String lastQueue = dataArr.getString(2);
+                String Session_name = dataArr.getString(1);
+                String Session_password = dataArr.getString(3);
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
                         lastTicket.setText("A"+lastQueue.substring(lastQueue.length()-3,lastQueue.length()));
                         if (statusCode == 0) {
+                            NameSession = Session_name;
+                            SessionPass = Session_password;
                             PopUpSucces();
                         } else {
                             PopUpWaiting();
