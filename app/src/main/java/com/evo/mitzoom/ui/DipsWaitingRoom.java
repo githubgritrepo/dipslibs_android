@@ -64,6 +64,7 @@ import com.google.android.gms.vision.CameraSource;
 import com.google.android.material.button.MaterialButton;
 import com.google.gson.JsonObject;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -150,6 +151,9 @@ public class DipsWaitingRoom extends AppCompatActivity {
 
         mContext = this;
 
+        mSocket.on("waiting", waitingListener);
+        mSocket.connect();
+
         sessions = new SessionManager(mContext);
         String lang = sessions.getLANG();
         setLocale(this,lang);
@@ -163,23 +167,7 @@ public class DipsWaitingRoom extends AppCompatActivity {
         lastTicket = findViewById(R.id.last_ticket);
         processGetTicket(myTicket);
 
-
         initializeSdk();
-
-        JSONObject object = new JSONObject();
-        try {
-            object.put("room", "room1");
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        mSocket.emit("call","join",object);
-        mSocket.on("waiting", new Emitter.Listener() {
-            @Override
-            public void call(Object... args) {
-
-            }
-        });
-        mSocket.connect();
 
         btnSchedule = (MaterialButton) findViewById(R.id.btnSchedule);
         btnEndCall = findViewById(R.id.end_call);
@@ -202,9 +190,6 @@ public class DipsWaitingRoom extends AppCompatActivity {
                 EndCall();
             }
         });
-
-        PopUpWaiting();
-        PopUpSucces();
     }
     @Override
     protected void onResume() {
@@ -251,6 +236,14 @@ public class DipsWaitingRoom extends AppCompatActivity {
         super.onPause();
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        mSocket.disconnect();
+        mSocket.off("waiting");
+    }
+
     private void previewHolder(){
         previewHolder = preview.getHolder();
         previewHolder.addCallback(surfaceCallback);
@@ -270,6 +263,38 @@ public class DipsWaitingRoom extends AppCompatActivity {
         }
 
     }
+
+    private Emitter.Listener waitingListener = new Emitter.Listener() {
+        @Override
+        public void call(final Object... args) {
+            try {
+                JSONArray dataArr = new JSONArray(args);
+                Log.d("CEK","dataArr : "+dataArr);
+                int statusCode = dataArr.getInt(0);
+                String lastQueue = dataArr.getString(2);
+                if (statusCode == 0) {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            lastTicket.setText("A"+lastQueue.substring(lastQueue.length()-3,lastQueue.length()));
+                            PopUpSucces();
+                        }
+                    });
+                } else {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            lastTicket.setText("A"+lastQueue.substring(lastQueue.length()-3,lastQueue.length()));
+                            PopUpWaiting();
+                        }
+                    });
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+    };
+
     private void initPreview(int width, int height) {
         if (camera != null && previewHolder.getSurface() != null) {
             try {
@@ -423,9 +448,9 @@ public class DipsWaitingRoom extends AppCompatActivity {
         btnCancel.setBackgroundTintList(DipsWaitingRoom.this.getResources().getColorStateList(R.color.Blue));
     }
     private void PopUpWaiting(){
-        new Handler().postDelayed(new Runnable() {
+        /*new Handler().postDelayed(new Runnable() {
             @Override
-            public void run() {
+            public void run() {*/
                 SweetAlertDialog sweetAlertDialog = new SweetAlertDialog(DipsWaitingRoom.this, SweetAlertDialog.WARNING_TYPE);
                 sweetAlertDialog.setContentText(getResources().getString(R.string.headline_waiting));
                 sweetAlertDialog.setConfirmText(getResources().getString(R.string.waiting));
@@ -444,15 +469,15 @@ public class DipsWaitingRoom extends AppCompatActivity {
                 });
                 Button btnConfirm = (Button) sweetAlertDialog.findViewById(cn.pedant.SweetAlert.R.id.confirm_button);
                 btnConfirm.setBackgroundTintList(DipsWaitingRoom.this.getResources().getColorStateList(R.color.Blue));
-            }
-        },waktu_tunggu);
+            /*}
+        },waktu_tunggu);*/
     }
     private void PopUpSucces(){
-        handlerSuccess = new Handler();
+        /*handlerSuccess = new Handler();
         handlerSuccess.postDelayed(new Runnable() {
             @Override
             public void run() {
-                if (!stopPopSuccess) {
+                if (!stopPopSuccess) {*/
                     SweetAlertDialog sweetAlertDialog = new SweetAlertDialog(DipsWaitingRoom.this, SweetAlertDialog.SUCCESS_TYPE);
                     sweetAlertDialog.setContentText(getResources().getString(R.string.headline_success));
                     sweetAlertDialog.setConfirmText(getResources().getString(R.string.btn_continue));
@@ -476,9 +501,9 @@ public class DipsWaitingRoom extends AppCompatActivity {
                             PopUpSchedule();
                         }
                     });
-                }
+                /*}
             }
-        },15000);
+        },15000);*/
     }
     public void setCameraDisplayOrientation(){
         if (camera == null)
@@ -577,7 +602,15 @@ public class DipsWaitingRoom extends AppCompatActivity {
 
 
                         my_Ticket.setText("A"+queueID.substring(queueID.length()-3,queueID.length()));
-                        lastTicket.setText("A"+queueID.substring(queueID.length()-3,queueID.length()));
+                        lastTicket.setText("A"+lastQueueID.substring(lastQueueID.length()-3,lastQueueID.length()));
+
+                        JSONObject object = new JSONObject();
+                        try {
+                            object.put("room", queueID);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                        mSocket.emit("call","join",object);
 
                         Log.d("CEK DATA","idDips : "+idDips+"\n queueID : "+queueID+"\n lastquueID : "+lastQueueID);
 
