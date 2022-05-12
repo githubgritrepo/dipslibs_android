@@ -1,13 +1,17 @@
 package com.evo.mitzoom.Fragments;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
 import android.os.Environment;
@@ -234,6 +238,8 @@ public class frag_dialog_rtgs extends Fragment {
             public void onClick(View v) {
                 processSavedInstance();
                 generateBarcode(noForm);
+
+
             }
         });
     }
@@ -282,24 +288,49 @@ public class frag_dialog_rtgs extends Fragment {
             @Override
             public void onClick(SweetAlertDialog sweetAlertDialog) {
                 sweetAlertDialog.dismissWithAnimation();
-                try {
-                    String filename = "Barcode_No_Formulir-"+noForm + ".jpg";
-                    createTemporaryFile(finalImgByte, filename);
+                if (ContextCompat.checkSelfPermission(mContext, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED) {
+                    ActivityCompat.requestPermissions(getActivity(), new String[] { Manifest.permission.WRITE_EXTERNAL_STORAGE }, 1);
+                    try {
+                        String filename = "Barcode_No_Formulir-"+noForm + ".jpg";
+                        createTemporaryFile(finalImgByte, filename);
 
-                    String appName = getString(R.string.app_name_dips);
+                        String appName = getString(R.string.app_name_dips);
 
-                    String contents = "File disimpan di folder Pictures/" + appName + "/" + filename;
+                        String contents = "File disimpan di folder Pictures/" + appName + "/" + filename;
 
-                    SweetAlertDialog sAW = new SweetAlertDialog(mContext, SweetAlertDialog.SUCCESS_TYPE);
-                    sAW.setContentText(contents);
-                    sAW.hideConfirmButton();
-                    sAW.setCancelText("Tutup");
-                    sAW.setCancelable(false);
-                    sAW.show();
+                        SweetAlertDialog sAW = new SweetAlertDialog(mContext, SweetAlertDialog.SUCCESS_TYPE);
+                        sAW.setContentText(contents);
+                        sAW.hideConfirmButton();
+                        sAW.setCancelText("Tutup");
+                        sAW.setCancelable(false);
+                        sAW.show();
 
-                } catch (Exception e) {
-                    e.printStackTrace();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                 }
+                else
+                {
+                    try {
+                        String filename = "Barcode_No_Formulir-"+noForm + ".jpg";
+                        createTemporaryFile(finalImgByte, filename);
+
+                        String appName = getString(R.string.app_name_dips);
+
+                        String contents = "File disimpan di folder Pictures/" + appName + "/" + filename;
+
+                        SweetAlertDialog sAW = new SweetAlertDialog(mContext, SweetAlertDialog.SUCCESS_TYPE);
+                        sAW.setContentText(contents);
+                        sAW.hideConfirmButton();
+                        sAW.setCancelText("Tutup");
+                        sAW.setCancelable(false);
+                        sAW.show();
+
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+
             }
         });
     }
@@ -343,37 +374,6 @@ public class frag_dialog_rtgs extends Fragment {
         }
         return BigDecimal.ZERO;
     }
-
-    private void processSavedInstance() {
-        String noFormulir = tvNoFormulir.getText().toString().trim();
-        String rek_penerima = et_rek_penerima.getText().toString().trim();
-        String nama_penerima = et_nama_penerima.getText().toString().trim();
-        String nominal = et_nominal.getText().toString().trim();
-        String berita = et_berita.getText().toString().trim();
-
-        JSONArray jsonArray = new JSONArray();
-        JSONObject jsons = new JSONObject();
-        try {
-            jsons.put("idForm",noFormulir);
-            jsons.put("sourceAccount",posSourceAccount);
-            jsons.put("sourceBank",posSourceBank);
-            jsons.put("sourceTypeService",posSourceTypeService);
-            jsons.put("sourceBenefit",posSourceBenefit);
-            jsons.put("sourcePopulation",posSourcePopulation);
-            jsons.put("rek_penerima",rek_penerima);
-            jsons.put("nama_penerima",nama_penerima);
-            jsons.put("nominal",nominal);
-            jsons.put("berita",berita);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        jsonArray.put(jsons);
-
-        String dataJs = jsonArray.toString();
-        sessions.saveRTGS(dataJs);
-    }
-
     private void fillBankList(){
         bankList = new ArrayList<>();
         bankList.add(new BankItem("BCA",R.drawable.bca));
@@ -395,4 +395,40 @@ public class frag_dialog_rtgs extends Fragment {
         typeServiceList.add(new TypeServiceItem("SKN","Nominal transaksi minimal Rp. 50.000,00 dan maksimal Rp. 1.000.000.000,00 pertransaksi"));
         typeServiceList.add(new TypeServiceItem("RTGS", "Nominal transaksi minimal Rp. 100.000.000,00 pertransaksi"));
     }
+    private void processSavedInstance() {
+        String noFormulir = tvNoFormulir.getText().toString().trim();
+        String rek_penerima = et_rek_penerima.getText().toString().trim();
+        String nama_penerima = et_nama_penerima.getText().toString().trim();
+        String nominal = et_nominal.getText().toString().trim();
+        String berita = et_berita.getText().toString().trim();
+        String SumberBank = et_nama_bank.getText().toString();
+        String JenisLayanan = et_serviceType.getText().toString();
+
+        JSONArray jsonArray = new JSONArray();
+        JSONObject jsons = new JSONObject();
+        try {
+            jsons.put("idForm",noFormulir);
+            jsons.put("sourceAccount",posSourceAccount);
+            jsons.put("sourceBank",SumberBank);
+            jsons.put("sourceTypeService",JenisLayanan);
+            jsons.put("sourceBenefit",posSourceBenefit);
+            jsons.put("sourcePopulation",posSourcePopulation);
+            jsons.put("rek_penerima",rek_penerima);
+            jsons.put("nama_penerima",nama_penerima);
+            jsons.put("nominal",nominal);
+            jsons.put("berita",berita);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        Log.d("TAG","Sumber bank = "+SumberBank);
+        Log.d("TAG","Jenis Layanan = "+JenisLayanan);
+
+        jsonArray.put(jsons);
+
+        String dataJs = jsonArray.toString();
+        sessions.saveRTGS(dataJs);
+    }
+
+
 }
