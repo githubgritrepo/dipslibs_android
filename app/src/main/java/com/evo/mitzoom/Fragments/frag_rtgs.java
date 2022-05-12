@@ -318,8 +318,8 @@ public class frag_rtgs extends Fragment {
 
                 if (resulText.equals(idForm)) {
                     posSourceAccount = dataJs.getInt("sourceAccount");
-                    posSourceBank = dataJs.getInt("sourceBank");
-                    posSourceTypeService = dataJs.getInt("sourceTypeService");
+                    String SourceBank = dataJs.getString("sourceBank");
+                    String SourceTypeService = dataJs.getString("sourceTypeService");
                     posSourceBenefit = dataJs.getInt("sourceBenefit");
                     posSourcePopulation = dataJs.getInt("sourcePopulation");
                     String rek_penerima = dataJs.getString("rek_penerima");
@@ -343,6 +343,12 @@ public class frag_rtgs extends Fragment {
                         et_typePopulation.setText(et_typePopulation.getAdapter().getItem(posSourcePopulation).toString(), false);
                     }
 
+                    if (!SourceBank.isEmpty()){
+                        et_NamaBank.setText(SourceBank);
+                    }
+                    if (!SourceTypeService.isEmpty()){
+                        et_serviceType.setText(SourceTypeService);
+                    }
                     if (!rek_penerima.isEmpty()) {
                         et_RekPenerima.setText(rek_penerima);
                     }
