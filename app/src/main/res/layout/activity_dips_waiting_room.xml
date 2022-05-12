@@ -58,6 +58,7 @@
                                 android:layout_marginEnd="5dp"
                                 android:src="@drawable/icon_timer" />
                             <TextView
+                                android:id="@+id/last_ticket"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="A015"
@@ -98,6 +99,7 @@
                                 app:tint="@color/white" />
 
                             <TextView
+                                android:id="@+id/myticket"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="A021"
