@@ -275,11 +275,10 @@ public class DipsWaitingRoom extends AppCompatActivity {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
+                        lastTicket.setText("A"+lastQueue.substring(lastQueue.length()-3,lastQueue.length()));
                         if (statusCode == 0) {
-                            lastTicket.setText("A"+lastQueue.substring(lastQueue.length()-3,lastQueue.length()));
                             PopUpSucces();
                         } else {
-                            lastTicket.setText("A"+lastQueue.substring(lastQueue.length()-3,lastQueue.length()));
                             PopUpWaiting();
                         }
                     }
