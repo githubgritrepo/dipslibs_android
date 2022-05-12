@@ -118,6 +118,7 @@ public class DipsWaitingRoom extends AppCompatActivity {
     private String tanggal, waktu;
     String [] time = {"08.00 - 10.00", "10.00 - 12.00", "12.00 - 14.00", "14.00 - 16.00", "16.00 - 17.00"};
     String NameSession;
+    String idDips;
     String SessionPass;
     boolean isCust;
     String custName;
@@ -125,6 +126,7 @@ public class DipsWaitingRoom extends AppCompatActivity {
     private boolean stopPopSuccess = false;
     private boolean doubleBackToExitPressedOnce = false;
     private SessionManager sessions;
+    private TextView myTicket, lastTicket;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -143,8 +145,12 @@ public class DipsWaitingRoom extends AppCompatActivity {
 
         isCust = getIntent().getExtras().getBoolean("ISCUSTOMER");
         custName = getIntent().getExtras().getString("CUSTNAME");
+        idDips = getIntent().getExtras().getString("idDips");
         NameSession = getIntent().getExtras().getString("SessionName");
         SessionPass = getIntent().getExtras().getString("SessionPass");
+        myTicket = findViewById(R.id.myticket);
+        lastTicket = findViewById(R.id.last_ticket);
+        processGetTicket(myTicket);
 
 
         initializeSdk();
@@ -519,6 +525,49 @@ public class DipsWaitingRoom extends AppCompatActivity {
     protected void onPermissionGranted() {
         processJoinVideo();
     }
+    private void processGetTicket(TextView my_Ticket){
+        JSONObject jsons = new JSONObject();
+        try {
+            jsons.put("idDips",idDips);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), jsons.toString());
+
+        ApiService API = Server.getAPIService();
+        Call<JsonObject> call = API.Ticket(requestBody);
+        call.enqueue(new Callback<JsonObject>() {
+            @Override
+            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                if (response.isSuccessful() && response.body().size() > 0) {
+                    String dataS = response.body().toString();
+                    try {
+                        JSONObject jsObj = new JSONObject(dataS);
+                        String idDips = jsObj.getString("idDips");
+                        String queueID = jsObj.getString("queueID").toString();
+                        String lastQueueID = jsObj.getString("lastQueueID");
+
+
+
+                        my_Ticket.setText("A"+queueID.substring(queueID.length()-3,queueID.length()));
+                        lastTicket.setText("A"+queueID.substring(queueID.length()-3,queueID.length()));
+
+                        Log.d("CEK DATA","idDips : "+idDips+"\n queueID : "+queueID+"\n lastquueID : "+lastQueueID);
+
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                } else {
+                    Log.d("CEK","MASUK ELSE");
+                }
+            }
+
+            @Override
+            public void onFailure(Call<JsonObject> call, Throwable t) {
+                Toast.makeText(mContext,t.getMessage(),Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
     private void processJoinVideo() {
         if (!requestPermission())
             return;
@@ -566,7 +615,8 @@ public class DipsWaitingRoom extends AppCompatActivity {
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
-                } else {
+                }
+                else {
                     Log.d("CEK","MASUK ELSE");
                 }
             }

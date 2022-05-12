@@ -14,8 +14,8 @@ public class CaptureIdentify {
     @SerializedName("customer")
     private boolean customer;
 
-    @SerializedName("user_id")
-    private String user_id;
+    @SerializedName("idDips")
+    private String idDips;
 
     @SerializedName("name")
     private String name;
@@ -55,12 +55,12 @@ public class CaptureIdentify {
         this.customer = customer;
     }
 
-    public String getUser_id() {
-        return user_id;
+    public String getIdDips() {
+        return idDips;
     }
 
-    public void setUser_id(String user_id) {
-        this.user_id = user_id;
+    public void setIdDips(String idDips) {
+        this.idDips = idDips;
     }
 
     public String getName() {

@@ -21,5 +21,9 @@ public interface ApiService {
     @POST("api/zoom/signature")
     Call<JsonObject> Signature(@Body RequestBody body);
 
+    @Headers("Content-Type: "+ MyConstants.CONTENT_TYPE)
+    @POST("api/queue/tiket")
+    Call<JsonObject> Ticket(@Body RequestBody body);
+
 
 }
