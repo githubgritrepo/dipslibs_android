@@ -25,5 +25,9 @@ public interface ApiService {
     @POST("api/queue/tiket")
     Call<JsonObject> Ticket(@Body RequestBody body);
 
+    @Headers("Content-Type: "+ MyConstants.CONTENT_TYPE)
+    @POST("api/nik/cek")
+    Call<JsonObject> CekData(@Body RequestBody body);
+
 
 }

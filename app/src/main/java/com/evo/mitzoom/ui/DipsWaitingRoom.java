@@ -270,19 +270,26 @@ public class DipsWaitingRoom extends AppCompatActivity {
             try {
                 JSONArray dataArr = new JSONArray(args);
                 Log.d("CEK","dataArr : "+dataArr);
+                //Status
                 int statusCode = dataArr.getInt(0);
-                String lastQueue = dataArr.getString(2);
+                //Nama Sesi
                 String Session_name = dataArr.getString(1);
+                //Antrian Terakhir
+                String lastQueue = dataArr.getString(2);
+                //Password Session
                 String Session_password = dataArr.getString(3);
+                //Username Agent
+                //String Username_agent = dataArr.getString(4);
+
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        lastTicket.setText("A"+lastQueue.substring(lastQueue.length()-3,lastQueue.length()));
                         if (statusCode == 0) {
                             NameSession = Session_name;
                             SessionPass = Session_password;
                             PopUpSucces();
                         } else {
+                            lastTicket.setText("A"+lastQueue.substring(lastQueue.length()-3,lastQueue.length()));
                             PopUpWaiting();
                         }
                     }

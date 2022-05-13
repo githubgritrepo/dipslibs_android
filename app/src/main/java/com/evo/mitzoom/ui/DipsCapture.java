@@ -466,6 +466,8 @@ public class DipsCapture extends AppCompatActivity implements CameraSource.Pictu
                     String sessionName = response.body().getDataSession().getNameSession();
                     String sessionPass = response.body().getDataSession().getPass();
 
+                    sessions.saveIdDips(idDips);
+
                     Intent intent = new Intent(DipsCapture.this,DipsWaitingRoom.class);
                     intent.putExtra("ISCUSTOMER",isCust);
                     intent.putExtra("CUSTNAME",custName);

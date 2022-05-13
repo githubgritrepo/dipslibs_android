@@ -21,6 +21,7 @@ public class SessionManager {
     // All Shared Preferences Keys
     public static final String KEY_LANG = "LANGUAGE";
     public static final String KEY_RTGS = "RTGS";
+    public static final String KEY_IdDips = "IdDips";
 
     // Constructor
     public SessionManager(Context context){
@@ -39,11 +40,19 @@ public class SessionManager {
         editor.commit();
     }
 
+    public void saveIdDips(String data){
+        editor.putString(KEY_IdDips,data);
+        editor.commit();
+    }
+
     public String getLANG() {
         return pref.getString(KEY_LANG,null);
     }
     public String getRTGS() {
         return pref.getString(KEY_RTGS,null);
+    }
+    public String getKEY_IdDips (){
+        return pref.getString(KEY_IdDips,null);
     }
 
 }

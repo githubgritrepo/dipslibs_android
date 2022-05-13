@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,30 +19,46 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.evo.mitzoom.API.ApiService;
+import com.evo.mitzoom.API.Server;
 import com.evo.mitzoom.R;
+import com.evo.mitzoom.Session.SessionManager;
 import com.evo.mitzoom.ui.DipsSplashScreen;
 import com.evo.mitzoom.ui.DipsVideoConfren;
 import com.evo.mitzoom.ui.DipsWaitingRoom;
 import com.google.android.material.button.MaterialButton;
+import com.google.gson.JsonObject;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.Locale;
 
 import cn.pedant.SweetAlert.SweetAlertDialog;
+import okhttp3.MediaType;
+import okhttp3.RequestBody;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class frag_inputdata extends Fragment {
     private Context context;
     private EditText et_NamaNasabah, et_NikNasabah;
+    private String Nama, NIK;
     private MaterialButton btnNext;
     private boolean isCust;
     public int seconds = 0;
     public boolean running = true;
     public boolean wasRunning;
+    private SessionManager session;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         context = getContext();
         isCust = getArguments().getBoolean("ISCUST");
+        session = new SessionManager(context);
+
     }
 
 
@@ -63,15 +80,58 @@ public class frag_inputdata extends Fragment {
         btnNext.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //if (isCust == false) {
-                    //untuk menu non Customer
-                    //getFragmentPage(new frag_item());
-                //}
-                //else{
-                    //untuk Menu Customer
-                    //getFragmentPage(new frag_portfolio());
-                //}
-                PopupChoose();
+                Nama = et_NamaNasabah.getText().toString();
+                NIK = et_NikNasabah.getText().toString();
+                CekData();
+                //PopupChoose();
+            }
+        });
+    }
+    private void CekData(){
+        String idDips = session.getKEY_IdDips();
+        JSONObject jsons = new JSONObject();
+        try {
+            jsons.put("idDips",idDips);
+            jsons.put("nik",NIK);
+            jsons.put("name",Nama);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), jsons.toString());
+
+        ApiService API = Server.getAPIService();
+        Call<JsonObject> call = API.CekData(requestBody);
+        call.enqueue(new Callback<JsonObject>() {
+            @Override
+            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                if (response.isSuccessful() && response.body().size() > 0) {
+                    String dataS = response.body().toString();
+                    try {
+                        JSONObject jsObj = new JSONObject(dataS);
+                        int err_code = jsObj.getInt("err_code");
+                        String message = jsObj.getString("message");
+
+                        Log.d("Cek Message", message);
+
+                        if (err_code == 0){
+                            getFragmentPage(new frag_item());
+                        }
+                        else {
+                            getFragmentPage(new frag_portfolio());
+                        }
+
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+                else {
+                    Log.d("CEK","MASUK ELSE");
+                }
+            }
+
+            @Override
+            public void onFailure(Call<JsonObject> call, Throwable t) {
+                Toast.makeText(context,t.getMessage(),Toast.LENGTH_SHORT).show();
             }
         });
     }

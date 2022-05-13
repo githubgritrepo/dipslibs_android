@@ -51,7 +51,14 @@ public class frag_conferee_agree extends Fragment {
         btn_Setuju.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (isCust == false) {
+                //Jika muka tidak terdaftar maka menuju ke masukan nama & NIK
                 getFragmentPage(new frag_inputdata());
+                }
+                else{
+                //Jika muka terdaftar maka langsung menuju ke portfolio
+                getFragmentPage(new frag_portfolio());
+                }
                 BaseMeetingActivity.btnChat.setBackgroundTintList(context.getResources().getColorStateList(R.color.Blue));
                 BaseMeetingActivity.btnChat.setClickable(true);
             }
