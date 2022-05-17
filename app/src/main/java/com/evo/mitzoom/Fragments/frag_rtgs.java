@@ -76,7 +76,7 @@ public class frag_rtgs extends Fragment {
     String[] sourcePopulation = {"Penduduk", "Bukan Penduduk"};
     private Button btnProses;
     private String RekeningSumber, NamaBank, RekPenerima, NamaPenerima, Nominal, JenisLayanan, PenerimaManfaat,JenisPenduduk,Berita;
-    public static final NumberFormat numberFormat = NumberFormat.getCurrencyInstance(new Locale("id", "ID"));
+    public static final NumberFormat numberFormat = NumberFormat.getInstance(new Locale("id", "ID"));
     private String dataRTGS;
     private LinearLayout choose_gallery;
 
@@ -112,11 +112,6 @@ public class frag_rtgs extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         String lang = sessions.getLANG();
-        if (lang.equals("en")) {
-            tvCurr.setText("IDR");
-        } else {
-            tvCurr.setText("Rp.");
-        }
 
         choose_gallery.setOnClickListener(new View.OnClickListener() {
             @Override

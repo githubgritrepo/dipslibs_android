@@ -193,45 +193,49 @@
                     android:textAppearance="@style/TextAppearance.AppCompat.Body2"
                     android:textSize="16sp" />
 
-                <RelativeLayout
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="10dp">
-
+                    android:layout_marginBottom="10dp"
+                    android:orientation="horizontal">
+                    <androidx.cardview.widget.CardView
+                        android:layout_width="0dp"
+                        android:layout_weight="0.15"
+                        android:layout_marginTop="3dp"
+                        android:layout_gravity="center_vertical"
+                        android:layout_height="36dp"
+                        app:cardCornerRadius="2dp">
+                        <TextView
+                            android:background="@drawable/bg_curr"
+                            android:backgroundTint="@color/Blue"
+                            android:textAlignment="center"
+                            android:gravity="center_vertical|center"
+                            android:textColor="@color/white"
+                            android:textSize="17sp"
+                            android:textStyle="bold"
+                            android:layout_width="match_parent"
+                            android:layout_height="36dp"
+                            android:text="@string/mata_uang"/>
+                    </androidx.cardview.widget.CardView>
                     <com.google.android.material.textfield.TextInputLayout
                         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                        android:layout_width="match_parent"
+                        android:layout_width="0dp"
+                        android:layout_marginStart="-10dp"
+                        android:layout_weight="1"
                         android:layout_height="wrap_content"
-                        android:layout_centerVertical="true"
                         app:boxCornerRadiusBottomEnd="10dp"
-                        app:boxCornerRadiusBottomStart="10dp"
-                        app:boxCornerRadiusTopEnd="10dp"
-                        app:boxCornerRadiusTopStart="10dp">
-
+                        app:boxCornerRadiusTopEnd="10dp">
                         <EditText
+                            android:paddingTop="9dp"
+                            android:paddingBottom="9dp"
                             android:id="@+id/et_nominal"
                             android:layout_width="match_parent"
                             android:layout_height="35dp"
                             android:inputType="number"
-                            android:padding="9dp"
-                            android:textSize="16sp"
-                            tools:ignore="SpeakableTextPresentCheck,SpeakableTextPresentCheck,SpeakableTextPresentCheck" />
+                            android:textSize="14sp"
+                            android:includeFontPadding="false"/>
                     </com.google.android.material.textfield.TextInputLayout>
-
-                    <TextView
-                        android:id="@+id/tvCurr"
-                        android:layout_width="wrap_content"
-                        android:layout_height="35dp"
-                        android:layout_marginTop="@dimen/dp_5"
-                        android:background="@drawable/bg_curr"
-                        android:backgroundTint="@color/Blue"
-                        android:padding="5dp"
-                        android:text="Rp."
-                        android:textColor="@color/white"
-                        android:textSize="17sp"
-                        android:textStyle="bold" />
-
-                </RelativeLayout>
+                </LinearLayout>
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -241,7 +245,7 @@
                     android:textSize="16sp" />
 
                 <com.google.android.material.textfield.TextInputLayout
-                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="10dp"

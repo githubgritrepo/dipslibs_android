@@ -108,7 +108,7 @@
     <string name="produk_layanan"><![CDATA[Layanan]]></string>
     <string name="btn_produk_nlayanan"><![CDATA[Produk & Layanan]]></string>
     <string name="verifikasi">Verifikasi</string>
-    <string name="RTGS">Transaksi RTGS</string>
+    <string name="RTGS">Formulir Transfer</string>
     <string name="SKN">Transaksi SKN</string>
     <string name="FOREX">Transaksi Valas</string>
     <string name="BankName">Bank Tujuan</string>
@@ -155,7 +155,7 @@
     <string name="antrian_sekarang">(Antrian Sekarang)</string>
     <string name="mata_uang">Rp</string>
     <string name="currency">Dalam Rp</string>
-    <string name="formulir_rtgs">Formulir RTGS</string>
+    <string name="formulir_rtgs">Formulir Transfer</string>
     <string name="please_wait">Harap Menunggu</string>
     <string name="ocr_title">Apakah data anda sudah sesuai ?</string>
     <string name="ttl">Tempat</string>

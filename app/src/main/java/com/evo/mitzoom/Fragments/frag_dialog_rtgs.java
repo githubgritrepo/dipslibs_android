@@ -13,6 +13,8 @@ import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.viewpager.widget.PagerAdapter;
+import androidx.viewpager.widget.ViewPager;
 
 import android.os.Environment;
 import android.text.Editable;
@@ -52,6 +54,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.math.BigDecimal;
+import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -61,6 +64,7 @@ import java.util.Locale;
 import java.util.Objects;
 
 import cn.pedant.SweetAlert.SweetAlertDialog;
+import me.relex.circleindicator.CircleIndicator;
 
 public class frag_dialog_rtgs extends Fragment {
 
@@ -69,12 +73,16 @@ public class frag_dialog_rtgs extends Fragment {
     private Button btnProsesRTGS, btnAdd;
     private Context mContext;
     private SessionManager sessions;
-    private AutoCompleteTextView et_source_account, et_nama_bank, et_serviceType,et_benefitRec,et_typePopulation;
-    String [] sourceAcc = {"Tabungan DiPS Rupiah\n011043021 - Andi\nRp. 18.231,00", "Giro DiPS Rupiah\n021008120 - Andi\nRp. 15.000.000,00"};
+    private AutoCompleteTextView et_nama_bank, et_serviceType,et_benefitRec,et_typePopulation;
     String[] sourceBenefit = {"Perorangan", "Perusahaan", "Pemerintah"};
     String[] sourcePopulation = {"Penduduk", "Bukan Penduduk"};
     private int posSourceAccount = -1;
     private int posSourceBank = -1;
+    private ViewPager pager;
+    private CircleIndicator circleIndicator;
+    private ArrayList<Integer> layouts = new ArrayList<Integer>();
+    private ArrayList<String> noForm = new ArrayList<String>();
+    private MyViewPagerAdapter myViewPagerAdapter;
     private int posSourceTypeService = -1;
     private int posSourceBenefit = -1;
     private int posSourcePopulation = -1;
@@ -84,7 +92,7 @@ public class frag_dialog_rtgs extends Fragment {
     private EditText et_berita;
     private List<BankItem> bankList;
     private List<TypeServiceItem> typeServiceList;
-    public static final NumberFormat numberFormat = NumberFormat.getCurrencyInstance(new Locale("id", "ID"));
+    public static final NumberFormat numberFormat = NumberFormat.getInstance(new Locale("id", "ID"));
     private TextView tvNoFormulir;
 
     @Override
@@ -93,6 +101,8 @@ public class frag_dialog_rtgs extends Fragment {
 
         mContext = getContext();
         sessions = new SessionManager(mContext);
+        layouts.add(R.layout.content_form_rtgs);
+        noForm.add("2103212");
     }
 
     @Override
@@ -102,7 +112,6 @@ public class frag_dialog_rtgs extends Fragment {
 
         btnBack = (ImageView) view.findViewById(R.id.btn_back4);
         tvNoFormulir = (TextView) view.findViewById(R.id.tvNoFormulir);
-        et_source_account = (AutoCompleteTextView) view.findViewById(R.id.et_source_account);
         et_nama_bank = (AutoCompleteTextView) view.findViewById(R.id.et_nama_bank);
         et_serviceType = (AutoCompleteTextView) view.findViewById(R.id.et_serviceType);
         et_benefitRec = (AutoCompleteTextView) view.findViewById(R.id.et_benefitRec);
@@ -114,6 +123,8 @@ public class frag_dialog_rtgs extends Fragment {
         btnProsesRTGS = (Button) view.findViewById(R.id.btnProsesRTGS);
         btnAdd = (Button) view.findViewById(R.id.btnAdd);
         tvCurr = (TextView) view.findViewById(R.id.tvCurr);
+        circleIndicator = (CircleIndicator) view.findViewById(R.id.indicator);
+        pager = (ViewPager) view.findViewById(R.id.pager);
 
         return view;
     }
@@ -122,17 +133,14 @@ public class frag_dialog_rtgs extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        String noForm = "2103212";
-        tvNoFormulir.setText(noForm);
+        initPager();
+
+        String noForm1 = "2103212";
+        tvNoFormulir.setText(noForm1);
         btnProsesRTGS.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.bg_cif)));
         btnAdd.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.button_schedule)));
 
         String lang = sessions.getLANG();
-        if (lang.equals("en")) {
-            tvCurr.setText("IDR");
-        } else {
-            tvCurr.setText("Rp.");
-        }
 
         et_nominal.addTextChangedListener(new TextWatcher() {
             @Override
@@ -163,37 +171,6 @@ public class frag_dialog_rtgs extends Fragment {
             }
         });
 
-        AdapterSourceAccount adapterSourceAcc = new AdapterSourceAccount(mContext,R.layout.list_item_souceacc,sourceAcc);
-        et_source_account.setAdapter(adapterSourceAcc);
-        et_source_account.setBackground(mContext.getResources().getDrawable(R.drawable.blue_button_background));
-        et_source_account.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                //String selection = (String) parent.getItemAtPosition(position);
-                posSourceAccount = position;
-            }
-        });
-        et_source_account.addTextChangedListener(new TextWatcher() {
-            String textContent = "";
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                textContent = s.toString();
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                String[] strings = textContent.split("\\r?\\n");
-                String titleAcc = strings[0]+"\n";
-                s.setSpan(new StyleSpan(android.graphics.Typeface.BOLD), 0, titleAcc.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-            }
-
-
-        });
 
         fillBankList();
         AdapterBank2 adapterBank2 = new AdapterBank2(mContext,bankList);
@@ -237,11 +214,33 @@ public class frag_dialog_rtgs extends Fragment {
             @Override
             public void onClick(View v) {
                 processSavedInstance();
-                generateBarcode(noForm);
-
-
+                generateBarcode(noForm1);
             }
         });
+
+        btnAdd.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int lens = layouts.size();
+                layouts.add(R.layout.content_form_rtgs);
+                int len = layouts.size();
+                String no_form = noForm.get(lens - 1);
+                int intForm = Integer.valueOf(no_form) + 1;
+                String NoForm = String.valueOf(intForm);
+                noForm.add(NoForm);
+                initPager();
+                pager.setCurrentItem(len-1);
+            }
+        });
+    }
+
+    private void initPager() {
+        if (myViewPagerAdapter == null) {
+            myViewPagerAdapter = new MyViewPagerAdapter();
+        }
+        pager.setAdapter(myViewPagerAdapter);
+        pager.addOnPageChangeListener(viewPagerPageChangeListener);
+        circleIndicator.setViewPager(pager);
     }
 
     @Override
@@ -408,7 +407,6 @@ public class frag_dialog_rtgs extends Fragment {
         JSONObject jsons = new JSONObject();
         try {
             jsons.put("idForm",noFormulir);
-            jsons.put("sourceAccount",posSourceAccount);
             jsons.put("sourceBank",SumberBank);
             jsons.put("sourceTypeService",JenisLayanan);
             jsons.put("sourceBenefit",posSourceBenefit);
@@ -420,15 +418,99 @@ public class frag_dialog_rtgs extends Fragment {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-
-        Log.d("TAG","Sumber bank = "+SumberBank);
-        Log.d("TAG","Jenis Layanan = "+JenisLayanan);
-
         jsonArray.put(jsons);
-
         String dataJs = jsonArray.toString();
         sessions.saveRTGS(dataJs);
     }
+
+
+
+    ViewPager.OnPageChangeListener viewPagerPageChangeListener = new ViewPager.OnPageChangeListener() {
+        @Override
+        public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+            Log.d("CEK","onPageScrolled position : "+position+" | positionOffset : "+positionOffset);
+        }
+
+        @Override
+        public void onPageSelected(int position) {
+            Log.d("CEK","onPageSelected position : "+position+" | noForm : "+noForm.get(position));
+            tvNoFormulir.setText(noForm.get(position));
+        }
+
+        @Override
+        public void onPageScrollStateChanged(int state) {
+            Log.d("CEK","onPageScrollStateChangedn : "+state);
+        }
+    };
+
+    public class MyViewPagerAdapter extends PagerAdapter {
+        private LayoutInflater layoutInflater;
+
+        @NonNull
+        @Override
+        public Object instantiateItem(@NonNull ViewGroup container, int position) {
+            layoutInflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+
+            View view = layoutInflater.inflate(layouts.get(position), container, false);
+            container.addView(view);
+
+            iniatilizeElement(view);
+
+            actionView();
+
+            return view;
+        }
+
+        private void iniatilizeElement(View view) {
+            tvNoFormulir = (TextView) view.findViewById(R.id.tvNoFormulir);
+            et_nama_bank = (AutoCompleteTextView) view.findViewById(R.id.et_nama_bank);
+            et_serviceType = (AutoCompleteTextView) view.findViewById(R.id.et_serviceType);
+            et_benefitRec = (AutoCompleteTextView) view.findViewById(R.id.et_benefitRec);
+            et_typePopulation = (AutoCompleteTextView) view.findViewById(R.id.et_typePopulation);
+            et_rek_penerima = (EditText) view.findViewById(R.id.et_rek_penerima);
+            et_nama_penerima = (EditText) view.findViewById(R.id.et_nama_penerima);
+            et_nominal = (EditText) view.findViewById(R.id.et_nominal);
+            et_berita = (EditText) view.findViewById(R.id.et_berita);
+            tvCurr = (TextView) view.findViewById(R.id.tvCurr);
+        }
+
+        @Override
+        public int getCount() {
+            return layouts.size();
+        }
+
+        @Override
+        public boolean isViewFromObject(@NonNull View view, @NonNull Object object) {
+            return view == object;
+        }
+
+        @Override
+        public void destroyItem(@NonNull ViewGroup container, int position, @NonNull Object object) {
+            View view = (View) object;
+            container.removeView(view);
+        }
+
+        private void actionView() {
+            tvNoFormulir.setText(noForm.get(0));
+            /*btnAdd.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Log.d("CEK","MASUK BUTTON ADD");
+                    layouts.add(R.layout.content_form_rtgs);
+                    int len = layouts.size();
+                    String no_form = noForm.get(lens - 1);
+                    int intForm = Integer.valueOf(no_form) + 1;
+                    String NoForm = String.valueOf(intForm);
+                    noForm.add(NoForm);
+                    initPager();
+                    pager.setCurrentItem(len-1);
+                }
+            });*/
+
+        }
+    }
+
+
 
 
 }

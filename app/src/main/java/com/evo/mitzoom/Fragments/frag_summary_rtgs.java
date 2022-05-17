@@ -84,7 +84,7 @@ public class frag_summary_rtgs extends Fragment {
         tv_JenisPenduduk.setText(JenisPenduduk);
         tv_Berita.setText(Berita);
         tv_Biaya.setText("Rp2.500");
-        tv_Nominal.setText(Nominal);
+        tv_Nominal.setText("Rp"+Nominal);
 
         btnBack.setOnClickListener(new View.OnClickListener() {
             @Override

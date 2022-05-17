@@ -95,7 +95,7 @@ public class frag_resi extends Fragment {
         tv_JenisPenduduk.setText(JenisPenduduk);
         tv_Berita.setText(Berita);
         tv_BiayaAdmin.setText("Rp2.500");
-        tv_NominalTransaksi.setText(Nominal);
+        tv_NominalTransaksi.setText("Rp"+Nominal);
 
         btnOK.setOnClickListener(new View.OnClickListener() {
             @Override

@@ -125,6 +125,7 @@ public class DipsWaitingRoom extends AppCompatActivity {
     String NameSession;
     String idDips;
     String SessionPass;
+    String myTicketNumber;
     boolean isCust;
     String custName;
     private Handler handlerSuccess;
@@ -249,6 +250,7 @@ public class DipsWaitingRoom extends AppCompatActivity {
         previewHolder.addCallback(surfaceCallback);
         previewHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
     }
+
     private void initializeSdk() {
         ZoomVideoSDKInitParams params = new ZoomVideoSDKInitParams();
         params.domain = AuthConstants.WEB_DOMAIN; // Required
@@ -289,8 +291,15 @@ public class DipsWaitingRoom extends AppCompatActivity {
                             SessionPass = Session_password;
                             PopUpSucces();
                         } else {
-                            lastTicket.setText("A"+lastQueue.substring(lastQueue.length()-3,lastQueue.length()));
-                            PopUpWaiting();
+                            if (lastQueue.trim().equals(myTicketNumber) ){
+                                NameSession = Session_name;
+                                SessionPass = Session_password;
+                                PopUpSucces();
+                            }
+                            else{
+                                lastTicket.setText("A"+lastQueue.substring(lastQueue.length()-3,lastQueue.length()));
+                                PopUpWaiting();
+                            }
                         }
                     }
                 });
@@ -336,12 +345,14 @@ public class DipsWaitingRoom extends AppCompatActivity {
             }
         }
     }
+    
     private void startPreview() {
         if (cameraConfigured && camera != null) {
             camera.startPreview();
             inPreview = true;
         }
     }
+
     private Camera.Size getOptimalPreviewSize(List<Camera.Size> sizes, int w, int h) {
         final double ASPECT_TOLERANCE = 0.1;
         double targetRatio=(double)h / w;
@@ -373,6 +384,7 @@ public class DipsWaitingRoom extends AppCompatActivity {
         }
         return optimalSize;
     }
+
     private void PopUpSchedule(){
         inflater = getLayoutInflater();
         dialogView = inflater.inflate(R.layout.item_schedule,null);
@@ -591,7 +603,6 @@ public class DipsWaitingRoom extends AppCompatActivity {
             e.printStackTrace();
         }
         RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), jsons.toString());
-
         ApiService API = Server.getAPIService();
         Call<JsonObject> call = API.Ticket(requestBody);
         call.enqueue(new Callback<JsonObject>() {
@@ -604,9 +615,7 @@ public class DipsWaitingRoom extends AppCompatActivity {
                         String idDips = jsObj.getString("idDips");
                         String queueID = jsObj.getString("queueID").toString();
                         String lastQueueID = jsObj.getString("lastQueueID");
-
-
-
+                        myTicketNumber = queueID;
                         my_Ticket.setText("A"+queueID.substring(queueID.length()-3,queueID.length()));
                         lastTicket.setText("A"+lastQueueID.substring(lastQueueID.length()-3,lastQueueID.length()));
 
@@ -627,7 +636,6 @@ public class DipsWaitingRoom extends AppCompatActivity {
                     Log.d("CEK","MASUK ELSE");
                 }
             }
-
             @Override
             public void onFailure(Call<JsonObject> call, Throwable t) {
                 Toast.makeText(mContext,t.getMessage(),Toast.LENGTH_SHORT).show();

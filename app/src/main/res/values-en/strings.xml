@@ -109,7 +109,7 @@
     <string name="produk_layanan"><![CDATA[Service]]></string>
     <string name="btn_produk_nlayanan"><![CDATA[Product & Service]]></string>
     <string name="verifikasi">Verified</string>
-    <string name="RTGS">RTGS Transaction</string>
+    <string name="RTGS">Transfer Form</string>
     <string name="SKN">SKN Transaction</string>
     <string name="FOREX">Forex Transaction</string>
     <string name="BankName">Destination Bank</string>
@@ -155,7 +155,7 @@
     <string name="antrian_saya">(My Queue)</string>
     <string name="antrian_sekarang">(Queue now)</string>
     <string name="mata_uang">IDR</string>
-    <string name="formulir_rtgs">Form RTGS</string>
+    <string name="formulir_rtgs">Transfer Form</string>
     <string name="please_wait">Please Wait</string>
     <string name="currency">In IDR</string>
     <string name="ocr_title">Is your data correct?</string>

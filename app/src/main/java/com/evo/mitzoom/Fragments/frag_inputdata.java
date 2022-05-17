@@ -2,6 +2,7 @@ package com.evo.mitzoom.Fragments;
 
 import static com.evo.mitzoom.ui.DipsVideoConfren.text_timer;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -50,6 +51,8 @@ public class frag_inputdata extends Fragment {
     public int seconds = 0;
     public boolean running = true;
     public boolean wasRunning;
+    private LayoutInflater inflater;
+    private View dialogView;
     private SessionManager session;
 
     @Override
@@ -82,8 +85,8 @@ public class frag_inputdata extends Fragment {
             public void onClick(View v) {
                 Nama = et_NamaNasabah.getText().toString();
                 NIK = et_NikNasabah.getText().toString();
-                CekData();
-                //PopupChoose();
+                //CekData();
+                PopupChoose();
             }
         });
     }
@@ -180,15 +183,15 @@ public class frag_inputdata extends Fragment {
         btnConfirm.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                getFragmentPage(new frag_portfolio());
                 sweetAlertDialog.dismiss();
+                getFragmentPage(new frag_portfolio());
             }
         });
         btnCancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                getFragmentPage(new frag_item());
                 sweetAlertDialog.dismiss();
+                PopUpTnc();
             }
         });
     }
@@ -198,5 +201,22 @@ public class frag_inputdata extends Fragment {
                 .replace(R.id.layout_frame2, fragment)
                 .addToBackStack(null)
                 .commit();
+    }
+    private void PopUpTnc(){
+        inflater = ((Activity)context).getLayoutInflater();
+        dialogView = inflater.inflate(R.layout.item_tnc,null);
+        SweetAlertDialog sweetAlertDialog = new SweetAlertDialog(context, SweetAlertDialog.NORMAL_TYPE);
+        sweetAlertDialog.setCustomView(dialogView);
+        sweetAlertDialog.hideConfirmButton();
+        sweetAlertDialog.setCancelable(false);
+        sweetAlertDialog.show();
+        Button btn = dialogView.findViewById(R.id.btnnexttnc);
+        btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                sweetAlertDialog.dismiss();
+                getFragmentPage(new frag_opening_account());
+            }
+        });
     }
 }
