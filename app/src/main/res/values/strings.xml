@@ -165,9 +165,23 @@
     <string name="biaya">Biaya</string>
     <string name="konfirmasi_transfer">Konfirmasi Transfer</string>
     <string name="transaksi_anda_berhasil">Transaksi Anda Berhasil</string>
-    <string name="resi_ini_akan_otomatis_dikirim_melalui_email_anda">Resi ini akan otomatis dikirim melalui email Anda.</string>
+    <string name="resi_ini_akan_otomatis_dikirim_melalui_email_anda">Resi ini akan otomatis\ndikirim melalui email Anda.</string>
     <string name="resi">Resi</string>
     <string name="perorangan">Perorangan</string>
     <string name="perusahaan">Perusahaan</string>
     <string name="pemerintah">Pemerintah</string>
+    <string name="BLOCK_ATM_CARD">Blokir Kartu ATM</string>
+    <string name="REMITTANCE_TRANSACTION">Transaksi Remittance</string>
+    <string name="CREATE_ATM_CARD">Pembuatan Kartu ATM</string>
+    <string name="INTERBANK_TRANSACTION">Transaksi Antar Bank</string>
+    <string name="ATM_CARD_ACTIVATION">Aktivasi Kartu ATM</string>
+    <string name="KYC_UPDATING">Perbarui KYC</string>
+    <string name="CUSTOMER_COMPLAIN">Komplain Customer</string>
+    <string name="DORMANT_ACTIVATION">Aktivasi Dormant</string>
+    <string name="rto_content">Nominal transaksi minimal Rp. 50.000,00 dan maksimal Rp. 50.000.000,00</string>
+    <string name="skn_content">Nominal transaksi minimal Rp. 50.000,00 dan maksimal Rp. 1.000.000.000,00 pertransaksi</string>
+    <string name="rtgs_content">Nominal transaksi minimal Rp. 100.000.000,00 pertransaksi</string>
+    <string name="nama_pemilik_rekening">Nama Pemilik Rekening</string>
+    <string name="jam">Jam</string>
+    <string name="date">tanggal</string>
 </resources>

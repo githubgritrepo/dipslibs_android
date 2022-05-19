@@ -45,6 +45,7 @@ public class frag_opening_account3 extends Fragment {
     private LinearLayout btnGallery;
     private Button btnNext, delete;
     private byte[] KTP, NPWP, TTD;
+    private LinearLayout LL;
     private LinearLayout chooseImage;
 
     @Override
@@ -66,6 +67,7 @@ public class frag_opening_account3 extends Fragment {
         viewImage = view.findViewById(R.id.Imageview);
         chooseImage = view.findViewById(R.id.Choose_Image);
         delete = view.findViewById(R.id.delete);
+        LL = view.findViewById(R.id.BackgroundLL);
         return view;
     }
     @Override
@@ -95,6 +97,7 @@ public class frag_opening_account3 extends Fragment {
         delete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                LL.setBackground(context.getResources().getDrawable(R.drawable.bg));
                 btnNext.setClickable(false);
                 btnNext.setBackgroundTintList(context.getResources().getColorStateList(R.color.btnFalse));
                 viewImage.setVisibility(View.GONE);

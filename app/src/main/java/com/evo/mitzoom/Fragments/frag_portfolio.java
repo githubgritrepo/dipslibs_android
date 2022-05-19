@@ -94,14 +94,16 @@ public class frag_portfolio extends Fragment {
             tvtanggal.setText(TanggalSekarang);
         }
         else if (bahasa.equalsIgnoreCase("id")){
-            SimpleDateFormat df = new SimpleDateFormat("EEEE dd MMMM yyy");
+            SimpleDateFormat df = new SimpleDateFormat("EEEE dd MMMM yyy",new Locale("id", "ID"));
             TanggalSekarang = df.format(c.getTime());
             tvtanggal.setText(TanggalSekarang);
         }
         tvCurrency.setText(getResources().getString(R.string.currency));
-        addDataDanaPihakKetiga();
-        addDataInvestasi();
-        addDataKredit();
+        btnToogleHide.setVisibility(View.VISIBLE);
+        btnToogleShow.setVisibility(View.GONE);
+        addDataDanaPihakKetigaMasking();
+        addDataInvestasiMasking();
+        addDataKreditMasking();
         setRecyler();
         btnToogleShow.setOnClickListener(new View.OnClickListener() {
             @Override
