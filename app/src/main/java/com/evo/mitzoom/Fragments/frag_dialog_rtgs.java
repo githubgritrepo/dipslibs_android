@@ -69,7 +69,6 @@ import me.relex.circleindicator.CircleIndicator;
 public class frag_dialog_rtgs extends Fragment {
 
     private ImageView btnBack;
-    private TextView tvCurr;
     private Button btnProsesRTGS, btnAdd;
     private Context mContext;
     private SessionManager sessions;
@@ -122,7 +121,6 @@ public class frag_dialog_rtgs extends Fragment {
         et_berita = (EditText) view.findViewById(R.id.et_berita);
         btnProsesRTGS = (Button) view.findViewById(R.id.btnProsesRTGS);
         btnAdd = (Button) view.findViewById(R.id.btnAdd);
-        tvCurr = (TextView) view.findViewById(R.id.tvCurr);
         circleIndicator = (CircleIndicator) view.findViewById(R.id.indicator);
         pager = (ViewPager) view.findViewById(R.id.pager);
 
@@ -471,7 +469,6 @@ public class frag_dialog_rtgs extends Fragment {
             et_nama_penerima = (EditText) view.findViewById(R.id.et_nama_penerima);
             et_nominal = (EditText) view.findViewById(R.id.et_nominal);
             et_berita = (EditText) view.findViewById(R.id.et_berita);
-            tvCurr = (TextView) view.findViewById(R.id.tvCurr);
         }
 
         @Override

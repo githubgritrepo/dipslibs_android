@@ -65,8 +65,7 @@ public class frag_rtgs extends Fragment {
     private ImageView btnBack;
     private EditText et_RekPenerima, et_NamaPenerima, et_Berita, et_Nominal;
     private Context context;
-    private TextView tvCurr;
-    private int posSourceAccount, posSourceBank, posSourceTypeService, posSourceBenefit, posSourcePopulation = -1;
+    private int posSourceBenefit, posSourcePopulation = -1;
     private AutoCompleteTextView et_source_account, et_NamaBank, et_serviceType, et_benefitRec, et_typePopulation;
     private SessionManager sessions;
     String [] sourceAcc = {"Tabungan DiPS Rupiah\n011043021 - Andi\nRp. 18.231,00", "Giro DiPS Rupiah\n021008120 - Andi\nRp. 15.000.000,00"};
@@ -99,7 +98,6 @@ public class frag_rtgs extends Fragment {
         et_serviceType = (AutoCompleteTextView) view.findViewById(R.id.et_serviceType);
         et_NamaPenerima = view.findViewById(R.id.et_nama_penerima);
         et_typePopulation = (AutoCompleteTextView) view.findViewById(R.id.et_typePopulation);
-        tvCurr = view.findViewById(R.id.tvCurr);
         et_Nominal = view.findViewById(R.id.et_nominal);
         et_benefitRec = (AutoCompleteTextView) view.findViewById(R.id.et_benefitRec);
         et_Berita = view.findViewById(R.id.et_berita);
@@ -154,7 +152,6 @@ public class frag_rtgs extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 //String selection = (String) parent.getItemAtPosition(position);
-                posSourceAccount = position;
             }
         });
         et_source_account.addTextChangedListener(new TextWatcher() {
@@ -186,7 +183,6 @@ public class frag_rtgs extends Fragment {
         et_NamaBank.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                posSourceBank = position;
             }
         });
 
@@ -196,7 +192,6 @@ public class frag_rtgs extends Fragment {
         et_serviceType.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                posSourceTypeService = position;
             }
         });
 
@@ -312,7 +307,6 @@ public class frag_rtgs extends Fragment {
                 Log.d("CEK","idForm : "+idForm);
 
                 if (resulText.equals(idForm)) {
-                    posSourceAccount = dataJs.getInt("sourceAccount");
                     String SourceBank = dataJs.getString("sourceBank");
                     String SourceTypeService = dataJs.getString("sourceTypeService");
                     posSourceBenefit = dataJs.getInt("sourceBenefit");
@@ -322,15 +316,8 @@ public class frag_rtgs extends Fragment {
                     String nominal = dataJs.getString("nominal");
                     String berita = dataJs.getString("berita");
 
-                    if (posSourceAccount > -1) {
-                        et_source_account.setText(et_source_account.getAdapter().getItem(posSourceAccount).toString(), false);
-                    }
-                    if (posSourceBank > -1) {
-                        et_NamaBank.setText(et_NamaBank.getAdapter().getItem(posSourceBank).toString(), false);
-                    }
-                    if (posSourceTypeService > -1) {
-                        et_serviceType.setText(et_serviceType.getAdapter().getItem(posSourceTypeService).toString(), false);
-                    }
+                    Log.d("CEK","SourceTypeService : "+SourceTypeService);
+
                     if (posSourceBenefit > -1) {
                         et_benefitRec.setText(et_benefitRec.getAdapter().getItem(posSourceBenefit).toString(), false);
                     }
