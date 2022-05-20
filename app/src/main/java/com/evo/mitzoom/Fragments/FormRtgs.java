@@ -365,7 +365,7 @@ public class FormRtgs extends Fragment {
         @Override
         public void onPageSelected(int position) {
             Log.d("CEK","onPageSelected position : "+position+" | noForm : "+noForm.get(position));
-            tvNoFormulir.setText(noForm.get(position));
+            //tvNoFormulir.setText(noForm.get(position));
         }
 
         @Override
@@ -387,7 +387,7 @@ public class FormRtgs extends Fragment {
 
             iniatilizeElement(view);
 
-            actionView();
+            actionView(position);
 
             return view;
         }
@@ -420,22 +420,9 @@ public class FormRtgs extends Fragment {
             container.removeView(view);
         }
 
-        private void actionView() {
-            tvNoFormulir.setText(noForm.get(0));
-            /*btnAdd.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Log.d("CEK","MASUK BUTTON ADD");
-                    layouts.add(R.layout.content_form_rtgs);
-                    int len = layouts.size();
-                    String no_form = noForm.get(lens - 1);
-                    int intForm = Integer.valueOf(no_form) + 1;
-                    String NoForm = String.valueOf(intForm);
-                    noForm.add(NoForm);
-                    initPager();
-                    pager.setCurrentItem(len-1);
-                }
-            });*/
+        private void actionView(int position) {
+            Log.d("CEK","position actionView : "+position);
+            tvNoFormulir.setText(noForm.get(position));
 
             et_nominal.addTextChangedListener(new TextWatcher() {
                 @Override
