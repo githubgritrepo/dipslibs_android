@@ -73,7 +73,7 @@ public class frag_dialog_rtgs extends Fragment {
     private Context mContext;
     private SessionManager sessions;
     private AutoCompleteTextView et_nama_bank, et_serviceType,et_benefitRec,et_typePopulation;
-    String[] sourceBenefit = {"Perorangan", "Perusahaan", "Pemerintah"};
+    String[] sourceBenefit;
     String[] sourcePopulation = {"Penduduk", "Bukan Penduduk"};
     private int posSourceAccount = -1;
     private int posSourceBank = -1;
@@ -130,6 +130,7 @@ public class frag_dialog_rtgs extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        sourceBenefit = new String[]{getResources().getString(R.string.perorangan), getResources().getString(R.string.perusahaan), getResources().getString(R.string.pemerintah)};
 
         initPager();
 
@@ -137,8 +138,6 @@ public class frag_dialog_rtgs extends Fragment {
         tvNoFormulir.setText(noForm1);
         btnProsesRTGS.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.bg_cif)));
         btnAdd.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.button_schedule)));
-
-        String lang = sessions.getLANG();
 
         et_nominal.addTextChangedListener(new TextWatcher() {
             @Override
@@ -168,7 +167,6 @@ public class frag_dialog_rtgs extends Fragment {
                 getFragmentPage(new frag_berita());
             }
         });
-
 
         fillBankList();
         AdapterBank2 adapterBank2 = new AdapterBank2(mContext,bankList);

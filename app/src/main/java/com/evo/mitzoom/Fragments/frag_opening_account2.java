@@ -45,6 +45,7 @@ public class frag_opening_account2 extends Fragment {
     private LinearLayout btnGallery;
     private Button btnNext, delete;
     private byte[] KTP, NPWP;
+    private LinearLayout LL;
     private LinearLayout chooseImage;
 
     @Override
@@ -66,6 +67,7 @@ public class frag_opening_account2 extends Fragment {
         viewImage = view.findViewById(R.id.Imageview);
         chooseImage = view.findViewById(R.id.Choose_Image);
         delete = view.findViewById(R.id.delete);
+        LL = view.findViewById(R.id.BackgroundLL);
         return view;
     }
     @Override
@@ -93,6 +95,7 @@ public class frag_opening_account2 extends Fragment {
         delete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                LL.setBackground(context.getResources().getDrawable(R.drawable.bg));
                 btnNext.setClickable(false);
                 btnNext.setBackgroundTintList(context.getResources().getColorStateList(R.color.btnFalse));
                 viewImage.setVisibility(View.GONE);
@@ -141,6 +144,7 @@ public class frag_opening_account2 extends Fragment {
             if (requestCode == 1){
                 byte[] resultCamera = data.getByteArrayExtra("result_camera");
                 Bitmap bitmap = BitmapFactory.decodeByteArray(resultCamera, 0, resultCamera.length);
+                LL.setBackgroundResource(0);
                 btnNext.setBackgroundTintList(context.getResources().getColorStateList(R.color.bg_cif));
                 btnNext.setClickable(true);
                 delete.setVisibility(View.VISIBLE);
@@ -197,6 +201,7 @@ public class frag_opening_account2 extends Fragment {
                 String picturePath = c.getString(columnIndex);
                 c.close();
                 Bitmap thumbnail = (BitmapFactory.decodeFile(picturePath));
+                LL.setBackgroundResource(0);
                 btnNext.setBackgroundTintList(context.getResources().getColorStateList(R.color.bg_cif));
                 btnNext.setClickable(true);
                 delete.setVisibility(View.VISIBLE);

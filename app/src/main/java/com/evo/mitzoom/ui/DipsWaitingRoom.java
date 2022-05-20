@@ -312,7 +312,17 @@ public class DipsWaitingRoom extends AppCompatActivity {
                                 PopUpSucces();
                             }
                             else{
-                                lastTicket.setText("A"+lastQueue.substring(lastQueue.length()-3,lastQueue.length()));
+                                //Ambil Data Antrian Terakhir terbaru dari Socket
+                                String NEWQUEUE = lastQueue.substring(lastQueue.length()-3,lastQueue.length());
+
+                                //Ambil Antrian Terakhir Yang Ter set Pada Apps Saat ini
+                                String[] CutLASTQUEUE = lastTicket.getText().toString().split("A");
+                                String RECENTQUEUE = CutLASTQUEUE[1];
+
+                                //Validasi apabila Antrian Terbaru (NEWQUEUE) > Antrian yang Ter set (RECENTQUEUE) maka TextView Update
+                                if (Integer.valueOf(NEWQUEUE) > Integer.valueOf(RECENTQUEUE)){
+                                    lastTicket.setText("A"+lastQueue.substring(lastQueue.length()-3,lastQueue.length()));
+                                }
                                 PopUpWaiting();
                             }
                         }

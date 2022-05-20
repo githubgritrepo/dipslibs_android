@@ -60,10 +60,18 @@ public class frag_service extends Fragment {
     private void addData(){
         data = new ArrayList<>();
         data.add(new ItemModel("1",getResources().getString(R.string.RTGS),R.drawable.item1));
-        data.add(new ItemModel("2",getResources().getString(R.string.SKN),R.drawable.item2));
-        data.add(new ItemModel("3",getResources().getString(R.string.FOREX),R.drawable.item1));
-        data.add(new ItemModel("4",getResources().getString(R.string.BI_FAST),R.drawable.item4));
-        data.add(new ItemModel("5",getResources().getString(R.string.ONLINE_TRANSACTION),R.drawable.item2));
+        data.add(new ItemModel("2",getResources().getString(R.string.FOREX),R.drawable.item1));
+        data.add(new ItemModel("3",getResources().getString(R.string.SKN),R.drawable.item2));
+        data.add(new ItemModel("4",getResources().getString(R.string.BLOCK_ATM_CARD),R.drawable.item1));
+        data.add(new ItemModel("5",getResources().getString(R.string.REMITTANCE_TRANSACTION),R.drawable.item1));
+        data.add(new ItemModel("6",getResources().getString(R.string.CREATE_ATM_CARD),R.drawable.item1));
+        data.add(new ItemModel("7",getResources().getString(R.string.INTERBANK_TRANSACTION),R.drawable.item1));
+        data.add(new ItemModel("8",getResources().getString(R.string.ATM_CARD_ACTIVATION),R.drawable.item1));
+        data.add(new ItemModel("9",getResources().getString(R.string.KYC_UPDATING),R.drawable.item1));
+        data.add(new ItemModel("10",getResources().getString(R.string.CUSTOMER_COMPLAIN),R.drawable.item1));
+        data.add(new ItemModel("11",getResources().getString(R.string.DORMANT_ACTIVATION),R.drawable.item1));
+        data.add(new ItemModel("12",getResources().getString(R.string.BI_FAST),R.drawable.item4));
+        data.add(new ItemModel("13",getResources().getString(R.string.ONLINE_TRANSACTION),R.drawable.item2));
     }
 
     private void getFragmentPage(Fragment fragment){

@@ -71,8 +71,8 @@ public class frag_rtgs extends Fragment {
     String [] sourceAcc = {"Tabungan DiPS Rupiah\n011043021 - Andi\nRp. 18.231,00", "Giro DiPS Rupiah\n021008120 - Andi\nRp. 15.000.000,00"};
     private List<BankItem> bankList;
     private List<TypeServiceItem> typeServiceList;
-    String[] sourceBenefit = {"Perorangan", "Perusahaan", "Pemerintah"};
-    String[] sourcePopulation = {"Penduduk", "Bukan Penduduk"};
+    String[] sourceBenefit;
+    String[] sourcePopulation;
     private Button btnProses;
     private String RekeningSumber, NamaBank, RekPenerima, NamaPenerima, Nominal, JenisLayanan, PenerimaManfaat,JenisPenduduk,Berita;
     public static final NumberFormat numberFormat = NumberFormat.getInstance(new Locale("id", "ID"));
@@ -85,7 +85,6 @@ public class frag_rtgs extends Fragment {
         context = getContext();
         sessions = new SessionManager(context);
         dataRTGS = sessions.getRTGS();
-
     }
     @Nullable
     @Override
@@ -108,9 +107,8 @@ public class frag_rtgs extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
-        String lang = sessions.getLANG();
-
+        sourceBenefit = new String[]{getResources().getString(R.string.perorangan), getResources().getString(R.string.perusahaan), getResources().getString(R.string.pemerintah)};
+        sourcePopulation = new String[]{getResources().getString(R.string.penduduk), getResources().getString(R.string.bukan_penduduk)};
         choose_gallery.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -392,8 +390,8 @@ public class frag_rtgs extends Fragment {
     }
     private void fillTypeServiceList(){
         typeServiceList = new ArrayList<>();
-        typeServiceList.add(new TypeServiceItem("RTO", "Nominal transaksi minimal Rp. 50.000,00 dan maksimal Rp. 50.000.000,00"));
-        typeServiceList.add(new TypeServiceItem("SKN","Nominal transaksi minimal Rp. 50.000,00 dan maksimal Rp. 1.000.000.000,00 pertransaksi"));
-        typeServiceList.add(new TypeServiceItem("RTGS", "Nominal transaksi minimal Rp. 100.000.000,00 pertransaksi"));
+        typeServiceList.add(new TypeServiceItem("RTO", getResources().getString(R.string.rto_content)));
+        typeServiceList.add(new TypeServiceItem("SKN",getResources().getString(R.string.skn_content)));
+        typeServiceList.add(new TypeServiceItem("RTGS", getResources().getString(R.string.rtgs_content)));
     }
 }

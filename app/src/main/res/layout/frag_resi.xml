@@ -98,7 +98,7 @@
                     android:layout_width="0dp"
                     android:layout_weight="1"
                     android:layout_height="wrap_content"
-                    android:text="Tanggal"/>
+                    android:text="@string/date"/>
                 <TextView
                     android:id="@+id/Tanggal"
                     android:textSize="15sp"
@@ -120,7 +120,7 @@
                     android:layout_width="0dp"
                     android:layout_weight="1"
                     android:layout_height="wrap_content"
-                    android:text="Jam"/>
+                    android:text="@string/jam"/>
                 <TextView
                     android:id="@+id/Jam"
                     android:textSize="15sp"
@@ -164,7 +164,7 @@
                     android:layout_width="0dp"
                     android:layout_weight="1"
                     android:layout_height="wrap_content"
-                    android:text="Nama Pemilik Rekening"/>
+                    android:text="@string/nama_pemilik_rekening"/>
                 <TextView
                     android:id="@+id/Nama_Pemilik_Rekening"
                     android:textSize="15sp"
