@@ -144,7 +144,8 @@ public class DipsWaitingRoom extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_dips_waiting_room);
+
+        mContext = this;
 
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
@@ -152,7 +153,6 @@ public class DipsWaitingRoom extends AppCompatActivity {
 
         AnimationCall();
 
-        mContext = this;
 
         mSocket.on("waiting", waitingListener);
         mSocket.connect();
@@ -161,28 +161,33 @@ public class DipsWaitingRoom extends AppCompatActivity {
         String lang = sessions.getLANG();
         setLocale(this,lang);
 
+        setContentView(R.layout.activity_dips_waiting_room);
+
+        mSocket.on("waiting", waitingListener);
+        mSocket.connect();
+
         isCust = getIntent().getExtras().getBoolean("ISCUSTOMER");
         custName = getIntent().getExtras().getString("CUSTNAME");
         idDips = getIntent().getExtras().getString("idDips");
         NameSession = getIntent().getExtras().getString("SessionName");
         SessionPass = getIntent().getExtras().getString("SessionPass");
-        myTicket = findViewById(R.id.myticket);
-        lastTicket = findViewById(R.id.last_ticket);
+        myTicket = findViewById(R.id.myticket2);
+        lastTicket = findViewById(R.id.last_ticket2);
         processGetTicket(myTicket);
         AnimationCall = findViewById(R.id.AnimationCall);
 
         initializeSdk();
 
-        btnSchedule = (MaterialButton) findViewById(R.id.btnSchedule);
-        btnEndCall = findViewById(R.id.end_call);
-        preview = (SurfaceView) findViewById(R.id.mySurface);
+        /*btnSchedule = (MaterialButton) findViewById(R.id.btnSchedule);
+        btnEndCall = findViewById(R.id.end_call);*/
+        preview = (SurfaceView) findViewById(R.id.mySurface2);
 
         getFragmentPage(new frag_berita());
 
         Intent intent = getIntent();
         useFacing = intent.getIntExtra(KEY_USE_FACING, Camera.CameraInfo.CAMERA_FACING_FRONT);
 
-        btnSchedule.setOnClickListener(new View.OnClickListener() {
+        /*btnSchedule.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 PopUpSchedule();
@@ -193,11 +198,12 @@ public class DipsWaitingRoom extends AppCompatActivity {
             public void onClick(View v) {
                 EndCall();
             }
-        });
+        });*/
     }
     @Override
     protected void onResume() {
         super.onResume();
+
         camera = Camera.open(useFacing);
         //startPreview();
         cameraConfigured = false;
@@ -554,6 +560,7 @@ public class DipsWaitingRoom extends AppCompatActivity {
                     sweetAlertDialog.setContentText(getResources().getString(R.string.headline_success));
                     sweetAlertDialog.setConfirmText(getResources().getString(R.string.btn_continue));
                     sweetAlertDialog.setCancelText(getResources().getString(R.string.cancel));
+                    sweetAlertDialog.setCancelable(false);
                     sweetAlertDialog.show();
                     Button btnConfirm = (Button) sweetAlertDialog.findViewById(cn.pedant.SweetAlert.R.id.confirm_button);
                     Button btnCancel = (Button) sweetAlertDialog.findViewById(cn.pedant.SweetAlert.R.id.cancel_button);
@@ -713,6 +720,8 @@ public class DipsWaitingRoom extends AppCompatActivity {
         processSignature();
     }
     private void processSignature() {
+        Log.d("CEK","NameSession : "+NameSession);
+        Log.d("CEK","NameSession : "+SessionPass);
         JSONObject jsons = new JSONObject();
         try {
             jsons.put("sessionName",NameSession);
@@ -762,6 +771,9 @@ public class DipsWaitingRoom extends AppCompatActivity {
         String name = allClaims.get("user_identity").asString();
         String sessionName = allClaims.get("tpc").asString();
         String sessionPass = allClaims.get("session_key").asString();
+
+        Log.d("CEK","sessionName : "+sessionName);
+        Log.d("CEK","sessionPass : "+sessionPass);
 
         ZoomVideoSDKSessionContext sessionContext = new ZoomVideoSDKSessionContext();
 

@@ -31,8 +31,7 @@ public class RatingActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_rating);
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
-        getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        getSupportActionBar().hide();
+
         thumbs_up = findViewById(R.id.thumbs_up);
         thumbs_down = findViewById(R.id.thumbs_down);
         allRating = findViewById(R.id.rating_star);
@@ -213,6 +212,12 @@ public class RatingActivity extends AppCompatActivity {
         return super.onKeyDown(keyCode, event);
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        hideStatusBar();
+    }
+
     private void PopUp(){
         SweetAlertDialog sweetAlertDialog = new SweetAlertDialog(RatingActivity.this, SweetAlertDialog.SUCCESS_TYPE);
         sweetAlertDialog.setTitleText(getResources().getString(R.string.rating_pop_up_content));
@@ -237,5 +242,16 @@ public class RatingActivity extends AppCompatActivity {
         overridePendingTransition(0,0);
         finish();
         System.exit(0);
+    }
+
+    public void hideStatusBar() {
+        getWindow().getDecorView()
+                .setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                        | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                        | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                        | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                        | View.SYSTEM_UI_FLAG_FULLSCREEN
+                        | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+                );
     }
 }

@@ -1,11 +1,19 @@
 package com.evo.mitzoom.Fragments;
 
+import android.app.DatePickerDialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
+import android.widget.Button;
+import android.widget.DatePicker;
+import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -18,11 +26,14 @@ import com.evo.mitzoom.Adapter.AdapterSlide;
 import com.evo.mitzoom.Adapter.GridProductAdapter;
 import com.evo.mitzoom.R;
 import com.evo.mitzoom.ui.DipsWaitingRoom;
+import com.google.android.material.button.MaterialButton;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import cn.pedant.SweetAlert.SweetAlertDialog;
 import me.relex.circleindicator.CircleIndicator;
 
 public class frag_berita extends Fragment {
@@ -35,6 +46,10 @@ public class frag_berita extends Fragment {
     private ArrayList<Integer> imgArray = new ArrayList<Integer>();
     private CircleIndicator circleIndicator;
     private int currentPage;
+    private MaterialButton btnSchedule,btnSchedule2, btnEndCall;
+    String [] time = {"08.00 - 10.00", "10.00 - 12.00", "12.00 - 14.00", "14.00 - 16.00", "16.00 - 17.00"};
+    private int year, month, day, waktu_tunggu = 6000;
+    private String tanggal, waktu;
 
 
     @Override
@@ -50,6 +65,9 @@ public class frag_berita extends Fragment {
         rv_product = view.findViewById(R.id.rv_product);
         mPager = view.findViewById(R.id.pager);
         circleIndicator = view.findViewById(R.id.indicator);
+        btnSchedule = (MaterialButton) view.findViewById(R.id.btnSchedule);
+        btnEndCall = (MaterialButton) view.findViewById(R.id.end_call);
+
         return view;
     }
 
@@ -60,6 +78,20 @@ public class frag_berita extends Fragment {
         gridAdapter = new GridProductAdapter(context,gambar);
         rv_product.setAdapter(gridAdapter);
         initPager();
+
+        btnSchedule.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                PopUpSchedule();
+            }
+        });
+        btnEndCall.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //EndCall();
+            }
+        });
+
     }
     private void initPager() {
         for (int i = 0; i < img.length; i++) {
@@ -87,5 +119,69 @@ public class frag_berita extends Fragment {
                 handler.post(updates);
             }
         }, 2500, 2500);
+    }
+
+    private void PopUpSchedule(){
+        LayoutInflater inflater = getLayoutInflater();
+        View dialogView = inflater.inflate(R.layout.item_schedule, null);
+        SweetAlertDialog sweetAlertDialog = new SweetAlertDialog(context, SweetAlertDialog.NORMAL_TYPE);
+        sweetAlertDialog.setCustomView(dialogView);
+        sweetAlertDialog.hideConfirmButton();
+        sweetAlertDialog.show();
+        ArrayAdapter<String> adapterTime = new ArrayAdapter<String>(context,R.layout.list_item, time);
+        ImageView btnclose = (ImageView) dialogView.findViewById(R.id.btn_close_schedule);
+        EditText et_Date = (EditText) dialogView.findViewById(R.id.et_Date);
+        AutoCompleteTextView et_time = (AutoCompleteTextView) dialogView.findViewById(R.id.et_time);
+        et_time.setAdapter(adapterTime);
+        btnSchedule2 = dialogView.findViewById(R.id.btnSchedule2);
+        et_Date.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final Calendar c = Calendar.getInstance();
+                year = c.get(Calendar.YEAR);
+                month = c.get(Calendar.MONTH);
+                day = c.get(Calendar.DAY_OF_MONTH);
+                DatePickerDialog datePickerDialog = new DatePickerDialog(context, new DatePickerDialog.OnDateSetListener() {
+                    @Override
+                    public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+                        tanggal = dayOfMonth+"/"+(month + 1)+"/"+year;
+                        et_Date.setText(tanggal);
+                    }
+                }, year, month, day);
+                datePickerDialog.getDatePicker().setMinDate(System.currentTimeMillis() - 1000);
+                datePickerDialog.show();
+            }
+        });
+        btnclose.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                sweetAlertDialog.dismiss();
+            }
+        });
+        btnSchedule2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                tanggal = et_Date.getText().toString();
+                waktu = et_time.getText().toString();
+                if (tanggal.trim().equals("")){
+                    Toast.makeText(context.getApplicationContext(), R.string.notif_blank, Toast.LENGTH_SHORT).show();
+                }
+                else if (waktu.trim().equals("")){
+                    Toast.makeText(context.getApplicationContext(), R.string.notif_blank, Toast.LENGTH_SHORT).show();
+                }
+                else {
+                    Toast.makeText(context.getApplicationContext(), "Jadwal panggilan anda "+tanggal+" jam "+waktu, Toast.LENGTH_LONG).show();
+                    sweetAlertDialog.dismiss();
+                    SweetAlertDialog sweetAlertDialog = new SweetAlertDialog(context, SweetAlertDialog.SUCCESS_TYPE);
+                    sweetAlertDialog.setContentText(getResources().getString(R.string.content_after_schedule));
+                    sweetAlertDialog.setConfirmText(getResources().getString(R.string.done));
+                    sweetAlertDialog.show();
+                    Button btnConfirm = (Button) sweetAlertDialog.findViewById(cn.pedant.SweetAlert.R.id.confirm_button);
+                    btnConfirm.setBackgroundTintList(context.getResources().getColorStateList(R.color.Blue));
+                }
+
+            }
+        });
+        btnSchedule2.setBackgroundTintList(context.getResources().getColorStateList(R.color.Blue));
     }
 }
