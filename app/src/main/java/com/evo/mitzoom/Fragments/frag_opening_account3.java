@@ -144,6 +144,7 @@ public class frag_opening_account3 extends Fragment {
             if (requestCode == 1){
                 byte[] resultCamera = data.getByteArrayExtra("result_camera");
                 Bitmap bitmap = BitmapFactory.decodeByteArray(resultCamera, 0, resultCamera.length);
+                LL.setBackgroundResource(0);
                 btnNext.setBackgroundTintList(context.getResources().getColorStateList(R.color.bg_cif));
                 btnNext.setClickable(true);
                 delete.setVisibility(View.VISIBLE);
@@ -200,6 +201,7 @@ public class frag_opening_account3 extends Fragment {
                 String picturePath = c.getString(columnIndex);
                 c.close();
                 Bitmap thumbnail = (BitmapFactory.decodeFile(picturePath));
+                LL.setBackgroundResource(0);
                 btnNext.setBackgroundTintList(context.getResources().getColorStateList(R.color.bg_cif));
                 btnNext.setClickable(true);
                 delete.setVisibility(View.VISIBLE);

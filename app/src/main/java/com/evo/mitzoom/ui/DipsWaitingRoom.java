@@ -117,7 +117,7 @@ public class DipsWaitingRoom extends AppCompatActivity {
     private LayoutInflater inflater;
     private View dialogView;
     private ImageView btnclose;
-    private TextView et_Date;
+    private TextView et_Date, AnimationCall;
     private AutoCompleteTextView et_time;
     private int year, month, day, waktu_tunggu = 6000;
     private String tanggal, waktu;
@@ -151,6 +151,12 @@ public class DipsWaitingRoom extends AppCompatActivity {
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
         getSupportActionBar().hide();
 
+        AnimationCall();
+
+
+        mSocket.on("waiting", waitingListener);
+        mSocket.connect();
+
         sessions = new SessionManager(mContext);
         String lang = sessions.getLANG();
         setLocale(this,lang);
@@ -168,6 +174,7 @@ public class DipsWaitingRoom extends AppCompatActivity {
         myTicket = findViewById(R.id.myticket2);
         lastTicket = findViewById(R.id.last_ticket2);
         processGetTicket(myTicket);
+        AnimationCall = findViewById(R.id.AnimationCall);
 
         initializeSdk();
 
@@ -202,6 +209,43 @@ public class DipsWaitingRoom extends AppCompatActivity {
         cameraConfigured = false;
         previewHolder();
         stopPopSuccess = false;
+        AnimationCall();
+    }
+
+    private void AnimationCall(){
+        final Handler handler = new Handler();
+        Runnable runnable = new Runnable() {
+
+            int count = 0;
+
+            @Override
+            public void run() {
+                count++;
+
+                if (count == 1)
+                {
+                    AnimationCall.setText(getResources().getString(R.string.call_is_being_connected));
+                }
+                else if (count == 2)
+                {
+                    AnimationCall.setText(getResources().getString(R.string.call_is_being_connected1));
+                }
+                else if (count == 3)
+                {
+                    AnimationCall.setText(getResources().getString(R.string.call_is_being_connected2));
+                }
+                else if (count == 4)
+                {
+                    AnimationCall.setText(getResources().getString(R.string.call_is_being_connected3));
+                }
+
+                if (count == 4)
+                    count = 0;
+
+                handler.postDelayed(this, 2 * 1000);
+            }
+        };
+        handler.postDelayed(runnable, 1 * 1000);
     }
 
     @Override
@@ -410,6 +454,7 @@ public class DipsWaitingRoom extends AppCompatActivity {
         et_time = dialogView.findViewById(R.id.et_time);
         et_time.setAdapter(adapterTime);
         btnSchedule2 = dialogView.findViewById(R.id.btnSchedule2);
+
         et_Date.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -460,6 +505,7 @@ public class DipsWaitingRoom extends AppCompatActivity {
         });
         btnSchedule2.setBackgroundTintList(DipsWaitingRoom.this.getResources().getColorStateList(R.color.Blue));
     }
+
     private void EndCall(){
         SweetAlertDialog sweetAlertDialog = new SweetAlertDialog(DipsWaitingRoom.this, SweetAlertDialog.WARNING_TYPE);
         sweetAlertDialog.setContentText(getResources().getString(R.string.headline_endcall));
@@ -477,6 +523,7 @@ public class DipsWaitingRoom extends AppCompatActivity {
         Button btnCancel = (Button) sweetAlertDialog.findViewById(cn.pedant.SweetAlert.R.id.cancel_button);
         btnCancel.setBackgroundTintList(DipsWaitingRoom.this.getResources().getColorStateList(R.color.Blue));
     }
+
     private void PopUpWaiting(){
         /*new Handler().postDelayed(new Runnable() {
             @Override
@@ -502,6 +549,7 @@ public class DipsWaitingRoom extends AppCompatActivity {
             /*}
         },waktu_tunggu);*/
     }
+
     private void PopUpSucces(){
         /*handlerSuccess = new Handler();
         handlerSuccess.postDelayed(new Runnable() {
@@ -536,6 +584,7 @@ public class DipsWaitingRoom extends AppCompatActivity {
             }
         },15000);*/
     }
+
     public void setCameraDisplayOrientation(){
         if (camera == null)
         {

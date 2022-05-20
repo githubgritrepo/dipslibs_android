@@ -23,6 +23,7 @@
             android:background="@drawable/oval_connecting_call"
             android:elevation="5dp">
             <TextView
+                android:id="@+id/AnimationCall"
                 android:textSize="12sp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -268,10 +269,10 @@
                 android:layout_gravity="center_horizontal"
                 android:background="@drawable/oval_connecting_call">
                 <TextView
+
                     android:textSize="12sp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/call_is_being_connected"
                     android:textColor="@color/white"
                     android:textStyle="bold" />
             </LinearLayout>
