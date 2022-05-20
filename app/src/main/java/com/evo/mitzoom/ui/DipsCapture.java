@@ -90,16 +90,15 @@ public class DipsCapture extends AppCompatActivity implements CameraSource.Pictu
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_dips_capture);
-        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
-        getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        getSupportActionBar().hide();
-        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         mContext = this;
 
         sessions = new SessionManager(mContext);
         String lang = sessions.getLANG();
         setLocale(this,lang);
+
+        setContentView(R.layout.activity_dips_capture);
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
         preview = (SurfaceView) findViewById(R.id.mySurface);
         transPreview = (SurfaceView) findViewById(R.id.transSurface);
@@ -112,6 +111,8 @@ public class DipsCapture extends AppCompatActivity implements CameraSource.Pictu
     @Override
     protected void onResume() {
         super.onResume();
+
+        hideStatusBar();
 
         detector = new FaceDetector.Builder(this)
                 .setProminentFaceOnly(true) // optimize for single, relatively large face
@@ -152,6 +153,17 @@ public class DipsCapture extends AppCompatActivity implements CameraSource.Pictu
                 doubleBackToExitPressedOnce = false;
             }
         },2000);
+    }
+
+    public void hideStatusBar() {
+        getWindow().getDecorView()
+                .setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                        | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                        | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                        | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                        | View.SYSTEM_UI_FLAG_FULLSCREEN
+                        | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+                );
     }
 
     private void setupSurfaceHolder() {

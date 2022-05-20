@@ -48,8 +48,8 @@ public class DipsSplashScreen extends AppCompatActivity {
         imgSplash = (ImageView) findViewById(R.id.imgSplash);
 
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
-        getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        getSupportActionBar().hide();
+        //getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        //getSupportActionBar().hide();
 
         mContext = this;
 
@@ -74,6 +74,12 @@ public class DipsSplashScreen extends AppCompatActivity {
 
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        hideStatusBar();
+    }
+
     private void chooseLanguage() {
         imgSplash.setVisibility(View.INVISIBLE);
         LayoutInflater inflater = getLayoutInflater();
@@ -82,6 +88,13 @@ public class DipsSplashScreen extends AppCompatActivity {
         sweetAlertDialog.setCustomView(dialogView);
         sweetAlertDialog.hideConfirmButton();
         sweetAlertDialog.setCancelable(false);
+        sweetAlertDialog.getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                | View.SYSTEM_UI_FLAG_FULLSCREEN
+                | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+        );
         sweetAlertDialog.show();
 
         RadioGroup radioGroup = (RadioGroup) dialogView.findViewById(R.id.groupradio);
@@ -176,6 +189,17 @@ public class DipsSplashScreen extends AppCompatActivity {
         Configuration config = resources.getConfiguration();
         config.setLocale(locale);
         resources.updateConfiguration(config, resources.getDisplayMetrics());
+    }
+
+    public void hideStatusBar() {
+        getWindow().getDecorView()
+                .setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                        | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                        | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                        | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                        | View.SYSTEM_UI_FLAG_FULLSCREEN
+                        | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+                );
     }
 
     public void onRadioButtonClicked(View view) {

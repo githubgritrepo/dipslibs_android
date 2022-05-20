@@ -208,6 +208,9 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
     @Override
     protected void onResume() {
         super.onResume();
+
+        hideStatusBar();
+
         if (isActivityPaused) {
             resumeSubscribe();
         }
@@ -229,6 +232,17 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
             return true;
         }
         return super.onKeyDown(keyCode, event);
+    }
+
+    public void hideStatusBar() {
+        getWindow().getDecorView()
+                .setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                        | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                        | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                        | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                        | View.SYSTEM_UI_FLAG_FULLSCREEN
+                        | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+                );
     }
 
     private void startVideoHandler() {
