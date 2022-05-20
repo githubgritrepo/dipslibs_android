@@ -55,7 +55,8 @@
             android:name=".ui.DipsWaitingRoom"
             android:exported="false"
             android:screenOrientation="portrait"
-            android:theme="@style/Theme.MITZoom" />
+            android:theme="@style/Theme.MITZoom"
+            android:windowSoftInputMode="adjustPan"/>
         <activity
             android:name=".ui.DipsCapture"
             android:exported="false"

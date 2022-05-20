@@ -147,18 +147,18 @@ public class DipsWaitingRoom extends AppCompatActivity {
 
         mContext = this;
 
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        getSupportActionBar().hide();
+
         sessions = new SessionManager(mContext);
         String lang = sessions.getLANG();
         setLocale(this,lang);
 
         setContentView(R.layout.activity_dips_waiting_room);
 
-        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
-
         mSocket.on("waiting", waitingListener);
         mSocket.connect();
-
-
 
         isCust = getIntent().getExtras().getBoolean("ISCUSTOMER");
         custName = getIntent().getExtras().getString("CUSTNAME");
@@ -196,8 +196,6 @@ public class DipsWaitingRoom extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-
-        hideStatusBar();
 
         camera = Camera.open(useFacing);
         //startPreview();
@@ -247,17 +245,6 @@ public class DipsWaitingRoom extends AppCompatActivity {
 
         mSocket.disconnect();
         mSocket.off("waiting");
-    }
-
-    public void hideStatusBar() {
-        getWindow().getDecorView()
-                .setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                        | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                        | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                        | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                        | View.SYSTEM_UI_FLAG_FULLSCREEN
-                        | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
-                );
     }
 
     private void previewHolder(){
@@ -525,6 +512,7 @@ public class DipsWaitingRoom extends AppCompatActivity {
                     sweetAlertDialog.setContentText(getResources().getString(R.string.headline_success));
                     sweetAlertDialog.setConfirmText(getResources().getString(R.string.btn_continue));
                     sweetAlertDialog.setCancelText(getResources().getString(R.string.cancel));
+                    sweetAlertDialog.setCancelable(false);
                     sweetAlertDialog.show();
                     Button btnConfirm = (Button) sweetAlertDialog.findViewById(cn.pedant.SweetAlert.R.id.confirm_button);
                     Button btnCancel = (Button) sweetAlertDialog.findViewById(cn.pedant.SweetAlert.R.id.cancel_button);
@@ -683,6 +671,8 @@ public class DipsWaitingRoom extends AppCompatActivity {
         processSignature();
     }
     private void processSignature() {
+        Log.d("CEK","NameSession : "+NameSession);
+        Log.d("CEK","NameSession : "+SessionPass);
         JSONObject jsons = new JSONObject();
         try {
             jsons.put("sessionName",NameSession);
@@ -732,6 +722,9 @@ public class DipsWaitingRoom extends AppCompatActivity {
         String name = allClaims.get("user_identity").asString();
         String sessionName = allClaims.get("tpc").asString();
         String sessionPass = allClaims.get("session_key").asString();
+
+        Log.d("CEK","sessionName : "+sessionName);
+        Log.d("CEK","sessionPass : "+sessionPass);
 
         ZoomVideoSDKSessionContext sessionContext = new ZoomVideoSDKSessionContext();
 
