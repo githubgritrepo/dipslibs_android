@@ -31,7 +31,8 @@ public class RatingActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_rating);
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
-
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        getSupportActionBar().hide();
         thumbs_up = findViewById(R.id.thumbs_up);
         thumbs_down = findViewById(R.id.thumbs_down);
         allRating = findViewById(R.id.rating_star);
@@ -212,11 +213,7 @@ public class RatingActivity extends AppCompatActivity {
         return super.onKeyDown(keyCode, event);
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        hideStatusBar();
-    }
+
 
     private void PopUp(){
         SweetAlertDialog sweetAlertDialog = new SweetAlertDialog(RatingActivity.this, SweetAlertDialog.SUCCESS_TYPE);

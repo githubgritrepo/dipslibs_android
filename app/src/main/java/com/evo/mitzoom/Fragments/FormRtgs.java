@@ -153,7 +153,7 @@ public class FormRtgs extends Fragment {
                 layouts.add(R.layout.content_form_rtgs);
                 int len = layouts.size();
                 String no_form = noForm.get(lens - 1);
-                int intForm = Integer.valueOf(no_form) + 1;
+                int intForm = Integer.parseInt(no_form) + 1;
                 String NoForm = String.valueOf(intForm);
                 noForm.add(NoForm);
                 initPager();
