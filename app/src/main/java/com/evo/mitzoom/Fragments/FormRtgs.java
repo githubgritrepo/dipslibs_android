@@ -87,7 +87,10 @@ public class FormRtgs extends Fragment {
     private int posSourcePopulation = -1;
     private List<BankItem> bankList;
     private List<TypeServiceItem> typeServiceList;
-    private ArrayList<String> noForm = new ArrayList<String>();
+    private List<AutoCompleteTextView> listBank = new ArrayList<>();
+    private ArrayList<String> dataNoForm = new ArrayList<String>();
+    private ArrayList<String> dataBankName = new ArrayList<String>();
+    private ArrayList<String> dataAccountReceive = new ArrayList<>();
     public static final NumberFormat numberFormat = NumberFormat.getInstance(new Locale("id", "ID"));
 
     @Override
@@ -99,7 +102,7 @@ public class FormRtgs extends Fragment {
         sessions = new SessionManager(mContext);
 
         layouts.add(R.layout.content_form_rtgs);
-        noForm.add("2103212");
+        dataNoForm.add("2103212");
     }
 
     @Override
@@ -122,6 +125,8 @@ public class FormRtgs extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        Log.d("CEK","onViewCreated");
+
         sourceBenefit = new String[]{getResources().getString(R.string.perorangan), getResources().getString(R.string.perusahaan), getResources().getString(R.string.pemerintah)};
         sourcePopulation = new String[]{getResources().getString(R.string.penduduk), getResources().getString(R.string.bukan_penduduk)};
 
@@ -131,7 +136,7 @@ public class FormRtgs extends Fragment {
             @Override
             public void onClick(View v) {
                 processSavedInstance();
-                generateBarcode(noForm);
+                generateBarcode(dataNoForm);
             }
         });
         
@@ -145,17 +150,37 @@ public class FormRtgs extends Fragment {
         btnAdd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 int lens = layouts.size();
+                int indexL = lens - 1;
                 if (lens > 4) {
                     Toast.makeText(mContext,"Maksimal 5 Formulir.",Toast.LENGTH_LONG).show();
                     return;
                 }
                 layouts.add(R.layout.content_form_rtgs);
                 int len = layouts.size();
-                String no_form = noForm.get(lens - 1);
+                String no_form = dataNoForm.get(indexL);
                 int intForm = Integer.valueOf(no_form) + 1;
                 String NoForm = String.valueOf(intForm);
-                noForm.add(NoForm);
+                dataNoForm.add(NoForm);
+
+                String valBank = et_nama_bank.getText().toString();
+                if (!valBank.isEmpty()) {
+                    if (lens == 1) {
+                        dataBankName.add(valBank);
+                    }
+                }
+
+                String valAccount = et_rek_penerima.getText().toString();
+                if (!valAccount.isEmpty()) {
+                    if (lens == 1) {
+                        dataAccountReceive.add(valBank);
+                    }
+                }
+
+                listBank.clear();
+                listBank.add(et_nama_bank);
+
                 initPager();
                 pager.setCurrentItem(len-1);
             }
@@ -163,7 +188,9 @@ public class FormRtgs extends Fragment {
     }
 
     private void initPager() {
+        Log.d("CEK","initPager");
         if (myViewPagerAdapter == null) {
+            Log.d("CEK","myViewPagerAdapter NULL");
             myViewPagerAdapter = new MyViewPagerAdapter();
         }
         pager.setAdapter(myViewPagerAdapter);
@@ -364,8 +391,8 @@ public class FormRtgs extends Fragment {
 
         @Override
         public void onPageSelected(int position) {
-            Log.d("CEK","onPageSelected position : "+position+" | noForm : "+noForm.get(position));
-            //tvNoFormulir.setText(noForm.get(position));
+            Log.d("CEK","count listBank : "+listBank.size());
+            Log.d("CEK","onPageSelected listBank ke-"+position+" : "+listBank.get(position).getText().toString());
         }
 
         @Override
@@ -380,6 +407,7 @@ public class FormRtgs extends Fragment {
         @NonNull
         @Override
         public Object instantiateItem(@NonNull ViewGroup container, int position) {
+            Log.d("CEK","instantiateItem ke-"+position);
             layoutInflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
             View view = layoutInflater.inflate(layouts.get(position), container, false);
@@ -393,6 +421,7 @@ public class FormRtgs extends Fragment {
         }
 
         private void iniatilizeElement(View view) {
+            Log.d("CEK","iniatilizeElement");
             tvNoFormulir = (TextView) view.findViewById(R.id.tvNoFormulir);
             et_nama_bank = (AutoCompleteTextView) view.findViewById(R.id.et_nama_bank);
             et_serviceType = (AutoCompleteTextView) view.findViewById(R.id.et_serviceType);
@@ -402,6 +431,8 @@ public class FormRtgs extends Fragment {
             et_nama_penerima = (EditText) view.findViewById(R.id.et_nama_penerima);
             et_nominal = (EditText) view.findViewById(R.id.et_nominal);
             et_berita = (EditText) view.findViewById(R.id.et_berita);
+
+            listBank.add(et_nama_bank);
         }
 
         @Override
@@ -421,8 +452,6 @@ public class FormRtgs extends Fragment {
         }
 
         private void actionView(int position) {
-            Log.d("CEK","position actionView : "+position);
-            tvNoFormulir.setText(noForm.get(position));
 
             et_nominal.addTextChangedListener(new TextWatcher() {
                 @Override
@@ -483,6 +512,26 @@ public class FormRtgs extends Fragment {
                     posSourcePopulation = position;
                 }
             });
+
+            tvNoFormulir.setText(dataNoForm.get(position));
+
+            if (listBank.size() > 0) {
+
+                if(position >= listBank.size() || position < 0){
+                    //index does not exists
+                }else{
+                    et_nama_bank.setText(listBank.get(position).getText().toString());
+                }
+            }
+
+            if (dataAccountReceive.size() > 0) {
+
+                if(position >= dataAccountReceive.size() || position < 0){
+                    //index does not exists
+                }else{
+                    et_rek_penerima.setText(dataAccountReceive.get(position));
+                }
+            }
         }
     }
 }

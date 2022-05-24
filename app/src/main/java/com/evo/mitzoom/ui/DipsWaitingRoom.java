@@ -721,7 +721,7 @@ public class DipsWaitingRoom extends AppCompatActivity {
     }
     private void processSignature() {
         Log.d("CEK","NameSession : "+NameSession);
-        Log.d("CEK","NameSession : "+SessionPass);
+        Log.d("CEK","SessionPass : "+SessionPass);
         JSONObject jsons = new JSONObject();
         try {
             jsons.put("sessionName",NameSession);
