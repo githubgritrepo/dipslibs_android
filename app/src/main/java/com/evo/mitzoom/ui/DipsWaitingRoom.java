@@ -113,7 +113,7 @@ public class DipsWaitingRoom extends AppCompatActivity {
     private SurfaceView preview = null;
     private SurfaceHolder previewHolder = null;
     private static int degreeFront = 0;
-     private MaterialButton btnSchedule,btnSchedule2, btnEndCall;
+    private MaterialButton btnSchedule,btnSchedule2, btnEndCall;
     private LayoutInflater inflater;
     private View dialogView;
     private ImageView btnclose;
@@ -144,7 +144,6 @@ public class DipsWaitingRoom extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         mContext = this;
 
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
@@ -160,11 +159,7 @@ public class DipsWaitingRoom extends AppCompatActivity {
         sessions = new SessionManager(mContext);
         String lang = sessions.getLANG();
         setLocale(this,lang);
-
         setContentView(R.layout.activity_dips_waiting_room);
-
-        mSocket.on("waiting", waitingListener);
-        mSocket.connect();
 
         isCust = getIntent().getExtras().getBoolean("ISCUSTOMER");
         custName = getIntent().getExtras().getString("CUSTNAME");
@@ -187,18 +182,6 @@ public class DipsWaitingRoom extends AppCompatActivity {
         Intent intent = getIntent();
         useFacing = intent.getIntExtra(KEY_USE_FACING, Camera.CameraInfo.CAMERA_FACING_FRONT);
 
-        /*btnSchedule.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                PopUpSchedule();
-            }
-        });
-        btnEndCall.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                EndCall();
-            }
-        });*/
     }
     @Override
     protected void onResume() {
@@ -333,11 +316,13 @@ public class DipsWaitingRoom extends AppCompatActivity {
                     @Override
                     public void run() {
                         if (statusCode == 0) {
+                            lastTicket.setText("A"+lastQueue.substring(lastQueue.length()-3,lastQueue.length()));
                             NameSession = Session_name;
                             SessionPass = Session_password;
                             PopUpSucces();
                         } else {
                             if (lastQueue.trim().equals(myTicketNumber) ){
+                                lastTicket.setText("A"+lastQueue.substring(lastQueue.length()-3,lastQueue.length()));
                                 NameSession = Session_name;
                                 SessionPass = Session_password;
                                 PopUpSucces();
@@ -506,23 +491,6 @@ public class DipsWaitingRoom extends AppCompatActivity {
         btnSchedule2.setBackgroundTintList(DipsWaitingRoom.this.getResources().getColorStateList(R.color.Blue));
     }
 
-    private void EndCall(){
-        SweetAlertDialog sweetAlertDialog = new SweetAlertDialog(DipsWaitingRoom.this, SweetAlertDialog.WARNING_TYPE);
-        sweetAlertDialog.setContentText(getResources().getString(R.string.headline_endcall));
-        sweetAlertDialog.setConfirmText(getResources().getString(R.string.end_call));
-        sweetAlertDialog.setCancelText(getResources().getString(R.string.no));
-        sweetAlertDialog.show();
-        sweetAlertDialog.setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
-            @Override
-            public void onClick(SweetAlertDialog sweetAlertDialog) {
-                Toast.makeText(DipsWaitingRoom.this,"Panggilan anda telah diakhiri", Toast.LENGTH_LONG);
-                startActivity(new Intent(getApplicationContext(), DipsSplashScreen.class));
-
-            }
-        });
-        Button btnCancel = (Button) sweetAlertDialog.findViewById(cn.pedant.SweetAlert.R.id.cancel_button);
-        btnCancel.setBackgroundTintList(DipsWaitingRoom.this.getResources().getColorStateList(R.color.Blue));
-    }
 
     private void PopUpWaiting(){
         /*new Handler().postDelayed(new Runnable() {
@@ -694,7 +662,8 @@ public class DipsWaitingRoom extends AppCompatActivity {
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
-                } else {
+                }
+                else {
                     Log.d("CEK","MASUK ELSE");
                 }
             }

@@ -29,5 +29,9 @@ public interface ApiService {
     @POST("api/nik/cek")
     Call<JsonObject> CekData(@Body RequestBody body);
 
+    @Headers("Content-Type: "+ MyConstants.CONTENT_TYPE)
+    @POST("api/document/savebase64")
+    Call<JsonObject> SaveImage(@Body RequestBody body);
+
 
 }

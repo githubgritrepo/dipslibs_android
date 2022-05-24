@@ -38,9 +38,16 @@ import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
 
+import com.evo.mitzoom.API.ApiService;
+import com.evo.mitzoom.API.Server;
 import com.evo.mitzoom.R;
+import com.evo.mitzoom.Session.SessionManager;
 import com.evo.mitzoom.ui.DipsCameraActivity;
 import com.evo.mitzoom.ui.DipsWaitingRoom;
+import com.google.gson.JsonObject;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -53,6 +60,11 @@ import java.util.Date;
 import java.util.Locale;
 
 import cn.pedant.SweetAlert.SweetAlertDialog;
+import okhttp3.MediaType;
+import okhttp3.RequestBody;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class frag_opening_account extends Fragment {
 
@@ -67,12 +79,15 @@ public class frag_opening_account extends Fragment {
     private LayoutInflater inflater;
     private View dialogView;
     private LinearLayout LL;
+    private String idDips, KTP_BASE64;
+    private SessionManager session;
     private TextView NIK, Nama, TTL, TTL2;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         context = getContext();
+        session = new SessionManager(context);
     }
     @Nullable
     @Override
@@ -134,6 +149,7 @@ public class frag_opening_account extends Fragment {
                     Toast.makeText(context, "Silahkan Upload Foto KTP Anda", Toast.LENGTH_SHORT).show();
                 }
                 else{
+                    saveImage();
                     PopUpOCR(KTP);
                 }
             }
@@ -148,7 +164,6 @@ public class frag_opening_account extends Fragment {
         }
         return true;
     }
-
     private void sendDataFragment(String tag, byte[] Text, Fragment fragment){
         Bundle bundle = new Bundle();
         bundle.putByteArray(tag,Text);
@@ -166,7 +181,6 @@ public class frag_opening_account extends Fragment {
             }
         }
     }
-
     private void PopUp(){
         SweetAlertDialog sweetAlertDialog = new SweetAlertDialog(context, SweetAlertDialog.WARNING_TYPE);
         sweetAlertDialog.setContentText(getResources().getString(R.string.popupktp));
@@ -196,7 +210,6 @@ public class frag_opening_account extends Fragment {
 
         startActivityForResult(intent, 1);*/
     }
-
     private File createTemporaryFile(String part, String ext) throws Exception {
         String IMAGE_DIRECTORY_NAME = getString(R.string.app_name_dips);
         File mediaStorageDir = new File(
@@ -288,6 +301,7 @@ public class frag_opening_account extends Fragment {
         btnOCR2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 sweetAlertDialog.dismiss();
                 sendDataFragment("ktp",DataKTP,new frag_opening_account2());
             }
@@ -317,11 +331,57 @@ public class frag_opening_account extends Fragment {
         viewImage.setImageBitmap(resizedBitmap);
         //return resizedBitmap;
         imgtoByteArray(resizedBitmap);
+        imgtoBase64(resizedBitmap);
     }
     private void imgtoByteArray(Bitmap bitmap) {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         bitmap.compress(Bitmap.CompressFormat.JPEG,100, baos);
         byte[] imageBytes = baos.toByteArray();
         KTP = imageBytes;
+    }
+    private void imgtoBase64(Bitmap bitmap) {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.JPEG,100, baos);
+        byte[] imageBytes = baos.toByteArray();
+        String encodedImage = Base64.encodeToString(imageBytes, Base64.DEFAULT);
+        KTP_BASE64 = encodedImage;
+    }
+    private void saveImage(){
+        idDips = session.getKEY_IdDips();
+        JSONObject jsons = new JSONObject();
+        try {
+            jsons.put("image",KTP_BASE64);
+            jsons.put("idDips",idDips);
+            jsons.put("filename","coba_gambar");
+            jsons.put("fieldname","ktp");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), jsons.toString());
+        ApiService API = Server.getAPIService();
+        Call<JsonObject> call = API.SaveImage(requestBody);
+        call.enqueue(new Callback<JsonObject>() {
+            @Override
+            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                if (response.isSuccessful() && response.body().size() > 0) {
+                    String dataS = response.body().toString();
+                    try {
+                        JSONObject jsObj = new JSONObject(dataS);
+                        String message = jsObj.getString("message");
+                        Log.d("CEK","MESSAGE = "+message);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+                else {
+                    Log.d("CEK","MASUK ELSE");
+                }
+            }
+
+            @Override
+            public void onFailure(Call<JsonObject> call, Throwable t) {
+                Toast.makeText(context,t.getMessage(),Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 }

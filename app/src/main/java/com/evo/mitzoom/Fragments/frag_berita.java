@@ -2,6 +2,7 @@ package com.evo.mitzoom.Fragments;
 
 import android.app.DatePickerDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.LayoutInflater;
@@ -25,6 +26,7 @@ import androidx.viewpager.widget.ViewPager;
 import com.evo.mitzoom.Adapter.AdapterSlide;
 import com.evo.mitzoom.Adapter.GridProductAdapter;
 import com.evo.mitzoom.R;
+import com.evo.mitzoom.ui.DipsSplashScreen;
 import com.evo.mitzoom.ui.DipsWaitingRoom;
 import com.google.android.material.button.MaterialButton;
 
@@ -88,10 +90,27 @@ public class frag_berita extends Fragment {
         btnEndCall.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //EndCall();
+                EndCall();
             }
         });
 
+    }
+    private void EndCall(){
+        SweetAlertDialog sweetAlertDialog = new SweetAlertDialog(context, SweetAlertDialog.WARNING_TYPE);
+        sweetAlertDialog.setContentText(getResources().getString(R.string.headline_endcall));
+        sweetAlertDialog.setConfirmText(getResources().getString(R.string.end_call));
+        sweetAlertDialog.setCancelText(getResources().getString(R.string.no));
+        sweetAlertDialog.show();
+        sweetAlertDialog.setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
+            @Override
+            public void onClick(SweetAlertDialog sweetAlertDialog) {
+                Toast.makeText(context,"Panggilan anda telah diakhiri", Toast.LENGTH_LONG);
+                startActivity(new Intent(context, DipsSplashScreen.class));
+
+            }
+        });
+        Button btnCancel = (Button) sweetAlertDialog.findViewById(cn.pedant.SweetAlert.R.id.cancel_button);
+        btnCancel.setBackgroundTintList(context.getResources().getColorStateList(R.color.Blue));
     }
     private void initPager() {
         for (int i = 0; i < img.length; i++) {

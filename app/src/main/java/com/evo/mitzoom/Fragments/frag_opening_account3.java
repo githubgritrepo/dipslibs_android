@@ -28,8 +28,15 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.evo.mitzoom.API.ApiService;
+import com.evo.mitzoom.API.Server;
 import com.evo.mitzoom.R;
+import com.evo.mitzoom.Session.SessionManager;
 import com.evo.mitzoom.ui.DipsCameraActivity;
+import com.google.gson.JsonObject;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -37,6 +44,12 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+
+import okhttp3.MediaType;
+import okhttp3.RequestBody;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class frag_opening_account3 extends Fragment {
     private Context context;
@@ -46,12 +59,15 @@ public class frag_opening_account3 extends Fragment {
     private Button btnNext, delete;
     private byte[] KTP, NPWP, TTD;
     private LinearLayout LL;
+    private String idDips, TTD_BASE64;
+    private SessionManager session;
     private LinearLayout chooseImage;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         context = getContext();
+        session = new SessionManager(context);
     }
     @Nullable
     @Override
@@ -112,6 +128,7 @@ public class frag_opening_account3 extends Fragment {
                     Toast.makeText(context, "Silahkan Upload Foto Tanda Tangan Anda", Toast.LENGTH_SHORT).show();
                 }
                 else{
+                    saveImage();
                     Fragment fragment = new frag_form_opening();
                     Bundle bundle = new Bundle();
                     bundle.putByteArray("ktp",KTP);
@@ -234,6 +251,7 @@ public class frag_opening_account3 extends Fragment {
         bm.recycle();
         viewImage.setImageBitmap(resizedBitmap);
         imgtoByteArray(resizedBitmap);
+        imgtoBase64(resizedBitmap);
         //return resizedBitmap;
     }
     private void imgtoByteArray(Bitmap bitmap) {
@@ -241,5 +259,50 @@ public class frag_opening_account3 extends Fragment {
         bitmap.compress(Bitmap.CompressFormat.JPEG,100, baos);
         byte[] imageBytes = baos.toByteArray();
         TTD = imageBytes;
+    }
+    private void imgtoBase64(Bitmap bitmap) {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.JPEG,100, baos);
+        byte[] imageBytes = baos.toByteArray();
+        String encodedImage = Base64.encodeToString(imageBytes, Base64.DEFAULT);
+        TTD_BASE64 = encodedImage;
+    }
+    private void saveImage(){
+        idDips = session.getKEY_IdDips();
+        JSONObject jsons = new JSONObject();
+        try {
+            jsons.put("image",TTD_BASE64);
+            jsons.put("idDips",idDips);
+            jsons.put("filename","coba_gambar");
+            jsons.put("fieldname","tanda_tangan");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), jsons.toString());
+        ApiService API = Server.getAPIService();
+        Call<JsonObject> call = API.SaveImage(requestBody);
+        call.enqueue(new Callback<JsonObject>() {
+            @Override
+            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                if (response.isSuccessful() && response.body().size() > 0) {
+                    String dataS = response.body().toString();
+                    try {
+                        JSONObject jsObj = new JSONObject(dataS);
+                        String message = jsObj.getString("message");
+                        Log.d("CEK","MESSAGE = "+message);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+                else {
+                    Log.d("CEK","MASUK ELSE");
+                }
+            }
+
+            @Override
+            public void onFailure(Call<JsonObject> call, Throwable t) {
+                Toast.makeText(context,t.getMessage(),Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 }
