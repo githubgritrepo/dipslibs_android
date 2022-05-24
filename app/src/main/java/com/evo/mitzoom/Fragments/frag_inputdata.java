@@ -7,6 +7,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -30,6 +32,7 @@ import com.evo.mitzoom.ui.DipsWaitingRoom;
 import com.google.android.material.button.MaterialButton;
 import com.google.gson.JsonObject;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -51,9 +54,11 @@ public class frag_inputdata extends Fragment {
     public int seconds = 0;
     public boolean running = true;
     public boolean wasRunning;
+    private boolean result = true;
     private LayoutInflater inflater;
     private View dialogView;
     private SessionManager session;
+    private String idDips, TW_NIK, TW_NAMA;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -61,10 +66,7 @@ public class frag_inputdata extends Fragment {
         context = getContext();
         isCust = getArguments().getBoolean("ISCUST");
         session = new SessionManager(context);
-
     }
-
-
 
     @Nullable
     @Override
@@ -79,14 +81,104 @@ public class frag_inputdata extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        idDips = session.getKEY_IdDips();
         Popup();
+        et_NamaNasabah.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                result = false;
+                Mirroring(false,s,et_NikNasabah.getText().toString());
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
+        et_NikNasabah.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                result = false;
+                Mirroring(false,et_NamaNasabah.getText().toString(),s);
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
         btnNext.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Nama = et_NamaNasabah.getText().toString();
                 NIK = et_NikNasabah.getText().toString();
+                Mirroring(true,Nama,NIK);
                 //CekData();
                 PopupChoose();
+            }
+        });
+    }
+    private void Mirroring(boolean bool, CharSequence sequence1, CharSequence sequence2){
+        JSONObject jsons = new JSONObject();
+        JSONArray jsonArray = new JSONArray();
+        try {
+            jsonArray.put(sequence1);
+            jsonArray.put(sequence2);
+            jsonArray.put(bool);
+            jsons.put("idDips",idDips);
+            jsons.put("code",1);
+            jsons.put("data",jsonArray);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), jsons.toString());
+        ApiService API = Server.getAPIService();
+        Call<JsonObject> call = API.Mirroring(requestBody);
+        call.enqueue(new Callback<JsonObject>() {
+            @Override
+            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                Log.d("MIRROR","Mirroring Sukses");
+            }
+
+            @Override
+            public void onFailure(Call<JsonObject> call, Throwable t) {
+                Log.d("MIRROR","Mirroring Gagal");
+            }
+        });
+    }
+    private void Mirroring2(boolean bool){
+        JSONObject jsons = new JSONObject();
+        JSONArray jsonArray = new JSONArray();
+        try {
+            jsonArray.put(bool);
+            jsons.put("idDips",idDips);
+            jsons.put("code",3);
+            jsons.put("data",jsonArray);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), jsons.toString());
+        ApiService API = Server.getAPIService();
+        Call<JsonObject> call = API.Mirroring(requestBody);
+        call.enqueue(new Callback<JsonObject>() {
+            @Override
+            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                Log.d("MIRROR","Mirroring Sukses");
+            }
+
+            @Override
+            public void onFailure(Call<JsonObject> call, Throwable t) {
+                Log.d("MIRROR","Mirroring Gagal");
             }
         });
     }
@@ -214,6 +306,7 @@ public class frag_inputdata extends Fragment {
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Mirroring2(true);
                 sweetAlertDialog.dismiss();
                 getFragmentPage(new frag_opening_account());
             }

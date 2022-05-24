@@ -156,18 +156,15 @@ public class frag_rtgs extends Fragment {
             String textContent = "";
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                Log.d("CEK","beforeTextChanged");
             }
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 textContent = s.toString();
-                Log.d("CEK","onTextChanged");
             }
 
             @Override
             public void afterTextChanged(Editable s) {
-                Log.d("CEK","afterTextChanged");
                 String[] strings = textContent.split("\\r?\\n");
                 String titleAcc = strings[0]+"\n";
                 s.setSpan(new StyleSpan(android.graphics.Typeface.BOLD), 0, titleAcc.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
@@ -278,7 +275,6 @@ public class frag_rtgs extends Fragment {
             MultiFormatReader reader = new MultiFormatReader();
             Result results = reader.decode(bBitmap);
 
-            Log.d("CEK","resulText : "+results.getText());
             getSavedInstance(results);
         } catch (FileNotFoundException | NotFoundException e) {
             messageBarcodeFailed();
@@ -302,8 +298,6 @@ public class frag_rtgs extends Fragment {
                 JSONObject dataJs = new JSONObject(dataArr);
                 String idForm = dataJs.getString("idForm");
 
-                Log.d("CEK","idForm : "+idForm);
-
                 if (resulText.equals(idForm)) {
                     String SourceBank = dataJs.getString("sourceBank");
                     String SourceTypeService = dataJs.getString("sourceTypeService");
@@ -313,8 +307,6 @@ public class frag_rtgs extends Fragment {
                     String nama_penerima = dataJs.getString("nama_penerima");
                     String nominal = dataJs.getString("nominal");
                     String berita = dataJs.getString("berita");
-
-                    Log.d("CEK","SourceTypeService : "+SourceTypeService);
 
                     if (posSourceBenefit > -1) {
                         et_benefitRec.setText(et_benefitRec.getAdapter().getItem(posSourceBenefit).toString(), false);

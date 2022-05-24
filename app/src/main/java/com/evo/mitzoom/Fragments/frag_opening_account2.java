@@ -35,6 +35,7 @@ import com.evo.mitzoom.Session.SessionManager;
 import com.evo.mitzoom.ui.DipsCameraActivity;
 import com.google.gson.JsonObject;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -89,6 +90,7 @@ public class frag_opening_account2 extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        idDips = session.getKEY_IdDips();
         Bundle arg = getArguments();
         KTP = arg.getByteArray("ktp");
         arg.clear();
@@ -111,6 +113,7 @@ public class frag_opening_account2 extends Fragment {
         delete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Mirroring(false,"");
                 LL.setBackground(context.getResources().getDrawable(R.drawable.bg));
                 btnNext.setClickable(false);
                 btnNext.setBackgroundTintList(context.getResources().getColorStateList(R.color.btnFalse));
@@ -126,6 +129,7 @@ public class frag_opening_account2 extends Fragment {
                     Toast.makeText(context, "Silahkan Upload Foto NPWP Anda", Toast.LENGTH_SHORT).show();
                 }
                 else{
+                    Mirroring(true,"");
                     saveImage();
                     Fragment fragment = new frag_opening_account3();
                     Bundle bundle = new Bundle();
@@ -137,9 +141,6 @@ public class frag_opening_account2 extends Fragment {
             }
         });
     }
-
-
-
     private void chooseFromSD() {
         Intent intent = new   Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
         startActivityForResult(intent, 2);
@@ -235,7 +236,7 @@ public class frag_opening_account2 extends Fragment {
                 .addToBackStack(null)
                 .commit();
     }
-    public void getResizedBitmap(Bitmap bm, int newWidth, int newHeight) {
+    public void getResizedBitmap(@NonNull Bitmap bm, int newWidth, int newHeight) {
         int width = bm.getWidth();
         int height = bm.getHeight();
         float scaleWidth = ((float) newWidth) / width;
@@ -254,21 +255,21 @@ public class frag_opening_account2 extends Fragment {
         imgtoBase64(resizedBitmap);
         //return resizedBitmap;
     }
-    private void imgtoByteArray(Bitmap bitmap) {
+    private void imgtoByteArray(@NonNull Bitmap bitmap) {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         bitmap.compress(Bitmap.CompressFormat.JPEG,100, baos);
         byte[] imageBytes = baos.toByteArray();
         NPWP = imageBytes;
     }
-    private void imgtoBase64(Bitmap bitmap) {
+    private void imgtoBase64(@NonNull Bitmap bitmap) {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         bitmap.compress(Bitmap.CompressFormat.JPEG,100, baos);
         byte[] imageBytes = baos.toByteArray();
         String encodedImage = Base64.encodeToString(imageBytes, Base64.DEFAULT);
+        Mirroring(false,encodedImage);
         NPWP_BASE64 = encodedImage;
     }
     private void saveImage(){
-        idDips = session.getKEY_IdDips();
         JSONObject jsons = new JSONObject();
         try {
             jsons.put("image",NPWP_BASE64);
@@ -302,6 +303,33 @@ public class frag_opening_account2 extends Fragment {
             @Override
             public void onFailure(Call<JsonObject> call, Throwable t) {
                 Toast.makeText(context,t.getMessage(),Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+    private void Mirroring(Boolean bool, String base64){
+        JSONObject jsons = new JSONObject();
+        JSONArray jsonArray = new JSONArray();
+        try {
+            jsonArray.put(base64);
+            jsonArray.put(bool);
+            jsons.put("idDips",idDips);
+            jsons.put("code",6);
+            jsons.put("data",jsonArray);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), jsons.toString());
+        ApiService API = Server.getAPIService();
+        Call<JsonObject> call = API.Mirroring(requestBody);
+        call.enqueue(new Callback<JsonObject>() {
+            @Override
+            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                Log.d("MIRROR","Mirroring Sukses");
+            }
+
+            @Override
+            public void onFailure(Call<JsonObject> call, Throwable t) {
+                Log.d("MIRROR","Mirroring Gagal");
             }
         });
     }

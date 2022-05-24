@@ -121,7 +121,6 @@ public class FormRtgs extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        Log.d("CEK","onViewCreated");
 
         sourceBenefit = new String[]{getResources().getString(R.string.perorangan), getResources().getString(R.string.perusahaan), getResources().getString(R.string.pemerintah)};
         sourcePopulation = new String[]{getResources().getString(R.string.penduduk), getResources().getString(R.string.bukan_penduduk)};
@@ -167,13 +166,10 @@ public class FormRtgs extends Fragment {
     }
 
     private void initPager() {
-        Log.d("CEK","initPager");
         if (myViewPagerAdapter == null) {
-            Log.d("CEK","myViewPagerAdapter NULL");
             myViewPagerAdapter = new MyViewPagerAdapter();
         }
         pager.setAdapter(myViewPagerAdapter);
-        pager.addOnPageChangeListener(viewPagerPageChangeListener);
         circleIndicator.setViewPager(pager);
     }
 
@@ -368,30 +364,12 @@ public class FormRtgs extends Fragment {
         return BigDecimal.ZERO;
     }
 
-    ViewPager.OnPageChangeListener viewPagerPageChangeListener = new ViewPager.OnPageChangeListener() {
-        @Override
-        public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-            Log.d("CEK","onPageScrolled position : "+position+" | positionOffset : "+positionOffset);
-        }
-
-        @Override
-        public void onPageSelected(int position) {
-            Log.d("CEK","onPageSelected ke-"+position);
-        }
-
-        @Override
-        public void onPageScrollStateChanged(int state) {
-            Log.d("CEK","onPageScrollStateChangedn : "+state);
-        }
-    };
-
     public class MyViewPagerAdapter extends PagerAdapter {
         private LayoutInflater layoutInflater;
 
         @NonNull
         @Override
         public Object instantiateItem(@NonNull ViewGroup container, int position) {
-            Log.d("CEK","instantiateItem ke-"+position);
             layoutInflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
             View view = layoutInflater.inflate(layouts.get(position), container, false);
@@ -404,7 +382,6 @@ public class FormRtgs extends Fragment {
 
         private void iniatilizeElement(View view, int position) {
             int positionE = position;
-            Log.d("CEK","iniatilizeElement : "+positionE);
             TextView tvNoFormulir = (TextView) view.findViewById(R.id.tvNoFormulir);
             AutoCompleteTextView et_nama_bank = (AutoCompleteTextView) view.findViewById(R.id.et_nama_bank);
             AutoCompleteTextView et_serviceType = (AutoCompleteTextView) view.findViewById(R.id.et_serviceType);
@@ -573,7 +550,6 @@ public class FormRtgs extends Fragment {
             }
 
             if (dataAccountReceive.size() > 0) {
-                Log.d("CEK","dataAccountReceive : "+dataAccountReceive.size());
                 if (positionE < dataAccountReceive.size()) {
                     et_rek_penerima.setText(dataAccountReceive.get(positionE));
                 }

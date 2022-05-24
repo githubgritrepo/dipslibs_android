@@ -5,6 +5,8 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.os.Handler;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -13,6 +15,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -24,27 +27,44 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.dhairytripathi.library.EditTextPin;
+import com.evo.mitzoom.API.ApiService;
+import com.evo.mitzoom.API.Server;
 import com.evo.mitzoom.R;
+import com.evo.mitzoom.Session.SessionManager;
 import com.evo.mitzoom.ui.DipsWaitingRoom;
+import com.google.gson.JsonObject;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.w3c.dom.Text;
 
 import java.util.Locale;
 
 import cn.pedant.SweetAlert.SweetAlertDialog;
+import okhttp3.MediaType;
+import okhttp3.RequestBody;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class frag_form_opening extends Fragment {
     private Context context;
     private ImageView preview_ktp, preview_npwp, preview_signature;
-    private TextView Nama,NIK,Email,Alamat,Agama,Status;
+    private TextView Nama,NIK,Email,Alamat,Agama,Status,NoHp;
     private LinearLayout iconKtp, iconNpwp, iconSignature, iconForm;
     private Button btnProcess;
+    private CheckBox pernyataan;
+    private Boolean aBoolean;
+    private String idDips;
+    private SessionManager session;
     private byte[] KTP, NPWP, TTD;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         context = getContext();
+        session = new SessionManager(context);
     }
     @Nullable
     @Override
@@ -59,16 +79,19 @@ public class frag_form_opening extends Fragment {
         Email = view.findViewById(R.id.et_email);
         Alamat = view.findViewById(R.id.et_alamat);
         Agama = view.findViewById(R.id.et_agama);
+        NoHp = view.findViewById(R.id.et_no_hp);
         Status = view.findViewById(R.id.et_status);
         btnProcess = view.findViewById(R.id.btnProses);
         preview_ktp = view.findViewById(R.id.Imageview_ktp);
         preview_npwp = view.findViewById(R.id.Imageview_npwp);
         preview_signature = view.findViewById(R.id.Imageview_tanda_tangan);
+        pernyataan = view.findViewById(R.id.pernyataan);
         return view;
     }
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        idDips = session.getKEY_IdDips();
         iconKtp.setBackgroundTintList(context.getResources().getColorStateList(R.color.bg_cif_success));
         iconNpwp.setBackgroundTintList(context.getResources().getColorStateList(R.color.bg_cif_success));
         iconSignature.setBackgroundTintList(context.getResources().getColorStateList(R.color.bg_cif_success));
@@ -95,11 +118,177 @@ public class frag_form_opening extends Fragment {
         Agama.setText("Islam");
         Status.setText("Belum Kawin");
 
+        if (pernyataan.isChecked()){
+            aBoolean = true;
+        }
+        else {
+            aBoolean = false;
+        }
+
+        //Text Watcher
+        Nama.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                Mirroring(false, (String) s,NIK.getText().toString(),Email.getText().toString(),NoHp.getText().toString(),Alamat.getText().toString(),Agama.getText().toString(),Status.getText().toString(),"",aBoolean);
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
+        NIK.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                Mirroring(false, Nama.getText().toString(), (String) s,Email.getText().toString(),NoHp.getText().toString(),Alamat.getText().toString(),Agama.getText().toString(),Status.getText().toString(),"",aBoolean);
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
+        NoHp.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                Mirroring(false, Nama.getText().toString(),NIK.getText().toString(),Email.getText().toString(), (String) s,Alamat.getText().toString(),Agama.getText().toString(),Status.getText().toString(),"",aBoolean);
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
+        Email.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                Mirroring(false, Nama.getText().toString(),NIK.getText().toString(), (String) s,NoHp.getText().toString(),Alamat.getText().toString(),Agama.getText().toString(),Status.getText().toString(),"",aBoolean);
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
+        Alamat.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                Mirroring(false, Nama.getText().toString(),NIK.getText().toString(),Email.getText().toString(),NoHp.getText().toString(), (String) s,Agama.getText().toString(),Status.getText().toString(),"",aBoolean);
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
+        Agama.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                Mirroring(false, Nama.getText().toString(),NIK.getText().toString(),Email.getText().toString(),NoHp.getText().toString(),Alamat.getText().toString(), (String) s,Status.getText().toString(),"",aBoolean);
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
+        Status.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                Mirroring(false, Nama.getText().toString(),NIK.getText().toString(),Email.getText().toString(),NoHp.getText().toString(),Alamat.getText().toString(),Agama.getText().toString(), (String) s,"",aBoolean);
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
+
+
         btnProcess.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Mirroring(true,Nama.getText().toString(),NIK.getText().toString(),Email.getText().toString(),NoHp.getText().toString(),Alamat.getText().toString(),Agama.getText().toString(),Status.getText().toString(),"Tabungan",aBoolean);
                 iconForm.setBackgroundTintList(context.getResources().getColorStateList(R.color.bg_cif_success));
                 PopUpSuccesRegistration();
+            }
+        });
+    }
+
+    private void Mirroring(Boolean bool, String nama, String nik, String email, String hp, String alamat, String agama, String status, String produk, boolean pernyataan){
+        JSONObject jsons = new JSONObject();
+        JSONArray jsonArray = new JSONArray();
+        try {
+            jsonArray.put(nama);
+            jsonArray.put(nik);
+            jsonArray.put(email);
+            jsonArray.put(hp);
+            jsonArray.put(alamat);
+            jsonArray.put(agama);
+            jsonArray.put(status);
+            jsonArray.put(produk);
+            jsonArray.put(pernyataan);
+            jsonArray.put(bool);
+            jsons.put("idDips",idDips);
+            jsons.put("code",8);
+            jsons.put("data",jsonArray);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), jsons.toString());
+        ApiService API = Server.getAPIService();
+        Call<JsonObject> call = API.Mirroring(requestBody);
+        call.enqueue(new Callback<JsonObject>() {
+            @Override
+            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                Log.d("MIRROR","Mirroring Sukses");
+            }
+
+            @Override
+            public void onFailure(Call<JsonObject> call, Throwable t) {
+                Log.d("MIRROR","Mirroring Gagal");
             }
         });
     }
@@ -120,6 +309,7 @@ public class frag_form_opening extends Fragment {
                     sweetAlertDialog.setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
                         @Override
                         public void onClick(SweetAlertDialog sweetAlertDialog) {
+                            Mirroring2(true);
                             getFragmentPage(new frag_aktivasi_ibmb());
                             sweetAlertDialog.dismiss();
                         }
@@ -132,7 +322,31 @@ public class frag_form_opening extends Fragment {
                 .addToBackStack(null)
                 .commit();
     }
+    private void Mirroring2(Boolean bool){
+        JSONObject jsons = new JSONObject();
+        JSONArray jsonArray = new JSONArray();
+        try {
+            jsonArray.put(bool);
+            jsons.put("idDips",idDips);
+            jsons.put("code",9);
+            jsons.put("data",jsonArray);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), jsons.toString());
+        ApiService API = Server.getAPIService();
+        Call<JsonObject> call = API.Mirroring(requestBody);
+        call.enqueue(new Callback<JsonObject>() {
+            @Override
+            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                Log.d("MIRROR","Mirroring Sukses");
+            }
 
-
+            @Override
+            public void onFailure(Call<JsonObject> call, Throwable t) {
+                Log.d("MIRROR","Mirroring Gagal");
+            }
+        });
+    }
 
 }

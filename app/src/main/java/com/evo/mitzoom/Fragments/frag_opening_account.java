@@ -20,6 +20,8 @@ import android.nfc.Tag;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -46,6 +48,7 @@ import com.evo.mitzoom.ui.DipsCameraActivity;
 import com.evo.mitzoom.ui.DipsWaitingRoom;
 import com.google.gson.JsonObject;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -67,7 +70,6 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class frag_opening_account extends Fragment {
-
     public static final int REQUEST_WRITE_PERMISSION = 786;
     private Context context;
     private LinearLayout iconKtp, iconNpwp, iconSignature, iconForm;
@@ -109,6 +111,7 @@ public class frag_opening_account extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        idDips = session.getKEY_IdDips();
         PopUp();
         iconKtp.setBackgroundTintList(context.getResources().getColorStateList(R.color.bg_cif));
         btnCamera.setOnClickListener(new View.OnClickListener() {
@@ -134,6 +137,7 @@ public class frag_opening_account extends Fragment {
         delete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Mirroring(false,"");
                 LL.setBackground(context.getResources().getDrawable(R.drawable.bg));
                 btnNext.setClickable(false);
                 btnNext.setBackgroundTintList(context.getResources().getColorStateList(R.color.btnFalse));
@@ -149,6 +153,8 @@ public class frag_opening_account extends Fragment {
                     Toast.makeText(context, "Silahkan Upload Foto KTP Anda", Toast.LENGTH_SHORT).show();
                 }
                 else{
+                    Mirroring(true,"");
+                    Mirroring2(false,"323432342304203","Andi Setiawan","Semarang","08 April 2000");
                     saveImage();
                     PopUpOCR(KTP);
                 }
@@ -225,7 +231,6 @@ public class frag_opening_account extends Fragment {
 
         return mediaFile;
     }
-
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -298,10 +303,77 @@ public class frag_opening_account extends Fragment {
         Nama.setText("Andi Setiawan");
         TTL.setText("Semarang");
         TTL2.setText("08 April 2000");
+
+        //TextWatcher
+        NIK.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                Mirroring2(false, (String) s,Nama.getText().toString(),TTL.getText().toString(),TTL2.getText().toString());
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
+        Nama.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                Mirroring2(false, NIK.getText().toString(), (String) s,TTL.getText().toString(),TTL2.getText().toString());
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
+        TTL.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                Mirroring2(false, NIK.getText().toString(), Nama.getText().toString(), (String) s,TTL2.getText().toString());
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
+        TTL2.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                Mirroring2(false, NIK.getText().toString(), Nama.getText().toString(), TTL.getText().toString(), (String) s);
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
+
         btnOCR2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                Mirroring2(true,NIK.getText().toString(),Nama.getText().toString(),TTL.getText().toString(),TTL2.getText().toString());
                 sweetAlertDialog.dismiss();
                 sendDataFragment("ktp",DataKTP,new frag_opening_account2());
             }
@@ -309,6 +381,7 @@ public class frag_opening_account extends Fragment {
         btnOCR1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Mirroring2(false,"","","","");
                 sweetAlertDialog.dismiss();
             }
         });
@@ -344,10 +417,10 @@ public class frag_opening_account extends Fragment {
         bitmap.compress(Bitmap.CompressFormat.JPEG,100, baos);
         byte[] imageBytes = baos.toByteArray();
         String encodedImage = Base64.encodeToString(imageBytes, Base64.DEFAULT);
+        Mirroring(false,encodedImage);
         KTP_BASE64 = encodedImage;
     }
     private void saveImage(){
-        idDips = session.getKEY_IdDips();
         JSONObject jsons = new JSONObject();
         try {
             jsons.put("image",KTP_BASE64);
@@ -381,6 +454,63 @@ public class frag_opening_account extends Fragment {
             @Override
             public void onFailure(Call<JsonObject> call, Throwable t) {
                 Toast.makeText(context,t.getMessage(),Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+    private void Mirroring(Boolean bool, String base64){
+        JSONObject jsons = new JSONObject();
+        JSONArray jsonArray = new JSONArray();
+        try {
+            jsonArray.put(base64);
+            jsonArray.put(bool);
+            jsons.put("idDips",idDips);
+            jsons.put("code",4);
+            jsons.put("data",jsonArray);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), jsons.toString());
+        ApiService API = Server.getAPIService();
+        Call<JsonObject> call = API.Mirroring(requestBody);
+        call.enqueue(new Callback<JsonObject>() {
+            @Override
+            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                Log.d("MIRROR","Mirroring Sukses");
+            }
+
+            @Override
+            public void onFailure(Call<JsonObject> call, Throwable t) {
+                Log.d("MIRROR","Mirroring Gagal");
+            }
+        });
+    }
+    private void Mirroring2(Boolean bool, String nik, String nama, String tempat, String ttl){
+        JSONObject jsons = new JSONObject();
+        JSONArray jsonArray = new JSONArray();
+        try {
+            jsonArray.put(nik);
+            jsonArray.put(nama);
+            jsonArray.put(tempat);
+            jsonArray.put(ttl);
+            jsonArray.put(bool);
+            jsons.put("idDips",idDips);
+            jsons.put("code",5);
+            jsons.put("data",jsonArray);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), jsons.toString());
+        ApiService API = Server.getAPIService();
+        Call<JsonObject> call = API.Mirroring(requestBody);
+        call.enqueue(new Callback<JsonObject>() {
+            @Override
+            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                Log.d("MIRROR","Mirroring Sukses");
+            }
+
+            @Override
+            public void onFailure(Call<JsonObject> call, Throwable t) {
+                Log.d("MIRROR","Mirroring Gagal");
             }
         });
     }

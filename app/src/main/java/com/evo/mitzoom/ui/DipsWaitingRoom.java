@@ -28,6 +28,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Surface;
 import android.view.SurfaceHolder;
@@ -231,7 +232,7 @@ public class DipsWaitingRoom extends AppCompatActivity {
         handler.postDelayed(runnable, 1 * 1000);
     }
 
-    @Override
+    /*@Override
     public void onBackPressed() {
 
         if (doubleBackToExitPressedOnce) {
@@ -249,6 +250,20 @@ public class DipsWaitingRoom extends AppCompatActivity {
                 doubleBackToExitPressedOnce = false;
             }
         },2000);
+    }*/
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            //preventing default implementation previous to android.os.Build.VERSION_CODES.ECLAIR
+            return true;
+        }
+
+        if (keyCode == KeyEvent.KEYCODE_HOME) {
+            //preventing default implementation previous to android.os.Build.VERSION_CODES.ECLAIR
+            return true;
+        }
+        return super.onKeyDown(keyCode, event);
     }
 
     @Override
@@ -461,7 +476,7 @@ public class DipsWaitingRoom extends AppCompatActivity {
         btnclose.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                sweetAlertDialog.dismiss();
+                sweetAlertDialog.dismissWithAnimation();
             }
         });
         btnSchedule2.setOnClickListener(new View.OnClickListener() {
@@ -477,7 +492,7 @@ public class DipsWaitingRoom extends AppCompatActivity {
                 }
                 else {
                     Toast.makeText(getApplicationContext(), "Jadwal panggilan anda "+tanggal+" jam "+waktu, Toast.LENGTH_LONG).show();
-                    sweetAlertDialog.dismiss();
+                    sweetAlertDialog.dismissWithAnimation();
                     SweetAlertDialog sweetAlertDialog = new SweetAlertDialog(DipsWaitingRoom.this, SweetAlertDialog.SUCCESS_TYPE);
                     sweetAlertDialog.setContentText(getResources().getString(R.string.content_after_schedule));
                     sweetAlertDialog.setConfirmText(getResources().getString(R.string.done));
@@ -493,64 +508,45 @@ public class DipsWaitingRoom extends AppCompatActivity {
 
 
     private void PopUpWaiting(){
-        /*new Handler().postDelayed(new Runnable() {
+        SweetAlertDialog sweetAlertDialog = new SweetAlertDialog(DipsWaitingRoom.this, SweetAlertDialog.WARNING_TYPE);
+        sweetAlertDialog.setContentText(getResources().getString(R.string.headline_waiting));
+        sweetAlertDialog.setConfirmText(getResources().getString(R.string.waiting));
+        sweetAlertDialog.show();
+        sweetAlertDialog.setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
             @Override
-            public void run() {*/
-                SweetAlertDialog sweetAlertDialog = new SweetAlertDialog(DipsWaitingRoom.this, SweetAlertDialog.WARNING_TYPE);
-                sweetAlertDialog.setContentText(getResources().getString(R.string.headline_waiting));
-                sweetAlertDialog.setConfirmText(getResources().getString(R.string.waiting));
-                sweetAlertDialog.show();
-                sweetAlertDialog.setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
-                    @Override
-                    public void onClick(SweetAlertDialog sweetAlertDialog) {
-                        sweetAlertDialog.dismiss();
-                        /*Intent intent = getIntent();
-                        overridePendingTransition(0, 0);
-                        intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
-                        finish();
-                        overridePendingTransition(0, 0);
-                        startActivity(intent);*/
-                    }
-                });
-                Button btnConfirm = (Button) sweetAlertDialog.findViewById(cn.pedant.SweetAlert.R.id.confirm_button);
-                btnConfirm.setBackgroundTintList(DipsWaitingRoom.this.getResources().getColorStateList(R.color.Blue));
-            /*}
-        },waktu_tunggu);*/
+            public void onClick(SweetAlertDialog sweetAlertDialog) {
+                sweetAlertDialog.dismissWithAnimation();
+            }
+        });
+        Button btnConfirm = (Button) sweetAlertDialog.findViewById(cn.pedant.SweetAlert.R.id.confirm_button);
+        btnConfirm.setBackgroundTintList(DipsWaitingRoom.this.getResources().getColorStateList(R.color.Blue));
     }
 
     private void PopUpSucces(){
-        /*handlerSuccess = new Handler();
-        handlerSuccess.postDelayed(new Runnable() {
+        SweetAlertDialog sweetAlertDialog = new SweetAlertDialog(DipsWaitingRoom.this, SweetAlertDialog.SUCCESS_TYPE);
+        sweetAlertDialog.setContentText(getResources().getString(R.string.headline_success));
+        sweetAlertDialog.setConfirmText(getResources().getString(R.string.btn_continue));
+        sweetAlertDialog.setCancelText(getResources().getString(R.string.cancel));
+        sweetAlertDialog.setCancelable(false);
+        sweetAlertDialog.show();
+        Button btnConfirm = (Button) sweetAlertDialog.findViewById(cn.pedant.SweetAlert.R.id.confirm_button);
+        Button btnCancel = (Button) sweetAlertDialog.findViewById(cn.pedant.SweetAlert.R.id.cancel_button);
+        btnConfirm.setBackgroundTintList(DipsWaitingRoom.this.getResources().getColorStateList(R.color.Blue));
+        btnCancel.setBackgroundTintList(DipsWaitingRoom.this.getResources().getColorStateList(R.color.button_end_call));
+        sweetAlertDialog.setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
             @Override
-            public void run() {
-                if (!stopPopSuccess) {*/
-                    SweetAlertDialog sweetAlertDialog = new SweetAlertDialog(DipsWaitingRoom.this, SweetAlertDialog.SUCCESS_TYPE);
-                    sweetAlertDialog.setContentText(getResources().getString(R.string.headline_success));
-                    sweetAlertDialog.setConfirmText(getResources().getString(R.string.btn_continue));
-                    sweetAlertDialog.setCancelText(getResources().getString(R.string.cancel));
-                    sweetAlertDialog.setCancelable(false);
-                    sweetAlertDialog.show();
-                    Button btnConfirm = (Button) sweetAlertDialog.findViewById(cn.pedant.SweetAlert.R.id.confirm_button);
-                    Button btnCancel = (Button) sweetAlertDialog.findViewById(cn.pedant.SweetAlert.R.id.cancel_button);
-                    btnConfirm.setBackgroundTintList(DipsWaitingRoom.this.getResources().getColorStateList(R.color.Blue));
-                    btnCancel.setBackgroundTintList(DipsWaitingRoom.this.getResources().getColorStateList(R.color.button_end_call));
-                    sweetAlertDialog.setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
-                        @Override
-                        public void onClick(SweetAlertDialog sweetAlertDialog) {
-                            sweetAlertDialog.dismiss();
-                            processJoinVideo();
-                        }
-                    });
-                    sweetAlertDialog.setCancelClickListener(new SweetAlertDialog.OnSweetClickListener() {
-                        @Override
-                        public void onClick(SweetAlertDialog sweetAlertDialog) {
-                            sweetAlertDialog.dismiss();
-                            PopUpSchedule();
-                        }
-                    });
-                /*}
+            public void onClick(SweetAlertDialog sweetAlertDialog) {
+                sweetAlertDialog.dismissWithAnimation();
+                processJoinVideo();
             }
-        },15000);*/
+        });
+        sweetAlertDialog.setCancelClickListener(new SweetAlertDialog.OnSweetClickListener() {
+            @Override
+            public void onClick(SweetAlertDialog sweetAlertDialog) {
+                sweetAlertDialog.dismissWithAnimation();
+                PopUpSchedule();
+            }
+        });
     }
 
     public void setCameraDisplayOrientation(){
@@ -663,9 +659,6 @@ public class DipsWaitingRoom extends AppCompatActivity {
                         e.printStackTrace();
                     }
                 }
-                else {
-                    Log.d("CEK","MASUK ELSE");
-                }
             }
             @Override
             public void onFailure(Call<JsonObject> call, Throwable t) {
@@ -689,8 +682,6 @@ public class DipsWaitingRoom extends AppCompatActivity {
         processSignature();
     }
     private void processSignature() {
-        Log.d("CEK","NameSession : "+NameSession);
-        Log.d("CEK","SessionPass : "+SessionPass);
         JSONObject jsons = new JSONObject();
         try {
             jsons.put("sessionName",NameSession);
@@ -723,9 +714,6 @@ public class DipsWaitingRoom extends AppCompatActivity {
                         e.printStackTrace();
                     }
                 }
-                else {
-                    Log.d("CEK","MASUK ELSE");
-                }
             }
 
             @Override
@@ -740,9 +728,6 @@ public class DipsWaitingRoom extends AppCompatActivity {
         String name = allClaims.get("user_identity").asString();
         String sessionName = allClaims.get("tpc").asString();
         String sessionPass = allClaims.get("session_key").asString();
-
-        Log.d("CEK","sessionName : "+sessionName);
-        Log.d("CEK","sessionPass : "+sessionPass);
 
         ZoomVideoSDKSessionContext sessionContext = new ZoomVideoSDKSessionContext();
 
