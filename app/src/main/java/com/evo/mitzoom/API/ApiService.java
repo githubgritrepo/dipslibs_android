@@ -33,5 +33,9 @@ public interface ApiService {
     @POST("api/document/savebase64")
     Call<JsonObject> SaveImage(@Body RequestBody body);
 
+    @Headers("Content-Type: "+ MyConstants.CONTENT_TYPE)
+    @POST("api/transaction/conferencing")
+    Call<JsonObject> Mirroring(@Body RequestBody body);
+
 
 }

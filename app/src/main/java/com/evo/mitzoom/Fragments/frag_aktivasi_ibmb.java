@@ -3,6 +3,7 @@ package com.evo.mitzoom.Fragments;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,11 +17,24 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.dhairytripathi.library.EditTextPin;
+import com.evo.mitzoom.API.ApiService;
+import com.evo.mitzoom.API.Server;
 import com.evo.mitzoom.R;
+import com.evo.mitzoom.Session.SessionManager;
+import com.google.gson.JsonObject;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.Locale;
 
 import cn.pedant.SweetAlert.SweetAlertDialog;
+import okhttp3.MediaType;
+import okhttp3.RequestBody;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class frag_aktivasi_ibmb extends Fragment {
     private Context context;
@@ -34,11 +48,14 @@ public class frag_aktivasi_ibmb extends Fragment {
     public int seconds = 60;
     public boolean running = true;
     public boolean clickable = true;
+    private String idDips;
+    private SessionManager session;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         context = getContext();
+        session = new SessionManager(context);
     }
 
     @Nullable
@@ -57,6 +74,7 @@ public class frag_aktivasi_ibmb extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        idDips = session.getKEY_IdDips();
         UserId.setText("Andi Setiawan");
         Password.setText("Andi123456");
         Konfirmasi_password.setText("Andi123456");
@@ -65,6 +83,7 @@ public class frag_aktivasi_ibmb extends Fragment {
         btnProses.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Mirroring(true);
             PopUp();
             }
         });
@@ -88,7 +107,7 @@ public class frag_aktivasi_ibmb extends Fragment {
                     Toast.makeText(context, "Kode Otp masih kosong", Toast.LENGTH_SHORT).show();
                 }
                 else {
-                    editTextPin.getPin().toString();
+                    Mirroring2(true,editTextPin.getPin());
                     sweetAlertDialog.dismiss();
                     PopUpSuccesOtp();
                 }
@@ -115,6 +134,7 @@ public class frag_aktivasi_ibmb extends Fragment {
         handlerSuccess.postDelayed(new Runnable() {
             @Override
             public void run() {
+                Mirroring3(true);
                 getFragmentPage(new frag_aktivasi_berhasil());
                 sweetAlertDialog.dismiss();
             }
@@ -147,7 +167,88 @@ public class frag_aktivasi_ibmb extends Fragment {
             }
         });
     }
+    private void Mirroring(Boolean bool){
+        JSONObject jsons = new JSONObject();
+        JSONArray jsonArray = new JSONArray();
+        try {
+            jsonArray.put("***");
+            jsonArray.put("***");
+            jsonArray.put("***");
+            jsonArray.put("***");
+            jsonArray.put("***");
+            jsonArray.put(bool);
+            jsons.put("idDips",idDips);
+            jsons.put("code",10);
+            jsons.put("data",jsonArray);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), jsons.toString());
+        ApiService API = Server.getAPIService();
+        Call<JsonObject> call = API.Mirroring(requestBody);
+        call.enqueue(new Callback<JsonObject>() {
+            @Override
+            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                Log.d("MIRROR","Mirroring Sukses");
+            }
 
+            @Override
+            public void onFailure(Call<JsonObject> call, Throwable t) {
+                Log.d("MIRROR","Mirroring Gagal");
+            }
+        });
+    }
+    private void Mirroring2(Boolean bool,String s){
+        JSONObject jsons = new JSONObject();
+        JSONArray jsonArray = new JSONArray();
+        try {
+            jsonArray.put(s);
+            jsonArray.put(bool);
+            jsons.put("idDips",idDips);
+            jsons.put("code",11);
+            jsons.put("data",jsonArray);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), jsons.toString());
+        ApiService API = Server.getAPIService();
+        Call<JsonObject> call = API.Mirroring(requestBody);
+        call.enqueue(new Callback<JsonObject>() {
+            @Override
+            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                Log.d("MIRROR","Mirroring Sukses");
+            }
 
+            @Override
+            public void onFailure(Call<JsonObject> call, Throwable t) {
+                Log.d("MIRROR","Mirroring Gagal");
+            }
+        });
+    }
+    private void Mirroring3(Boolean bool){
+        JSONObject jsons = new JSONObject();
+        JSONArray jsonArray = new JSONArray();
+        try {
+            jsonArray.put(bool);
+            jsons.put("idDips",idDips);
+            jsons.put("code",12);
+            jsons.put("data",jsonArray);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), jsons.toString());
+        ApiService API = Server.getAPIService();
+        Call<JsonObject> call = API.Mirroring(requestBody);
+        call.enqueue(new Callback<JsonObject>() {
+            @Override
+            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                Log.d("MIRROR","Mirroring Sukses");
+            }
 
+            @Override
+            public void onFailure(Call<JsonObject> call, Throwable t) {
+                Log.d("MIRROR","Mirroring Gagal");
+            }
+        });
+    }
 }
