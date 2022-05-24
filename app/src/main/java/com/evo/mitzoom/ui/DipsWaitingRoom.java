@@ -134,6 +134,8 @@ public class DipsWaitingRoom extends AppCompatActivity {
     private boolean doubleBackToExitPressedOnce = false;
     private SessionManager sessions;
     private TextView myTicket, lastTicket;
+    private SweetAlertDialog dialogWaiting;
+    private SweetAlertDialog dialogSuccess;
 
     private Socket mSocket;
     {
@@ -508,45 +510,51 @@ public class DipsWaitingRoom extends AppCompatActivity {
 
 
     private void PopUpWaiting(){
-        SweetAlertDialog sweetAlertDialog = new SweetAlertDialog(DipsWaitingRoom.this, SweetAlertDialog.WARNING_TYPE);
-        sweetAlertDialog.setContentText(getResources().getString(R.string.headline_waiting));
-        sweetAlertDialog.setConfirmText(getResources().getString(R.string.waiting));
-        sweetAlertDialog.show();
-        sweetAlertDialog.setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
-            @Override
-            public void onClick(SweetAlertDialog sweetAlertDialog) {
-                sweetAlertDialog.dismissWithAnimation();
-            }
-        });
-        Button btnConfirm = (Button) sweetAlertDialog.findViewById(cn.pedant.SweetAlert.R.id.confirm_button);
-        btnConfirm.setBackgroundTintList(DipsWaitingRoom.this.getResources().getColorStateList(R.color.Blue));
+        if (dialogWaiting == null) {
+            dialogWaiting = new SweetAlertDialog(DipsWaitingRoom.this, SweetAlertDialog.WARNING_TYPE);
+            dialogWaiting.setContentText(getResources().getString(R.string.headline_waiting));
+            dialogWaiting.setConfirmText(getResources().getString(R.string.waiting));
+            dialogWaiting.setCancelable(false);
+            dialogWaiting.show();
+            dialogWaiting.setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
+                @Override
+                public void onClick(SweetAlertDialog sweetAlertDialog) {
+                    sweetAlertDialog.dismissWithAnimation();
+                    dialogWaiting = null;
+                }
+            });
+            Button btnConfirm = (Button) dialogWaiting.findViewById(cn.pedant.SweetAlert.R.id.confirm_button);
+            btnConfirm.setBackgroundTintList(DipsWaitingRoom.this.getResources().getColorStateList(R.color.Blue));
+        }
     }
 
     private void PopUpSucces(){
-        SweetAlertDialog sweetAlertDialog = new SweetAlertDialog(DipsWaitingRoom.this, SweetAlertDialog.SUCCESS_TYPE);
-        sweetAlertDialog.setContentText(getResources().getString(R.string.headline_success));
-        sweetAlertDialog.setConfirmText(getResources().getString(R.string.btn_continue));
-        sweetAlertDialog.setCancelText(getResources().getString(R.string.cancel));
-        sweetAlertDialog.setCancelable(false);
-        sweetAlertDialog.show();
-        Button btnConfirm = (Button) sweetAlertDialog.findViewById(cn.pedant.SweetAlert.R.id.confirm_button);
-        Button btnCancel = (Button) sweetAlertDialog.findViewById(cn.pedant.SweetAlert.R.id.cancel_button);
-        btnConfirm.setBackgroundTintList(DipsWaitingRoom.this.getResources().getColorStateList(R.color.Blue));
-        btnCancel.setBackgroundTintList(DipsWaitingRoom.this.getResources().getColorStateList(R.color.button_end_call));
-        sweetAlertDialog.setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
-            @Override
-            public void onClick(SweetAlertDialog sweetAlertDialog) {
-                sweetAlertDialog.dismissWithAnimation();
-                processJoinVideo();
-            }
-        });
-        sweetAlertDialog.setCancelClickListener(new SweetAlertDialog.OnSweetClickListener() {
-            @Override
-            public void onClick(SweetAlertDialog sweetAlertDialog) {
-                sweetAlertDialog.dismissWithAnimation();
-                PopUpSchedule();
-            }
-        });
+        if (dialogSuccess == null) {
+            dialogSuccess = new SweetAlertDialog(DipsWaitingRoom.this, SweetAlertDialog.SUCCESS_TYPE);
+            dialogSuccess.setContentText(getResources().getString(R.string.headline_success));
+            dialogSuccess.setConfirmText(getResources().getString(R.string.btn_continue));
+            dialogSuccess.setCancelText(getResources().getString(R.string.cancel));
+            dialogSuccess.setCancelable(false);
+            dialogSuccess.show();
+            Button btnConfirm = (Button) dialogSuccess.findViewById(cn.pedant.SweetAlert.R.id.confirm_button);
+            Button btnCancel = (Button) dialogSuccess.findViewById(cn.pedant.SweetAlert.R.id.cancel_button);
+            btnConfirm.setBackgroundTintList(DipsWaitingRoom.this.getResources().getColorStateList(R.color.Blue));
+            btnCancel.setBackgroundTintList(DipsWaitingRoom.this.getResources().getColorStateList(R.color.button_end_call));
+            dialogSuccess.setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
+                @Override
+                public void onClick(SweetAlertDialog sweetAlertDialog) {
+                    sweetAlertDialog.dismissWithAnimation();
+                    processJoinVideo();
+                }
+            });
+            dialogSuccess.setCancelClickListener(new SweetAlertDialog.OnSweetClickListener() {
+                @Override
+                public void onClick(SweetAlertDialog sweetAlertDialog) {
+                    sweetAlertDialog.dismissWithAnimation();
+                    PopUpSchedule();
+                }
+            });
+        }
     }
 
     public void setCameraDisplayOrientation(){
