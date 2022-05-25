@@ -196,4 +196,10 @@
     <string name="tabungan_b">Savings B</string>
     <string name="end_call2">Your calling is ended</string>
     <string name="schedule">Your Scheduling Call in </string>
+    <string name="alertRTGS">must be filled/selected on Form</string>
+    <string name="label_first">Pertama</string>
+    <string name="label_second">Second</string>
+    <string name="label_third">Third</string>
+    <string name="label_fourth">Fourth</string>
+    <string name="label_fifth">Fifth</string>
 </resources>

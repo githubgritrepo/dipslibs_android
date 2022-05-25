@@ -160,6 +160,7 @@ public class DipsWaitingRoom extends AppCompatActivity {
         mSocket.connect();
 
         sessions = new SessionManager(mContext);
+        sessions.saveRTGS(null);
         String lang = sessions.getLANG();
         setLocale(this,lang);
         setContentView(R.layout.activity_dips_waiting_room);
@@ -545,6 +546,7 @@ public class DipsWaitingRoom extends AppCompatActivity {
                 public void onClick(SweetAlertDialog sweetAlertDialog) {
                     sweetAlertDialog.dismissWithAnimation();
                     processJoinVideo();
+                    dialogSuccess = null;
                 }
             });
             dialogSuccess.setCancelClickListener(new SweetAlertDialog.OnSweetClickListener() {
@@ -552,6 +554,7 @@ public class DipsWaitingRoom extends AppCompatActivity {
                 public void onClick(SweetAlertDialog sweetAlertDialog) {
                     sweetAlertDialog.dismissWithAnimation();
                     PopUpSchedule();
+                    dialogSuccess = null;
                 }
             });
         }

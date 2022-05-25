@@ -195,4 +195,10 @@
     <string name="tabungan_b">Tabungan B</string>
     <string name="end_call2">Panggilan anda telah diakhiri</string>
     <string name="schedule">Jadwal Panggilan Anda,Tanggal </string>
+    <string name="alertRTGS">harus diisi/dipilih pada Formulir</string>
+    <string name="label_first">Pertama</string>
+    <string name="label_second">Kedua</string>
+    <string name="label_third">Ketiga</string>
+    <string name="label_fourth">Keempat</string>
+    <string name="label_fifth">Kelima</string>
 </resources>

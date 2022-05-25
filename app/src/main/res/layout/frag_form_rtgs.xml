@@ -183,7 +183,9 @@
                         android:inputType="text"
                         android:padding="9dp"
                         android:textSize="12sp"
-                        tools:ignore="SpeakableTextPresentCheck,SpeakableTextPresentCheck,SpeakableTextPresentCheck" />
+                        tools:ignore="SpeakableTextPresentCheck,SpeakableTextPresentCheck,SpeakableTextPresentCheck"
+                        android:maxLines="1"
+                        android:singleLine="true"/>
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <TextView
@@ -262,7 +264,8 @@
                         android:textSize="12sp"
                         android:paddingVertical="@dimen/dp_10"
                         android:includeFontPadding="false"
-                        android:gravity="center_vertical"/>
+                        android:gravity="center_vertical"
+                        android:singleLine="true"/>
 
                 </com.google.android.material.textfield.TextInputLayout>
 
@@ -293,7 +296,8 @@
                         android:textSize="12sp"
                         android:paddingVertical="@dimen/dp_10"
                         android:includeFontPadding="false"
-                        android:gravity="center_vertical"/>
+                        android:gravity="center_vertical"
+                        android:singleLine="true"/>
 
                 </com.google.android.material.textfield.TextInputLayout>
 
@@ -324,7 +328,8 @@
                         android:textSize="12sp"
                         android:paddingVertical="@dimen/dp_10"
                         android:includeFontPadding="false"
-                        android:gravity="center_vertical"/>
+                        android:gravity="center_vertical"
+                        android:singleLine="true"/>
 
                 </com.google.android.material.textfield.TextInputLayout>
 
