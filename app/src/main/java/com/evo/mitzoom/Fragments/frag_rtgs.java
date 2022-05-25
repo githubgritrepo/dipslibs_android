@@ -85,6 +85,7 @@ public class frag_rtgs extends Fragment {
         context = getContext();
         sessions = new SessionManager(context);
         dataRTGS = sessions.getRTGS();
+        Log.d("CEK","dataRTGS : "+dataRTGS);
     }
     @Nullable
     @Override
@@ -301,20 +302,31 @@ public class frag_rtgs extends Fragment {
                 if (resulText.equals(idForm)) {
                     String SourceBank = dataJs.getString("sourceBank");
                     String SourceTypeService = dataJs.getString("sourceTypeService");
-                    posSourceBenefit = dataJs.getInt("sourceBenefit");
-                    posSourcePopulation = dataJs.getInt("sourcePopulation");
+                    String SourceBenefit = dataJs.getString("sourceBenefit");
+                    String SourcePopulation = dataJs.getString("sourcePopulation");
                     String rek_penerima = dataJs.getString("rek_penerima");
                     String nama_penerima = dataJs.getString("nama_penerima");
                     String nominal = dataJs.getString("nominal");
-                    String berita = dataJs.getString("berita");
+                    String berita = "";
+                    if (dataJs.has("berita")) {
+                        if (!dataJs.isNull("berita")) {
+                            berita = dataJs.getString("berita");
+                        }
+                    }
 
-                    if (posSourceBenefit > -1) {
+                    /*if (posSourceBenefit > -1) {
                         et_benefitRec.setText(et_benefitRec.getAdapter().getItem(posSourceBenefit).toString(), false);
                     }
                     if (posSourcePopulation > -1) {
                         et_typePopulation.setText(et_typePopulation.getAdapter().getItem(posSourcePopulation).toString(), false);
-                    }
+                    }*/
 
+                    if (!SourceBenefit.isEmpty()){
+                        et_benefitRec.setText(SourceBenefit);
+                    }
+                    if (!SourcePopulation.isEmpty()){
+                        et_typePopulation.setText(SourcePopulation);
+                    }
                     if (!SourceBank.isEmpty()){
                         et_NamaBank.setText(SourceBank);
                     }

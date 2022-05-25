@@ -187,4 +187,10 @@
     <string name="nama_pemilik_rekening">Nama Pemilik Rekening</string>
     <string name="jam">Jam</string>
     <string name="date">tanggal</string>
+    <string name="alertRTGS">harus diisi/dipilih pada Formulir</string>
+    <string name="label_first">Pertama</string>
+    <string name="label_second">Kedua</string>
+    <string name="label_third">Ketiga</string>
+    <string name="label_fourth">Keempat</string>
+    <string name="label_fifth">Kelima</string>
 </resources>

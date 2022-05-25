@@ -188,4 +188,10 @@
     <string name="nama_pemilik_rekening">Account Owner Name</string>
     <string name="jam">Time</string>
     <string name="date">Date</string>
+    <string name="alertRTGS">must be filled/selected on Form</string>
+    <string name="label_first">Pertama</string>
+    <string name="label_second">Second</string>
+    <string name="label_third">Third</string>
+    <string name="label_fourth">Fourth</string>
+    <string name="label_fifth">Fifth</string>
 </resources>

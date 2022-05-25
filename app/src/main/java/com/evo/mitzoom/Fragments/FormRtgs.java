@@ -23,6 +23,7 @@ import android.text.TextWatcher;
 import android.text.style.StyleSpan;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -84,10 +85,12 @@ public class FormRtgs extends Fragment {
     private ArrayList<String> dataNameReceive = new ArrayList<>();
     private ArrayList<String> dataNominal = new ArrayList<>();
     private ArrayList<String> dataService = new ArrayList<>();
-    private ArrayList<Integer> dataBenefit = new ArrayList<>();
-    private ArrayList<Integer> dataPopulation = new ArrayList<>();
+    private ArrayList<String> dataBenefit = new ArrayList<>();
+    private ArrayList<String> dataPopulation = new ArrayList<>();
     private ArrayList<String> dataNews = new ArrayList<>();
     public static final NumberFormat numberFormat = NumberFormat.getInstance(new Locale("id", "ID"));
+    private String getBerita;
+    private AutoCompleteTextView elBankName;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -130,8 +133,10 @@ public class FormRtgs extends Fragment {
         btnProsesRTGS.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                processSavedInstance();
-                generateBarcode(dataNoForm);
+                boolean cbRTGS = processSavedInstance();
+                if (cbRTGS) {
+                    generateBarcode(dataNoForm);
+                }
             }
         });
         
@@ -148,6 +153,7 @@ public class FormRtgs extends Fragment {
 
                 int lens = layouts.size();
                 int indexL = lens - 1;
+
                 if (lens > 4) {
                     Toast.makeText(mContext,"Maksimal 5 Formulir.",Toast.LENGTH_LONG).show();
                     return;
@@ -187,22 +193,78 @@ public class FormRtgs extends Fragment {
                 .commit();
     }
 
-    private void processSavedInstance() {
+    private String dataArrF(int index) {
+        ArrayList<String> arrF = new ArrayList<>();
+        arrF.add(getResources().getString(R.string.label_first));
+        arrF.add(getResources().getString(R.string.label_second));
+        arrF.add(getResources().getString(R.string.label_third));
+        arrF.add(getResources().getString(R.string.label_fourth));
+        arrF.add(getResources().getString(R.string.label_fifth));
+
+        return  arrF.get(index).toString();
+    }
+
+    private boolean processSavedInstance() {
         int lenL = layouts.size();
         JSONArray jsonArray = new JSONArray();
-        JSONObject jsons = new JSONObject();
 
         for (int i = 0; i < lenL; i++) {
+            JSONObject jsons = new JSONObject();
             try {
                 String noFormulir = dataNoForm.get(i);
+                if (dataBankName.size() == 0 || (dataBankName.size() == i) || (dataBankName.size() > 0 && dataBankName.get(i).isEmpty())) {
+                    Toast.makeText(mContext,"Data "+getResources().getString(R.string.BankReceive)+" "+
+                            getResources().getString(R.string.alertRTGS)+" "+dataArrF(i),Toast.LENGTH_SHORT).show();
+                    return false;
+                }
+                if (dataAccountReceive.size() == 0 || (dataAccountReceive.size() == i) || (dataAccountReceive.size() > 0 && dataAccountReceive.get(i).isEmpty())) {
+                    Toast.makeText(mContext,"Data "+getResources().getString(R.string.ReceiverAccount2)+" "+
+                            getResources().getString(R.string.alertRTGS)+" "+dataArrF(i),Toast.LENGTH_SHORT).show();
+                    return false;
+                }
+                if (dataNameReceive.size() == 0 || (dataNameReceive.size() == i) || (dataNameReceive.size() > 0 && dataNameReceive.get(i).isEmpty())) {
+                    Toast.makeText(mContext,"Data "+getResources().getString(R.string.ReceiverName2)+" "+
+                            getResources().getString(R.string.alertRTGS)+" "+dataArrF(i),Toast.LENGTH_SHORT).show();
+                    return false;
+                }
+                if (dataNominal.size() == 0 || (dataNominal.size() == i) || (dataNominal.size() > 0 && dataNominal.get(i).isEmpty())) {
+                    Toast.makeText(mContext,"Data "+getResources().getString(R.string.Amount)+" "+
+                            getResources().getString(R.string.alertRTGS)+" "+dataArrF(i),Toast.LENGTH_SHORT).show();
+                    return false;
+                }
+                if (dataService.size() == 0 || (dataService.size() == i) || (dataService.size() > 0 && dataService.get(i).isEmpty())) {
+                    Toast.makeText(mContext,"Data "+getResources().getString(R.string.jenis_layanan)+" "+
+                            getResources().getString(R.string.alertRTGS)+" "+dataArrF(i),Toast.LENGTH_SHORT).show();
+                    return false;
+                }
+                if (dataBenefit.size() == 0 || (dataBenefit.size() == i) || (dataBenefit.size() > 0 && dataBenefit.get(i).isEmpty())) {
+                    Toast.makeText(mContext,"Data "+getResources().getString(R.string.penerima_manfaat)+" "+
+                            getResources().getString(R.string.alertRTGS)+" "+dataArrF(i),Toast.LENGTH_SHORT).show();
+                    return false;
+                }
+                if (dataPopulation.size() == 0 || (dataPopulation.size() == i) || (dataPopulation.size() > 0 && dataPopulation.get(i).isEmpty())) {
+                    Toast.makeText(mContext,"Data "+getResources().getString(R.string.ResidentType)+" "+
+                            getResources().getString(R.string.alertRTGS)+" "+dataArrF(i),Toast.LENGTH_SHORT).show();
+                    return false;
+                }
+
                 String SumberBank = dataBankName.get(i);
                 String JenisLayanan = dataService.get(i);
-                int posSourceBenefit = dataBenefit.get(i);
-                int posSourcePopulation = dataPopulation.get(i);
+                String posSourceBenefit = dataBenefit.get(i);
+                String posSourcePopulation = dataPopulation.get(i);
                 String rek_penerima = dataAccountReceive.get(i);
                 String nama_penerima = dataNameReceive.get(i);
                 String nominal = dataNominal.get(i);
-                String berita = dataNews.get(i);
+                String berita = "";
+                if (dataNews.size() == 0) {
+                    berita = getBerita;
+                } else {
+                    if (dataNews.size() == i) {
+                        berita = getBerita;
+                    } else {
+                        berita = dataNews.get(i);
+                    }
+                }
 
                 jsons.put("idForm",noFormulir);
                 jsons.put("sourceBank",SumberBank);
@@ -222,6 +284,7 @@ public class FormRtgs extends Fragment {
 
         String dataJs = jsonArray.toString();
         sessions.saveRTGS(dataJs);
+        return true;
     }
 
     private void generateBarcode(ArrayList<String> noFormList) {
@@ -392,6 +455,8 @@ public class FormRtgs extends Fragment {
             EditText et_nominal = (EditText) view.findViewById(R.id.et_nominal);
             EditText et_berita = (EditText) view.findViewById(R.id.et_berita);
 
+            elBankName = et_nama_bank;
+
             et_nominal.addTextChangedListener(new TextWatcher() {
                 @Override
                 public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -427,6 +492,16 @@ public class FormRtgs extends Fragment {
                                 et_nama_bank.showDropDown();
                             }
                         }, 500);
+                    } else {
+                        et_nama_bank.dismissDropDown();
+                        if (dataBankName.size() > 0) {
+                            String dataB = et_nama_bank.getText().toString();
+                            if (dataBankName.size() == positionE) {
+                                dataBankName.add(positionE, dataB);
+                            } else {
+                                dataBankName.set(positionE, dataB);
+                            }
+                        }
                     }
                 }
             });
@@ -437,7 +512,11 @@ public class FormRtgs extends Fragment {
                     if (dataBankName.size() == 0) {
                         dataBankName.add(positionE, dataB);
                     } else {
-                        dataBankName.set(positionE, dataB);
+                        if (dataBankName.size() == positionE) {
+                            dataBankName.add(positionE, dataB);
+                        } else {
+                            dataBankName.set(positionE, dataB);
+                        }
                     }
                 }
             });
@@ -445,6 +524,22 @@ public class FormRtgs extends Fragment {
             fillTypeServiceList();
             AdapterTypeService adapterTypeService = new AdapterTypeService(mContext,typeServiceList);
             et_serviceType.setAdapter(adapterTypeService);
+            et_serviceType.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+                @Override
+                public void onFocusChange(View v, boolean hasFocus) {
+                    if (!hasFocus) {
+                        et_serviceType.dismissDropDown();
+                        if (dataService.size() > 0) {
+                            String dataB = et_serviceType.getText().toString();
+                            if (dataService.size() == positionE) {
+                                dataService.add(positionE, dataB);
+                            } else {
+                                dataService.set(positionE, dataB);
+                            }
+                        }
+                    }
+                }
+            });
             et_serviceType.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -452,7 +547,11 @@ public class FormRtgs extends Fragment {
                     if (dataService.size() == 0) {
                         dataService.add(positionE, dataB);
                     } else {
-                        dataService.set(positionE, dataB);
+                        if (dataService.size() == positionE) {
+                            dataService.add(positionE, dataB);
+                        } else {
+                            dataService.set(positionE, dataB);
+                        }
                     }
                 }
             });
@@ -462,10 +561,15 @@ public class FormRtgs extends Fragment {
             et_benefitRec.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    String dataB = et_benefitRec.getText().toString();
                     if (dataBenefit.size() == 0) {
-                        dataBenefit.add(positionE, position);
+                        dataBenefit.add(positionE, dataB);
                     } else {
-                        dataBenefit.set(positionE, position);
+                        if (dataBenefit.size() == positionE) {
+                            dataBenefit.add(positionE, dataB);
+                        } else {
+                            dataBenefit.set(positionE, dataB);
+                        }
                     }
                 }
             });
@@ -475,10 +579,15 @@ public class FormRtgs extends Fragment {
             et_typePopulation.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    String dataB = et_typePopulation.getText().toString();
                     if (dataPopulation.size() == 0) {
-                        dataPopulation.add(positionE, position);
+                        dataPopulation.add(positionE, dataB);
                     } else {
-                        dataPopulation.set(positionE, position);
+                        if (dataPopulation.size() == positionE) {
+                            dataPopulation.add(positionE, dataB);
+                        } else {
+                            dataPopulation.set(positionE, dataB);
+                        }
                     }
                 }
             });
@@ -491,7 +600,11 @@ public class FormRtgs extends Fragment {
                         if (dataAccountReceive.size() == 0) {
                             dataAccountReceive.add(positionE,dataB);
                         } else {
-                            dataAccountReceive.set(positionE, dataB);
+                            if (dataAccountReceive.size() == positionE) {
+                                dataAccountReceive.add(positionE,dataB);
+                            } else {
+                                dataAccountReceive.set(positionE, dataB);
+                            }
                         }
 
                     }
@@ -506,7 +619,11 @@ public class FormRtgs extends Fragment {
                         if (dataNameReceive.size() == 0) {
                             dataNameReceive.add(positionE, dataB);
                         } else {
-                            dataNameReceive.set(positionE, dataB);
+                            if (dataNameReceive.size() == positionE) {
+                                dataNameReceive.add(positionE, dataB);
+                            } else {
+                                dataNameReceive.set(positionE, dataB);
+                            }
                         }
                     }
                 }
@@ -520,7 +637,11 @@ public class FormRtgs extends Fragment {
                         if (dataNominal.size() == 0) {
                             dataNominal.add(positionE, dataB);
                         } else {
-                            dataNominal.set(positionE, dataB);
+                            if (dataNominal.size() == positionE) {
+                                dataNominal.add(positionE, dataB);
+                            } else {
+                                dataNominal.set(positionE, dataB);
+                            }
                         }
                     }
                 }
@@ -534,9 +655,33 @@ public class FormRtgs extends Fragment {
                         if (dataNews.size() == 0) {
                             dataNews.add(positionE, dataB);
                         } else {
-                            dataNews.set(positionE, dataB);
+                            if (dataNews.size() == positionE) {
+                                dataNews.add(positionE, dataB);
+                            } else {
+                                dataNews.set(positionE, dataB);
+                            }
                         }
                     }
+                }
+            });
+
+            et_berita.addTextChangedListener(new TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+                }
+
+                @Override
+                public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+                }
+
+                @Override
+                public void afterTextChanged(Editable s) {
+                    et_berita.removeTextChangedListener(this);
+                    String valB = et_berita.getText().toString();
+                    et_berita.setText(valB);
+                    getBerita = valB;
                 }
             });
 
@@ -574,20 +719,14 @@ public class FormRtgs extends Fragment {
             }
 
             if (dataBenefit.size() > 0) {
-                if (positionE < dataBenefit.size()) {
-                    int indexBenefit = dataBenefit.get(positionE);
-                    if (indexBenefit > -1) {
-                        et_benefitRec.setText(et_benefitRec.getAdapter().getItem(indexBenefit).toString(), false);
-                    }
+                if (positionE < dataBenefit.size()) {;
+                    et_benefitRec.setText(dataBenefit.get(positionE));
                 }
             }
 
             if (dataPopulation.size() > 0) {
                 if (positionE < dataPopulation.size()) {
-                    int indexP = dataPopulation.get(positionE);
-                    if (indexP > -1) {
-                        et_typePopulation.setText(et_typePopulation.getAdapter().getItem(indexP).toString(), false);
-                    }
+                    et_typePopulation.setText(dataPopulation.get(positionE));
                 }
             }
 

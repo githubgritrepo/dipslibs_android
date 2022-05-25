@@ -1,11 +1,13 @@
 package com.evo.mitzoom;
 
+import static com.evo.mitzoom.ui.DipsSplashScreen.setLocale;
 import static com.evo.mitzoom.ui.DipsVideoConfren.text_timer;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Dialog;
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Rect;
@@ -48,6 +50,7 @@ import com.evo.mitzoom.Fragments.frag_conferee_agree;
 import com.evo.mitzoom.Fragments.frag_inputdata;
 import com.evo.mitzoom.Helper.NotificationMgr;
 import com.evo.mitzoom.Helper.NotificationService;
+import com.evo.mitzoom.Session.SessionManager;
 import com.evo.mitzoom.screenshare.ShareToolbar;
 import com.evo.mitzoom.ui.DipsVideoConfren;
 import com.evo.mitzoom.ui.RatingActivity;
@@ -129,12 +132,20 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
     public boolean running = true;
     public boolean wasRunning;
     private int isOn = 0;
+    private SessionManager sessions;
+    private Context mContext;
 
     protected Handler handler = new Handler(Looper.getMainLooper());
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        mContext = this;
+
+        sessions = new SessionManager(mContext);
+        String lang = sessions.getLANG();
+        setLocale(this,lang);
 
         if (savedInstanceState != null) {
             seconds = savedInstanceState.getInt("seconds");
