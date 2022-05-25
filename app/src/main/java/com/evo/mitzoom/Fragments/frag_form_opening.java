@@ -56,7 +56,8 @@ public class frag_form_opening extends Fragment {
     private Context context;
     private ImageView preview_ktp, preview_npwp, preview_signature;
     private EditText Nama,NIK,Email,Alamat,Agama,Status,NoHp;
-    private String Nama2,NIK2,Email2,Alamat2,Agama2,Status2,NoHp2, Produk;
+    private String Nama2,NIK2,Email2,Alamat2,Agama2,Status2,NoHp2;
+    private String Produk = "";
     private LinearLayout iconKtp, iconNpwp, iconSignature, iconForm;
     private Button btnProcess;
     private CheckBox pernyataan;
@@ -137,12 +138,6 @@ public class frag_form_opening extends Fragment {
         }
         else if (!pernyataan.isChecked()){
             aBoolean = false;
-        }
-        else if (radioButton.isChecked()){
-            Produk = radioButton.getText().toString();
-        }
-        else if (!radioButton.isChecked()){
-            Produk = "";
         }
 
         Mirroring(false,Nama2,NIK2,Email2,NoHp2,Alamat2,Agama2,Status2,Produk,aBoolean);
@@ -318,17 +313,24 @@ public class frag_form_opening extends Fragment {
                 radioButton = view.findViewById(selectedId);
                 Log.d("RADIO", "Text : "+radioButton.getText());
                 if (pernyataan.isChecked()){
+                    Log.d("CEK","MASUK IF onCheckedChanged");
                     aBoolean = true;
                 }
                 else if (!pernyataan.isChecked()){
+                    Log.d("CEK","MASUK ELSE IF onCheckedChanged");
                     aBoolean = false;
                 }
-                else if (radioButton.isChecked()){
+
+                if (radioButton.isChecked()){
+                    Log.d("CEK","MASUK ELSE IF 2 onCheckedChanged");
                     Produk = radioButton.getText().toString();
                 }
                 else if (!radioButton.isChecked()){
+                    Log.d("CEK","MASUK ELSE IF 3 onCheckedChanged");
                     Produk = "";
                 }
+                Log.d("CEK","Produk : "+Produk);
+                Log.d("CEK","aBoolean : "+aBoolean);
                 Mirroring(false,Nama2,NIK2,Email2,NoHp2,Alamat2,Agama2,Status2,radioButton.getText(),aBoolean);
             }
         });
@@ -336,17 +338,24 @@ public class frag_form_opening extends Fragment {
             @Override
             public void onClick(View v) {
                 if (pernyataan.isChecked()){
+                    Log.d("CEK","MASUK IF onClick pernyataan");
                     aBoolean = true;
                 }
                 else if (!pernyataan.isChecked()){
+                    Log.d("CEK","MASUK ELSE IF onClick pernyataan");
                     aBoolean = false;
                 }
-                else if (radioButton.isChecked()){
+
+                if (radioButton.isChecked()){
+                    Log.d("CEK","MASUK ELSE IF 2 onClick pernyataan");
                     Produk = radioButton.getText().toString();
                 }
                 else if (!radioButton.isChecked()){
+                    Log.d("CEK","MASUK ELSE IF 3 onClick pernyataan");
                     Produk = "";
                 }
+                Log.d("CEK","Produk : "+Produk);
+                Log.d("CEK","aBoolean : "+aBoolean);
                 Mirroring(false,Nama2,NIK2,Email2,NoHp2,Alamat2,Agama2,Status2,Produk,aBoolean);
             }
         });
