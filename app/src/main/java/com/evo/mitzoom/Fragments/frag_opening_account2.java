@@ -126,7 +126,7 @@ public class frag_opening_account2 extends Fragment {
             @Override
             public void onClick(View v) {
                 if (NPWP == null){
-                    Toast.makeText(context, "Silahkan Upload Foto NPWP Anda", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context, getResources().getString(R.string.error_image), Toast.LENGTH_SHORT).show();
                 }
                 else{
                     Mirroring(true,"");

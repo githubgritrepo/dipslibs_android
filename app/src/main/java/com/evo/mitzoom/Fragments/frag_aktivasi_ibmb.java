@@ -3,6 +3,10 @@ package com.evo.mitzoom.Fragments;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
+import android.text.Editable;
+import android.text.InputFilter;
+import android.text.Spanned;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -38,7 +42,8 @@ import retrofit2.Response;
 
 public class frag_aktivasi_ibmb extends Fragment {
     private Context context;
-    private TextView UserId, Password, Konfirmasi_password, Mpin, Konfirmasi_mpin, Timer, Resend_Otp;
+    private EditText UserId, Password, Konfirmasi_password, Mpin, Konfirmasi_mpin;
+    private TextView Timer, Resend_Otp;
     private Button btnProses;
     private LayoutInflater inflater;
     private View dialogView;
@@ -47,8 +52,7 @@ public class frag_aktivasi_ibmb extends Fragment {
     private Handler handlerSuccess;
     public int seconds = 60;
     public boolean running = true;
-    public boolean clickable = true;
-    private String idDips;
+    private String idDips, UserId2, Password2, Konfirmasi_password2, Mpin2, Konfirmasi_mpin2, Timer2, Resend_Otp2;
     private SessionManager session;
 
     @Override
@@ -75,16 +79,185 @@ public class frag_aktivasi_ibmb extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         idDips = session.getKEY_IdDips();
-        UserId.setText("Andi Setiawan");
-        Password.setText("Andi123456");
-        Konfirmasi_password.setText("Andi123456");
-        Mpin.setText("123456");
-        Konfirmasi_mpin.setText("123456");
-        btnProses.setOnClickListener(new View.OnClickListener() {
+
+        UserId.setFilters(new InputFilter[]{
+                new InputFilter() {
+                    @Override
+                    public CharSequence filter(CharSequence cs, int start, int end, Spanned dest, int dstart, int dend) {
+                        // TODO Auto-generated method stub
+                        if(cs.equals("")){ // for backspace
+                            return cs;
+                        }
+                        if(cs.toString().matches("[a-zA-Z0-9._-]+")){ // here no space character
+                            return cs;
+                        }
+                        return "";
+                    }
+                }
+        });
+
+        ///TextWatcher
+        UserId.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                Mirroring(false,s,Password.getText().toString(),Konfirmasi_password.getText().toString(),Mpin.getText().toString(),Konfirmasi_mpin.getText().toString());
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                if (!s.toString().isEmpty() && !Password.getText().toString().isEmpty() && !Konfirmasi_password.getText().toString().isEmpty() && !Mpin.getText().toString().isEmpty() && !Konfirmasi_mpin.getText().toString().isEmpty()){
+                    btnProses.setClickable(true);
+                    btnProses.setBackgroundTintList(context.getResources().getColorStateList(R.color.Blue));
+                }
+                else {
+                    btnProses.setClickable(false);
+                    btnProses.setBackgroundTintList(context.getResources().getColorStateList(R.color.btnFalse));
+                }
+
+            }
+        });
+        Password.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                Mirroring(false,UserId.getText().toString(),s,Konfirmasi_password.getText().toString(),Mpin.getText().toString(),Konfirmasi_mpin.getText().toString());
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                if (!UserId.getText().toString().isEmpty() && !s.toString().isEmpty() && !Konfirmasi_password.getText().toString().isEmpty() && !Mpin.getText().toString().isEmpty() && !Konfirmasi_mpin.getText().toString().isEmpty()){
+                    btnProses.setClickable(true);
+                    btnProses.setBackgroundTintList(context.getResources().getColorStateList(R.color.Blue));
+                }
+                else {
+                    btnProses.setClickable(false);
+                    btnProses.setBackgroundTintList(context.getResources().getColorStateList(R.color.btnFalse));
+                }
+
+            }
+        });
+        Mpin.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                Mirroring(false,UserId.getText().toString(),Password.getText().toString(),Konfirmasi_password.getText().toString(),s,Konfirmasi_mpin.getText().toString());
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                if (!UserId.getText().toString().isEmpty() && !Password.getText().toString().isEmpty() && !Konfirmasi_password.getText().toString().isEmpty() && !s.toString().isEmpty() && !Konfirmasi_mpin.getText().toString().isEmpty()){
+                    btnProses.setClickable(true);
+                    btnProses.setBackgroundTintList(context.getResources().getColorStateList(R.color.Blue));
+                }
+                else {
+                    btnProses.setClickable(false);
+                    btnProses.setBackgroundTintList(context.getResources().getColorStateList(R.color.btnFalse));
+                }
+
+            }
+        });
+
+        //Filter Konfirmasi
+       Konfirmasi_password.addTextChangedListener(new TextWatcher() {
+           @Override
+           public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+           }
+
+           @Override
+           public void onTextChanged(CharSequence s, int start, int before, int count) {
+               Mirroring(false,UserId.getText().toString(),Password.getText().toString(),s,Mpin.getText().toString(),Konfirmasi_mpin.getText().toString());
+           }
+
+           @Override
+           public void afterTextChanged(Editable s) {
+               Password2 = Password.getText().toString();
+                if (!s.toString().equals(Password2)){
+                    Konfirmasi_password.setError(getResources().getString(R.string.error_pass));
+                }
+               else if (!UserId.getText().toString().isEmpty() && !Password.getText().toString().isEmpty() && !s.toString().isEmpty() && !Mpin.getText().toString().isEmpty() && !Konfirmasi_mpin.getText().toString().isEmpty()){
+                   btnProses.setClickable(true);
+                   btnProses.setBackgroundTintList(context.getResources().getColorStateList(R.color.Blue));
+               }
+               else {
+                   btnProses.setClickable(false);
+                   btnProses.setBackgroundTintList(context.getResources().getColorStateList(R.color.btnFalse));
+               }
+
+           }
+       });
+       Konfirmasi_mpin.addTextChangedListener(new TextWatcher() {
+           @Override
+           public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+           }
+
+           @Override
+           public void onTextChanged(CharSequence s, int start, int before, int count) {
+               Mirroring(false,UserId.getText().toString(),Password.getText().toString(),Konfirmasi_password.getText().toString(),Mpin.getText().toString(),s);
+
+           }
+
+           @Override
+           public void afterTextChanged(Editable s) {
+               Mpin2 = Mpin.getText().toString();
+               if (!s.toString().equals(Mpin2)){
+                   Konfirmasi_mpin.setError(getResources().getString(R.string.error_mpin));
+               }
+               else if (!UserId.getText().toString().isEmpty() && !Password.getText().toString().isEmpty() && !Konfirmasi_password.getText().toString().isEmpty() && !Mpin.getText().toString().isEmpty() && !s.toString().isEmpty()){
+                   btnProses.setClickable(true);
+                   btnProses.setBackgroundTintList(context.getResources().getColorStateList(R.color.Blue));
+               }
+               else {
+                   btnProses.setClickable(false);
+                   btnProses.setBackgroundTintList(context.getResources().getColorStateList(R.color.btnFalse));
+               }
+           }
+       });
+
+       btnProses.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Mirroring(true);
-            PopUp();
+                UserId2 = UserId.getText().toString();
+                Password2 = Password.getText().toString();
+                Konfirmasi_password2 = Konfirmasi_password.getText().toString();
+                Mpin2 = Mpin.getText().toString();
+                Konfirmasi_mpin2 = Konfirmasi_mpin.getText().toString();
+
+                if (UserId2.isEmpty()){
+                    UserId.setError(getResources().getString(R.string.error_field));
+                }
+                else if (Password2.isEmpty()){
+                    Password.setError(getResources().getString(R.string.error_field));
+                }
+                else if (Konfirmasi_password2.isEmpty()){
+                    Konfirmasi_password.setError(getResources().getString(R.string.error_field));
+                }
+                else if (Mpin2.isEmpty()){
+                    Mpin.setError(getResources().getString(R.string.error_field));
+                }
+                else if (Konfirmasi_mpin2.isEmpty()){
+                    Konfirmasi_mpin.setError(getResources().getString(R.string.error_field));
+                }
+                else
+                {
+                    Mirroring(true,UserId2,Password2,Konfirmasi_password2,Mpin2,Konfirmasi_mpin2);
+                    PopUp();
+                }
             }
         });
     }
@@ -107,7 +280,7 @@ public class frag_aktivasi_ibmb extends Fragment {
                     Toast.makeText(context, "Kode Otp masih kosong", Toast.LENGTH_SHORT).show();
                 }
                 else {
-                    Mirroring2(true,editTextPin.getPin());
+                    Mirroring2(true, editTextPin.getPin());
                     sweetAlertDialog.dismiss();
                     PopUpSuccesOtp();
                 }
@@ -167,15 +340,15 @@ public class frag_aktivasi_ibmb extends Fragment {
             }
         });
     }
-    private void Mirroring(Boolean bool){
+    private void Mirroring(Boolean bool, CharSequence user_id, CharSequence pass, CharSequence konfirm_pass, CharSequence mpin, CharSequence konfirm_mpin){
         JSONObject jsons = new JSONObject();
         JSONArray jsonArray = new JSONArray();
         try {
-            jsonArray.put("***");
-            jsonArray.put("***");
-            jsonArray.put("***");
-            jsonArray.put("***");
-            jsonArray.put("***");
+            jsonArray.put(user_id);
+            jsonArray.put(pass);
+            jsonArray.put(konfirm_pass);
+            jsonArray.put(mpin);
+            jsonArray.put(konfirm_mpin);
             jsonArray.put(bool);
             jsons.put("idDips",idDips);
             jsons.put("code",10);

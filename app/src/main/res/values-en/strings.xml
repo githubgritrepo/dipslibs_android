@@ -188,4 +188,12 @@
     <string name="nama_pemilik_rekening">Account Owner Name</string>
     <string name="jam">Time</string>
     <string name="date">Date</string>
+    <string name="error_field">Field is empty</string>
+    <string name="error_image">Please upload your photo</string>
+    <string name="error_pass">Password is not same</string>
+    <string name="error_mpin">MPIN is not same</string>
+    <string name="tabungan_a">Savings A</string>
+    <string name="tabungan_b">Savings B</string>
+    <string name="end_call2">Your calling is ended</string>
+    <string name="schedule">Your Scheduling Call in </string>
 </resources>

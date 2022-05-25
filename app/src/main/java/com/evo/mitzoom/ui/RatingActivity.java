@@ -17,13 +17,14 @@ import android.widget.Toast;
 
 import com.evo.mitzoom.Fragments.frag_aktivasi_ibmb;
 import com.evo.mitzoom.R;
+import com.google.android.material.button.MaterialButton;
 
 import cn.pedant.SweetAlert.SweetAlertDialog;
 
 public class RatingActivity extends AppCompatActivity {
     private ImageView thumbs_up, thumbs_down, star1, star2, star3, star4, star5,star1_2, star2_2, star3_2, star4_2, star5_2;
     private LinearLayout allRating;
-    private Button btnSend;
+    private MaterialButton btnSend;
     private EditText kritik;
 
     @Override
@@ -48,11 +49,13 @@ public class RatingActivity extends AppCompatActivity {
         star3_2 = findViewById(R.id.star3_2);
         star4_2 = findViewById(R.id.star4_2);
         star5_2 = findViewById(R.id.star5_2);
-        btnSend.setBackgroundTintList(RatingActivity.this.getResources().getColorStateList(R.color.Blue));
+        btnSend.setBackgroundTintList(RatingActivity.this.getResources().getColorStateList(R.color.btnFalse));
         thumbs_down.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 allRating.setClickable(false);
+                btnSend.setEnabled(true);
+                btnSend.setBackgroundTintList(RatingActivity.this.getResources().getColorStateList(R.color.Blue));
                 thumbs_down.setImageResource(R.drawable.thumbs_down2);
                 thumbs_up.setImageResource(R.drawable.thumbs_up);
                 star1.setVisibility(View.VISIBLE);
@@ -80,8 +83,10 @@ public class RatingActivity extends AppCompatActivity {
         thumbs_up.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                allRating.setClickable(true);
                 thumbs_up.setImageResource(R.drawable.thumbs_up2);
+                btnSend.setEnabled(true);
+                btnSend.setBackgroundTintList(RatingActivity.this.getResources().getColorStateList(R.color.Blue));
+                allRating.setClickable(true);
                 thumbs_down.setImageResource(R.drawable.thumbs_down);
                 star1.setClickable(true);
                 star2.setClickable(true);
@@ -100,6 +105,9 @@ public class RatingActivity extends AppCompatActivity {
        star1.setOnClickListener(new View.OnClickListener() {
            @Override
            public void onClick(View v) {
+               thumbs_up.setImageResource(R.drawable.thumbs_up2);
+               btnSend.setEnabled(true);
+               btnSend.setBackgroundTintList(RatingActivity.this.getResources().getColorStateList(R.color.Blue));
                Toast.makeText(RatingActivity.this, "Rating 20%", Toast.LENGTH_SHORT).show();
                star1_2.setVisibility(View.VISIBLE);
                star1.setVisibility(View.GONE);
@@ -116,6 +124,9 @@ public class RatingActivity extends AppCompatActivity {
        star2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                thumbs_up.setImageResource(R.drawable.thumbs_up2);
+                btnSend.setEnabled(true);
+                btnSend.setBackgroundTintList(RatingActivity.this.getResources().getColorStateList(R.color.Blue));
                 Toast.makeText(RatingActivity.this, "Rating 40%", Toast.LENGTH_SHORT).show();
                 star2_2.setVisibility(View.VISIBLE);
                 star2.setVisibility(View.GONE);
@@ -134,6 +145,9 @@ public class RatingActivity extends AppCompatActivity {
        star3.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                thumbs_up.setImageResource(R.drawable.thumbs_up2);
+                btnSend.setEnabled(true);
+                btnSend.setBackgroundTintList(RatingActivity.this.getResources().getColorStateList(R.color.Blue));
                 Toast.makeText(RatingActivity.this, "Rating 60%", Toast.LENGTH_SHORT).show();
                 star3_2.setVisibility(View.VISIBLE);
                 star3.setVisibility(View.GONE);
@@ -154,6 +168,9 @@ public class RatingActivity extends AppCompatActivity {
        star4.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                thumbs_up.setImageResource(R.drawable.thumbs_up2);
+                btnSend.setEnabled(true);
+                btnSend.setBackgroundTintList(RatingActivity.this.getResources().getColorStateList(R.color.Blue));
                 Toast.makeText(RatingActivity.this, "Rating 80%", Toast.LENGTH_SHORT).show();
                 star4_2.setVisibility(View.VISIBLE);
                 star4.setVisibility(View.GONE);
@@ -176,6 +193,9 @@ public class RatingActivity extends AppCompatActivity {
        star5.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                thumbs_up.setImageResource(R.drawable.thumbs_up2);
+                btnSend.setEnabled(true);
+                btnSend.setBackgroundTintList(RatingActivity.this.getResources().getColorStateList(R.color.Blue));
                 Toast.makeText(RatingActivity.this, "Rating 100%", Toast.LENGTH_SHORT).show();
                 star5_2.setVisibility(View.VISIBLE);
                 star5.setVisibility(View.GONE);
@@ -212,9 +232,6 @@ public class RatingActivity extends AppCompatActivity {
         }
         return super.onKeyDown(keyCode, event);
     }
-
-
-
     private void PopUp(){
         SweetAlertDialog sweetAlertDialog = new SweetAlertDialog(RatingActivity.this, SweetAlertDialog.SUCCESS_TYPE);
         sweetAlertDialog.setTitleText(getResources().getString(R.string.rating_pop_up_content));
@@ -239,16 +256,5 @@ public class RatingActivity extends AppCompatActivity {
         overridePendingTransition(0,0);
         finish();
         System.exit(0);
-    }
-
-    public void hideStatusBar() {
-        getWindow().getDecorView()
-                .setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                        | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                        | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                        | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                        | View.SYSTEM_UI_FLAG_FULLSCREEN
-                        | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
-                );
     }
 }

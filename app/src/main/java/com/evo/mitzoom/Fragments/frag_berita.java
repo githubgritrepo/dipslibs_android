@@ -104,7 +104,7 @@ public class frag_berita extends Fragment {
         sweetAlertDialog.setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
             @Override
             public void onClick(SweetAlertDialog sweetAlertDialog) {
-                Toast.makeText(context,"Panggilan anda telah diakhiri", Toast.LENGTH_LONG);
+                Toast.makeText(context,getResources().getString(R.string.end_call2), Toast.LENGTH_LONG);
                 startActivity(new Intent(context, DipsSplashScreen.class));
 
             }
@@ -189,7 +189,7 @@ public class frag_berita extends Fragment {
                     Toast.makeText(context.getApplicationContext(), R.string.notif_blank, Toast.LENGTH_SHORT).show();
                 }
                 else {
-                    Toast.makeText(context.getApplicationContext(), "Jadwal panggilan anda "+tanggal+" jam "+waktu, Toast.LENGTH_LONG).show();
+                    Toast.makeText(context.getApplicationContext(), getResources().getString(R.string.schedule)+tanggal+" & "+getResources().getString(R.string.jam)+waktu, Toast.LENGTH_LONG).show();
                     sweetAlertDialog.dismiss();
                     SweetAlertDialog sweetAlertDialog = new SweetAlertDialog(context, SweetAlertDialog.SUCCESS_TYPE);
                     sweetAlertDialog.setContentText(getResources().getString(R.string.content_after_schedule));

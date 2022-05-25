@@ -187,4 +187,12 @@
     <string name="nama_pemilik_rekening">Nama Pemilik Rekening</string>
     <string name="jam">Jam</string>
     <string name="date">tanggal</string>
+    <string name="error_field">Kolom masih kosong</string>
+    <string name="error_image">Silahkan upload foto anda</string>
+    <string name="error_pass">Password anda tidak sama</string>
+    <string name="error_mpin">MPIN anda tidak sama</string>
+    <string name="tabungan_a">Tabungan A</string>
+    <string name="tabungan_b">Tabungan B</string>
+    <string name="end_call2">Panggilan anda telah diakhiri</string>
+    <string name="schedule">Jadwal Panggilan Anda,Tanggal </string>
 </resources>

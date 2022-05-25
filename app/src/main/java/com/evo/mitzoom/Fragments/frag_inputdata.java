@@ -8,12 +8,15 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.Editable;
+import android.text.InputFilter;
+import android.text.Spanned;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -83,6 +86,21 @@ public class frag_inputdata extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         idDips = session.getKEY_IdDips();
         Popup();
+        et_NamaNasabah.setFilters(new InputFilter[]{
+            new InputFilter() {
+                @Override
+                public CharSequence filter(CharSequence cs, int start, int end, Spanned dest, int dstart, int dend) {
+                    // TODO Auto-generated method stub
+                    if(cs.equals("")){ // for backspace
+                        return cs;
+                    }
+                    if(cs.toString().matches("[a-zA-Z ]+")){ // here no space character
+                        return cs;
+                    }
+                    return "";
+                }
+            }
+        });
         et_NamaNasabah.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -97,7 +115,14 @@ public class frag_inputdata extends Fragment {
 
             @Override
             public void afterTextChanged(Editable s) {
-
+                if (!s.toString().isEmpty() && !et_NikNasabah.getText().toString().isEmpty()){
+                    btnNext.setClickable(true);
+                    btnNext.setBackgroundTintList(context.getResources().getColorStateList(R.color.Blue));
+                }
+                else {
+                    btnNext.setClickable(false);
+                    btnNext.setBackgroundTintList(context.getResources().getColorStateList(R.color.btnFalse));
+                }
             }
         });
         et_NikNasabah.addTextChangedListener(new TextWatcher() {
@@ -114,17 +139,34 @@ public class frag_inputdata extends Fragment {
 
             @Override
             public void afterTextChanged(Editable s) {
+                if (!s.toString().isEmpty() && !et_NamaNasabah.getText().toString().isEmpty()){
+                    btnNext.setClickable(true);
+                    btnNext.setBackgroundTintList(context.getResources().getColorStateList(R.color.Blue));
+                }
+                else {
+                    btnNext.setClickable(false);
+                    btnNext.setBackgroundTintList(context.getResources().getColorStateList(R.color.btnFalse));
+                }
 
             }
         });
+
         btnNext.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Nama = et_NamaNasabah.getText().toString();
                 NIK = et_NikNasabah.getText().toString();
-                Mirroring(true,Nama,NIK);
-                //CekData();
-                PopupChoose();
+                if(Nama.isEmpty()){
+                    et_NamaNasabah.setError(getResources().getString(R.string.error_field));
+                }
+                else if (NIK.isEmpty()){
+                    et_NikNasabah.setError(getResources().getString(R.string.error_field));
+                }
+                else {
+                    Mirroring(true, Nama, NIK);
+                    //CekData();
+                    PopupChoose();
+                }
             }
         });
     }
@@ -302,13 +344,35 @@ public class frag_inputdata extends Fragment {
         sweetAlertDialog.hideConfirmButton();
         sweetAlertDialog.setCancelable(false);
         sweetAlertDialog.show();
+        CheckBox checkBox = dialogView.findViewById(R.id.checktnc);
         Button btn = dialogView.findViewById(R.id.btnnexttnc);
+        btn.setClickable(false);
+        checkBox.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (checkBox.isChecked()){
+                    Log.d("CHECK","TRUE");
+                    btn.setBackgroundTintList(context.getResources().getColorStateList(R.color.Blue));
+                    btn.setClickable(true);
+                }
+                else {
+                    Log.d("CHECK","FALSE");
+                    btn.setBackgroundTintList(context.getResources().getColorStateList(R.color.btnFalse));
+                    btn.setClickable(false);
+                }
+            }
+        });
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Mirroring2(true);
-                sweetAlertDialog.dismiss();
-                getFragmentPage(new frag_opening_account());
+                if (checkBox.isChecked()){
+                    Mirroring2(true);
+                    sweetAlertDialog.dismiss();
+                    getFragmentPage(new frag_opening_account());
+                }
+                else {
+                    btn.setClickable(false);
+                }
             }
         });
     }

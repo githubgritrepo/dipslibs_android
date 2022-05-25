@@ -67,7 +67,7 @@ public class DipsVideoConfren extends BaseMeetingActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         audioRawDataUtil = new AudioRawDataUtil(this);
-        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         CmdHelper.getInstance().addListener(mFeedbackPushHandler);
 //        FeedbackDataManager.getInstance().startListenerFeedbackData();
     }

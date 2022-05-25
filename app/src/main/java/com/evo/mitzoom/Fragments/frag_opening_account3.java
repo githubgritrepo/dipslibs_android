@@ -124,7 +124,7 @@ public class frag_opening_account3 extends Fragment {
             @Override
             public void onClick(View v) {
                 if (TTD == null){
-                    Toast.makeText(context, "Silahkan Upload Foto Tanda Tangan Anda", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context, getResources().getString(R.string.error_image), Toast.LENGTH_SHORT).show();
                 }
                 else{
                     Mirroring(true,"");

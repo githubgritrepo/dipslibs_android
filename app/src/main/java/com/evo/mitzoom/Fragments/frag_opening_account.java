@@ -150,11 +150,11 @@ public class frag_opening_account extends Fragment {
             @Override
             public void onClick(View v) {
                 if (KTP == null){
-                    Toast.makeText(context, "Silahkan Upload Foto KTP Anda", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context, getResources().getString(R.string.error_image), Toast.LENGTH_SHORT).show();
                 }
                 else{
                     Mirroring(true,"");
-                    Mirroring2(false,"323432342304203","Andi Setiawan","Semarang","08 April 2000");
+                    Mirroring2(false,"320124150585005","Andi Wijaya Lesmana","Bogor","13-03-1985");
                     saveImage();
                     PopUpOCR(KTP);
                 }
@@ -299,10 +299,10 @@ public class frag_opening_account extends Fragment {
         TTL2= dialogView.findViewById(R.id.et_ttl2_ocr);
         btnOCR1 = dialogView.findViewById(R.id.btncncl);
         btnOCR2 = dialogView.findViewById(R.id.btnlnjt);
-        NIK.setText("323432342304203");
-        Nama.setText("Andi Setiawan");
-        TTL.setText("Semarang");
-        TTL2.setText("08 April 2000");
+        NIK.setText("320124150585005");
+        Nama.setText("Andi Wijaya Lesmana");
+        TTL.setText("Bogor");
+        TTL2.setText("13-03-1985");
 
         //TextWatcher
         NIK.addTextChangedListener(new TextWatcher() {

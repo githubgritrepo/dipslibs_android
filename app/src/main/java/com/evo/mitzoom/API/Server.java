@@ -10,8 +10,8 @@ public class Server {
         return Client.getClientUnsafe(BASE_URL_API).create(ApiService.class);
     }
 
-//    public static ApiService getAPIFirebase() {
-//        return Client.getClientUnsafe(BASE_URL_API_FIREBASE).create(ApiService.class);
-//    }
+    /* public static ApiService getAPIFirebase() {
+        return Client.getClientUnsafe(BASE_URL_API_FIREBASE).create(ApiService.class);
+    }*/
 
 }

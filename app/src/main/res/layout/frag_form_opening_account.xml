@@ -313,28 +313,26 @@
                         android:background="@drawable/bg_textinput"
                         android:textSize="16sp" />
                 </com.google.android.material.textfield.TextInputLayout>
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
-                    <CheckBox
-                        android:layout_marginBottom="10dp"
-                        android:layout_marginEnd="15dp"
-                        android:focusable="false"
-                        android:layout_width="wrap_content"
+                <RadioGroup
+                        android:id="@+id/groupradio2"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Tabungan A"
-                        android:textSize="16sp"
-                        android:textColor="@color/black"/>
-                    <CheckBox
-                        android:layout_marginBottom="10dp"
-                        android:focusable="false"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Tabungan B"
-                        android:textSize="16sp"
-                        android:textColor="@color/black"/>
-                </LinearLayout>
+                        android:orientation="horizontal">
+                        <RadioButton
+                            android:id="@+id/tabA"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/tabungan_a"
+                            android:textStyle="bold"/>
+
+                        <RadioButton
+                            android:id="@+id/tabB"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/tabungan_b"
+                            android:textStyle="bold"/>
+
+                    </RadioGroup>
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -390,7 +388,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="35dp"
                     android:background="@drawable/oval_background_10dp"
-                    android:backgroundTint="@color/bg_cif"
+                    android:backgroundTint="@color/Blue"
                     android:text="@string/process"
                     android:textColor="@color/white"
                     android:textStyle="bold" />

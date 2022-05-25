@@ -6,6 +6,8 @@ import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.Editable;
+import android.text.InputFilter;
+import android.text.Spanned;
 import android.text.TextWatcher;
 import android.util.Base64;
 import android.util.Log;
@@ -19,6 +21,8 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -51,7 +55,8 @@ import retrofit2.Response;
 public class frag_form_opening extends Fragment {
     private Context context;
     private ImageView preview_ktp, preview_npwp, preview_signature;
-    private TextView Nama,NIK,Email,Alamat,Agama,Status,NoHp;
+    private EditText Nama,NIK,Email,Alamat,Agama,Status,NoHp;
+    private String Nama2,NIK2,Email2,Alamat2,Agama2,Status2,NoHp2, Produk;
     private LinearLayout iconKtp, iconNpwp, iconSignature, iconForm;
     private Button btnProcess;
     private CheckBox pernyataan;
@@ -59,6 +64,10 @@ public class frag_form_opening extends Fragment {
     private String idDips;
     private SessionManager session;
     private byte[] KTP, NPWP, TTD;
+    private RadioGroup radioGroup;
+    private RadioButton radioButton;
+    private int selectedId;
+    private int idRb;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -72,6 +81,7 @@ public class frag_form_opening extends Fragment {
         View view = inflater.inflate(R.layout.frag_form_opening_account, container, false);
         iconKtp = view.findViewById(R.id.icon_ktp);
         iconNpwp = view.findViewById(R.id.icon_npwp);
+        radioGroup = view.findViewById(R.id.groupradio2);
         iconSignature = view.findViewById(R.id.icon_signature);
         iconForm = view.findViewById(R.id.icon_form);
         Nama = view.findViewById(R.id.et_nama);
@@ -86,6 +96,7 @@ public class frag_form_opening extends Fragment {
         preview_npwp = view.findViewById(R.id.Imageview_npwp);
         preview_signature = view.findViewById(R.id.Imageview_tanda_tangan);
         pernyataan = view.findViewById(R.id.pernyataan);
+
         return view;
     }
     @Override
@@ -107,24 +118,80 @@ public class frag_form_opening extends Fragment {
         ByteArraytoimg(NPWP,preview_npwp);
         ByteArraytoimg(TTD,preview_signature);
 
-
-        Log.d("BYTE ARRAY KTP = ", String.valueOf(KTP));
-        Log.d("BYTE ARRAY NPWP = ", String.valueOf(NPWP));
-        Log.d("BYTE ARRAY TTD = ", String.valueOf(TTD));
-
-        Nama.setText("Andi Setiawan");
-        NIK.setText("323432342304203");
-        Alamat.setText("Rt.15 Rw/20 Maju, Kecamatan Suka Mulya, DKI Jakarta, Jawa Barat 12345");
+        Nama.setText("Andi Wijaya Lesmana");
+        NIK.setText("320124150585005");
+        Alamat.setText("JL RAYA CISEENG NO.15 BLOK G, RT 12, RW 16, Kel CIBENTANG, Kec CISEENG");
         Agama.setText("Islam");
         Status.setText("Belum Kawin");
+
+        Nama2 = Nama.getText().toString();
+        NIK2 = NIK.getText().toString();
+        NoHp2 = NoHp.getText().toString();
+        Email2 = Email.getText().toString();
+        Alamat2 = Alamat.getText().toString();
+        Agama2 = Agama.getText().toString();
+        Status2 = Status.getText().toString();
 
         if (pernyataan.isChecked()){
             aBoolean = true;
         }
-        else {
+        else if (!pernyataan.isChecked()){
             aBoolean = false;
         }
+        else if (radioButton.isChecked()){
+            Produk = radioButton.getText().toString();
+        }
+        else if (!radioButton.isChecked()){
+            Produk = "";
+        }
 
+        Mirroring(false,Nama2,NIK2,Email2,NoHp2,Alamat2,Agama2,Status2,Produk,aBoolean);
+
+        Email.setFilters(new InputFilter[]{
+                new InputFilter() {
+                    @Override
+                    public CharSequence filter(CharSequence cs, int start, int end, Spanned dest, int dstart, int dend) {
+                        // TODO Auto-generated method stub
+                        if(cs.equals("")){ // for backspace
+                            return cs;
+                        }
+                        if(cs.toString().matches("[a-zA-Z0-9@._-]+")){ // here no space character
+                            return cs;
+                        }
+                        return "";
+                    }
+                }
+        });
+        Status.setFilters(new InputFilter[]{
+                new InputFilter() {
+                    @Override
+                    public CharSequence filter(CharSequence cs, int start, int end, Spanned dest, int dstart, int dend) {
+                        // TODO Auto-generated method stub
+                        if(cs.equals("")){ // for backspace
+                            return cs;
+                        }
+                        if(cs.toString().matches("[a-zA-Z ]+")){ // here no space character
+                            return cs;
+                        }
+                        return "";
+                    }
+                }
+        });
+        Agama.setFilters(new InputFilter[]{
+                new InputFilter() {
+                    @Override
+                    public CharSequence filter(CharSequence cs, int start, int end, Spanned dest, int dstart, int dend) {
+                        // TODO Auto-generated method stub
+                        if(cs.equals("")){ // for backspace
+                            return cs;
+                        }
+                        if(cs.toString().matches("[a-zA-Z]+")){ // here no space character
+                            return cs;
+                        }
+                        return "";
+                    }
+                }
+        });
         //Text Watcher
         Nama.addTextChangedListener(new TextWatcher() {
             @Override
@@ -134,8 +201,7 @@ public class frag_form_opening extends Fragment {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                Mirroring(false, (String) s,NIK.getText().toString(),Email.getText().toString(),NoHp.getText().toString(),Alamat.getText().toString(),Agama.getText().toString(),Status.getText().toString(),"",aBoolean);
-
+                Mirroring(false,s,NIK.getText().toString(),Email.getText().toString(),NoHp.getText().toString(),Alamat.getText().toString(),Agama.getText().toString(),Status.getText().toString(),Produk,aBoolean);
             }
 
             @Override
@@ -151,7 +217,7 @@ public class frag_form_opening extends Fragment {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                Mirroring(false, Nama.getText().toString(), (String) s,Email.getText().toString(),NoHp.getText().toString(),Alamat.getText().toString(),Agama.getText().toString(),Status.getText().toString(),"",aBoolean);
+                Mirroring(false, Nama.getText().toString(), s,Email.getText().toString(),NoHp.getText().toString(),Alamat.getText().toString(),Agama.getText().toString(),Status.getText().toString(),Produk,aBoolean);
 
             }
 
@@ -168,7 +234,7 @@ public class frag_form_opening extends Fragment {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                Mirroring(false, Nama.getText().toString(),NIK.getText().toString(),Email.getText().toString(), (String) s,Alamat.getText().toString(),Agama.getText().toString(),Status.getText().toString(),"",aBoolean);
+                Mirroring(false, Nama.getText().toString(),NIK.getText().toString(),Email.getText().toString(), s,Alamat.getText().toString(),Agama.getText().toString(),Status.getText().toString(),Produk,aBoolean);
 
             }
 
@@ -185,7 +251,7 @@ public class frag_form_opening extends Fragment {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                Mirroring(false, Nama.getText().toString(),NIK.getText().toString(), (String) s,NoHp.getText().toString(),Alamat.getText().toString(),Agama.getText().toString(),Status.getText().toString(),"",aBoolean);
+                Mirroring(false, Nama.getText().toString(),NIK.getText().toString(),s,NoHp.getText().toString(),Alamat.getText().toString(),Agama.getText().toString(),Status.getText().toString(),Produk,aBoolean);
 
             }
 
@@ -202,7 +268,7 @@ public class frag_form_opening extends Fragment {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                Mirroring(false, Nama.getText().toString(),NIK.getText().toString(),Email.getText().toString(),NoHp.getText().toString(), (String) s,Agama.getText().toString(),Status.getText().toString(),"",aBoolean);
+                Mirroring(false, Nama.getText().toString(),NIK.getText().toString(),Email.getText().toString(),NoHp.getText().toString(),s,Agama.getText().toString(),Status.getText().toString(),Produk,aBoolean);
 
             }
 
@@ -219,7 +285,7 @@ public class frag_form_opening extends Fragment {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                Mirroring(false, Nama.getText().toString(),NIK.getText().toString(),Email.getText().toString(),NoHp.getText().toString(),Alamat.getText().toString(), (String) s,Status.getText().toString(),"",aBoolean);
+                Mirroring(false, Nama.getText().toString(),NIK.getText().toString(),Email.getText().toString(),NoHp.getText().toString(),Alamat.getText().toString(),s,Status.getText().toString(),Produk,aBoolean);
 
             }
 
@@ -236,7 +302,7 @@ public class frag_form_opening extends Fragment {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                Mirroring(false, Nama.getText().toString(),NIK.getText().toString(),Email.getText().toString(),NoHp.getText().toString(),Alamat.getText().toString(),Agama.getText().toString(), (String) s,"",aBoolean);
+                Mirroring(false, Nama.getText().toString(),NIK.getText().toString(),Email.getText().toString(),NoHp.getText().toString(),Alamat.getText().toString(),Agama.getText().toString(), s,Produk,aBoolean);
 
             }
 
@@ -245,19 +311,94 @@ public class frag_form_opening extends Fragment {
 
             }
         });
-
-
+        radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                selectedId = group.getCheckedRadioButtonId();
+                radioButton = view.findViewById(selectedId);
+                Log.d("RADIO", "Text : "+radioButton.getText());
+                if (pernyataan.isChecked()){
+                    aBoolean = true;
+                }
+                else if (!pernyataan.isChecked()){
+                    aBoolean = false;
+                }
+                else if (radioButton.isChecked()){
+                    Produk = radioButton.getText().toString();
+                }
+                else if (!radioButton.isChecked()){
+                    Produk = "";
+                }
+                Mirroring(false,Nama2,NIK2,Email2,NoHp2,Alamat2,Agama2,Status2,radioButton.getText(),aBoolean);
+            }
+        });
+        pernyataan.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (pernyataan.isChecked()){
+                    aBoolean = true;
+                }
+                else if (!pernyataan.isChecked()){
+                    aBoolean = false;
+                }
+                else if (radioButton.isChecked()){
+                    Produk = radioButton.getText().toString();
+                }
+                else if (!radioButton.isChecked()){
+                    Produk = "";
+                }
+                Mirroring(false,Nama2,NIK2,Email2,NoHp2,Alamat2,Agama2,Status2,Produk,aBoolean);
+            }
+        });
         btnProcess.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Mirroring(true,Nama.getText().toString(),NIK.getText().toString(),Email.getText().toString(),NoHp.getText().toString(),Alamat.getText().toString(),Agama.getText().toString(),Status.getText().toString(),"Tabungan",aBoolean);
-                iconForm.setBackgroundTintList(context.getResources().getColorStateList(R.color.bg_cif_success));
-                PopUpSuccesRegistration();
+                Nama2 = Nama.getText().toString();
+                NIK2 = NIK.getText().toString();
+                NoHp2 = NoHp.getText().toString();
+                Email2 = Email.getText().toString();
+                Alamat2 = Alamat.getText().toString();
+                Agama2 = Agama.getText().toString();
+                Status2 = Status.getText().toString();
+
+                //Validasi
+                if (Nama2.isEmpty()){
+                    Nama.setError(getResources().getString(R.string.error_field));
+                }
+                else if (NIK2.isEmpty()){
+                    NIK.setError(getResources().getString(R.string.error_field));
+                }
+                else if (NoHp2.isEmpty()){
+                    NoHp.setError(getResources().getString(R.string.error_field));
+                }
+                else if (Email2.isEmpty()){
+                    Email.setError(getResources().getString(R.string.error_field));
+                }
+                else if (Alamat2.isEmpty()){
+                    Alamat.setError(getResources().getString(R.string.error_field));
+                }
+                else if (Agama2.isEmpty()){
+                    Agama.setError(getResources().getString(R.string.error_field));
+                }
+                else if (Status2.isEmpty()){
+                    Status.setError(getResources().getString(R.string.error_field));
+                }
+                else if (!radioButton.isChecked()){
+
+                }
+                else if(!pernyataan.isChecked()){
+                    pernyataan.setError(getResources().getString(R.string.error_field));
+                }
+                else {
+                    Mirroring(true,Nama2,NIK2,Email2,NoHp2,Alamat2,Agama2,Status2,Produk,aBoolean);
+                    iconForm.setBackgroundTintList(context.getResources().getColorStateList(R.color.bg_cif_success));
+                    PopUpSuccesRegistration();
+                }
             }
         });
     }
 
-    private void Mirroring(Boolean bool, String nama, String nik, String email, String hp, String alamat, String agama, String status, String produk, boolean pernyataan){
+    private void Mirroring(Boolean bool, CharSequence nama, CharSequence nik, CharSequence email, CharSequence hp, CharSequence alamat, CharSequence agama, CharSequence status, CharSequence produk, boolean pernyataan){
         JSONObject jsons = new JSONObject();
         JSONArray jsonArray = new JSONArray();
         try {
