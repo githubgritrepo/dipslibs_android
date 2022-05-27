@@ -317,7 +317,7 @@ public class DipsCapture extends AppCompatActivity implements CameraSource.Pictu
 
     private void processCropImage(byte[] dataPhoto) {
         Bitmap bitmap = BitmapFactory.decodeByteArray(dataPhoto, 0, dataPhoto.length);
-        Bitmap bitmapCrop = resizeAndCropCenter(bitmap, 320, false);
+        Bitmap bitmapCrop = resizeAndCropCenter(bitmap, 640, false);
 
         int rotationInDegree = 1;
         try {

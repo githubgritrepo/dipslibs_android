@@ -220,7 +220,7 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
     protected void onResume() {
         super.onResume();
 
-        hideStatusBar();
+        //hideStatusBar();
 
         if (isActivityPaused) {
             resumeSubscribe();

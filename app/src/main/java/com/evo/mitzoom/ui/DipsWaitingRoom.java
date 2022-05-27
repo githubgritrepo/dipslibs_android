@@ -175,6 +175,8 @@ public class DipsWaitingRoom extends AppCompatActivity {
         processGetTicket(myTicket);
         AnimationCall = findViewById(R.id.AnimationCall);
 
+        Log.d("CEK", "idDips : "+idDips);
+
         initializeSdk();
 
         /*btnSchedule = (MaterialButton) findViewById(R.id.btnSchedule);

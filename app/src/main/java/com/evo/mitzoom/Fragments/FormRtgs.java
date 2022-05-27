@@ -1,11 +1,16 @@
 package com.evo.mitzoom.Fragments;
 
 import android.Manifest;
+import android.app.Activity;
+import android.app.Application;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.media.MediaScannerConnection;
+import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -53,9 +58,12 @@ import org.json.JSONObject;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.text.NumberFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
@@ -259,6 +267,12 @@ public class FormRtgs extends Fragment {
                 if (dataNews.size() == 0) {
                     berita = getBerita;
                 } else {
+                    if (dataNews.size() < i) {
+                        int lenN = dataNews.size();
+                        for (int k = lenN; k <= i; k++) {
+                            dataNews.add(k, "");
+                        }
+                    }
                     if (dataNews.size() == i) {
                         berita = getBerita;
                     } else {
@@ -321,7 +335,9 @@ public class FormRtgs extends Fragment {
                 if (ContextCompat.checkSelfPermission(mContext, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED) {
                     ActivityCompat.requestPermissions(getActivity(), new String[] { Manifest.permission.WRITE_EXTERNAL_STORAGE }, 1);
                     try {
-                        String filename = "Barcode_No_Formulir-"+no_Form + ".jpg";
+                        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss",
+                                Locale.getDefault()).format(new Date());
+                        String filename = "Barcode_No_Formulir-"+no_Form +"-"+timeStamp+ ".jpg";
                         createTemporaryFile(finalImgByte, filename);
 
                         String appName = getString(R.string.app_name_dips);
@@ -342,7 +358,9 @@ public class FormRtgs extends Fragment {
                 else
                 {
                     try {
-                        String filename = "Barcode_No_Formulir-"+no_Form + ".jpg";
+                        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss",
+                                Locale.getDefault()).format(new Date());
+                        String filename = "Barcode_No_Formulir-"+no_Form +"-"+timeStamp+ ".jpg";
                         createTemporaryFile(finalImgByte, filename);
 
                         String appName = getString(R.string.app_name_dips);
@@ -377,10 +395,19 @@ public class FormRtgs extends Fragment {
         String IMAGE_DIRECTORY_NAME = appName;
         File mediaStorageDir = new File(
                 Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), IMAGE_DIRECTORY_NAME);
+
         if (!mediaStorageDir.exists()) {
             if (!mediaStorageDir.mkdirs()) {
                 return null;
             }
+        }
+
+        String[] myFiles;
+
+        myFiles = mediaStorageDir.list();
+        for (int i=0; i<myFiles.length; i++) {
+            File myFile = new File(mediaStorageDir, myFiles[i]);
+            myFile.delete();
         }
 
         File mediaFile;
@@ -389,9 +416,20 @@ public class FormRtgs extends Fragment {
 
         FileOutputStream fos = new FileOutputStream(mediaFile);
         fos.write(byteImage);
+        fos.flush();
         fos.close();
 
+        galleryAddPic(mediaFile.getPath());
+
         return mediaFile;
+    }
+
+    private void galleryAddPic(String absolutePath) {
+        Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+        File f = new File(absolutePath);
+        Uri contentUri = Uri.fromFile(f);
+        mediaScanIntent.setData(contentUri);
+        ((Activity)mContext).sendBroadcast(mediaScanIntent);
     }
 
     private void fillBankList(){
@@ -651,6 +689,12 @@ public class FormRtgs extends Fragment {
                 @Override
                 public void onFocusChange(View v, boolean hasFocus) {
                     if (!hasFocus) {
+                        if (dataNews.size() < positionE) {
+                            int lenN = dataNews.size();
+                            for (int i = lenN; i <= positionE; i++) {
+                                dataNews.add(i, "");
+                            }
+                        }
                         String dataB = et_berita.getText().toString();
                         if (dataNews.size() == 0) {
                             dataNews.add(positionE, dataB);
