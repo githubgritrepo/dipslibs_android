@@ -94,7 +94,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="35dp"
                             android:background="@drawable/bg_textinput"
-                            android:inputType="textPassword"
+                            android:inputType="text"
                             android:padding="9dp"
                             android:textSize="16sp"
                             tools:ignore="SpeakableTextPresentCheck" />
@@ -123,7 +123,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="35dp"
                             android:background="@drawable/bg_textinput"
-                            android:inputType="textPassword"
+                            android:inputType="text"
                             android:padding="9dp"
                             android:textSize="16sp"
                             tools:ignore="SpeakableTextPresentCheck,SpeakableTextPresentCheck,SpeakableTextPresentCheck" />
@@ -152,7 +152,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="35dp"
                             android:background="@drawable/bg_textinput"
-                            android:inputType="numberPassword"
+                            android:inputType="number"
                             android:padding="9dp"
                             android:textSize="16sp"
                             tools:ignore="SpeakableTextPresentCheck" />
@@ -181,7 +181,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="35dp"
                             android:background="@drawable/bg_textinput"
-                            android:inputType="numberPassword"
+                            android:inputType="number"
                             android:padding="9dp"
                             android:textSize="16sp" />
                     </com.google.android.material.textfield.TextInputLayout>
