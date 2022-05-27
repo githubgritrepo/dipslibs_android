@@ -288,7 +288,7 @@ public class frag_opening_account extends Fragment {
     private void PopUpOCR(byte[] DataKTP){
         inflater = getLayoutInflater();
         dialogView = inflater.inflate(R.layout.item_ocr,null);
-        SweetAlertDialog sweetAlertDialog = new SweetAlertDialog(context, SweetAlertDialog.WARNING_TYPE);
+        SweetAlertDialog sweetAlertDialog = new SweetAlertDialog(context, SweetAlertDialog.NORMAL_TYPE);
         sweetAlertDialog.setCustomView(dialogView);
         sweetAlertDialog.hideConfirmButton();
         sweetAlertDialog.show();

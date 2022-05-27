@@ -94,11 +94,11 @@ public class Client {
             // Create an ssl socket factory with our all-trusting manager
             final SSLSocketFactory sslSocketFactory = sslContext.getSocketFactory();
 
-            HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
-            interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
+            /*HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
+            interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);*/
 
-            OkHttpClient.Builder builder = new OkHttpClient.Builder().addInterceptor(interceptor);
-            builder.addInterceptor(interceptor);
+            OkHttpClient.Builder builder = new OkHttpClient.Builder();
+            //builder.addInterceptor(interceptor);
             //builder.sslSocketFactory(sslSocketFactory);
             builder.sslSocketFactory(sslSocketFactory, (X509TrustManager) trustAllCerts[0]);
             builder.hostnameVerifier(new HostnameVerifier() {
