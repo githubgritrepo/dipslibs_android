@@ -113,11 +113,17 @@ public class frag_form_opening extends Fragment {
         KTP = arg.getByteArray("ktp");
         NPWP = arg.getByteArray("npwp");
         TTD = arg.getByteArray("ttd");
-        arg.clear();
-
+        Log.d("CEK1","ktp "+KTP+" | npwp = "+NPWP+" | TTD = "+TTD);
+        if (KTP == null && NPWP == null && TTD == null){
+            KTP = session.getKEY_KTP().getBytes();
+            NPWP = session.getKEY_NPWP().getBytes();
+            TTD = session.getKEY_TTD().getBytes();
+        }
+        Log.d("CEK2","ktp "+KTP+" | npwp = "+NPWP+" | TTD = "+TTD);
         ByteArraytoimg(KTP,preview_ktp);
         ByteArraytoimg(NPWP,preview_npwp);
         ByteArraytoimg(TTD,preview_signature);
+
 
         Nama.setText("Andi Wijaya Lesmana");
         NIK.setText("320124150585005");
@@ -337,22 +343,23 @@ public class frag_form_opening extends Fragment {
         pernyataan.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                int selectedId = radioGroup.getCheckedRadioButtonId();
                 if (pernyataan.isChecked()){
                     Log.d("CEK","MASUK IF onClick pernyataan");
                     aBoolean = true;
                 }
-                else if (!pernyataan.isChecked()){
+                else {
                     Log.d("CEK","MASUK ELSE IF onClick pernyataan");
                     aBoolean = false;
                 }
 
-                if (radioButton.isChecked()){
+                if (selectedId == -1){
                     Log.d("CEK","MASUK ELSE IF 2 onClick pernyataan");
-                    Produk = radioButton.getText().toString();
+                    Produk = "" ;
                 }
-                else if (!radioButton.isChecked()){
+                else {
                     Log.d("CEK","MASUK ELSE IF 3 onClick pernyataan");
-                    Produk = "";
+                    Produk = radioButton.getText().toString();
                 }
                 Log.d("CEK","Produk : "+Produk);
                 Log.d("CEK","aBoolean : "+aBoolean);
@@ -362,6 +369,7 @@ public class frag_form_opening extends Fragment {
         btnProcess.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                int selectedId = radioGroup.getCheckedRadioButtonId();
                 Nama2 = Nama.getText().toString();
                 NIK2 = NIK.getText().toString();
                 NoHp2 = NoHp.getText().toString();
@@ -392,7 +400,7 @@ public class frag_form_opening extends Fragment {
                 else if (Status2.isEmpty()){
                     Status.setError(getResources().getString(R.string.error_field));
                 }
-                else if (!radioButton.isChecked()){
+                else if (selectedId == -1){
 
                 }
                 else if(!pernyataan.isChecked()){
@@ -406,6 +414,9 @@ public class frag_form_opening extends Fragment {
             }
         });
     }
+
+
+
 
     private void Mirroring(Boolean bool, CharSequence nama, CharSequence nik, CharSequence email, CharSequence hp, CharSequence alamat, CharSequence agama, CharSequence status, CharSequence produk, boolean pernyataan){
         JSONObject jsons = new JSONObject();

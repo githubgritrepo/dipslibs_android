@@ -344,7 +344,7 @@ public class DipsWaitingRoom extends AppCompatActivity {
                             SessionPass = Session_password;
                             PopUpSucces();
                         } else {
-                            if (lastQueue.trim().equals(myTicketNumber) && Session_name.trim().equals(idDips) ){
+                              if (lastQueue.trim().equals(myTicketNumber) && Session_name.trim().equals(idDips) ){
                                 lastTicket.setText("A"+lastQueue.substring(lastQueue.length()-3,lastQueue.length()));
                                 NameSession = Session_name;
                                 SessionPass = Session_password;

@@ -22,6 +22,10 @@ public class SessionManager {
     public static final String KEY_LANG = "LANGUAGE";
     public static final String KEY_RTGS = "RTGS";
     public static final String KEY_IdDips = "IdDips";
+    public static final String KEY_KTP = "KTP";
+    public static final String KEY_NPWP = "NPWP";
+    public static final String KEY_TTD = "TTD";
+    public static final String KEY_CHAT = "CHAT";
 
     // Constructor
     public SessionManager(Context context){
@@ -40,8 +44,29 @@ public class SessionManager {
         editor.commit();
     }
 
+    public void saveChat(String data) {
+        editor.putString(KEY_CHAT,data);
+        editor.commit();
+    }
+
     public void saveIdDips(String data){
         editor.putString(KEY_IdDips,data);
+        editor.commit();
+    }
+    public void saveKTP(String data){
+        editor.putString(KEY_KTP, data);
+        editor.commit();
+    }
+    public void saveNPWP(String data){
+        editor.putString(KEY_NPWP,data);
+        editor.commit();
+    }
+    public void saveTTD(String data){
+        editor.putString(KEY_TTD,data);
+        editor.commit();
+    }
+    public void clearData(){
+        editor.clear();
         editor.commit();
     }
 
@@ -53,6 +78,18 @@ public class SessionManager {
     }
     public String getKEY_IdDips (){
         return pref.getString(KEY_IdDips,null);
+    }
+    public String getKEY_KTP (){
+        return pref.getString(KEY_KTP,null);
+    }
+    public String getKEY_NPWP (){
+        return pref.getString(KEY_NPWP,null);
+    }
+    public String getKEY_TTD (){
+        return pref.getString(KEY_TTD,null);
+    }
+    public String getKEY_CHAT (){
+        return pref.getString(KEY_CHAT,null);
     }
 
 }

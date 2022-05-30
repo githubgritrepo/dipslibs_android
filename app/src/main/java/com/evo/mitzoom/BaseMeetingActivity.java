@@ -306,6 +306,7 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
         }
         ZoomVideoSDK.getInstance().removeListener(this);
         adapter.onDestroyed();
+        sessions.clearData();
     }
 
     @Override
@@ -604,6 +605,7 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
                 int ret = ZoomVideoSDK.getInstance().leaveSession(false);
                 Log.d(TAG, "leaveSession ret = " + ret);
                 startActivity(new Intent(getApplicationContext(), RatingActivity.class));
+                sessions.clearData();
             }
         });
         boolean end = false;

@@ -134,6 +134,9 @@ public class frag_opening_account3 extends Fragment {
                     bundle.putByteArray("ktp",KTP);
                     bundle.putByteArray("npwp",NPWP);
                     bundle.putByteArray("ttd",TTD);
+                    session.saveKTP(new String(KTP));
+                    session.saveNPWP(new String(NPWP));
+                    session.saveTTD(new String(TTD));
                     fragment.setArguments(bundle);
                     getFragmentPage(fragment);
                 }
