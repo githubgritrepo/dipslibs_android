@@ -171,10 +171,12 @@ public class frag_portfolio extends Fragment {
         pieChart.setDrawHoleEnabled(true);
         pieChart.setDrawEntryLabels(false);
         pieChart.getDescription().setEnabled(false);
-        pieEntryList.add(new PieEntry(3,"Giro"));
-        pieEntryList.add(new PieEntry(2,"Tabungan"));
-        pieEntryList.add(new PieEntry(1,"Deposito"));
-        pieEntryList.add(new PieEntry(4,"Reksa Dana"));
+        if (pieEntryList.size() < 1){
+            pieEntryList.add(new PieEntry(3,"Giro"));
+            pieEntryList.add(new PieEntry(2,"Tabungan"));
+            pieEntryList.add(new PieEntry(1,"Deposito"));
+            pieEntryList.add(new PieEntry(4,"Reksa Dana"));
+        }
         PieDataSet pieDataSet = new PieDataSet(pieEntryList,"");
         pieDataSet.setColors(ColorTemplate.MATERIAL_COLORS);
         pieData = new PieData(pieDataSet);

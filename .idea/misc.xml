@@ -94,6 +94,7 @@
         <entry key="..\:/Users/Mohammad Rafii B/AndroidStudioProjects/DIPS 2/app/src/main/res/layout/activity_rating.xml" value="0.2" />
         <entry key="..\:/Users/Mohammad Rafii B/AndroidStudioProjects/DIPS 2/app/src/main/res/layout/aktivasi_ibmb.xml" value="0.2" />
         <entry key="..\:/Users/Mohammad Rafii B/AndroidStudioProjects/DIPS 2/app/src/main/res/layout/dialog_barcode_rtgs.xml" value="0.33" />
+        <entry key="..\:/Users/Mohammad Rafii B/AndroidStudioProjects/DIPS 2/app/src/main/res/layout/dialog_leave_alert.xml" value="0.2" />
         <entry key="..\:/Users/Mohammad Rafii B/AndroidStudioProjects/DIPS 2/app/src/main/res/layout/frag_berita.xml" value="0.2" />
         <entry key="..\:/Users/Mohammad Rafii B/AndroidStudioProjects/DIPS 2/app/src/main/res/layout/frag_dialog_rtgs.xml" value="0.33" />
         <entry key="..\:/Users/Mohammad Rafii B/AndroidStudioProjects/DIPS 2/app/src/main/res/layout/frag_form_opening_account.xml" value="0.2" />
@@ -108,9 +109,11 @@
         <entry key="..\:/Users/Mohammad Rafii B/AndroidStudioProjects/DIPS 2/app/src/main/res/layout/item_ads.xml" value="0.2" />
         <entry key="..\:/Users/Mohammad Rafii B/AndroidStudioProjects/DIPS 2/app/src/main/res/layout/item_cif.xml" value="0.33" />
         <entry key="..\:/Users/Mohammad Rafii B/AndroidStudioProjects/DIPS 2/app/src/main/res/layout/item_ocr.xml" value="0.2" />
+        <entry key="..\:/Users/Mohammad Rafii B/AndroidStudioProjects/DIPS 2/app/src/main/res/layout/item_otp.xml" value="0.2" />
         <entry key="..\:/Users/Mohammad Rafii B/AndroidStudioProjects/DIPS 2/app/src/main/res/layout/item_portfolio.xml" value="0.33" />
         <entry key="..\:/Users/Mohammad Rafii B/AndroidStudioProjects/DIPS 2/app/src/main/res/layout/item_schedule.xml" value="0.2" />
         <entry key="..\:/Users/Mohammad Rafii B/AndroidStudioProjects/DIPS 2/app/src/main/res/layout/layout_bottom_action_bar.xml" value="0.2" />
+        <entry key="..\:/Users/Mohammad Rafii B/AndroidStudioProjects/DIPS 2/app/src/main/res/layout/layout_bottomsheetdialog.xml" value="0.2" />
         <entry key="..\:/Users/Mohammad Rafii B/AndroidStudioProjects/DIPS 2/app/src/main/res/layout/list_item.xml" value="0.2" />
         <entry key="..\:/Users/Mohammad Rafii B/AndroidStudioProjects/DIPS 2/app/src/main/res/layout/portfolio.xml" value="0.33" />
         <entry key="..\:/Users/Mohammad Rafii B/AndroidStudioProjects/DIPS 2/app/src/main/res/layout/slide.xml" value="0.2" />

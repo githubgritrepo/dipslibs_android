@@ -79,7 +79,9 @@ public class frag_aktivasi_ibmb extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         idDips = session.getKEY_IdDips();
-
+        session.saveKTP(null);
+        session.saveNPWP(null);
+        session.saveTTD(null);
         UserId.setFilters(new InputFilter[]{
                 new InputFilter() {
                     @Override
@@ -273,6 +275,7 @@ public class frag_aktivasi_ibmb extends Fragment {
         Timer = dialogView.findViewById(R.id.timer_otp);
         Resend_Otp = dialogView.findViewById(R.id.btn_resend_otp);
         editTextPin = dialogView.findViewById(R.id.kode_otp);
+
         btnVerifikasi.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

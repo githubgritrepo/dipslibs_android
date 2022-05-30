@@ -19,6 +19,7 @@ import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.evo.mitzoom.R;
+import com.evo.mitzoom.Session.SessionManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,12 +33,14 @@ public class ChatMsgAdapter extends RecyclerView.Adapter<ChatMsgAdapter.MsgHolde
 
     private Context ctx;
     private List<CharSequence> list;
-    private List<Boolean> isSelf = new ArrayList<>();;
-    private List<Boolean> isHost = new ArrayList<>();;
+    private List<Boolean> isSelf;
+    private List<Boolean> isHost;
     protected ZoomVideoSDKSession session;
-    public ChatMsgAdapter(Context ctx, List<CharSequence> list) {
+    public ChatMsgAdapter(Context ctx, List<CharSequence> list, List<Boolean> isHost, List<Boolean> isSelf) {
         this.ctx = ctx;
         this.list = list;
+        this.isSelf = isSelf;
+        this.isHost = isHost;
     }
     public void onReceive(ZoomVideoSDKChatMessage item) {
         boolean isSelfval = item.isSelfSend();

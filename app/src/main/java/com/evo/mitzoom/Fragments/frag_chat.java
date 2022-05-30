@@ -1,7 +1,12 @@
 package com.evo.mitzoom.Fragments;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.text.Spannable;
+import android.text.SpannableStringBuilder;
+import android.text.style.ForegroundColorSpan;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,6 +24,11 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.evo.mitzoom.Adapter.ChatMsgAdapter;
 import com.evo.mitzoom.BaseMeetingActivity;
 import com.evo.mitzoom.R;
+import com.evo.mitzoom.Session.SessionManager;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -49,7 +59,10 @@ public class frag_chat extends Fragment  implements ZoomVideoSDKDelegate {
     private String Chat;
     private ChatMsgAdapter chatMsgAdapter;
     protected RecyclerView chatListView;
+    private SessionManager sessionManager;
     private List<CharSequence> list = new ArrayList<>();
+    private List<Boolean> isSelf = new ArrayList<>();
+    private List<Boolean> isHost = new ArrayList<>();
     protected ZoomVideoSDKSession session;
 
     @Override
@@ -58,6 +71,7 @@ public class frag_chat extends Fragment  implements ZoomVideoSDKDelegate {
         context = getContext();
         BaseMeetingActivity.btnChat.setBackgroundTintList(context.getResources().getColorStateList(R.color.btnFalse));
         BaseMeetingActivity.btnChat.setClickable(false);
+        sessionManager = new SessionManager(context);
     }
 
     @Nullable
@@ -83,6 +97,7 @@ public class frag_chat extends Fragment  implements ZoomVideoSDKDelegate {
                 BaseMeetingActivity.btnChat.setClickable(true);
                 FragmentManager fragmentManager = getFragmentManager();
                 fragmentManager.popBackStack();
+                SavedInstanceChat();
             }
         });
         btnSend.setOnClickListener(new View.OnClickListener() {
@@ -94,16 +109,69 @@ public class frag_chat extends Fragment  implements ZoomVideoSDKDelegate {
             }
         });
         chatListView.setLayoutManager(new LinearLayoutManager(context, RecyclerView.VERTICAL, false));
-        chatMsgAdapter = new ChatMsgAdapter(context, list);
+        if (sessionManager.getKEY_CHAT() != null){
+            String dataChat = sessionManager.getKEY_CHAT();
+            Log.d("CEK START PESAN ",dataChat);
+            try {
+                JSONArray jsonArray2 = new JSONArray(dataChat);
+                int panjang = jsonArray2.length();
+                for (int a=0;a<panjang;a++){
+                    String dataChat2 = jsonArray2.get(a).toString();
+                    JSONObject jsonObject = new JSONObject(dataChat2);
+                    boolean isSelf2 = jsonObject.getBoolean("isSelf");
+                    boolean isHost2 = jsonObject.getBoolean("isHost");
+                    String message = jsonObject.getString("message");
+
+                    String [] message2 = message.split("\n");
+                    String SenderName = message2[0]+"\n";
+                    String content = message2[1];
+                    SpannableStringBuilder builder = new SpannableStringBuilder();
+                    builder.append(SenderName).append(content);
+                    builder.setSpan(new ForegroundColorSpan(Color.parseColor("#000000")),0,SenderName.length(), Spannable.SPAN_EXCLUSIVE_INCLUSIVE);
+                    builder.setSpan(new ForegroundColorSpan(Color.parseColor("#FFFFFF")),SenderName.length(), builder.length(), Spannable.SPAN_EXCLUSIVE_INCLUSIVE); //设置前面的字体颜色
+
+                    isSelf.add(isSelf2);
+                    isHost.add(isHost2);
+                    list.add(builder);
+
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+        else {
+            Log.d("CEK START PESAN ","MASUK ELSE");
+        }
+        chatMsgAdapter = new ChatMsgAdapter(context, list,isHost, isSelf);
         chatListView.setAdapter(chatMsgAdapter);
         updateChatLayoutParams();
-
     }
+
 
     private void updateChatLayoutParams() {
         if (chatMsgAdapter.getItemCount() > 0) {
             chatListView.scrollToPosition(chatMsgAdapter.getItemCount() - 1);
         }
+    }
+
+    private void SavedInstanceChat(){
+        JSONArray jsonArray = new JSONArray();
+        for (int i =0; i < list.size(); i++){
+            JSONObject jsons = new JSONObject();
+            try {
+                jsons.put("isSelf",isSelf.get(i));
+                jsons.put("isHost",isHost.get(i));
+                jsons.put("message",list.get(i));
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+            jsonArray.put(jsons);
+        }
+        String dataArr = jsonArray.toString();
+        sessionManager.saveChat(dataArr);
+        Log.d("CEK PESAN ARRAY",dataArr);
     }
 
     @Override
@@ -154,8 +222,8 @@ public class frag_chat extends Fragment  implements ZoomVideoSDKDelegate {
     @Override
     public void onChatNewMessageNotify(ZoomVideoSDKChatHelper zoomVideoSDKChatHelper, ZoomVideoSDKChatMessage messageItem) {
         chatMsgAdapter.onReceive(messageItem);
+        Log.d("CEK PESAN",messageItem.getContent());
         updateChatLayoutParams();
-
     }
 
     @Override
