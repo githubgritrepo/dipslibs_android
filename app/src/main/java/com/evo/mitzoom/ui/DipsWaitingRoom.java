@@ -146,6 +146,7 @@ public class DipsWaitingRoom extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Log.d("CEK","MASUK onCreate");
         super.onCreate(savedInstanceState);
         mContext = this;
 
@@ -192,6 +193,8 @@ public class DipsWaitingRoom extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+
+        Log.d("CEK","MASUK onResume");
 
         camera = Camera.open(useFacing);
         //startPreview();

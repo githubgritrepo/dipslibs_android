@@ -97,8 +97,9 @@ public class FormRtgs extends Fragment {
     private ArrayList<String> dataPopulation = new ArrayList<>();
     private ArrayList<String> dataNews = new ArrayList<>();
     public static final NumberFormat numberFormat = NumberFormat.getInstance(new Locale("id", "ID"));
-    private String getBerita;
+    private String getBerita = "";
     private AutoCompleteTextView elBankName;
+    private String dataRTGS = null;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -107,9 +108,6 @@ public class FormRtgs extends Fragment {
         mContext = getContext();
 
         sessions = new SessionManager(mContext);
-
-        layouts.add(R.layout.content_form_rtgs);
-        dataNoForm.add("2103212");
     }
 
     @Override
@@ -136,7 +134,15 @@ public class FormRtgs extends Fragment {
         sourceBenefit = new String[]{getResources().getString(R.string.perorangan), getResources().getString(R.string.perusahaan), getResources().getString(R.string.pemerintah)};
         sourcePopulation = new String[]{getResources().getString(R.string.penduduk), getResources().getString(R.string.bukan_penduduk)};
 
-        initPager();
+        dataRTGS = sessions.getRTGS();
+        if (dataRTGS == null) {
+            layouts.add(R.layout.content_form_rtgs);
+            dataNoForm.add("2103212");
+
+            initPager();
+        } else {
+            savedPreRTGS();
+        }
 
         btnProsesRTGS.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -151,6 +157,7 @@ public class FormRtgs extends Fragment {
         btnBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                processSavedInstanceBack();
                 getFragmentPage(new frag_berita());
             }
         });
@@ -179,18 +186,54 @@ public class FormRtgs extends Fragment {
         });
     }
 
+    @Override
+    public void onDestroy() {
+        processSavedInstance();
+        super.onDestroy();
+    }
+
+    private void savedPreRTGS() {
+        try {
+            Log.d("CEK","dataRTGS : "+dataRTGS);
+            JSONArray jsArr = new JSONArray(dataRTGS);
+            int len = jsArr.length();
+            for (int i = 0; i < len; i++) {
+                String dataArr = jsArr.get(i).toString();
+                JSONObject dataJs = new JSONObject(dataArr);
+                String idForm = dataJs.getString("idForm");
+                String sourceBank = dataJs.getString("sourceBank");
+                String sourceTypeService = dataJs.getString("sourceTypeService");
+                String sourceBenefit = dataJs.getString("sourceBenefit");
+                String sourcePopulation = dataJs.getString("sourcePopulation");
+                String rek_penerima = dataJs.getString("rek_penerima");
+                String nama_penerima = dataJs.getString("nama_penerima");
+                String nominal = dataJs.getString("nominal");
+                String berita = dataJs.getString("berita");
+
+                layouts.add(R.layout.content_form_rtgs);
+                dataNoForm.add(idForm);
+                dataBankName.add(sourceBank);
+                dataAccountReceive.add(rek_penerima);
+                dataNameReceive.add(nama_penerima);
+                dataNominal.add(nominal);
+                dataService.add(sourceTypeService);
+                dataBenefit.add(sourceBenefit);
+                dataPopulation.add(sourcePopulation);
+                dataNews.add(berita);
+
+                initPager();
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
     private void initPager() {
         if (myViewPagerAdapter == null) {
             myViewPagerAdapter = new MyViewPagerAdapter();
         }
         pager.setAdapter(myViewPagerAdapter);
         circleIndicator.setViewPager(pager);
-    }
-
-    @Override
-    public void onDestroy() {
-        processSavedInstance();
-        super.onDestroy();
     }
 
     private void getFragmentPage(Fragment fragment){
@@ -266,6 +309,82 @@ public class FormRtgs extends Fragment {
                 String berita = "";
                 if (dataNews.size() == 0) {
                     berita = getBerita;
+                } else {
+                    if (dataNews.size() < i) {
+                        int lenN = dataNews.size();
+                        for (int k = lenN; k <= i; k++) {
+                            dataNews.add(k, "");
+                        }
+                    }
+                    if (dataNews.size() == i) {
+                        berita = getBerita;
+                    } else {
+                        berita = dataNews.get(i);
+                    }
+                }
+
+                jsons.put("idForm",noFormulir);
+                jsons.put("sourceBank",SumberBank);
+                jsons.put("sourceTypeService",JenisLayanan);
+                jsons.put("sourceBenefit",posSourceBenefit);
+                jsons.put("sourcePopulation",posSourcePopulation);
+                jsons.put("rek_penerima",rek_penerima);
+                jsons.put("nama_penerima",nama_penerima);
+                jsons.put("nominal",nominal);
+                jsons.put("berita",berita);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+            jsonArray.put(jsons);
+        }
+
+        String dataJs = jsonArray.toString();
+        sessions.saveRTGS(dataJs);
+        return true;
+    }
+
+    private boolean processSavedInstanceBack() {
+        int lenL = layouts.size();
+        JSONArray jsonArray = new JSONArray();
+
+        for (int i = 0; i < lenL; i++) {
+            JSONObject jsons = new JSONObject();
+            try {
+                String noFormulir = dataNoForm.get(i);
+                if (dataBankName.size() == 0 || (dataBankName.size() == i) || (dataBankName.size() > 0 && dataBankName.get(i).isEmpty())) {
+                    dataBankName.add("");
+                }
+                if (dataAccountReceive.size() == 0 || (dataAccountReceive.size() == i) || (dataAccountReceive.size() > 0 && dataAccountReceive.get(i).isEmpty())) {
+                    dataAccountReceive.add("");
+                }
+                if (dataNameReceive.size() == 0 || (dataNameReceive.size() == i) || (dataNameReceive.size() > 0 && dataNameReceive.get(i).isEmpty())) {
+                    dataNameReceive.add("");
+                }
+                if (dataNominal.size() == 0 || (dataNominal.size() == i) || (dataNominal.size() > 0 && dataNominal.get(i).isEmpty())) {
+                    dataNominal.add("0");
+                }
+                if (dataService.size() == 0 || (dataService.size() == i) || (dataService.size() > 0 && dataService.get(i).isEmpty())) {
+                    dataService.add("");
+                }
+                if (dataBenefit.size() == 0 || (dataBenefit.size() == i) || (dataBenefit.size() > 0 && dataBenefit.get(i).isEmpty())) {
+                    dataBenefit.add("");
+                }
+                if (dataPopulation.size() == 0 || (dataPopulation.size() == i) || (dataPopulation.size() > 0 && dataPopulation.get(i).isEmpty())) {
+                    dataPopulation.add("");
+                }
+
+                String SumberBank = dataBankName.get(i);
+                String JenisLayanan = dataService.get(i);
+                String posSourceBenefit = dataBenefit.get(i);
+                String posSourcePopulation = dataPopulation.get(i);
+                String rek_penerima = dataAccountReceive.get(i);
+                String nama_penerima = dataNameReceive.get(i);
+                String nominal = dataNominal.get(i);
+                String berita = "";
+                if (dataNews.size() == 0) {
+                    berita = getBerita;
+                    dataNews.add(berita);
                 } else {
                     if (dataNews.size() < i) {
                         int lenN = dataNews.size();

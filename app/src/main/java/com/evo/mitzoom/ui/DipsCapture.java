@@ -6,6 +6,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
 import android.Manifest;
 import android.content.Context;
@@ -35,6 +36,7 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
@@ -311,7 +313,13 @@ public class DipsCapture extends AppCompatActivity implements CameraSource.Pictu
     public void onPictureTaken(@NonNull byte[] dataPhoto) {
         if (dataPhoto.length > 0) {
             cameraSource.stop();
-            processCropImage(dataPhoto);
+            if (ContextCompat.checkSelfPermission(mContext, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED) {
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
+                processCropImage(dataPhoto);
+            } else
+            {
+                processCropImage(dataPhoto);
+            }
         }
     }
 
@@ -323,10 +331,12 @@ public class DipsCapture extends AppCompatActivity implements CameraSource.Pictu
         try {
             File mediaFile = createTemporaryFile(dataPhoto);
             try {
-                String pathFile = mediaFile.getAbsolutePath();
+                String pathFile = mediaFile.getPath();
                 ExifInterface exif = new ExifInterface(pathFile);
                 int rotation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL);
                 rotationInDegree = rotation;
+                Log.d("CEK","rotationInDegree before : "+rotationInDegree);
+                rotationInDegree = exifToDegrees(rotationInDegree);
 
                 if (mediaFile.exists()) {
                     try {
@@ -346,13 +356,14 @@ public class DipsCapture extends AppCompatActivity implements CameraSource.Pictu
             e.printStackTrace();
         }
 
+        Log.d("CEK","rotationInDegree : "+rotationInDegree);
+
         String imgBase64 = imageRotateBase64(bitmapCrop, rotationInDegree);
 
         if (!imgBase64.isEmpty()) {
             showProgress(true);
             processCaptureIdentify(imgBase64);
         }
-        //byte[] bytePhoto = Base64.decode(imgBase64, Base64.NO_WRAP);
 
     }
 
@@ -385,13 +396,7 @@ public class DipsCapture extends AppCompatActivity implements CameraSource.Pictu
         else if (exifOrientation == ExifInterface.ORIENTATION_ROTATE_270) {  return 270; }
         else if (exifOrientation == ExifInterface.ORIENTATION_NORMAL) {  return 270; }
         else if (exifOrientation == ExifInterface.ORIENTATION_UNDEFINED && useFacing == CameraSource.CAMERA_FACING_BACK) {  return 90; }
-        else if (exifOrientation == ExifInterface.ORIENTATION_UNDEFINED && useFacing == CameraSource.CAMERA_FACING_FRONT) {
-            if (degreeFront == 90) {
-                return 270;
-            } else {
-                return 90;
-            }
-        }
+        else if (exifOrientation == ExifInterface.ORIENTATION_UNDEFINED && useFacing == CameraSource.CAMERA_FACING_FRONT) { return 0; }
         return 0;
     }
 
@@ -400,6 +405,7 @@ public class DipsCapture extends AppCompatActivity implements CameraSource.Pictu
         int h = bitmap.getHeight();
 
         Matrix matrix = new Matrix();
+        Log.d("CEK","useFacing : "+useFacing);
         if (useFacing == CameraSource.CAMERA_FACING_FRONT) {
             matrix.setRotate(rotationInDegree);
         } else {
