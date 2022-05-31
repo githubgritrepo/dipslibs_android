@@ -234,10 +234,10 @@ public class DipsWaitingRoom extends AppCompatActivity {
                 if (count == 4)
                     count = 0;
 
-                handler.postDelayed(this, 2 * 1000);
+                handler.postDelayed(this, 1000);
             }
         };
-        handler.postDelayed(runnable, 1 * 1000);
+        handler.postDelayed(runnable, 1000);
     }
 
     /*@Override
