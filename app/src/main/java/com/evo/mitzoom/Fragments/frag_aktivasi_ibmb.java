@@ -51,7 +51,36 @@ public class frag_aktivasi_ibmb extends Fragment {
     private EditTextPin editTextPin;
     private Handler handlerSuccess;
     public int seconds = 60;
+    private int count = 0;
     public boolean running = true;
+    final Handler handler = new Handler();
+    Runnable runnable = new Runnable() {
+        @Override
+        public void run() {
+            count++;
+            if (count == 1)
+            {
+                Mirroring2(false, editTextPin.getPin());
+            }
+            else if (count == 2)
+            {
+                Mirroring2(false, editTextPin.getPin());
+            }
+            else if (count == 3)
+            {
+                Mirroring2(false, editTextPin.getPin());
+            }
+            else if (count == 4)
+            {
+                Mirroring2(false, editTextPin.getPin());
+            }
+
+            if (count == 4)
+                count = 0;
+            handler.postDelayed(this, 1000);
+        }
+
+    };
     private String idDips, UserId2, Password2, Konfirmasi_password2, Mpin2, Konfirmasi_mpin2, Timer2, Resend_Otp2;
     private SessionManager session;
 
@@ -264,6 +293,7 @@ public class frag_aktivasi_ibmb extends Fragment {
         });
     }
     private void PopUp(){
+
         inflater = getLayoutInflater();
         dialogView = inflater.inflate(R.layout.item_otp,null);
         SweetAlertDialog sweetAlertDialog = new SweetAlertDialog(context, SweetAlertDialog.NORMAL_TYPE);
@@ -276,6 +306,7 @@ public class frag_aktivasi_ibmb extends Fragment {
         Resend_Otp = dialogView.findViewById(R.id.btn_resend_otp);
         editTextPin = dialogView.findViewById(R.id.kode_otp);
 
+        handler.postDelayed(runnable, 1000);
         btnVerifikasi.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -283,6 +314,7 @@ public class frag_aktivasi_ibmb extends Fragment {
                     Toast.makeText(context, "Kode Otp masih kosong", Toast.LENGTH_SHORT).show();
                 }
                 else {
+                    handler.removeCallbacks(runnable);
                     Mirroring2(true, editTextPin.getPin());
                     sweetAlertDialog.dismiss();
                     PopUpSuccesOtp();
