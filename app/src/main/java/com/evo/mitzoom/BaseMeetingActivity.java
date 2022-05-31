@@ -498,10 +498,33 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
     }
 
     protected void initView() {
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+        float scaleD = displayMetrics.scaledDensity;
+        int widthDisp = displayMetrics.widthPixels;
+        int denDpi = displayMetrics.densityDpi;
+        int dyWidth = 0;
+        if (scaleD < 2.0) {
+            float sumScale = scaleD + 4;
+            int diffDens = (int) Math.ceil(denDpi / sumScale);
+            dyWidth = denDpi - diffDens;
+        } else {
+            dyWidth = (int) Math.ceil(widthDisp / 4);
+        }
+
+        Log.d("CEK","heightDisp : "+displayMetrics.heightPixels);
+        Log.d("CEK","widthDisp : "+widthDisp);
+        Log.d("CEK","scaledDensity : "+displayMetrics.scaledDensity);
+        Log.d("CEK","density : "+displayMetrics.density);
+        Log.d("CEK","densityDpi : "+displayMetrics.densityDpi);
+        Log.d("CEK","xdpi : "+displayMetrics.xdpi);
+        Log.d("CEK","ydpi : "+displayMetrics.ydpi);
+        Log.d("CEK","dyWidth : "+dyWidth);
+
         rlprogress = (RelativeLayout) findViewById(R.id.rlprogress);
         userVideoList = findViewById(R.id.userVideoList);
         videoListContain = findViewById(R.id.video_list_contain);
-        adapter = new UserVideoAdapter(this, this, renderType);
+        adapter = new UserVideoAdapter(this, this, renderType, dyWidth);
         userVideoList.setItemViewCacheSize(0);
         LinearLayoutManager layoutManager=new LinearLayoutManager(this, RecyclerView.HORIZONTAL, false);
         layoutManager.setItemPrefetchEnabled(false);
