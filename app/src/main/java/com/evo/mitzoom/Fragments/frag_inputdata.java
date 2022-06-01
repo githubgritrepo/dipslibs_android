@@ -224,6 +224,32 @@ public class frag_inputdata extends Fragment {
             }
         });
     }
+    private void Mirroring3(boolean bool){
+        JSONObject jsons = new JSONObject();
+        JSONArray jsonArray = new JSONArray();
+        try {
+            jsonArray.put(bool);
+            jsons.put("idDips",idDips);
+            jsons.put("code",2);
+            jsons.put("data",jsonArray);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), jsons.toString());
+        ApiService API = Server.getAPIService();
+        Call<JsonObject> call = API.Mirroring(requestBody);
+        call.enqueue(new Callback<JsonObject>() {
+            @Override
+            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                Log.d("MIRROR","Mirroring Sukses");
+            }
+
+            @Override
+            public void onFailure(Call<JsonObject> call, Throwable t) {
+                Log.d("MIRROR","Mirroring Gagal");
+            }
+        });
+    }
     private void CekData(){
         String idDips = session.getKEY_IdDips();
         JSONObject jsons = new JSONObject();
@@ -367,6 +393,7 @@ public class frag_inputdata extends Fragment {
             public void onClick(View v) {
                 if (checkBox.isChecked()){
                     Mirroring2(true);
+                    Mirroring3(true);
                     sweetAlertDialog.dismiss();
                     getFragmentPage(new frag_opening_account());
                 }
