@@ -194,7 +194,6 @@ public class FormRtgs extends Fragment {
 
     private void savedPreRTGS() {
         try {
-            Log.d("CEK","dataRTGS : "+dataRTGS);
             JSONArray jsArr = new JSONArray(dataRTGS);
             int len = jsArr.length();
             for (int i = 0; i < len; i++) {

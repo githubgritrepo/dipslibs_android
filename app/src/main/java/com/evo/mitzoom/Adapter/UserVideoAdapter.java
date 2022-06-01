@@ -2,9 +2,11 @@ package com.evo.mitzoom.Adapter;
 
 import android.content.Context;
 import android.os.Handler;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -41,6 +43,7 @@ public class UserVideoAdapter extends RecyclerView.Adapter<UserVideoAdapter.Base
     private Context context;
 
     private int renderType;
+    private int dyWidth;
 
     private ZoomVideoSDKUser selectedVideoUser;
 
@@ -87,10 +90,11 @@ public class UserVideoAdapter extends RecyclerView.Adapter<UserVideoAdapter.Base
         }
     };
 
-    public UserVideoAdapter(Context context, ItemTapListener listener, int renderType) {
+    public UserVideoAdapter(Context context, ItemTapListener listener, int renderType, int dyWidth) {
         this.context = context;
         tapListener = listener;
         this.renderType = renderType;
+        this.dyWidth = dyWidth;
         handler.postDelayed(emojiTimerRunnable, 1000);
     }
 
@@ -252,6 +256,9 @@ public class UserVideoAdapter extends RecyclerView.Adapter<UserVideoAdapter.Base
             if (!user.getVideoStatus().isOn()) {
                 viewHolder.video_off_contain.setVisibility(View.VISIBLE);
                 viewHolder.video_off_tips.setImageResource(R.drawable.zm_conf_no_avatar);
+                /*ViewGroup.LayoutParams lp = viewHolder.video_off_tips.getLayoutParams();
+                lp.width = dyWidth;
+                viewHolder.video_off_tips.setLayoutParams(lp);*/
                 resultsStartVideo = false;
             } else {
                 resultsStartVideo = true;
