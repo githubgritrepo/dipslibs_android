@@ -5,6 +5,7 @@ import static com.evo.mitzoom.ui.DipsSplashScreen.setLocale;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
+import androidx.cardview.widget.CardView;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
@@ -27,6 +28,7 @@ import android.hardware.camera2.CameraManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -34,6 +36,7 @@ import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
@@ -136,6 +139,7 @@ public class DipsWaitingRoom extends AppCompatActivity {
     private TextView myTicket, lastTicket;
     private SweetAlertDialog dialogWaiting;
     private SweetAlertDialog dialogSuccess;
+    private DisplayMetrics displayMetrics;
 
     private Socket mSocket;
     {
@@ -166,6 +170,11 @@ public class DipsWaitingRoom extends AppCompatActivity {
         setLocale(this,lang);
         setContentView(R.layout.activity_dips_waiting_room);
 
+        displayMetrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+        int widthDisp = displayMetrics.widthPixels;
+        int dyWidth = (int) Math.ceil(widthDisp / 2);
+
         isCust = getIntent().getExtras().getBoolean("ISCUSTOMER");
         custName = getIntent().getExtras().getString("CUSTNAME");
         idDips = getIntent().getExtras().getString("idDips");
@@ -175,6 +184,7 @@ public class DipsWaitingRoom extends AppCompatActivity {
         lastTicket = findViewById(R.id.last_ticket2);
         processGetTicket(myTicket);
         AnimationCall = findViewById(R.id.AnimationCall);
+        CardView cardSurf = (CardView) findViewById(R.id.cardSurf);
 
         Log.d("CEK", "idDips : "+idDips);
 
@@ -188,6 +198,10 @@ public class DipsWaitingRoom extends AppCompatActivity {
 
         Intent intent = getIntent();
         useFacing = intent.getIntExtra(KEY_USE_FACING, Camera.CameraInfo.CAMERA_FACING_FRONT);
+
+        ViewGroup.LayoutParams lp = cardSurf.getLayoutParams();
+        lp.width = dyWidth;
+        cardSurf.setLayoutParams(lp);
 
     }
     @Override

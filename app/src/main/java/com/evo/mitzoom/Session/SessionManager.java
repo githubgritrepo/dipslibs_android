@@ -26,6 +26,7 @@ public class SessionManager {
     public static final String KEY_NPWP = "NPWP";
     public static final String KEY_TTD = "TTD";
     public static final String KEY_CHAT = "CHAT";
+    public static final String KEY_FLAG_UPDOC = "FLAG_UPLOADDOC";
 
     // Constructor
     public SessionManager(Context context){
@@ -65,6 +66,10 @@ public class SessionManager {
         editor.putString(KEY_TTD,data);
         editor.commit();
     }
+    public void saveFlagUpDoc(boolean data){
+        editor.putBoolean(KEY_FLAG_UPDOC,data);
+        editor.commit();
+    }
     public void clearData(){
         editor.clear();
         editor.commit();
@@ -90,6 +95,9 @@ public class SessionManager {
     }
     public String getKEY_CHAT (){
         return pref.getString(KEY_CHAT,null);
+    }
+    public boolean getFlagUpDoc (){
+        return pref.getBoolean(KEY_FLAG_UPDOC,false);
     }
 
 }

@@ -49,8 +49,6 @@ public class UserVideoAdapter extends RecyclerView.Adapter<UserVideoAdapter.Base
 
     private List<ZoomVideoSDKUser> activeAudioList;
 
-    private boolean resultsStartVideo = false;
-
     @NonNull
     private List<CmdReactionRequest> emojiActiveList = new ArrayList<>();
 
@@ -231,13 +229,8 @@ public class UserVideoAdapter extends RecyclerView.Adapter<UserVideoAdapter.Base
         }
     }
 
-    public boolean isNotStartVideo() {
-        return resultsStartVideo;
-    }
-
     @Override
     public void onBindViewHolder(@NonNull BaseHolder holder, int position, @NonNull List<Object> payloads) {
-
         ZoomVideoSDKUser user = userList.get(position);
         VideoHolder viewHolder = (VideoHolder) holder;
 
@@ -256,13 +249,11 @@ public class UserVideoAdapter extends RecyclerView.Adapter<UserVideoAdapter.Base
             if (!user.getVideoStatus().isOn()) {
                 viewHolder.video_off_contain.setVisibility(View.VISIBLE);
                 viewHolder.video_off_tips.setImageResource(R.drawable.zm_conf_no_avatar);
-                /*ViewGroup.LayoutParams lp = viewHolder.video_off_tips.getLayoutParams();
-                lp.width = dyWidth;
-                viewHolder.video_off_tips.setLayoutParams(lp);*/
-                resultsStartVideo = false;
             } else {
-                resultsStartVideo = true;
                 viewHolder.video_off_contain.setVisibility(View.INVISIBLE);
+                ViewGroup.LayoutParams lp = viewHolder.video_off_tips.getLayoutParams();
+                lp.width = dyWidth;
+                viewHolder.video_off_tips.setLayoutParams(lp);
             }
             viewHolder.userNameText.setText(user.getUserName());
         }

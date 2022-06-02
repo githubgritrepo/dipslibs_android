@@ -171,46 +171,7 @@ public class frag_opening_account3 extends Fragment {
                 viewImage.setVisibility(View.VISIBLE);
                 chooseImage.setVisibility(View.GONE);
                 getResizedBitmap(bitmap, (bitmap.getWidth()/2), (bitmap.getHeight()/2));
-                /*File f = new File(Environment.getExternalStorageDirectory().toString());
-                for (File temp : f.listFiles()){
-                    if (temp.getName().equals("temp.png")){
-                        f = temp;
-                        break;
-                    }
-                }
-                try {
-                    Bitmap bitmap;
-                    BitmapFactory.Options bitmapOptions = new BitmapFactory.Options();
-                    bitmap = BitmapFactory.decodeFile(f.getAbsolutePath(),
-                            bitmapOptions);
-                    btnNext.setBackgroundTintList(context.getResources().getColorStateList(R.color.bg_cif));
-                    btnNext.setClickable(true);
-                    delete.setVisibility(View.VISIBLE);
-                    viewImage.setVisibility(View.VISIBLE);
-                    chooseImage.setVisibility(View.GONE);
-                    getResizedBitmap(bitmap , (bitmap.getWidth()/2), (bitmap.getHeight()/2));
-                    String path = Environment
-                            .getExternalStorageDirectory()
-                            + File.separator
-                            + "Phoenix" + File.separator + "default";
-                    f.delete();
-                    OutputStream outFile = null;
-                    File file = new File(path, String.valueOf(System.currentTimeMillis()) + ".png");
-                    try {
-                        outFile = new FileOutputStream(file);
-                        bitmap.compress(Bitmap.CompressFormat.PNG,85,outFile);
-                        outFile.flush();
-                        outFile.close();
-                    }
-                    catch (FileNotFoundException e){
-                        e.printStackTrace();
-                    }
-                    catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }*/
+                session.saveFlagUpDoc(true);
             }
             else if (requestCode == 2){
                 Uri selectedImage = data.getData();

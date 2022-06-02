@@ -245,19 +245,7 @@ public class frag_opening_account extends Fragment {
                 viewImage.setVisibility(View.VISIBLE);
                 chooseImage.setVisibility(View.GONE);
                 getResizedBitmap(bitmap, (bitmap.getWidth()/2), (bitmap.getHeight()/2));
-                /*String URL_IMAGE = photo.getAbsolutePath();
-                try {
-                    Bitmap bitmap;
-                    bitmap = BitmapFactory.decodeFile(URL_IMAGE);
-                    getResizedBitmap(bitmap , (bitmap.getWidth()/2), (bitmap.getHeight()/2));
-                    btnNext.setBackgroundTintList(context.getResources().getColorStateList(R.color.bg_cif));
-                    btnNext.setClickable(true);
-                    delete.setVisibility(View.VISIBLE);
-                    viewImage.setVisibility(View.VISIBLE);
-                    chooseImage.setVisibility(View.GONE);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }*/
+                session.saveFlagUpDoc(true);
             }
             else if (requestCode == 2){
                 Uri selectedImage = data.getData();

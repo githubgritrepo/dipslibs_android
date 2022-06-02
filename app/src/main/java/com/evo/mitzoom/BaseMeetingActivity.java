@@ -220,16 +220,12 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
     protected void onResume() {
         super.onResume();
 
-        //hideStatusBar();
-
         if (isActivityPaused) {
             resumeSubscribe();
         }
         isActivityPaused = false;
         refreshRotation();
         updateActionBarLayoutParams();
-        startVideoHandler();
-        //updateChatLayoutParams();
 
         if (wasRunning) {
             running = true;
@@ -257,23 +253,24 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
     }
 
     private void startVideoHandler() {
-        Handler handler = new Handler();
-        handler.post(new Runnable() {
-            @Override
-            public void run() {
-                boolean isNotStartVideo = adapter.isNotStartVideo();
 
-                if (isOn == 1 && isNotStartVideo == false) {
-                    ZoomVideoSDK.getInstance().getVideoHelper().stopVideo();
-                    isOn = 0;
-                } else if ((isOn == 2 && isNotStartVideo == true) || (isOn == 2 && isNotStartVideo == false)) {
-                    ZoomVideoSDK.getInstance().getVideoHelper().startVideo();
-                    isOn = 0;
+        if (isOn == 1) {
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        Thread.sleep(1000);
+                        ZoomVideoSDK.getInstance().getVideoHelper().stopVideo();
+                        Thread.sleep(1500);
+                        ZoomVideoSDK.getInstance().getVideoHelper().startVideo();
+                        sessions.saveFlagUpDoc(false);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
                 }
+            }).start();
+        }
 
-                handler.postDelayed(this,1000);
-            }
-        });
     }
 
     @Override
@@ -283,14 +280,11 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
         running = false;
         isActivityPaused = true;
         unSubscribe();
-        //adapter.clear(false);
-        Log.d(TAG, "onPause");
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        Log.d(TAG, "onStop");
     }
 
     @Override
@@ -389,12 +383,10 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
 
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
-        Log.d(TAG,"onConfigurationChanged");
         super.onConfigurationChanged(newConfig);
         //updateFpsOrientation();
         refreshRotation();
         updateActionBarLayoutParams();
-        //updateChatLayoutParams();
         updateSmallVideoLayoutParams();
     }
 
@@ -478,7 +470,6 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
 
     protected void refreshRotation() {
         int displayRotation = display.getRotation();
-        Log.d(TAG, "rotateVideo:" + displayRotation);
         ZoomVideoSDK.getInstance().getVideoHelper().rotateMyVideo(displayRotation);
     }
 
@@ -498,28 +489,9 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
     }
 
     protected void initView() {
-        DisplayMetrics displayMetrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
-        float scaleD = displayMetrics.scaledDensity;
         int widthDisp = displayMetrics.widthPixels;
-        int denDpi = displayMetrics.densityDpi;
-        int dyWidth = 0;
-        if (scaleD < 2.0) {
-            float sumScale = scaleD + 4;
-            int diffDens = (int) Math.ceil(denDpi / sumScale);
-            dyWidth = denDpi - diffDens;
-        } else {
-            dyWidth = (int) Math.ceil(widthDisp / 4);
-        }
-
-        Log.d("CEK","heightDisp : "+displayMetrics.heightPixels);
-        Log.d("CEK","widthDisp : "+widthDisp);
-        Log.d("CEK","scaledDensity : "+displayMetrics.scaledDensity);
-        Log.d("CEK","density : "+displayMetrics.density);
-        Log.d("CEK","densityDpi : "+displayMetrics.densityDpi);
-        Log.d("CEK","xdpi : "+displayMetrics.xdpi);
-        Log.d("CEK","ydpi : "+displayMetrics.ydpi);
-        Log.d("CEK","dyWidth : "+dyWidth);
+        int dyWidth = (int) Math.ceil(widthDisp / 2);
 
         rlprogress = (RelativeLayout) findViewById(R.id.rlprogress);
         userVideoList = findViewById(R.id.userVideoList);
@@ -887,7 +859,6 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
 
     @Override
     public void onUserJoin(ZoomVideoSDKUserHelper zoomVideoSDKUserHelper, List<ZoomVideoSDKUser> userList) {
-        Log.d(TAG, "onUserJoin " + userList.size());
         updateVideoListLayout();
         if (!isActivityPaused) {
             adapter.onUserJoin(userList);
@@ -899,7 +870,6 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
     @Override
     public void onUserLeave(ZoomVideoSDKUserHelper zoomVideoSDKUserHelper, List<ZoomVideoSDKUser> userList) {
         updateVideoListLayout();
-        Log.d(TAG, "onUserLeave " + userList.size());
         adapter.onUserLeave(userList);
         if (adapter.getItemCount() == 0) {
             videoListContain.setVisibility(View.INVISIBLE);
@@ -909,7 +879,7 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
 
     @Override
     public void onUserVideoStatusChanged(ZoomVideoSDKVideoHelper zoomVideoSDKVideoHelper, List<ZoomVideoSDKUser> userList) {
-        Log.d(TAG, "onUserVideoStatusChanged ");
+        Log.d(TAG, "onUserVideoStatusChanged");
         if (null == iconVideo) {
             return;
         }
@@ -926,6 +896,11 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
             //iconVideo.setImageResource(zoomSDKUserInfo.getVideoStatus().isOn() ? R.drawable.icon_video_off : R.drawable.icon_video_on);
             if (userList.contains(zoomSDKUserInfo)) {
                 //checkMoreAction();
+            }
+
+            boolean flagDoc = sessions.getFlagUpDoc();
+            if (flagDoc) {
+                startVideoHandler();
             }
         }
         adapter.onUserVideoStatusChanged(userList);
