@@ -317,6 +317,8 @@ public class frag_form_opening extends Fragment {
             public void onCheckedChanged(RadioGroup group, int checkedId) {
                 selectedId = group.getCheckedRadioButtonId();
                 radioButton = view.findViewById(selectedId);
+                NoHp2 = NoHp.getText().toString();
+                Email2 = Email.getText().toString();
                 Log.d("RADIO", "Text : "+radioButton.getText());
                 if (pernyataan.isChecked()){
                     Log.d("CEK","MASUK IF onCheckedChanged");
@@ -343,6 +345,8 @@ public class frag_form_opening extends Fragment {
         pernyataan.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                NoHp2 = NoHp.getText().toString();
+                Email2 = Email.getText().toString();
                 int selectedId = radioGroup.getCheckedRadioButtonId();
                 if (pernyataan.isChecked()){
                     Log.d("CEK","MASUK IF onClick pernyataan");
@@ -414,9 +418,6 @@ public class frag_form_opening extends Fragment {
             }
         });
     }
-
-
-
 
     private void Mirroring(Boolean bool, CharSequence nama, CharSequence nik, CharSequence email, CharSequence hp, CharSequence alamat, CharSequence agama, CharSequence status, CharSequence produk, boolean pernyataan){
         JSONObject jsons = new JSONObject();
