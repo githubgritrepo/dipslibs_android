@@ -148,6 +148,7 @@
                         app:passwordToggleEnabled="true">
 
                         <EditText
+                            android:maxLength="6"
                             android:id="@+id/et_mpin"
                             android:layout_width="match_parent"
                             android:layout_height="35dp"
@@ -177,6 +178,7 @@
                         app:passwordToggleEnabled="true">
 
                         <EditText
+                            android:maxLength="6"
                             android:id="@+id/et_konfirmasi_mpin"
                             android:layout_width="match_parent"
                             android:layout_height="35dp"

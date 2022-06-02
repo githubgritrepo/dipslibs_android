@@ -126,6 +126,36 @@ public class frag_aktivasi_ibmb extends Fragment {
                     }
                 }
         });
+        Password.setFilters(new InputFilter[]{
+                new InputFilter() {
+                    @Override
+                    public CharSequence filter(CharSequence cs, int start, int end, Spanned dest, int dstart, int dend) {
+                        // TODO Auto-generated method stub
+                        if(cs.equals("")){ // for backspace
+                            return cs;
+                        }
+                        if(cs.toString().matches("[a-zA-Z0-9]+")){ // here no space character
+                            return cs;
+                        }
+                        return "";
+                    }
+                }
+        });
+        Konfirmasi_password.setFilters(new InputFilter[]{
+                new InputFilter() {
+                    @Override
+                    public CharSequence filter(CharSequence cs, int start, int end, Spanned dest, int dstart, int dend) {
+                        // TODO Auto-generated method stub
+                        if(cs.equals("")){ // for backspace
+                            return cs;
+                        }
+                        if(cs.toString().matches("[a-zA-Z0-9]+")){ // here no space character
+                            return cs;
+                        }
+                        return "";
+                    }
+                }
+        });
 
         ///TextWatcher
         UserId.addTextChangedListener(new TextWatcher() {
