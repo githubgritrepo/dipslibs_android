@@ -314,6 +314,9 @@ public class frag_aktivasi_ibmb extends Fragment {
                 else if (Konfirmasi_mpin2.isEmpty()){
                     Konfirmasi_mpin.setError(getResources().getString(R.string.error_field));
                 }
+                else if (Password2.length() < 8){
+                    Toast.makeText(context, getResources().getString(R.string.min_password), Toast.LENGTH_SHORT).show();
+                }
                 else
                 {
                     Mirroring(true,UserId2,Password2,Konfirmasi_password2,Mpin2,Konfirmasi_mpin2);

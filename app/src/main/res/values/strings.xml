@@ -201,4 +201,6 @@
     <string name="label_third">Ketiga</string>
     <string name="label_fourth">Keempat</string>
     <string name="label_fifth">Kelima</string>
+    <string name="min_password">Password minimal 8 karakter</string>
+    <string name="max_mpin">MPIN maksimal 6 digit</string>
 </resources>
