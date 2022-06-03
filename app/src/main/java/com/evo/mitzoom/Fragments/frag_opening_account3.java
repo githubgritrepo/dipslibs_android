@@ -162,6 +162,7 @@ public class frag_opening_account3 extends Fragment {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == RESULT_OK) {
             if (requestCode == 1){
+                session.saveFlagUpDoc(true);
                 byte[] resultCamera = data.getByteArrayExtra("result_camera");
                 Bitmap bitmap = BitmapFactory.decodeByteArray(resultCamera, 0, resultCamera.length);
                 LL.setBackgroundResource(0);
@@ -171,7 +172,6 @@ public class frag_opening_account3 extends Fragment {
                 viewImage.setVisibility(View.VISIBLE);
                 chooseImage.setVisibility(View.GONE);
                 getResizedBitmap(bitmap, (bitmap.getWidth()/2), (bitmap.getHeight()/2));
-                session.saveFlagUpDoc(true);
             }
             else if (requestCode == 2){
                 Uri selectedImage = data.getData();

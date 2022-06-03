@@ -73,15 +73,18 @@ import us.zoom.sdk.ZoomVideoSDKDelegate;
 import us.zoom.sdk.ZoomVideoSDKErrors;
 import us.zoom.sdk.ZoomVideoSDKLiveStreamHelper;
 import us.zoom.sdk.ZoomVideoSDKLiveStreamStatus;
+import us.zoom.sdk.ZoomVideoSDKMultiCameraStreamStatus;
 import us.zoom.sdk.ZoomVideoSDKPasswordHandler;
 import us.zoom.sdk.ZoomVideoSDKPhoneFailedReason;
 import us.zoom.sdk.ZoomVideoSDKPhoneStatus;
+import us.zoom.sdk.ZoomVideoSDKRawDataPipe;
 import us.zoom.sdk.ZoomVideoSDKRecordingStatus;
 import us.zoom.sdk.ZoomVideoSDKSession;
 import us.zoom.sdk.ZoomVideoSDKShareHelper;
 import us.zoom.sdk.ZoomVideoSDKShareStatus;
 import us.zoom.sdk.ZoomVideoSDKUser;
 import us.zoom.sdk.ZoomVideoSDKUserHelper;
+import us.zoom.sdk.ZoomVideoSDKVideoCanvas;
 import us.zoom.sdk.ZoomVideoSDKVideoHelper;
 
 public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoSDKDelegate, UserVideoAdapter.ItemTapListener, ShareToolbar.Listener {
@@ -227,6 +230,15 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
         refreshRotation();
         updateActionBarLayoutParams();
 
+        if (ZoomVideoSDK.getInstance().isInSession()) {
+            int size = UserHelper.getAllUsers().size();
+            if (size > 0 && adapter.getItemCount() == 0) {
+                adapter.addAll();
+                updateVideoListLayout();
+                refreshUserListAdapter();
+            }
+        }
+
         if (wasRunning) {
             running = true;
         }
@@ -253,17 +265,21 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
     }
 
     private void startVideoHandler() {
-
+        Log.d("CEK","MASUK startVideoHandler");
         if (isOn == 1) {
             new Thread(new Runnable() {
                 @Override
                 public void run() {
                     try {
-                        Thread.sleep(1000);
-                        ZoomVideoSDK.getInstance().getVideoHelper().stopVideo();
-                        Thread.sleep(1500);
-                        ZoomVideoSDK.getInstance().getVideoHelper().startVideo();
                         sessions.saveFlagUpDoc(false);
+                        Thread.sleep(1000);
+                        Log.d("CEK","ON OFF VIDEO is OFF");
+                        onOffVideo();
+                        onClickMoreSwitchCamera();
+                        Thread.sleep(1000);
+                        Log.d("CEK","ON OFF VIDEO is ON");
+                        onOffVideo();
+                        onClickMoreSwitchCamera();
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
@@ -280,6 +296,7 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
         running = false;
         isActivityPaused = true;
         unSubscribe();
+        adapter.clear(false);
     }
 
     @Override
@@ -583,6 +600,27 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
             ZoomVideoSDK.getInstance().getVideoHelper().stopVideo();
         } else {
             ZoomVideoSDK.getInstance().getVideoHelper().startVideo();
+        }
+    }
+
+    private void onOffVideo() {
+        ZoomVideoSDKUser zoomSDKUserInfo = session.getMySelf();
+        if (null == zoomSDKUserInfo)
+            return;
+        if (zoomSDKUserInfo.getVideoStatus().isOn()) {
+            ZoomVideoSDK.getInstance().getVideoHelper().stopVideo();
+        } else {
+            ZoomVideoSDK.getInstance().getVideoHelper().startVideo();
+        }
+    }
+
+    public void onClickMoreSwitchCamera() {
+        ZoomVideoSDKUser zoomSDKUserInfo = session.getMySelf();
+        if (null == zoomSDKUserInfo)
+            return;
+        if (zoomSDKUserInfo.getVideoStatus().isHasVideoDevice() && zoomSDKUserInfo.getVideoStatus().isOn()) {
+            ZoomVideoSDK.getInstance().getVideoHelper().switchCamera();
+            refreshRotation();
         }
     }
 
@@ -1010,6 +1048,16 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
     @Override
     public void onInviteByPhoneStatus(ZoomVideoSDKPhoneStatus zoomVideoSDKPhoneStatus, ZoomVideoSDKPhoneFailedReason zoomVideoSDKPhoneFailedReason) {
         Log.d(TAG, "onInviteByPhoneStatus ");
+    }
+
+    @Override
+    public void onMultiCameraStreamStatusChanged(ZoomVideoSDKMultiCameraStreamStatus status, ZoomVideoSDKUser user, ZoomVideoSDKRawDataPipe videoPipe) {
+
+    }
+
+    @Override
+    public void onMultiCameraStreamStatusChanged(ZoomVideoSDKMultiCameraStreamStatus status, ZoomVideoSDKUser user, ZoomVideoSDKVideoCanvas canvas) {
+
     }
 
     @Override

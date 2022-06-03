@@ -19,14 +19,17 @@ import us.zoom.sdk.ZoomVideoSDKChatMessage;
 import us.zoom.sdk.ZoomVideoSDKDelegate;
 import us.zoom.sdk.ZoomVideoSDKLiveStreamHelper;
 import us.zoom.sdk.ZoomVideoSDKLiveStreamStatus;
+import us.zoom.sdk.ZoomVideoSDKMultiCameraStreamStatus;
 import us.zoom.sdk.ZoomVideoSDKPasswordHandler;
 import us.zoom.sdk.ZoomVideoSDKPhoneFailedReason;
 import us.zoom.sdk.ZoomVideoSDKPhoneStatus;
+import us.zoom.sdk.ZoomVideoSDKRawDataPipe;
 import us.zoom.sdk.ZoomVideoSDKRecordingStatus;
 import us.zoom.sdk.ZoomVideoSDKShareHelper;
 import us.zoom.sdk.ZoomVideoSDKShareStatus;
 import us.zoom.sdk.ZoomVideoSDKUser;
 import us.zoom.sdk.ZoomVideoSDKUserHelper;
+import us.zoom.sdk.ZoomVideoSDKVideoCanvas;
 import us.zoom.sdk.ZoomVideoSDKVideoHelper;
 
 public class AudioRawDataUtil {
@@ -188,6 +191,16 @@ public class AudioRawDataUtil {
 
         @Override
         public void onInviteByPhoneStatus(ZoomVideoSDKPhoneStatus status, ZoomVideoSDKPhoneFailedReason reason) {
+        }
+
+        @Override
+        public void onMultiCameraStreamStatusChanged(ZoomVideoSDKMultiCameraStreamStatus status, ZoomVideoSDKUser user, ZoomVideoSDKRawDataPipe videoPipe) {
+
+        }
+
+        @Override
+        public void onMultiCameraStreamStatusChanged(ZoomVideoSDKMultiCameraStreamStatus status, ZoomVideoSDKUser user, ZoomVideoSDKVideoCanvas canvas) {
+
         }
     };
 

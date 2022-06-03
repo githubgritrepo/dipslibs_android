@@ -198,7 +198,7 @@ public class DipsVideoConfren extends BaseMeetingActivity {
 
         if (null != mActiveUser) {
             if (renderType == RENDER_TYPE_ZOOMRENDERER) {
-//                mActiveUser.getVideoCanvas().unSubscribe(zoomCanvas);
+                mActiveUser.getVideoCanvas().unSubscribe(zoomCanvas);
 //                mActiveUser.getShareCanvas().unSubscribe(zoomCanvas);
             } else {
                 mActiveUser.getVideoPipe().unSubscribe(rawDataRenderer);
@@ -215,7 +215,7 @@ public class DipsVideoConfren extends BaseMeetingActivity {
             if (null != currentShareUser) {
 //                currentShareUser.getShareCanvas().unSubscribe(zoomCanvas);
             }
-//            user.getVideoCanvas().unSubscribe(zoomCanvas);
+            user.getVideoCanvas().unSubscribe(zoomCanvas);
 //            int ret=user.getVideoCanvas().subscribe(zoomCanvas, aspect);
 //            if(ret!= ZoomVideoSDKErrors.Errors_Success)
 //

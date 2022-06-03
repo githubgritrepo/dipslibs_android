@@ -202,19 +202,6 @@ public class frag_opening_account extends Fragment {
     private void chooseFromCamera() {
         Intent intent = new Intent(context, DipsCameraActivity.class);
         startActivityForResult(intent, 1);
-        /*Intent intent = new Intent("android.media.action.IMAGE_CAPTURE");
-        try {
-            photo = createTemporaryFile("temp", ".jpg");
-            photo.delete();
-        } catch (Exception e) {
-            e.printStackTrace();
-            Toast.makeText(getActivity(), "Please check SD Card! Image shot is impossible!", Toast.LENGTH_LONG).show();
-        }
-        Uri uriImage = FileProvider.getUriForFile(context,context.getApplicationContext().getPackageName()+".provider",photo);
-        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-        intent.putExtra(MediaStore.EXTRA_OUTPUT, uriImage);
-
-        startActivityForResult(intent, 1);*/
     }
     private File createTemporaryFile(String part, String ext) throws Exception {
         String IMAGE_DIRECTORY_NAME = getString(R.string.app_name_dips);
@@ -236,6 +223,7 @@ public class frag_opening_account extends Fragment {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == RESULT_OK) {
             if (requestCode == 1){
+                session.saveFlagUpDoc(true);
                 byte[] resultCamera = data.getByteArrayExtra("result_camera");
                 Bitmap bitmap = BitmapFactory.decodeByteArray(resultCamera, 0, resultCamera.length);
                 LL.setBackgroundResource(0);
@@ -245,7 +233,6 @@ public class frag_opening_account extends Fragment {
                 viewImage.setVisibility(View.VISIBLE);
                 chooseImage.setVisibility(View.GONE);
                 getResizedBitmap(bitmap, (bitmap.getWidth()/2), (bitmap.getHeight()/2));
-                session.saveFlagUpDoc(true);
             }
             else if (requestCode == 2){
                 Uri selectedImage = data.getData();
