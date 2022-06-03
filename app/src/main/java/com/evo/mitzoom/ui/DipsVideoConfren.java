@@ -1,16 +1,10 @@
 package com.evo.mitzoom.ui;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
-import android.util.Log;
 import android.view.View;
-import android.view.WindowManager;
-import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -26,10 +20,8 @@ import com.evo.mitzoom.cmd.CmdHelper;
 import com.evo.mitzoom.cmd.CmdRequest;
 import com.evo.mitzoom.rawdata.RawDataRenderer;
 import com.evo.mitzoom.util.AudioRawDataUtil;
-import com.evo.mitzoom.util.SharePreferenceUtil;
 
 import java.util.List;
-import java.util.Locale;
 
 import us.zoom.sdk.ZoomVideoSDK;
 import us.zoom.sdk.ZoomVideoSDKErrors;

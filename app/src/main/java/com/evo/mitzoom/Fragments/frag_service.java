@@ -13,7 +13,6 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.evo.mitzoom.Adapter.ItemBankAdapter;
 import com.evo.mitzoom.Adapter.ItemServiceAdapter;
 import com.evo.mitzoom.Model.ItemModel;
 import com.evo.mitzoom.R;

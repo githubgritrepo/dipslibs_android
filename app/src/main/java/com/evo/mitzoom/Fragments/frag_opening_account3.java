@@ -1,6 +1,7 @@
 package com.evo.mitzoom.Fragments;
 
 import static android.app.Activity.RESULT_OK;
+
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
@@ -36,11 +37,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
 
 import okhttp3.MediaType;
 import okhttp3.RequestBody;

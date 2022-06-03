@@ -1,7 +1,6 @@
 package com.evo.mitzoom.Fragments;
 
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,11 +15,6 @@ import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.Fragment;
 
 import com.evo.mitzoom.R;
-import com.evo.mitzoom.ui.DipsWaitingRoom;
-import com.google.android.material.button.MaterialButton;
-import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
-
-import cn.pedant.SweetAlert.SweetAlertDialog;
 
 public class frag_tabungan extends Fragment {
     private Context context;

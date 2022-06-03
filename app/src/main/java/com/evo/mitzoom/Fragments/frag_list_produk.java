@@ -14,7 +14,6 @@ import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.Fragment;
 
 import com.evo.mitzoom.R;
-import com.evo.mitzoom.ui.DipsWaitingRoom;
 
 public class frag_list_produk extends Fragment {
     private Context context;
