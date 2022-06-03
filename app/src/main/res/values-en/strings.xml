@@ -202,4 +202,6 @@
     <string name="label_third">Third</string>
     <string name="label_fourth">Fourth</string>
     <string name="label_fifth">Fifth</string>
+    <string name="min_password">Minimum password 8 characters</string>
+    <string name="max_mpin">Maximum MPIN 6 digit</string>
 </resources>

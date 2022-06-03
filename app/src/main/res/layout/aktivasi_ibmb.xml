@@ -33,7 +33,7 @@
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="20dp"
+                android:layout_margin="15dp"
                 app:cardCornerRadius="10dp"
                 app:cardElevation="0dp">
 
@@ -111,7 +111,6 @@
                         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginBottom="10dp"
                         app:boxCornerRadiusBottomEnd="10dp"
                         app:boxCornerRadiusBottomStart="10dp"
                         app:boxCornerRadiusTopEnd="10dp"
@@ -132,6 +131,15 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_marginBottom="10dp"
+                        android:text="@string/min_password"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+                        android:textColor="@color/Blue"
+                        android:textSize="12sp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
                         android:text="@string/mpin"
                         android:textAppearance="@style/TextAppearance.AppCompat.Body2"
                         android:textSize="16sp" />
@@ -140,7 +148,6 @@
                         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginBottom="10dp"
                         app:boxCornerRadiusBottomEnd="10dp"
                         app:boxCornerRadiusBottomStart="10dp"
                         app:boxCornerRadiusTopEnd="10dp"
@@ -148,16 +155,25 @@
                         app:passwordToggleEnabled="true">
 
                         <EditText
-                            android:maxLength="6"
                             android:id="@+id/et_mpin"
                             android:layout_width="match_parent"
                             android:layout_height="35dp"
                             android:background="@drawable/bg_textinput"
                             android:inputType="number"
+                            android:maxLength="6"
                             android:padding="9dp"
                             android:textSize="16sp"
                             tools:ignore="SpeakableTextPresentCheck" />
                     </com.google.android.material.textfield.TextInputLayout>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="10dp"
+                        android:text="@string/max_mpin"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+                        android:textColor="@color/Blue"
+                        android:textSize="12sp" />
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -170,7 +186,6 @@
                         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginBottom="10dp"
                         app:boxCornerRadiusBottomEnd="10dp"
                         app:boxCornerRadiusBottomStart="10dp"
                         app:boxCornerRadiusTopEnd="10dp"
@@ -178,24 +193,24 @@
                         app:passwordToggleEnabled="true">
 
                         <EditText
-                            android:maxLength="6"
                             android:id="@+id/et_konfirmasi_mpin"
                             android:layout_width="match_parent"
                             android:layout_height="35dp"
                             android:background="@drawable/bg_textinput"
                             android:inputType="number"
+                            android:maxLength="6"
                             android:padding="9dp"
                             android:textSize="16sp" />
                     </com.google.android.material.textfield.TextInputLayout>
 
                     <Button
-                        android:clickable="false"
                         android:id="@+id/btnProsesIbmb"
                         android:layout_width="match_parent"
                         android:layout_height="35dp"
                         android:layout_marginTop="10dp"
                         android:background="@drawable/oval_background_10dp"
                         android:backgroundTint="@color/btnFalse"
+                        android:clickable="false"
                         android:text="@string/process"
                         android:textColor="@color/white"
                         android:textStyle="bold" />
