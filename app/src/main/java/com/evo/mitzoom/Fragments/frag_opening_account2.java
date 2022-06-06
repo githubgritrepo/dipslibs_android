@@ -93,6 +93,7 @@ public class frag_opening_account2 extends Fragment {
         btnCamera.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                session.saveMedia(1);
                 chooseFromCamera();
             }
         });

@@ -280,6 +280,21 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
                     }
                 }
             }).start();
+        } else {
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        sessions.saveFlagUpDoc(false);
+                        sessions.saveMedia(0);
+                        Thread.sleep(1000);
+                        Log.d("CEK","ON OFF VIDEO is ON");
+                        onOffVideo();
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }).start();
         }
 
     }
@@ -287,6 +302,10 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
     @Override
     protected void onPause() {
         super.onPause();
+        int valMedia = sessions.getMedia();
+        if (valMedia == 1) {
+            ZoomVideoSDK.getInstance().getVideoHelper().stopVideo();
+        }
         wasRunning = running;
         running = false;
         isActivityPaused = true;
@@ -934,6 +953,11 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
             boolean flagDoc = sessions.getFlagUpDoc();
             if (flagDoc) {
                 startVideoHandler();
+            } else {
+                int valMedia = sessions.getMedia();
+                if (valMedia == 0 && isOn == 2) {
+                    onOffVideo();
+                }
             }
         }
         adapter.onUserVideoStatusChanged(userList);

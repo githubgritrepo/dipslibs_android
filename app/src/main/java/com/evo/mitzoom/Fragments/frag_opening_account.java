@@ -105,6 +105,7 @@ public class frag_opening_account extends Fragment {
                     Toast.makeText(context, "Permission denied",Toast.LENGTH_SHORT).show();
                     return;
                 }
+                session.saveMedia(1);
                 chooseFromCamera();
             }
         });

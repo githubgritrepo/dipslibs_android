@@ -37,6 +37,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import com.evo.mitzoom.R;
+import com.evo.mitzoom.Session.SessionManager;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -78,6 +79,7 @@ public class DipsCameraActivity extends AppCompatActivity {
     private double surfTop = 0;
     private double surfRight = 0;
     private double surfBottom = 0;
+    private SessionManager sessions;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -89,6 +91,8 @@ public class DipsCameraActivity extends AppCompatActivity {
         initialElements();
 
         mContext = this;
+
+        sessions = new SessionManager(mContext);
 
         transHolder = transPreview.getHolder();
         transHolder.setFormat(PixelFormat.TRANSPARENT);
@@ -254,6 +258,7 @@ public class DipsCameraActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         super.onBackPressed();
+        sessions.saveMedia(0);
     }
 
     public void hideStatusBar() {
