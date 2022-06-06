@@ -267,7 +267,7 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
                 public void run() {
                     try {
                         sessions.saveFlagUpDoc(false);
-                        Thread.sleep(1000);
+                        //Thread.sleep(1000);
                         Log.d("CEK","ON OFF VIDEO is OFF");
                         onOffVideo();
                         onClickMoreSwitchCamera();
@@ -281,20 +281,10 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
                 }
             }).start();
         } else {
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        sessions.saveFlagUpDoc(false);
-                        sessions.saveMedia(0);
-                        Thread.sleep(1000);
-                        Log.d("CEK","ON OFF VIDEO is ON");
-                        onOffVideo();
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }).start();
+            sessions.saveFlagUpDoc(false);
+            sessions.saveMedia(0);
+            Log.d("CEK","ON OFF VIDEO is ON");
+            onOffVideo();
         }
 
     }
