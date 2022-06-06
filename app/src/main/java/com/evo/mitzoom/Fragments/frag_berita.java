@@ -44,7 +44,7 @@ public class frag_berita extends Fragment {
     private RecyclerView rv_product;
     private ViewPager mPager;
     private GridProductAdapter gridAdapter;
-    private static final Integer[] img = {R.drawable.adsv1, R.drawable.adsv2, R.drawable.adsv3};
+    private static final Integer[]img = {R.drawable.adsv1, R.drawable.adsv2, R.drawable.adsv3};
     private ArrayList<Integer> imgArray = new ArrayList<Integer>();
     private CircleIndicator circleIndicator;
     private int currentPage;
