@@ -27,6 +27,7 @@ public class SessionManager {
     public static final String KEY_TTD = "TTD";
     public static final String KEY_CHAT = "CHAT";
     public static final String KEY_FLAG_UPDOC = "FLAG_UPLOADDOC";
+    public static final String KEY_MEDIA = "MEDIA";
 
     // Constructor
     public SessionManager(Context context){
@@ -70,6 +71,10 @@ public class SessionManager {
         editor.putBoolean(KEY_FLAG_UPDOC,data);
         editor.commit();
     }
+    public void saveMedia(int data){
+        editor.putInt(KEY_MEDIA,data);
+        editor.commit();
+    }
     public void clearData(){
         editor.clear();
         editor.commit();
@@ -98,6 +103,9 @@ public class SessionManager {
     }
     public boolean getFlagUpDoc (){
         return pref.getBoolean(KEY_FLAG_UPDOC,false);
+    }
+    public int getMedia (){
+        return pref.getInt(KEY_MEDIA,0);
     }
 
 }

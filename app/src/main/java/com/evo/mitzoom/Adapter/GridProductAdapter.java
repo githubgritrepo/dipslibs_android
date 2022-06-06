@@ -4,9 +4,7 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewParent;
 import android.widget.ImageView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -14,13 +12,10 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.evo.mitzoom.Fragments.FormRtgs;
-import com.evo.mitzoom.Fragments.frag_dialog_rtgs;
 import com.evo.mitzoom.R;
 import com.evo.mitzoom.Session.SessionManager;
 import com.github.javiersantos.materialstyleddialogs.MaterialStyledDialog;
-import com.google.android.material.dialog.MaterialDialogs;
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 public class GridProductAdapter extends RecyclerView.Adapter<GridProductAdapter.GriViewHolder> {
 

@@ -13,14 +13,12 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
 import com.dhairytripathi.library.EditTextPin;
 import com.evo.mitzoom.R;
 
 import java.util.Locale;
-import java.util.Objects;
 
 import cn.pedant.SweetAlert.SweetAlertDialog;
 

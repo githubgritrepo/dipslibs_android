@@ -1,7 +1,6 @@
 package com.evo.mitzoom.Fragments;
 
 import android.content.Context;
-import android.nfc.Tag;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -15,7 +14,6 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.evo.mitzoom.R;
-import com.evo.mitzoom.Session.SessionManager;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;

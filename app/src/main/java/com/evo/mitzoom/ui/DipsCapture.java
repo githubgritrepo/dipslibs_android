@@ -2,12 +2,6 @@ package com.evo.mitzoom.ui;
 
 import static com.evo.mitzoom.ui.DipsSplashScreen.setLocale;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.app.AppCompatDelegate;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-
 import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
@@ -21,9 +15,6 @@ import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.PixelFormat;
 import android.graphics.RectF;
-import android.hardware.Camera;
-import android.hardware.camera2.CameraAccessException;
-import android.hardware.camera2.CameraManager;
 import android.media.ExifInterface;
 import android.os.Bundle;
 import android.os.Environment;
@@ -31,15 +22,19 @@ import android.os.Handler;
 import android.os.Looper;
 import android.util.Base64;
 import android.util.Log;
-import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
 import android.view.WindowManager;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
 import com.evo.mitzoom.API.ApiService;
 import com.evo.mitzoom.API.Server;
@@ -53,16 +48,12 @@ import com.google.android.gms.vision.CameraSource;
 import com.google.android.gms.vision.face.FaceDetector;
 import com.google.android.gms.vision.face.LargestFaceFocusingProcessor;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.List;
 import java.util.Locale;
 
 import cn.pedant.SweetAlert.SweetAlertDialog;

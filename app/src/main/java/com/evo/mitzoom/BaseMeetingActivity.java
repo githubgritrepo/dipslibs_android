@@ -1,10 +1,8 @@
 package com.evo.mitzoom;
 
 import static com.evo.mitzoom.ui.DipsSplashScreen.setLocale;
-import static com.evo.mitzoom.ui.DipsVideoConfren.text_timer;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.app.Dialog;
 import android.app.Service;
 import android.content.Context;
@@ -12,7 +10,6 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Rect;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -40,14 +37,12 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.evo.mitzoom.Adapter.UserVideoAdapter;
 import com.evo.mitzoom.Fragments.frag_chat;
 import com.evo.mitzoom.Fragments.frag_conferee_agree;
-import com.evo.mitzoom.Fragments.frag_inputdata;
 import com.evo.mitzoom.Helper.NotificationMgr;
 import com.evo.mitzoom.Helper.NotificationService;
 import com.evo.mitzoom.Session.SessionManager;
@@ -285,6 +280,21 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
                     }
                 }
             }).start();
+        } else {
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        sessions.saveFlagUpDoc(false);
+                        sessions.saveMedia(0);
+                        Thread.sleep(1000);
+                        Log.d("CEK","ON OFF VIDEO is ON");
+                        onOffVideo();
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }).start();
         }
 
     }
@@ -292,6 +302,10 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
     @Override
     protected void onPause() {
         super.onPause();
+        int valMedia = sessions.getMedia();
+        if (valMedia == 1) {
+            ZoomVideoSDK.getInstance().getVideoHelper().stopVideo();
+        }
         wasRunning = running;
         running = false;
         isActivityPaused = true;
@@ -939,6 +953,11 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
             boolean flagDoc = sessions.getFlagUpDoc();
             if (flagDoc) {
                 startVideoHandler();
+            } else {
+                int valMedia = sessions.getMedia();
+                if (valMedia == 0 && isOn == 2) {
+                    onOffVideo();
+                }
             }
         }
         adapter.onUserVideoStatusChanged(userList);

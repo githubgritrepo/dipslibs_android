@@ -6,13 +6,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Filter;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.evo.mitzoom.Model.BankItem;
 import com.evo.mitzoom.Model.TypeServiceItem;
 import com.evo.mitzoom.R;
 

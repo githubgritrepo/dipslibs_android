@@ -4,7 +4,6 @@ import static android.app.Activity.RESULT_OK;
 
 import android.content.Context;
 import android.content.Intent;
-import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
@@ -25,8 +24,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;

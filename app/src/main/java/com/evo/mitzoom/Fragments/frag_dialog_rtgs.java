@@ -1,26 +1,14 @@
 package com.evo.mitzoom.Fragments;
 
 import android.Manifest;
-import android.app.Activity;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-import androidx.fragment.app.Fragment;
-import androidx.viewpager.widget.PagerAdapter;
-import androidx.viewpager.widget.ViewPager;
-
 import android.os.Environment;
 import android.text.Editable;
-import android.text.Spannable;
 import android.text.TextWatcher;
-import android.text.style.StyleSpan;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -33,15 +21,20 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.fragment.app.Fragment;
+import androidx.viewpager.widget.PagerAdapter;
+import androidx.viewpager.widget.ViewPager;
+
 import com.evo.mitzoom.Adapter.AdapterBank2;
-import com.evo.mitzoom.Adapter.AdapterSourceAccount;
 import com.evo.mitzoom.Adapter.AdapterTypeService;
 import com.evo.mitzoom.Model.BankItem;
 import com.evo.mitzoom.Model.TypeServiceItem;
 import com.evo.mitzoom.R;
 import com.evo.mitzoom.Session.SessionManager;
-import com.evo.mitzoom.ui.DipsSplashScreen;
-import com.evo.mitzoom.ui.DipsWaitingRoom;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.WriterException;
 import com.journeyapps.barcodescanner.BarcodeEncoder;
@@ -54,11 +47,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.math.BigDecimal;
-import java.text.DecimalFormat;
 import java.text.NumberFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;

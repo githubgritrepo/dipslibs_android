@@ -4,7 +4,6 @@ import static com.evo.mitzoom.ui.DipsVideoConfren.text_timer;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.Editable;
@@ -29,9 +28,7 @@ import com.evo.mitzoom.API.ApiService;
 import com.evo.mitzoom.API.Server;
 import com.evo.mitzoom.R;
 import com.evo.mitzoom.Session.SessionManager;
-import com.evo.mitzoom.ui.DipsSplashScreen;
 import com.evo.mitzoom.ui.DipsVideoConfren;
-import com.evo.mitzoom.ui.DipsWaitingRoom;
 import com.google.android.material.button.MaterialButton;
 import com.google.gson.JsonObject;
 

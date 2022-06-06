@@ -1,16 +1,9 @@
 package com.evo.mitzoom.ui;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.app.AppCompatDelegate;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-
 import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -20,12 +13,9 @@ import android.graphics.Paint;
 import android.graphics.PixelFormat;
 import android.graphics.RectF;
 import android.hardware.Camera;
-import android.hardware.SensorManager;
 import android.hardware.camera2.CameraAccessException;
-import android.hardware.camera2.CameraCharacteristics;
 import android.hardware.camera2.CameraManager;
 import android.media.ExifInterface;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
@@ -40,7 +30,14 @@ import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+
 import com.evo.mitzoom.R;
+import com.evo.mitzoom.Session.SessionManager;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -50,8 +47,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-
-import us.zoom.sdk.ZoomVideoSDK;
 
 public class DipsCameraActivity extends AppCompatActivity {
 
@@ -84,6 +79,7 @@ public class DipsCameraActivity extends AppCompatActivity {
     private double surfTop = 0;
     private double surfRight = 0;
     private double surfBottom = 0;
+    private SessionManager sessions;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -95,6 +91,8 @@ public class DipsCameraActivity extends AppCompatActivity {
         initialElements();
 
         mContext = this;
+
+        sessions = new SessionManager(mContext);
 
         transHolder = transPreview.getHolder();
         transHolder.setFormat(PixelFormat.TRANSPARENT);
@@ -260,6 +258,7 @@ public class DipsCameraActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         super.onBackPressed();
+        sessions.saveMedia(0);
     }
 
     public void hideStatusBar() {

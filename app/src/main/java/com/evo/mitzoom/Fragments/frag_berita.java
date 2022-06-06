@@ -27,7 +27,6 @@ import com.evo.mitzoom.Adapter.AdapterSlide;
 import com.evo.mitzoom.Adapter.GridProductAdapter;
 import com.evo.mitzoom.R;
 import com.evo.mitzoom.ui.DipsSplashScreen;
-import com.evo.mitzoom.ui.DipsWaitingRoom;
 import com.google.android.material.button.MaterialButton;
 
 import java.util.ArrayList;

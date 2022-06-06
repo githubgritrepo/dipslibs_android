@@ -13,7 +13,6 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.evo.mitzoom.Fragments.frag_opening_account;
 import com.evo.mitzoom.Fragments.frag_rtgs;
 import com.evo.mitzoom.Model.ItemModel;
 import com.evo.mitzoom.R;

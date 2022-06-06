@@ -1,15 +1,12 @@
 package com.evo.mitzoom.Fragments;
 
-import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -19,7 +16,6 @@ import com.evo.mitzoom.API.ApiService;
 import com.evo.mitzoom.API.Server;
 import com.evo.mitzoom.R;
 import com.evo.mitzoom.Session.SessionManager;
-import com.evo.mitzoom.ui.RatingActivity;
 import com.google.gson.JsonObject;
 
 import org.json.JSONArray;
