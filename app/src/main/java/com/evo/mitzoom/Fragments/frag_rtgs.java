@@ -24,6 +24,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -206,8 +207,6 @@ public class frag_rtgs extends Fragment {
             }
         });
 
-
-
         btnProses.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -221,19 +220,24 @@ public class frag_rtgs extends Fragment {
                 JenisPenduduk = et_typePopulation.getText().toString();
                 Berita = et_Berita.getText().toString();
 
-                Fragment fragment = new frag_summary_rtgs();
-                Bundle bundle = new Bundle();
-                bundle.putString("rekeningSumber",RekeningSumber);
-                bundle.putString("jenisLayanan",JenisLayanan);
-                bundle.putString("namaBank",NamaBank);
-                bundle.putString("namaPenerima",NamaPenerima);
-                bundle.putString("penerimaManfaat",PenerimaManfaat);
-                bundle.putString("jenisPenduduk",JenisPenduduk);
-                bundle.putString("berita",Berita);
-                bundle.putString("nominal",Nominal);
-                bundle.putString("rekPenerima",RekPenerima);
-                fragment.setArguments(bundle);
-                getFragmentPage(fragment);
+                if (RekeningSumber.isEmpty() || NamaBank.isEmpty() || RekPenerima.isEmpty() || NamaPenerima.isEmpty() || Nominal.isEmpty() || JenisLayanan.isEmpty() || PenerimaManfaat.isEmpty() || JenisPenduduk.isEmpty()){
+                    Toast.makeText(context, getResources().getString(R.string.empty_field), Toast.LENGTH_SHORT).show();
+                }
+                else{
+                    Fragment fragment = new frag_summary_rtgs();
+                    Bundle bundle = new Bundle();
+                    bundle.putString("rekeningSumber",RekeningSumber);
+                    bundle.putString("jenisLayanan",JenisLayanan);
+                    bundle.putString("namaBank",NamaBank);
+                    bundle.putString("namaPenerima",NamaPenerima);
+                    bundle.putString("penerimaManfaat",PenerimaManfaat);
+                    bundle.putString("jenisPenduduk",JenisPenduduk);
+                    bundle.putString("berita",Berita);
+                    bundle.putString("nominal",Nominal);
+                    bundle.putString("rekPenerima",RekPenerima);
+                    fragment.setArguments(bundle);
+                    getFragmentPage(fragment);
+                }
 
             }
         });

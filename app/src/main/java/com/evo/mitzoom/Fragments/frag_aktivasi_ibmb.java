@@ -317,6 +317,9 @@ public class frag_aktivasi_ibmb extends Fragment {
                 else if (Password2.length() < 8){
                     Toast.makeText(context, getResources().getString(R.string.min_password), Toast.LENGTH_SHORT).show();
                 }
+                else if(Mpin2.length() < 6){
+                    Toast.makeText(context, getResources().getString(R.string.min_MPIN), Toast.LENGTH_SHORT).show();
+                }
                 else
                 {
                     Mirroring(true,UserId2,Password2,Konfirmasi_password2,Mpin2,Konfirmasi_mpin2);

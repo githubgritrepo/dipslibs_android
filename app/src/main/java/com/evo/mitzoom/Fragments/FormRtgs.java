@@ -480,6 +480,13 @@ public class FormRtgs extends Fragment {
                         sAW.setContentText(contents);
                         sAW.hideConfirmButton();
                         sAW.setCancelText("Tutup");
+                        sAW.setCancelClickListener(new SweetAlertDialog.OnSweetClickListener() {
+                            @Override
+                            public void onClick(SweetAlertDialog sweetAlertDialog) {
+                                getFragmentPage(new frag_berita());
+                                sAW.dismiss();
+                            }
+                        });
                         sAW.setCancelable(false);
                         sAW.show();
 
@@ -487,7 +494,6 @@ public class FormRtgs extends Fragment {
                         e.printStackTrace();
                     }
                 }
-
             }
         });
     }
