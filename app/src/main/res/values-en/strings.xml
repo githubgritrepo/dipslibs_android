@@ -181,5 +181,7 @@
     <string name="label_fourth">Fourth</string>
     <string name="label_fifth">Fifth</string>
     <string name="min_password">Minimum password 8 characters</string>
-    <string name="max_mpin">Maximum MPIN 6 digit</string>
+    <string name="min_MPIN">Your MPIN is less than 6 digit</string>
+    <string name="max_mpin">Enter 6 digit MPIN</string>
+    <string name="empty_field">Data cannot be empty</string>
 </resources>

@@ -180,5 +180,7 @@
     <string name="label_fourth">Keempat</string>
     <string name="label_fifth">Kelima</string>
     <string name="min_password">Password minimal 8 karakter</string>
-    <string name="max_mpin">MPIN maksimal 6 digit</string>
+    <string name="min_MPIN">MPIN anda kurang dari 6 digit</string>
+    <string name="max_mpin">Masukkan 6 digit MPIN</string>
+    <string name="empty_field">Data tidak boleh kosong</string>
 </resources>
