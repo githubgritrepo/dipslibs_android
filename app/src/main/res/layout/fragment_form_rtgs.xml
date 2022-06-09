@@ -72,14 +72,14 @@
                             android:id="@+id/btnProsesRTGS"
                             android:layout_width="wrap_content"
                             android:layout_height="35dp"
+                            android:layout_marginStart="@dimen/dp_10"
+                            android:layout_marginEnd="@dimen/dp_10"
                             android:background="@drawable/oval_background_10dp"
                             android:backgroundTint="@color/bg_cif"
                             android:text="@string/submit"
                             android:textColor="@color/white"
                             android:textSize="12sp"
-                            android:textStyle="bold"
-                            android:layout_marginEnd="@dimen/dp_10"
-                            android:layout_marginStart="@dimen/dp_10"/>
+                            android:textStyle="bold" />
 
                         <me.relex.circleindicator.CircleIndicator
                             android:id="@+id/indicator"
@@ -95,14 +95,14 @@
                             android:id="@+id/btnAdd"
                             android:layout_width="wrap_content"
                             android:layout_height="35dp"
+                            android:layout_marginStart="@dimen/dp_10"
+                            android:layout_marginEnd="@dimen/dp_10"
                             android:background="@drawable/oval_background_10dp"
                             android:backgroundTint="@color/button_schedule"
                             android:text="@string/add"
                             android:textColor="@color/white"
                             android:textSize="12sp"
-                            android:textStyle="bold"
-                            android:layout_marginEnd="@dimen/dp_10"
-                            android:layout_marginStart="@dimen/dp_10"/>
+                            android:textStyle="bold" />
 
                     </LinearLayout>
 
