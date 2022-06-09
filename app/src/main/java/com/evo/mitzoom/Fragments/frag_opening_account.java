@@ -273,7 +273,7 @@ public class frag_opening_account extends Fragment {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                Mirroring2(false, (String) s,Nama.getText().toString(),TTL.getText().toString(),TTL2.getText().toString());
+                Mirroring2(false,s,Nama.getText().toString(),TTL.getText().toString(),TTL2.getText().toString());
             }
 
             @Override
@@ -289,7 +289,7 @@ public class frag_opening_account extends Fragment {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                Mirroring2(false, NIK.getText().toString(), (String) s,TTL.getText().toString(),TTL2.getText().toString());
+                Mirroring2(false, NIK.getText().toString(), s,TTL.getText().toString(),TTL2.getText().toString());
             }
 
             @Override
@@ -305,7 +305,7 @@ public class frag_opening_account extends Fragment {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                Mirroring2(false, NIK.getText().toString(), Nama.getText().toString(), (String) s,TTL2.getText().toString());
+                Mirroring2(false, NIK.getText().toString(), Nama.getText().toString(), s,TTL2.getText().toString());
             }
 
             @Override
@@ -321,7 +321,7 @@ public class frag_opening_account extends Fragment {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                Mirroring2(false, NIK.getText().toString(), Nama.getText().toString(), TTL.getText().toString(), (String) s);
+                Mirroring2(false, NIK.getText().toString(), Nama.getText().toString(), TTL.getText().toString(),s);
             }
 
             @Override
@@ -444,7 +444,7 @@ public class frag_opening_account extends Fragment {
             }
         });
     }
-    private void Mirroring2(Boolean bool, String nik, String nama, String tempat, String ttl){
+    private void Mirroring2(Boolean bool, CharSequence nik, CharSequence nama, CharSequence tempat, CharSequence ttl){
         JSONObject jsons = new JSONObject();
         JSONArray jsonArray = new JSONArray();
         try {
