@@ -84,7 +84,6 @@ public class DipsCapture extends AppCompatActivity implements CameraSource.Pictu
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mContext = this;
-
         sessions = new SessionManager(mContext);
         String lang = sessions.getLANG();
         setLocale(this,lang);
@@ -466,6 +465,7 @@ public class DipsCapture extends AppCompatActivity implements CameraSource.Pictu
                     String sessionPass = response.body().getDataSession().getPass();
 
                     sessions.saveIdDips(idDips);
+                    sessions.saveIsCust(isCust);
 
                     Intent intent = new Intent(DipsCapture.this,DipsWaitingRoom.class);
                     intent.putExtra("ISCUSTOMER",isCust);

@@ -38,7 +38,7 @@ public class frag_portfolio extends Fragment {
     private Context context;
     PieChart pieChart;
     PieData pieData;
-    TextView tvtanggal, tvCurrency;
+    TextView tvtanggal, tvCurrency, DanaPihakKetiga, Investasi, Kredit;
     NestedScrollView nestedScrollView;
     String TanggalSekarang;
     RecyclerView recyclerView, recyclerView2, recyclerView3;
@@ -49,6 +49,7 @@ public class frag_portfolio extends Fragment {
     ExtendedFloatingActionButton extendedFloatingActionButton;
     private SessionManager sessionManager;
     private String bahasa;
+    private boolean cekCust;
     ImageView btnToogleShow, btnToogleHide;
 
     @Override
@@ -69,7 +70,11 @@ public class frag_portfolio extends Fragment {
         recyclerView = view.findViewById(R.id.rv_item_1);
         recyclerView2 = view.findViewById(R.id.rv_item_2);
         recyclerView3 = view.findViewById(R.id.rv_item_3);
+        DanaPihakKetiga = view.findViewById(R.id.DanaPihakKetiga);
+        Investasi = view.findViewById(R.id.DanaInvestasi);
+        Kredit = view.findViewById(R.id.DanaKredit);
         bahasa = sessionManager.getLANG();
+        cekCust = sessionManager.getKEY_iSCust();
         btnToogleShow = view.findViewById(R.id.btn_toogle_eye);
         btnToogleHide = view.findViewById(R.id.btn_toogle_eye2);
         tvCurrency = view.findViewById(R.id.currency);
@@ -94,18 +99,37 @@ public class frag_portfolio extends Fragment {
         tvCurrency.setText(getResources().getString(R.string.currency));
         btnToogleHide.setVisibility(View.VISIBLE);
         btnToogleShow.setVisibility(View.GONE);
-        addDataDanaPihakKetigaMasking();
-        addDataInvestasiMasking();
-        addDataKreditMasking();
+        if (cekCust){
+            setChartNasabah();
+            setLegendChart();
+            addDataDanaPihakKetigaMasking();
+            addDataInvestasiMasking();
+            addDataKreditMasking();
+        }
+        else {
+            addDataDanaPihakKetigaNewMasking();
+            setChartNewNasabah();
+            setLegendChart();
+            recyclerView2.setVisibility(View.GONE);
+            recyclerView3.setVisibility(View.GONE);
+            DanaPihakKetiga.setVisibility(View.GONE);
+            Investasi.setVisibility(View.GONE);
+            Kredit.setVisibility(View.GONE);
+        }
         setRecyler();
         btnToogleShow.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 btnToogleShow.setVisibility(View.GONE);
                 btnToogleHide.setVisibility(View.VISIBLE);
-                addDataDanaPihakKetigaMasking();
-                addDataInvestasiMasking();
-                addDataKreditMasking();
+                if (cekCust){
+                    addDataDanaPihakKetigaMasking();
+                    addDataInvestasiMasking();
+                    addDataKreditMasking();
+                }
+                else {
+                    addDataDanaPihakKetigaNewMasking();
+                }
                 setRecyler();
             }
         });
@@ -114,9 +138,14 @@ public class frag_portfolio extends Fragment {
             public void onClick(View v) {
                 btnToogleShow.setVisibility(View.VISIBLE);
                 btnToogleHide.setVisibility(View.GONE);
-                addDataDanaPihakKetiga();
-                addDataInvestasi();
-                addDataKredit();
+                if (cekCust){
+                    addDataDanaPihakKetiga();
+                    addDataInvestasi();
+                    addDataKredit();
+                }
+                else {
+                    addDataDanaPihakKetigaEmpty();
+                }
                 setRecyler();
             }
         });
@@ -138,8 +167,8 @@ public class frag_portfolio extends Fragment {
                 getFragmentPage(new frag_service());
             }
         });
-        setChart();
-        setLegendChart();
+
+
     }
     private void setRecyler(){
         recyclerViewAdapter = new AdapterPortofolio(context, data);
@@ -159,7 +188,7 @@ public class frag_portfolio extends Fragment {
         recyclerView3.setLayoutManager(recylerViewLayoutManager3);
         recyclerView3.setAdapter(recyclerViewAdapter3);
     }
-    private void setChart(){
+    private void setChartNasabah(){
         pieChart.setUsePercentValues(true);
         pieChart.setDrawHoleEnabled(true);
         pieChart.setDrawEntryLabels(false);
@@ -169,6 +198,23 @@ public class frag_portfolio extends Fragment {
             pieEntryList.add(new PieEntry(2,"Tabungan"));
             pieEntryList.add(new PieEntry(1,"Deposito"));
             pieEntryList.add(new PieEntry(4,"Reksa Dana"));
+        }
+        PieDataSet pieDataSet = new PieDataSet(pieEntryList,"");
+        pieDataSet.setColors(ColorTemplate.MATERIAL_COLORS);
+        pieData = new PieData(pieDataSet);
+        pieData.setValueFormatter(new PercentFormatter(pieChart));
+        pieChart.setEntryLabelTextSize(12f);
+        pieChart.setData(pieData);
+        pieChart.setEntryLabelColor(R.color.black);
+        pieChart.invalidate();
+    }
+    private void setChartNewNasabah(){
+        pieChart.setUsePercentValues(true);
+        pieChart.setDrawHoleEnabled(true);
+        pieChart.setDrawEntryLabels(false);
+        pieChart.getDescription().setEnabled(false);
+        if (pieEntryList.size() < 1){
+            pieEntryList.add(new PieEntry(100,getResources().getString(R.string.tabungan_a)));
         }
         PieDataSet pieDataSet = new PieDataSet(pieEntryList,"");
         pieDataSet.setColors(ColorTemplate.MATERIAL_COLORS);
@@ -201,11 +247,19 @@ public class frag_portfolio extends Fragment {
         data.add(new PortfolioModel("3",getResources().getString(R.string.TABUNGAN_DIPS),getResources().getString(R.string.mata_uang)+" 12.000.000",R.drawable.porto2));
         data.add(new PortfolioModel("4",getResources().getString(R.string.DEPOSITO_DIPS),getResources().getString(R.string.mata_uang)+" 100.000.000",R.drawable.porto3));
     }
+    private void addDataDanaPihakKetigaEmpty(){
+        data = new ArrayList<>();
+        data.add(new PortfolioModel("3",getResources().getString(R.string.TABUNGAN_DIPS),getResources().getString(R.string.mata_uang)+" 0",R.drawable.porto2));
+    }
     private void addDataDanaPihakKetigaMasking(){
         data = new ArrayList<>();
         data.add(new PortfolioModel("1",getResources().getString(R.string.GIRO_DIPS),getResources().getString(R.string.mata_uang)+" XXXXXX",R.drawable.porto1));
         data.add(new PortfolioModel("3",getResources().getString(R.string.TABUNGAN_DIPS),getResources().getString(R.string.mata_uang)+" XXXXXX",R.drawable.porto2));
         data.add(new PortfolioModel("4",getResources().getString(R.string.DEPOSITO_DIPS),getResources().getString(R.string.mata_uang)+" XXXXXX",R.drawable.porto3));
+    }
+    private void addDataDanaPihakKetigaNewMasking(){
+        data = new ArrayList<>();
+        data.add(new PortfolioModel("1",getResources().getString(R.string.TABUNGAN_DIPS),getResources().getString(R.string.mata_uang)+" XXXXXX",R.drawable.porto2));
     }
 
     /// Data Investasi
@@ -216,6 +270,14 @@ public class frag_portfolio extends Fragment {
         data2.add(new PortfolioModel("3","DiPS Money Market Fund",getResources().getString(R.string.mata_uang)+" 12.000.000,00",R.drawable.porto6));
         data2.add(new PortfolioModel("4","ORI 022",getResources().getString(R.string.mata_uang)+" 100.000.000,00",R.drawable.porto7));
         data2.add(new PortfolioModel("5","SR 014",getResources().getString(R.string.mata_uang)+" 80.000,00",R.drawable.porto7));
+    }
+    private void addDataInvestasiEmpty(){
+        data2 = new ArrayList<>();
+        data2.add(new PortfolioModel("1","DiPS Wealthlink",getResources().getString(R.string.mata_uang)+" 0",R.drawable.porto4));
+        data2.add(new PortfolioModel("2","DiPS Protect Life",getResources().getString(R.string.mata_uang)+" 0",R.drawable.porto5));
+        data2.add(new PortfolioModel("3","DiPS Money Market Fund",getResources().getString(R.string.mata_uang)+" 0",R.drawable.porto6));
+        data2.add(new PortfolioModel("4","ORI 022",getResources().getString(R.string.mata_uang)+" 0",R.drawable.porto7));
+        data2.add(new PortfolioModel("5","SR 014",getResources().getString(R.string.mata_uang)+" 0",R.drawable.porto7));
     }
     private void addDataInvestasiMasking(){
         data2 = new ArrayList<>();
@@ -231,6 +293,11 @@ public class frag_portfolio extends Fragment {
         data3 = new ArrayList<>();
         data3.add(new PortfolioModel("1",getResources().getString(R.string.DIPS_MODAL_KERJA),getResources().getString(R.string.mata_uang)+" 15.000.000,00",R.drawable.porto8));
         data3.add(new PortfolioModel("2",getResources().getString(R.string.DIPS_INVESTMENT),getResources().getString(R.string.mata_uang)+" 12.000.000,00",R.drawable.porto8));
+    }
+    private void addDataKreditEmpty(){
+        data3 = new ArrayList<>();
+        data3.add(new PortfolioModel("1",getResources().getString(R.string.DIPS_MODAL_KERJA),getResources().getString(R.string.mata_uang)+" 0",R.drawable.porto8));
+        data3.add(new PortfolioModel("2",getResources().getString(R.string.DIPS_INVESTMENT),getResources().getString(R.string.mata_uang)+" 0",R.drawable.porto8));
     }
     private void addDataKreditMasking(){
         data3 = new ArrayList<>();

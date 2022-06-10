@@ -26,6 +26,7 @@ public class SessionManager {
     public static final String KEY_NPWP = "NPWP";
     public static final String KEY_TTD = "TTD";
     public static final String KEY_CHAT = "CHAT";
+    public static final String KEY_iSCust = "isCust";
     public static final String KEY_FLAG_UPDOC = "FLAG_UPLOADDOC";
     public static final String KEY_MEDIA = "MEDIA";
 
@@ -35,22 +36,18 @@ public class SessionManager {
         pref = _context.getSharedPreferences(PREF_NAME, PRIVATE_MODE);
         editor = pref.edit();
     }
-
     public void saveLANG(String data) {
         editor.putString(KEY_LANG,data);
         editor.commit();
     }
-
     public void saveRTGS(String data) {
         editor.putString(KEY_RTGS,data);
         editor.commit();
     }
-
     public void saveChat(String data) {
         editor.putString(KEY_CHAT,data);
         editor.commit();
     }
-
     public void saveIdDips(String data){
         editor.putString(KEY_IdDips,data);
         editor.commit();
@@ -69,6 +66,10 @@ public class SessionManager {
     }
     public void saveFlagUpDoc(boolean data){
         editor.putBoolean(KEY_FLAG_UPDOC,data);
+        editor.commit();
+    }
+    public void saveIsCust(boolean data) {
+        editor.putBoolean(KEY_iSCust,data);
         editor.commit();
     }
     public void saveMedia(int data){
@@ -100,6 +101,9 @@ public class SessionManager {
     }
     public String getKEY_CHAT (){
         return pref.getString(KEY_CHAT,null);
+    }
+    public boolean getKEY_iSCust (){
+        return pref.getBoolean(KEY_iSCust,false);
     }
     public boolean getFlagUpDoc (){
         return pref.getBoolean(KEY_FLAG_UPDOC,false);

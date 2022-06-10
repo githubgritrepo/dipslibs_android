@@ -106,6 +106,7 @@
                 android:orientation="vertical">
 
                 <TextView
+                    android:id="@+id/DanaPihakKetiga"
                     android:gravity="center"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -132,6 +133,7 @@
                 android:orientation="vertical">
 
                 <TextView
+                    android:id="@+id/DanaInvestasi"
                     android:gravity="center"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -158,6 +160,7 @@
                 android:orientation="vertical">
 
                 <TextView
+                    android:id="@+id/DanaKredit"
                     android:gravity="center"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"

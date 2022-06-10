@@ -34,7 +34,7 @@ import retrofit2.Response;
 public class frag_conferee_agree extends Fragment {
     private Context context;
     private Button btn_Setuju,btn_tidak;
-    private boolean isCust;
+    private boolean isCust = true;
     private String idDips;
     private SessionManager session;
     private Boolean result = true;
@@ -73,18 +73,21 @@ public class frag_conferee_agree extends Fragment {
             @Override
             public void onClick(View v) {
                 Mirroring(result);
-                if (isCust == false) {
-                //Jika muka tidak terdaftar maka menuju ke masukan nama & NIK
-                getFragmentPage(new frag_inputdata());
-                }
-                else{
-                //Jika muka terdaftar maka langsung menuju ke portfolio
-                getFragmentPage(new frag_portfolio());
-                }
+                cekData();
                 BaseMeetingActivity.btnChat.setBackgroundTintList(context.getResources().getColorStateList(R.color.Blue));
                 BaseMeetingActivity.btnChat.setClickable(true);
             }
         });
+    }
+    private void cekData(){
+        if (isCust) {
+            //Jika muka terdaftar maka langsung menuju ke portfolio
+            getFragmentPage(new frag_portfolio());
+        }
+        else{
+            //Jika muka tidak terdaftar maka menuju ke masukan nama & NIK
+            getFragmentPage(new frag_inputdata());
+        }
     }
     private void getFragmentPage(Fragment fragment){
         Bundle bundle = new Bundle();

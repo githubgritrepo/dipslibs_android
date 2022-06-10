@@ -14,6 +14,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.evo.mitzoom.R;
+import com.evo.mitzoom.Session.SessionManager;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -21,6 +22,7 @@ import java.util.Calendar;
 public class frag_resi extends Fragment {
     private String [] rekening_sumber, rekening_sumber2;
     private Button btnOK;
+    private SessionManager sessions;
     private Context context;
     private TextView tv_NoFormulir, tv_NoReferensi, tv_Tanggal, tv_Jam, tv_RekeningSumberDana, tv_NamaPemilikRekening, tv_JenisLayanan, tv_BankPenerima, tv_NamaPenerima, tv_PenerimaManfaat, tv_JenisPenduduk, tv_Berita, tv_BiayaAdmin, tv_NominalTransaksi;
     private String Jam,TanggalSekarang,RekeningSumber, NamaBank, RekPenerima, NamaPenerima, Nominal, JenisLayanan, PenerimaManfaat,JenisPenduduk,Berita;
@@ -29,6 +31,7 @@ public class frag_resi extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         context = getContext();
+        sessions = new SessionManager(context);
     }
     @Nullable
     @Override
@@ -98,6 +101,7 @@ public class frag_resi extends Fragment {
         btnOK.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                sessions.saveIsCust(false);
                 getFragmentPage(new frag_portfolio());
             }
         });

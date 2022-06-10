@@ -161,8 +161,8 @@ public class frag_inputdata extends Fragment {
                 }
                 else {
                     Mirroring(true, Nama, NIK);
-                    //CekData();
-                    PopupChoose();
+                    CekData();
+                    //PopupChoose();
                 }
             }
         });
@@ -274,7 +274,7 @@ public class frag_inputdata extends Fragment {
                         Log.d("Cek Message", message);
 
                         if (err_code == 0){
-                            getFragmentPage(new frag_item());
+                            PopUpTnc();
                         }
                         else {
                             getFragmentPage(new frag_portfolio());
