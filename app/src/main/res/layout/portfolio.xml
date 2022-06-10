@@ -152,7 +152,6 @@
                     tools:listitem="@layout/item_portfolio"/>
             </LinearLayout>
             <LinearLayout
-                android:id="@+id/LL4"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/LL3"

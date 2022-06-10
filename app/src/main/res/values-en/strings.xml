@@ -184,5 +184,4 @@
     <string name="min_MPIN">Your MPIN is less than 6 digit</string>
     <string name="max_mpin">Enter 6 digit MPIN</string>
     <string name="empty_field">Data cannot be empty</string>
-    <string name="kosong">Empty</string>
 </resources>

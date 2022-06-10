@@ -318,14 +318,12 @@
                         android:layout_height="wrap_content"
                         android:orientation="horizontal">
                         <RadioButton
-                            android:id="@+id/tabA"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/tabungan_a"
                             android:textStyle="bold"/>
 
                         <RadioButton
-                            android:id="@+id/tabB"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/tabungan_b"
