@@ -281,7 +281,7 @@ public class frag_dialog_rtgs extends Fragment {
 
                         String appName = getString(R.string.app_name_dips);
 
-                        String contents = "File disimpan di folder Pictures/" + appName + "/" + filename;
+                        String contents = "File disimpan di folder Phone/DCIM/" + appName + "/" + filename;
 
                         SweetAlertDialog sAW = new SweetAlertDialog(mContext, SweetAlertDialog.SUCCESS_TYPE);
                         sAW.setContentText(contents);
@@ -302,7 +302,7 @@ public class frag_dialog_rtgs extends Fragment {
 
                         String appName = getString(R.string.app_name_dips);
 
-                        String contents = "File disimpan di folder Pictures/" + appName + "/" + filename;
+                        String contents = "File disimpan di folder Phone/DCIM/" + appName + "/" + filename;
 
                         SweetAlertDialog sAW = new SweetAlertDialog(mContext, SweetAlertDialog.SUCCESS_TYPE);
                         sAW.setContentText(contents);

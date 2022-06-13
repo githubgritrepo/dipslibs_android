@@ -144,6 +144,7 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
         sessions = new SessionManager(mContext);
         String lang = sessions.getLANG();
         setLocale(this,lang);
+        sessions.saveFlagUpDoc(false);
 
         if (savedInstanceState != null) {
             seconds = savedInstanceState.getInt("seconds");
@@ -217,6 +218,8 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
     @Override
     protected void onResume() {
         super.onResume();
+
+        Log.d("CEK","onResume");
 
         if (isActivityPaused) {
             resumeSubscribe();
@@ -293,6 +296,7 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
     protected void onPause() {
         super.onPause();
         int valMedia = sessions.getMedia();
+        Log.d("CEK","onPause valMedia : "+valMedia);
         if (valMedia == 1) {
             ZoomVideoSDK.getInstance().getVideoHelper().stopVideo();
         }
@@ -941,6 +945,7 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
             }
 
             boolean flagDoc = sessions.getFlagUpDoc();
+            Log.d("CEK","flagDoc : "+flagDoc);
             if (flagDoc) {
                 startVideoHandler();
             } else {

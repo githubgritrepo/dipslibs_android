@@ -9,6 +9,7 @@ import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
@@ -35,6 +36,7 @@ public class DipsSplashScreen extends AppCompatActivity {
     private Context mContext;
     public static final int REQUEST_WRITE_PERMISSION = 786;
     private static final int MY_CAMERA_PERMISSION_CODE = 100;
+    private static final int REQUEST_READ_PHONE_STATE = 787;
     private ImageView imgSplash;
     private SessionManager sessions;
 
@@ -56,20 +58,24 @@ public class DipsSplashScreen extends AppCompatActivity {
         if (ActivityCompat.checkSelfPermission(mContext, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
             PermissionCamera();
         } else {
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    doWork();
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            chooseLanguage();
-                        }
-                    });
-                }
-            }).start();
+            permissionWrite();
         }
 
+    }
+
+    private void processNext() {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                doWork();
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        chooseLanguage();
+                    }
+                });
+            }
+        }).start();
     }
 
     private void chooseLanguage() {
@@ -137,32 +143,46 @@ public class DipsSplashScreen extends AppCompatActivity {
     }
 
     private void PermissionCamera() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            requestPermissions(new String[]{Manifest.permission.CAMERA}, MY_CAMERA_PERMISSION_CODE);
+        requestPermissions(new String[]{Manifest.permission.CAMERA}, MY_CAMERA_PERMISSION_CODE);
+    }
+
+    private void permissionWrite() {
+        if (ActivityCompat.checkSelfPermission(mContext, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_WRITE_PERMISSION);
         } else {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, MY_CAMERA_PERMISSION_CODE);
+            permissionPhoneState();
+        }
+    }
+
+    private void permissionPhoneState() {
+        if (ActivityCompat.checkSelfPermission(mContext, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(new String[]{Manifest.permission.READ_PHONE_STATE}, REQUEST_READ_PHONE_STATE);
+        } else {
+            processNext();
         }
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
         if (requestCode == MY_CAMERA_PERMISSION_CODE) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        doWork();
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                chooseLanguage();
-                            }
-                        });
-                    }
-                }).start();
+                permissionWrite();
             } else {
-                //Toast.makeText(mContext,"Location Permission Denied", Toast.LENGTH_LONG).show();
+                Toast.makeText(mContext,"Camera Permission Denied", Toast.LENGTH_LONG).show();
+            }
+        } else if (requestCode == REQUEST_WRITE_PERMISSION) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                permissionPhoneState();
+            } else {
+                Toast.makeText(mContext,"Write External Stroge Denied", Toast.LENGTH_LONG).show();
+            }
+        } else if (requestCode == REQUEST_READ_PHONE_STATE) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                processNext();
+            } else {
+                Toast.makeText(mContext,"Read Phone State Denied", Toast.LENGTH_LONG).show();
             }
         }
     }

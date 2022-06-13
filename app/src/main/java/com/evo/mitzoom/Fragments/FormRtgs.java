@@ -2,6 +2,7 @@ package com.evo.mitzoom.Fragments;
 
 import android.Manifest;
 import android.app.Activity;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -10,6 +11,7 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -451,7 +453,7 @@ public class FormRtgs extends Fragment {
 
                         String appName = getString(R.string.app_name_dips);
 
-                        String contents = "File disimpan di folder Pictures/" + appName + "/" + filename;
+                        String contents = "File disimpan di folder Phone/DCIM/" + appName + "/" + filename;
 
                         SweetAlertDialog sAW = new SweetAlertDialog(mContext, SweetAlertDialog.SUCCESS_TYPE);
                         sAW.setContentText(contents);
@@ -481,7 +483,7 @@ public class FormRtgs extends Fragment {
 
                         String appName = getString(R.string.app_name_dips);
 
-                        String contents = "File disimpan di folder Pictures/" + appName + "/" + filename;
+                        String contents = "File disimpan di folder Phone/DCIM/" + appName + "/" + filename;
 
                         SweetAlertDialog sAW = new SweetAlertDialog(mContext, SweetAlertDialog.SUCCESS_TYPE);
                         sAW.setContentText(contents);
@@ -516,21 +518,28 @@ public class FormRtgs extends Fragment {
         String appName = getString(R.string.app_name_dips);
         String IMAGE_DIRECTORY_NAME = appName;
         File mediaStorageDir = new File(
-                Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), IMAGE_DIRECTORY_NAME);
+                Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM), IMAGE_DIRECTORY_NAME);
 
-        if (!mediaStorageDir.exists()) {
+        /*if (!mediaStorageDir.exists()) {
             if (!mediaStorageDir.mkdirs()) {
                 return null;
             }
-        }
+        } else if (!mediaStorageDir.mkdirs()) {
+            return null;
+        }*/
 
         String[] myFiles;
 
         myFiles = mediaStorageDir.list();
-        for (int i=0; i<myFiles.length; i++) {
-            File myFile = new File(mediaStorageDir, myFiles[i]);
-            myFile.delete();
+        if (myFiles != null) {
+            for (int i = 0; i < myFiles.length; i++) {
+                Log.d("CEK","myFiles ke-"+i+" : "+myFiles[i]);
+                File myFile = new File(mediaStorageDir, myFiles[i]);
+                myFile.delete();
+            }
         }
+
+        mediaStorageDir.mkdirs();
 
         File mediaFile;
         mediaFile = new File(mediaStorageDir.getPath() + File.separator +

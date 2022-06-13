@@ -188,21 +188,7 @@ public class frag_opening_account extends Fragment {
         Intent intent = new Intent(context, DipsCameraActivity.class);
         startActivityForResult(intent, 1);
     }
-    private File createTemporaryFile(String part, String ext) throws Exception {
-        String IMAGE_DIRECTORY_NAME = getString(R.string.app_name_dips);
-        File mediaStorageDir = new File(
-                Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), IMAGE_DIRECTORY_NAME);
-        if (!mediaStorageDir.exists()) {
-            if (!mediaStorageDir.mkdirs()) {
-                return null;
-            }
-        }
-        File mediaFile;
-        mediaFile = new File(mediaStorageDir.getPath() + File.separator +
-                "IMG_" + part + ext);
 
-        return mediaFile;
-    }
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
