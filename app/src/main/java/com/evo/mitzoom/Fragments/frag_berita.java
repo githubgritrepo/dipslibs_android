@@ -1,5 +1,6 @@
 package com.evo.mitzoom.Fragments;
 
+import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -104,12 +105,21 @@ public class frag_berita extends Fragment {
             @Override
             public void onClick(SweetAlertDialog sweetAlertDialog) {
                 Toast.makeText(context,getResources().getString(R.string.end_call2), Toast.LENGTH_LONG);
-                startActivity(new Intent(context, DipsSplashScreen.class));
+                OutApps();
 
             }
         });
         Button btnCancel = (Button) sweetAlertDialog.findViewById(cn.pedant.SweetAlert.R.id.cancel_button);
         btnCancel.setBackgroundTintList(context.getResources().getColorStateList(R.color.Blue));
+    }
+    private void OutApps(){
+        Intent intent = new Intent(Intent.ACTION_MAIN);
+        intent.addCategory(Intent.CATEGORY_HOME);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(intent);
+        ((Activity)context).overridePendingTransition(0,0);
+        ((Activity)context).finish();
+        System.exit(0);
     }
     private void initPager() {
         for (int i = 0; i < img.length; i++) {
