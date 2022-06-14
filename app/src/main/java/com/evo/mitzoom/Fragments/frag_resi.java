@@ -13,17 +13,31 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.evo.mitzoom.API.ApiService;
+import com.evo.mitzoom.API.Server;
 import com.evo.mitzoom.R;
 import com.evo.mitzoom.Session.SessionManager;
+import com.google.gson.JsonObject;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+
+import okhttp3.MediaType;
+import okhttp3.RequestBody;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class frag_resi extends Fragment {
     private String [] rekening_sumber, rekening_sumber2;
     private Button btnOK;
     private SessionManager sessions;
     private Context context;
+    private String idDips;
     private TextView tv_NoFormulir, tv_NoReferensi, tv_Tanggal, tv_Jam, tv_RekeningSumberDana, tv_NamaPemilikRekening, tv_JenisLayanan, tv_BankPenerima, tv_NamaPenerima, tv_PenerimaManfaat, tv_JenisPenduduk, tv_Berita, tv_BiayaAdmin, tv_NominalTransaksi;
     private String Jam,TanggalSekarang,RekeningSumber, NamaBank, RekPenerima, NamaPenerima, Nominal, JenisLayanan, PenerimaManfaat,JenisPenduduk,Berita;
 
@@ -57,6 +71,7 @@ public class frag_resi extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        idDips = sessions.getKEY_IdDips();
         Bundle terima = getArguments();
         RekeningSumber = terima.getString("rekeningSumber");
         JenisLayanan = terima.getString("jenisLayanan");
@@ -102,6 +117,7 @@ public class frag_resi extends Fragment {
             @Override
             public void onClick(View v) {
                 sessions.saveIsCust(false);
+                Mirroring(true,1,1);
                 getFragmentPage(new frag_portfolio());
             }
         });
@@ -113,5 +129,33 @@ public class frag_resi extends Fragment {
                 .replace(R.id.layout_frame2, fragment)
                 .addToBackStack(null)
                 .commit();
+    }
+    private void Mirroring(boolean bool, int page, int pageAll){
+        JSONObject jsons = new JSONObject();
+        JSONArray jsonArray = new JSONArray();
+        try {
+            jsonArray.put(page);
+            jsonArray.put(pageAll);
+            jsonArray.put(bool);
+            jsons.put("idDips",idDips);
+            jsons.put("code",20);
+            jsons.put("data",jsonArray);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), jsons.toString());
+        ApiService API = Server.getAPIService();
+        Call<JsonObject> call = API.Mirroring(requestBody);
+        call.enqueue(new Callback<JsonObject>() {
+            @Override
+            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                Log.d("MIRROR","Mirroring Sukses");
+            }
+
+            @Override
+            public void onFailure(Call<JsonObject> call, Throwable t) {
+                Log.d("MIRROR","Mirroring Gagal");
+            }
+        });
     }
 }

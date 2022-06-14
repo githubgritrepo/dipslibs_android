@@ -3,6 +3,7 @@ package com.evo.mitzoom.Fragments;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,11 +17,24 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.dhairytripathi.library.EditTextPin;
+import com.evo.mitzoom.API.ApiService;
+import com.evo.mitzoom.API.Server;
 import com.evo.mitzoom.R;
+import com.evo.mitzoom.Session.SessionManager;
+import com.google.gson.JsonObject;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.Locale;
 
 import cn.pedant.SweetAlert.SweetAlertDialog;
+import okhttp3.MediaType;
+import okhttp3.RequestBody;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class frag_summary_rtgs extends Fragment {
     private Context context;
@@ -35,14 +49,44 @@ public class frag_summary_rtgs extends Fragment {
     private EditTextPin editTextPin;
     public int seconds = 60;
     public boolean running = true;
+    private SessionManager session;
+    private String idDips;
+    final Handler handler = new Handler();
+    Runnable runnable = new Runnable() {
+        @Override
+        public void run() {
+            count++;
+            if (count == 1)
+            {
+                Mirroring2(false, editTextPin.getPin());
+            }
+            else if (count == 2)
+            {
+                Mirroring2(false, editTextPin.getPin());
+            }
+            else if (count == 3)
+            {
+                Mirroring2(false, editTextPin.getPin());
+            }
+            else if (count == 4)
+            {
+                Mirroring2(false, editTextPin.getPin());
+            }
+
+            if (count == 4)
+                count = 0;
+            handler.postDelayed(this, 1000);
+        }
+
+    };
+    private int count = 0;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         context = getContext();
+        session = new SessionManager(context);
     }
-
-
 
     @Nullable
     @Override
@@ -64,6 +108,7 @@ public class frag_summary_rtgs extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        idDips = session.getKEY_IdDips();
         Bundle terima = getArguments();
         RekeningSumber = terima.getString("rekeningSumber");
         JenisLayanan = terima.getString("jenisLayanan");
@@ -87,12 +132,14 @@ public class frag_summary_rtgs extends Fragment {
         btnBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Mirroring(true,true,1,1);
                 getFragmentPage(new frag_rtgs());
             }
         });
         btnTransfer.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Mirroring(true,false,1,1);
                 PopUp();
             }
         });
@@ -118,6 +165,7 @@ public class frag_summary_rtgs extends Fragment {
         Timer = dialogView.findViewById(R.id.timer_otp);
         Resend_Otp = dialogView.findViewById(R.id.btn_resend_otp);
         editTextPin = dialogView.findViewById(R.id.kode_otp);
+        handler.postDelayed(runnable, 1000);
         btnVerifikasi.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -125,6 +173,8 @@ public class frag_summary_rtgs extends Fragment {
                     Toast.makeText(context, "Kode Otp masih kosong", Toast.LENGTH_SHORT).show();
                 }
                 else {
+                    handler.removeCallbacks(runnable);
+                    Mirroring2(true, editTextPin.getPin());
                     editTextPin.getPin().toString();
                     sweetAlertDialog.dismiss();
                     PopUpSuccesOtp();
@@ -156,7 +206,7 @@ public class frag_summary_rtgs extends Fragment {
                 sweetAlertDialog.dismiss();
                 popUpBerhasil();
             }
-        },5000);
+        },2000);
     }
     private void popUpBerhasil(){
         SweetAlertDialog sweetAlertDialog = new SweetAlertDialog(context, SweetAlertDialog.SUCCESS_TYPE);
@@ -169,6 +219,7 @@ public class frag_summary_rtgs extends Fragment {
         sweetAlertDialog.setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
             @Override
             public void onClick(SweetAlertDialog sweetAlertDialog) {
+                Mirroring3(true);
                 Fragment fragment = new frag_resi();
                 Bundle bundle = new Bundle();
                 bundle.putString("rekeningSumber",RekeningSumber);
@@ -206,6 +257,86 @@ public class frag_summary_rtgs extends Fragment {
             }
         });
     }
+    private void Mirroring(boolean bool, boolean back, int page, int pageAll){
+        JSONObject jsons = new JSONObject();
+        JSONArray jsonArray = new JSONArray();
+        try {
+            jsonArray.put(back);
+            jsonArray.put(page);
+            jsonArray.put(pageAll);
+            jsonArray.put(bool);
+            jsons.put("idDips",idDips);
+            jsons.put("code",17);
+            jsons.put("data",jsonArray);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), jsons.toString());
+        ApiService API = Server.getAPIService();
+        Call<JsonObject> call = API.Mirroring(requestBody);
+        call.enqueue(new Callback<JsonObject>() {
+            @Override
+            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                Log.d("MIRROR","Mirroring Sukses");
+            }
 
+            @Override
+            public void onFailure(Call<JsonObject> call, Throwable t) {
+                Log.d("MIRROR","Mirroring Gagal");
+            }
+        });
+    }
+    private void Mirroring2(Boolean bool,String s){
+        JSONObject jsons = new JSONObject();
+        JSONArray jsonArray = new JSONArray();
+        try {
+            jsonArray.put(s);
+            jsonArray.put(bool);
+            jsons.put("idDips",idDips);
+            jsons.put("code",18);
+            jsons.put("data",jsonArray);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), jsons.toString());
+        ApiService API = Server.getAPIService();
+        Call<JsonObject> call = API.Mirroring(requestBody);
+        call.enqueue(new Callback<JsonObject>() {
+            @Override
+            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                Log.d("MIRROR","Mirroring Sukses");
+            }
 
+            @Override
+            public void onFailure(Call<JsonObject> call, Throwable t) {
+                Log.d("MIRROR","Mirroring Gagal");
+            }
+        });
+    }
+    private void Mirroring3(boolean bool){
+        JSONObject jsons = new JSONObject();
+        JSONArray jsonArray = new JSONArray();
+        try {
+            jsonArray.put(bool);
+            jsons.put("idDips",idDips);
+            jsons.put("code",19);
+            jsons.put("data",jsonArray);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), jsons.toString());
+        ApiService API = Server.getAPIService();
+        Call<JsonObject> call = API.Mirroring(requestBody);
+        call.enqueue(new Callback<JsonObject>() {
+            @Override
+            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                Log.d("MIRROR","Mirroring Sukses");
+            }
+
+            @Override
+            public void onFailure(Call<JsonObject> call, Throwable t) {
+                Log.d("MIRROR","Mirroring Gagal");
+            }
+        });
+    }
 }

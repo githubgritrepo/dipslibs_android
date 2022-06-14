@@ -64,15 +64,13 @@ public class frag_conferee_agree extends Fragment {
         btn_tidak.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                result = false;
-                Mirroring(result);
+                Mirroring(0,-1,false);
                 OutApps();
             }
         });
         btn_Setuju.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Mirroring(result);
                 cekData();
                 BaseMeetingActivity.btnChat.setBackgroundTintList(context.getResources().getColorStateList(R.color.Blue));
                 BaseMeetingActivity.btnChat.setClickable(true);
@@ -83,10 +81,12 @@ public class frag_conferee_agree extends Fragment {
         if (isCust) {
             //Jika muka terdaftar maka langsung menuju ke portfolio
             getFragmentPage(new frag_portfolio());
+            Mirroring(0,14,true);
         }
         else{
             //Jika muka tidak terdaftar maka menuju ke masukan nama & NIK
             getFragmentPage(new frag_inputdata());
+            Mirroring(0,1,true);
         }
     }
     private void getFragmentPage(Fragment fragment){
@@ -108,13 +108,14 @@ public class frag_conferee_agree extends Fragment {
         ((Activity)context).finish();
         System.exit(0);
     }
-    private void Mirroring(boolean bool){
+    private void Mirroring(int codeEvent,int nextCode,boolean bool){
         JSONObject jsons = new JSONObject();
         JSONArray jsonArray = new JSONArray();
         try {
+            jsonArray.put(nextCode);
             jsonArray.put(bool);
             jsons.put("idDips",idDips);
-            jsons.put("code",0);
+            jsons.put("code",codeEvent);
             jsons.put("data",jsonArray);
         } catch (JSONException e) {
             e.printStackTrace();
@@ -134,5 +135,4 @@ public class frag_conferee_agree extends Fragment {
             }
         });
     }
-
 }

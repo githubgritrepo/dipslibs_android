@@ -97,11 +97,11 @@ public class ItemServiceAdapter extends RecyclerView.Adapter<ItemServiceAdapter.
                 .addToBackStack(null)
                 .commit();
     }
-    private void Mirroring(int code,boolean bool){
+    private void Mirroring(int nextCode,boolean bool){
         JSONObject jsons = new JSONObject();
         JSONArray jsonArray = new JSONArray();
         try {
-            jsonArray.put(code);
+            jsonArray.put(nextCode);
             jsonArray.put(bool);
             jsons.put("idDips",idDips);
             jsons.put("code",15);

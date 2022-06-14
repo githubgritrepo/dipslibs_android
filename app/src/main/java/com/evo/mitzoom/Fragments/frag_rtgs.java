@@ -30,6 +30,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.evo.mitzoom.API.ApiService;
+import com.evo.mitzoom.API.Server;
 import com.evo.mitzoom.Adapter.AdapterBank2;
 import com.evo.mitzoom.Adapter.AdapterSourceAccount;
 import com.evo.mitzoom.Adapter.AdapterTypeService;
@@ -37,6 +39,7 @@ import com.evo.mitzoom.Model.BankItem;
 import com.evo.mitzoom.Model.TypeServiceItem;
 import com.evo.mitzoom.R;
 import com.evo.mitzoom.Session.SessionManager;
+import com.google.gson.JsonObject;
 import com.google.zxing.BinaryBitmap;
 import com.google.zxing.MultiFormatReader;
 import com.google.zxing.NotFoundException;
@@ -58,6 +61,11 @@ import java.util.Locale;
 import java.util.Objects;
 
 import cn.pedant.SweetAlert.SweetAlertDialog;
+import okhttp3.MediaType;
+import okhttp3.RequestBody;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class frag_rtgs extends Fragment {
     private ImageView btnBack;
@@ -74,7 +82,7 @@ public class frag_rtgs extends Fragment {
     private Button btnProses;
     private String RekeningSumber, NamaBank, RekPenerima, NamaPenerima, Nominal, JenisLayanan, PenerimaManfaat,JenisPenduduk,Berita;
     public static final NumberFormat numberFormat = NumberFormat.getInstance(new Locale("id", "ID"));
-    private String dataRTGS;
+    private String dataRTGS, idDips;
     private LinearLayout choose_gallery;
 
     @Override
@@ -106,6 +114,7 @@ public class frag_rtgs extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        idDips = sessions.getKEY_IdDips();
         sourceBenefit = new String[]{getResources().getString(R.string.perorangan), getResources().getString(R.string.perusahaan), getResources().getString(R.string.pemerintah)};
         sourcePopulation = new String[]{getResources().getString(R.string.penduduk), getResources().getString(R.string.bukan_penduduk)};
         choose_gallery.setOnClickListener(new View.OnClickListener() {
@@ -128,6 +137,7 @@ public class frag_rtgs extends Fragment {
                 et_Nominal.setText(formatted);
                 et_Nominal.setSelection(formatted.length());
                 et_Nominal.addTextChangedListener(this);
+                Mirroring(false,et_source_account.getText().toString(),et_NamaBank.getText().toString(),et_RekPenerima.getText().toString(),et_NamaPenerima.getText().toString(),s,et_serviceType.getText().toString(),et_benefitRec.getText().toString(),et_typePopulation.getText().toString(),et_Berita.getText().toString(),1,1);
 
             }
 
@@ -139,9 +149,11 @@ public class frag_rtgs extends Fragment {
         btnBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Mirroring2(15,false);
                 getFragmentPage(new frag_service());
             }
         });
+
         AdapterSourceAccount adapterSourceAcc = new AdapterSourceAccount(context,R.layout.list_item_souceacc,sourceAcc);
         et_source_account.setAdapter(adapterSourceAcc);
         et_source_account.setBackground(context.getResources().getDrawable(R.drawable.blue_button_background));
@@ -160,6 +172,7 @@ public class frag_rtgs extends Fragment {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 textContent = s.toString();
+
             }
 
             @Override
@@ -167,16 +180,67 @@ public class frag_rtgs extends Fragment {
                 String[] strings = textContent.split("\\r?\\n");
                 String titleAcc = strings[0]+"\n";
                 s.setSpan(new StyleSpan(android.graphics.Typeface.BOLD), 0, titleAcc.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                Mirroring(false,s,et_NamaBank.getText().toString(),et_RekPenerima.getText().toString(),et_NamaPenerima.getText().toString(),et_Nominal.getText().toString(),et_serviceType.getText().toString(),et_benefitRec.getText().toString(),et_typePopulation.getText().toString(),et_Berita.getText().toString(),1,1);
             }
 
 
         });
+
         fillBankList();
         AdapterBank2 adapterBank2 = new AdapterBank2(context,bankList);
         et_NamaBank.setAdapter(adapterBank2);
         et_NamaBank.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            }
+        });
+        et_NamaBank.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                Mirroring(false,et_source_account.getText().toString(),s,et_RekPenerima.getText().toString(),et_NamaPenerima.getText().toString(),et_Nominal.getText().toString(),et_serviceType.getText().toString(),et_benefitRec.getText().toString(),et_typePopulation.getText().toString(),et_Berita.getText().toString(),1,1);
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
+
+        et_RekPenerima.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                Mirroring(false,et_source_account.getText().toString(),et_NamaBank.getText().toString(),s,et_NamaPenerima.getText().toString(),et_Nominal.getText().toString(),et_serviceType.getText().toString(),et_benefitRec.getText().toString(),et_typePopulation.getText().toString(),et_Berita.getText().toString(),1,1);
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
+        et_NamaPenerima.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                Mirroring(false,et_source_account.getText().toString(),et_NamaBank.getText().toString(),et_RekPenerima.getText().toString(),s,et_Nominal.getText().toString(),et_serviceType.getText().toString(),et_benefitRec.getText().toString(),et_typePopulation.getText().toString(),et_Berita.getText().toString(),1,1);
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
             }
         });
 
@@ -188,6 +252,22 @@ public class frag_rtgs extends Fragment {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
             }
         });
+        et_serviceType.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                Mirroring(false,et_source_account.getText().toString(),et_NamaBank.getText().toString(),et_RekPenerima.getText().toString(),et_NamaPenerima.getText().toString(),et_Nominal.getText().toString(),s,et_benefitRec.getText().toString(),et_typePopulation.getText().toString(),et_Berita.getText().toString(),1,1);
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
 
         ArrayAdapter<String> adapterBenefit = new ArrayAdapter<String>(context,R.layout.list_item, sourceBenefit);
         et_benefitRec.setAdapter(adapterBenefit);
@@ -197,6 +277,22 @@ public class frag_rtgs extends Fragment {
                 posSourceBenefit = position;
             }
         });
+        et_benefitRec.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                Mirroring(false,et_source_account.getText().toString(),et_NamaBank.getText().toString(),et_RekPenerima.getText().toString(),et_NamaPenerima.getText().toString(),et_Nominal.getText().toString(),et_serviceType.getText().toString(),s,et_typePopulation.getText().toString(),et_Berita.getText().toString(),1,1);
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
 
         ArrayAdapter<String> adapterPopulation = new ArrayAdapter<String>(context,R.layout.list_item, sourcePopulation);
         et_typePopulation.setAdapter(adapterPopulation);
@@ -204,6 +300,39 @@ public class frag_rtgs extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 posSourcePopulation = position;
+            }
+        });
+        et_typePopulation.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                Mirroring(false,et_source_account.getText().toString(),et_NamaBank.getText().toString(),et_RekPenerima.getText().toString(),et_NamaPenerima.getText().toString(),et_Nominal.getText().toString(),et_serviceType.getText().toString(),et_benefitRec.getText().toString(),s,et_Berita.getText().toString(),1,1);
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
+
+        et_Berita.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                Mirroring(false,et_source_account.getText().toString(),et_NamaBank.getText().toString(),et_RekPenerima.getText().toString(),et_NamaPenerima.getText().toString(),et_Nominal.getText().toString(),et_serviceType.getText().toString(),et_benefitRec.getText().toString(),et_typePopulation.getText().toString(),s,1,1);
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
             }
         });
 
@@ -224,6 +353,7 @@ public class frag_rtgs extends Fragment {
                     Toast.makeText(context, getResources().getString(R.string.empty_field), Toast.LENGTH_SHORT).show();
                 }
                 else{
+                    Mirroring(true,et_source_account.getText().toString(),et_NamaBank.getText().toString(),et_RekPenerima.getText().toString(),et_NamaPenerima.getText().toString(),et_Nominal.getText().toString(),et_serviceType.getText().toString(),et_benefitRec.getText().toString(),et_typePopulation.getText().toString(),et_Berita.getText().toString(),1,1);
                     Fragment fragment = new frag_summary_rtgs();
                     Bundle bundle = new Bundle();
                     bundle.putString("rekeningSumber",RekeningSumber);
@@ -398,5 +528,69 @@ public class frag_rtgs extends Fragment {
         typeServiceList.add(new TypeServiceItem("RTO", getResources().getString(R.string.rto_content)));
         typeServiceList.add(new TypeServiceItem("SKN",getResources().getString(R.string.skn_content)));
         typeServiceList.add(new TypeServiceItem("RTGS", getResources().getString(R.string.rtgs_content)));
+    }
+    private void Mirroring(boolean bool, CharSequence sumberRekening, CharSequence bank, CharSequence rekening, CharSequence nama, CharSequence nominal, CharSequence layanan, CharSequence manfaat, CharSequence penduduk, CharSequence berita, int page, int allpage ){
+        JSONObject jsons = new JSONObject();
+        JSONArray jsonArray = new JSONArray();
+        try {
+            jsonArray.put(sumberRekening);
+            jsonArray.put(bank);
+            jsonArray.put(rekening);
+            jsonArray.put(nama);
+            jsonArray.put(nominal);
+            jsonArray.put(layanan);
+            jsonArray.put(manfaat);
+            jsonArray.put(penduduk);
+            jsonArray.put(berita);
+            jsonArray.put(page);
+            jsonArray.put(allpage);
+            jsonArray.put(bool);
+            jsons.put("idDips",idDips);
+            jsons.put("code",16);
+            jsons.put("data",jsonArray);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), jsons.toString());
+        ApiService API = Server.getAPIService();
+        Call<JsonObject> call = API.Mirroring(requestBody);
+        call.enqueue(new Callback<JsonObject>() {
+            @Override
+            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                Log.d("MIRROR","Mirroring Sukses");
+            }
+
+            @Override
+            public void onFailure(Call<JsonObject> call, Throwable t) {
+                Log.d("MIRROR","Mirroring Gagal");
+            }
+        });
+    }
+    private void Mirroring2(int nextCode, boolean bool){
+        JSONObject jsons = new JSONObject();
+        JSONArray jsonArray = new JSONArray();
+        try {
+            jsonArray.put(nextCode);
+            jsonArray.put(bool);
+            jsons.put("idDips",idDips);
+            jsons.put("code",15);
+            jsons.put("data",jsonArray);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), jsons.toString());
+        ApiService API = Server.getAPIService();
+        Call<JsonObject> call = API.Mirroring(requestBody);
+        call.enqueue(new Callback<JsonObject>() {
+            @Override
+            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                Log.d("MIRROR","Mirroring Sukses");
+            }
+
+            @Override
+            public void onFailure(Call<JsonObject> call, Throwable t) {
+                Log.d("MIRROR","Mirroring Gagal");
+            }
+        });
     }
 }

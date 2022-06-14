@@ -51,7 +51,6 @@ public class frag_aktivasi_ibmb extends Fragment {
     private EditTextPin editTextPin;
     private Handler handlerSuccess;
     public int seconds = 60;
-    private int count = 0;
     public boolean running = true;
     final Handler handler = new Handler();
     Runnable runnable = new Runnable() {
@@ -81,6 +80,7 @@ public class frag_aktivasi_ibmb extends Fragment {
         }
 
     };
+    private int count = 0;
     private String idDips, UserId2, Password2, Konfirmasi_password2, Mpin2, Konfirmasi_mpin2, Timer2, Resend_Otp2;
     private SessionManager session;
 
