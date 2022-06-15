@@ -193,7 +193,7 @@ public class frag_portfolio extends Fragment {
         try {
             jsonArray.put(bool);
             jsons.put("idDips",idDips);
-            jsons.put("code",14);
+            jsons.put("code",15);
             jsons.put("data",jsonArray);
         } catch (JSONException e) {
             e.printStackTrace();

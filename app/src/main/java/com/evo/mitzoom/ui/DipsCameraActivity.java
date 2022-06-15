@@ -105,53 +105,58 @@ public class DipsCameraActivity extends AppCompatActivity {
         btnTake.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                camera.takePicture(null, null, null, new Camera.PictureCallback() {
-                    @Override
-                    public void onPictureTaken(byte[] data, Camera camera) {
-                        if (data.length > 0) {
-                            dataImage = data;
+                if (camera != null) {
+                    camera.takePicture(null, null, null, new Camera.PictureCallback() {
+                        @Override
+                        public void onPictureTaken(byte[] data, Camera camera) {
+                            if (data.length > 0) {
+                                dataImage = data;
 
-                            Bitmap bitmap = BitmapFactory.decodeByteArray(dataImage, 0, dataImage.length);
-                            //Bitmap bitmapCrop = resizeAndCropCenter2(bitmap, 640, false);
-                            Bitmap bitmapCrop = getResizedBitmap(bitmap, (bitmap.getWidth() / 2), (bitmap.getHeight() / 2));
+                                Bitmap bitmap = BitmapFactory.decodeByteArray(dataImage, 0, dataImage.length);
+                                //Bitmap bitmapCrop = resizeAndCropCenter2(bitmap, 640, false);
+                                Bitmap bitmapCrop = getResizedBitmap(bitmap, (bitmap.getWidth() / 2), (bitmap.getHeight() / 2));
 
-                            int rotation = 0;
-                            try {
-                                File mediaFile = createTemporaryFile(dataImage);
+                                int rotation = 0;
                                 try {
-                                    String pathFile = mediaFile.getAbsolutePath();
-                                    ExifInterface exif = new ExifInterface(pathFile);
-                                    rotation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL);
-                                    Log.d("CEK", "rotation : " + rotation);
+                                    File mediaFile = createTemporaryFile(dataImage);
+                                    try {
+                                        String pathFile = mediaFile.getAbsolutePath();
+                                        ExifInterface exif = new ExifInterface(pathFile);
+                                        rotation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL);
+                                        Log.d("CEK", "rotation : " + rotation);
 
-                                    if (mediaFile.exists()) {
-                                        try {
-                                            mediaFile.getCanonicalFile().delete();
-                                            if (mediaFile.exists()) {
-                                                getApplicationContext().deleteFile(mediaFile.getName());
+                                        if (mediaFile.exists()) {
+                                            try {
+                                                mediaFile.getCanonicalFile().delete();
+                                                if (mediaFile.exists()) {
+                                                    getApplicationContext().deleteFile(mediaFile.getName());
+                                                }
+                                            } catch (IOException e) {
+                                                e.printStackTrace();
                                             }
-                                        } catch (IOException e) {
-                                            e.printStackTrace();
                                         }
-                                    }
 
-                                } catch (IOException e) {
+                                    } catch (IOException e) {
+                                        e.printStackTrace();
+                                    }
+                                } catch (Exception e) {
                                     e.printStackTrace();
                                 }
-                            } catch (Exception e) {
-                                e.printStackTrace();
+
+                                String imgBase64 = imageRotateBase64(bitmapCrop, rotation);
+
+                                byte[] bytePhoto = Base64.decode(imgBase64, Base64.NO_WRAP);
+                                Intent returnIntent = getIntent();
+                                returnIntent.putExtra("result_camera", bytePhoto);
+                                setResult(Activity.RESULT_OK, returnIntent);
+                                finish();
                             }
-
-                            String imgBase64 = imageRotateBase64(bitmapCrop, rotation);
-
-                            byte[] bytePhoto = Base64.decode(imgBase64, Base64.NO_WRAP);
-                            Intent returnIntent = getIntent();
-                            returnIntent.putExtra("result_camera", bytePhoto);
-                            setResult(Activity.RESULT_OK, returnIntent);
-                            finish();
                         }
-                    }
-                });
+                    });
+                } else {
+                    onPause();
+                    onResume();
+                }
             }
         });
 

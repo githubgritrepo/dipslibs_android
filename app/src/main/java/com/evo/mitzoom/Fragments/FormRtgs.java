@@ -91,7 +91,6 @@ public class FormRtgs extends Fragment {
     private ArrayList<String> dataNews = new ArrayList<>();
     public static final NumberFormat numberFormat = NumberFormat.getInstance(new Locale("id", "ID"));
     private String getBerita = "";
-    private AutoCompleteTextView elBankName;
     private String dataRTGS = null;
 
     @Override
@@ -623,8 +622,6 @@ public class FormRtgs extends Fragment {
             EditText et_nama_penerima = (EditText) view.findViewById(R.id.et_nama_penerima);
             EditText et_nominal = (EditText) view.findViewById(R.id.et_nominal);
             EditText et_berita = (EditText) view.findViewById(R.id.et_berita);
-
-            elBankName = et_nama_bank;
 
             et_nominal.addTextChangedListener(new TextWatcher() {
                 @Override
