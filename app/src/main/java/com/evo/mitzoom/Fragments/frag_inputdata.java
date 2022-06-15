@@ -59,6 +59,7 @@ public class frag_inputdata extends Fragment {
     private View dialogView;
     private SessionManager session;
     private String idDips, TW_NIK, TW_NAMA;
+    private SweetAlertDialog sweetAlertDialogTNC;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -390,11 +391,13 @@ public class frag_inputdata extends Fragment {
     private void PopUpTnc(){
         inflater = ((Activity)context).getLayoutInflater();
         dialogView = inflater.inflate(R.layout.item_tnc,null);
-        SweetAlertDialog sweetAlertDialog = new SweetAlertDialog(context, SweetAlertDialog.NORMAL_TYPE);
-        sweetAlertDialog.setCustomView(dialogView);
-        sweetAlertDialog.hideConfirmButton();
-        sweetAlertDialog.setCancelable(false);
-        sweetAlertDialog.show();
+        if (sweetAlertDialogTNC == null) {
+            sweetAlertDialogTNC = new SweetAlertDialog(context, SweetAlertDialog.NORMAL_TYPE);
+        }
+        sweetAlertDialogTNC.setCustomView(dialogView);
+        sweetAlertDialogTNC.hideConfirmButton();
+        sweetAlertDialogTNC.setCancelable(false);
+        sweetAlertDialogTNC.show();
         CheckBox checkBox = dialogView.findViewById(R.id.checktnc);
         Button btn = dialogView.findViewById(R.id.btnnexttnc);
         btn.setClickable(false);
@@ -419,7 +422,7 @@ public class frag_inputdata extends Fragment {
                 if (checkBox.isChecked()){
                     Mirroring2(true);
                     Mirroring3(true);
-                    sweetAlertDialog.dismiss();
+                    sweetAlertDialogTNC.dismiss();
                     getFragmentPage(new frag_opening_account());
                 }
                 else {

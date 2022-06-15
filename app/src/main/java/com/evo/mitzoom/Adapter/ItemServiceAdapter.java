@@ -104,7 +104,7 @@ public class ItemServiceAdapter extends RecyclerView.Adapter<ItemServiceAdapter.
             jsonArray.put(nextCode);
             jsonArray.put(bool);
             jsons.put("idDips",idDips);
-            jsons.put("code",15);
+            jsons.put("code",nextCode);
             jsons.put("data",jsonArray);
         } catch (JSONException e) {
             e.printStackTrace();

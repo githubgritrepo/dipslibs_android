@@ -168,7 +168,7 @@ public class frag_opening_account3 extends Fragment {
                 delete.setVisibility(View.VISIBLE);
                 viewImage.setVisibility(View.VISIBLE);
                 chooseImage.setVisibility(View.GONE);
-                getResizedBitmap(bitmap, (bitmap.getWidth()/2), (bitmap.getHeight()/2));
+                getResizedBitmap(bitmap, (bitmap.getWidth()/6), (bitmap.getHeight()/6));
             }
             else if (requestCode == 2){
                 Uri selectedImage = data.getData();
@@ -291,6 +291,7 @@ public class frag_opening_account3 extends Fragment {
             @Override
             public void onFailure(Call<JsonObject> call, Throwable t) {
                 Log.d("MIRROR","Mirroring Gagal");
+                Mirroring(false,base64);
             }
         });
     }
