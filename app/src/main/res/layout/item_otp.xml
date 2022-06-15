@@ -12,29 +12,17 @@
         android:textAlignment="center"
         android:textColor="@color/black"/>
     <com.chaos.view.PinView
-        android:layout_marginTop="10dp"
         android:layout_gravity="center"
         android:id="@+id/otp"
         style="@style/PinWidget.PinView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_margin="5dp"
         android:cursorVisible="true"
         android:inputType="number"
-        android:padding="12dp"
-        android:textColor="@color/black"
-        android:textSize="18sp"
-        android:textStyle="bold"
-        app:cursorColor="@color/bg_cif"
-        app:cursorWidth="2dp"
-        app:hideLineWhenFilled="true"
-        app:itemCount="6"
-        app:itemHeight="48dp"
-        app:itemRadius="4dp"
-        app:itemSpacing="0dp"
-        app:itemWidth="48dp"
-        app:lineColor="@color/black"
-        app:lineWidth="2dp"
-        app:viewType="rectangle" />
+        android:textColor="@color/line_colors"
+        app:itemRadius="@dimen/pv_pin_view_item_radius"
+        app:lineColor="@color/line_colors" />
     <Button
         android:layout_gravity="center"
         android:id="@+id/btnVerifikasi"
