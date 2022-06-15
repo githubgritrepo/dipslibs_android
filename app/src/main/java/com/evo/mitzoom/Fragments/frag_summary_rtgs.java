@@ -56,6 +56,8 @@ public class frag_summary_rtgs extends Fragment {
     public boolean running = true;
     private SessionManager session;
     private String idDips;
+    private Handler handler;
+    private Runnable myRunnable;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -140,7 +142,7 @@ public class frag_summary_rtgs extends Fragment {
         btnVerifikasi = dialogView.findViewById(R.id.btnVerifikasi);
         Timer = dialogView.findViewById(R.id.timer_otp);
         Resend_Otp = dialogView.findViewById(R.id.btn_resend_otp);
-        otp = dialogView.findViewById(R.id.otp);
+        otp.setAnimationEnable(true);
         otp.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -156,14 +158,20 @@ public class frag_summary_rtgs extends Fragment {
 
             @Override
             public void afterTextChanged(Editable s) {
-                otp.removeTextChangedListener(this);
                 newString = myFilter(s.toString());
-                otp.setText(newString);
-                int newPos = selPos + (newString.length() - oldString.length());
-                if (newPos < 0) newPos = 0;
-                otp.setSelection(newPos);
+                otp.removeTextChangedListener(this);
+                handler = new Handler();
+                myRunnable = new Runnable() {
+                    @Override
+                    public void run() {
+                        otp.setText(newString);
+                    }
+                };
+                handler.postDelayed(myRunnable, 1500);
                 otp.addTextChangedListener(this);
-
+                if (s.length() == 0){
+                    handler.removeCallbacks(myRunnable);
+                }
             }
         });
         btnVerifikasi.setOnClickListener(new View.OnClickListener() {

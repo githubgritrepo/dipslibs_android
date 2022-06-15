@@ -1,6 +1,7 @@
 package com.evo.mitzoom.Fragments;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.Editable;
@@ -57,6 +58,8 @@ public class frag_aktivasi_ibmb extends Fragment {
     public boolean running = true;
     private String idDips, UserId2, Password2, Konfirmasi_password2, Mpin2, Konfirmasi_mpin2, Timer2, Resend_Otp2;
     private SessionManager session;
+    private Handler handler;
+    private Runnable myRunnable;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -303,7 +306,6 @@ public class frag_aktivasi_ibmb extends Fragment {
         });
     }
     private void PopUp(){
-
         inflater = getLayoutInflater();
         dialogView = inflater.inflate(R.layout.item_otp,null);
         SweetAlertDialog sweetAlertDialog = new SweetAlertDialog(context, SweetAlertDialog.NORMAL_TYPE);
@@ -315,6 +317,7 @@ public class frag_aktivasi_ibmb extends Fragment {
         Timer = dialogView.findViewById(R.id.timer_otp);
         Resend_Otp = dialogView.findViewById(R.id.btn_resend_otp);
         otp = dialogView.findViewById(R.id.otp);
+        otp.setAnimationEnable(true);
         otp.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -330,13 +333,20 @@ public class frag_aktivasi_ibmb extends Fragment {
 
             @Override
             public void afterTextChanged(Editable s) {
-                otp.removeTextChangedListener(this);
                 newString = myFilter(s.toString());
-                otp.setText(newString);
-                int newPos = selPos + (newString.length() - oldString.length());
-                if (newPos < 0) newPos = 0;
-                otp.setSelection(newPos);
+                otp.removeTextChangedListener(this);
+                handler = new Handler();
+                myRunnable = new Runnable() {
+                    @Override
+                    public void run() {
+                        otp.setText(newString);
+                    }
+                };
+                handler.postDelayed(myRunnable, 1500);
                 otp.addTextChangedListener(this);
+                if (s.length() == 0){
+                    handler.removeCallbacks(myRunnable);
+                }
             }
         });
 
