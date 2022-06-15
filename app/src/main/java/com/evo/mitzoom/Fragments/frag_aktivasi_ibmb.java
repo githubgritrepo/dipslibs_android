@@ -20,6 +20,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.chaos.view.PinView;
 import com.dhairytripathi.library.EditTextPin;
 import com.evo.mitzoom.API.ApiService;
 import com.evo.mitzoom.API.Server;
@@ -48,39 +49,12 @@ public class frag_aktivasi_ibmb extends Fragment {
     private LayoutInflater inflater;
     private View dialogView;
     private Button btnVerifikasi;
-    private EditTextPin editTextPin;
+    private PinView otp;
+    private int selPos;
+    private String oldString, newString;
     private Handler handlerSuccess;
     public int seconds = 60;
     public boolean running = true;
-    final Handler handler = new Handler();
-    Runnable runnable = new Runnable() {
-        @Override
-        public void run() {
-            count++;
-            if (count == 1)
-            {
-                Mirroring2(false, editTextPin.getPin());
-            }
-            else if (count == 2)
-            {
-                Mirroring2(false, editTextPin.getPin());
-            }
-            else if (count == 3)
-            {
-                Mirroring2(false, editTextPin.getPin());
-            }
-            else if (count == 4)
-            {
-                Mirroring2(false, editTextPin.getPin());
-            }
-
-            if (count == 4)
-                count = 0;
-            handler.postDelayed(this, 1000);
-        }
-
-    };
-    private int count = 0;
     private String idDips, UserId2, Password2, Konfirmasi_password2, Mpin2, Konfirmasi_mpin2, Timer2, Resend_Otp2;
     private SessionManager session;
 
@@ -340,18 +314,40 @@ public class frag_aktivasi_ibmb extends Fragment {
         btnVerifikasi = dialogView.findViewById(R.id.btnVerifikasi);
         Timer = dialogView.findViewById(R.id.timer_otp);
         Resend_Otp = dialogView.findViewById(R.id.btn_resend_otp);
-        editTextPin = dialogView.findViewById(R.id.kode_otp);
+        otp = dialogView.findViewById(R.id.otp);
+        otp.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                selPos = otp.getSelectionStart();
+                oldString = myFilter(s.toString());
 
-        handler.postDelayed(runnable, 1000);
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                Mirroring2(false,s);
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                otp.removeTextChangedListener(this);
+                newString = myFilter(s.toString());
+                otp.setText(newString);
+                int newPos = selPos + (newString.length() - oldString.length());
+                if (newPos < 0) newPos = 0;
+                otp.setSelection(newPos);
+                otp.addTextChangedListener(this);
+            }
+        });
+
         btnVerifikasi.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (editTextPin.getPin().equalsIgnoreCase("")){
+                if (otp.getText().toString().equalsIgnoreCase("")){
                     Toast.makeText(context, "Kode Otp masih kosong", Toast.LENGTH_SHORT).show();
                 }
                 else {
-                    handler.removeCallbacks(runnable);
-                    Mirroring2(true, editTextPin.getPin());
+                    Mirroring2(true, otp.getText().toString());
                     sweetAlertDialog.dismiss();
                     PopUpSuccesOtp();
                 }
@@ -366,6 +362,12 @@ public class frag_aktivasi_ibmb extends Fragment {
                 }
             }
         });
+    }
+    public String myFilter(String s) {
+        String digits;
+        digits = s.replaceAll("[0-9]", "*");
+        if (s.equals("")) return "";
+        return digits;
     }
     private void PopUpSuccesOtp(){
         SweetAlertDialog sweetAlertDialog = new SweetAlertDialog(context, SweetAlertDialog.SUCCESS_TYPE);
@@ -442,7 +444,7 @@ public class frag_aktivasi_ibmb extends Fragment {
             }
         });
     }
-    private void Mirroring2(Boolean bool,String s){
+    private void Mirroring2(Boolean bool,CharSequence s){
         JSONObject jsons = new JSONObject();
         JSONArray jsonArray = new JSONArray();
         try {
