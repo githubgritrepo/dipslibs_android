@@ -14,6 +14,7 @@
     <com.chaos.view.PinView
         android:layout_gravity="center"
         android:id="@+id/otp"
+        app:itemCount="6"
         style="@style/PinWidget.PinView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
