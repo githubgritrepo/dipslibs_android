@@ -24,11 +24,15 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.Fragment;
+import androidx.viewpager.widget.PagerAdapter;
+import androidx.viewpager.widget.ViewPager;
 
 import com.evo.mitzoom.API.ApiService;
 import com.evo.mitzoom.API.Server;
@@ -61,6 +65,7 @@ import java.util.Locale;
 import java.util.Objects;
 
 import cn.pedant.SweetAlert.SweetAlertDialog;
+import me.relex.circleindicator.CircleIndicator;
 import okhttp3.MediaType;
 import okhttp3.RequestBody;
 import retrofit2.Call;
@@ -84,6 +89,20 @@ public class frag_rtgs extends Fragment {
     public static final NumberFormat numberFormat = NumberFormat.getInstance(new Locale("id", "ID"));
     private String dataRTGS, idDips;
     private LinearLayout choose_gallery;
+    private MyViewPagerAdapter myViewPagerAdapter;
+    private CircleIndicator circleIndicator;
+    private ViewPager pager;
+    private String getBerita = "";
+    private ArrayList<Integer> layouts = new ArrayList<Integer>();
+    private ArrayList<String> dataNoForm = new ArrayList<String>();
+    private ArrayList<String> dataBankName = new ArrayList<String>();
+    private ArrayList<String> dataAccountReceive = new ArrayList<>();
+    private ArrayList<String> dataNameReceive = new ArrayList<>();
+    private ArrayList<String> dataNominal = new ArrayList<>();
+    private ArrayList<String> dataService = new ArrayList<>();
+    private ArrayList<String> dataBenefit = new ArrayList<>();
+    private ArrayList<String> dataPopulation = new ArrayList<>();
+    private ArrayList<String> dataNews = new ArrayList<>();
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -96,24 +115,22 @@ public class frag_rtgs extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.frag_form_rtgs, container, false);
+        View view = inflater.inflate(R.layout.frag_form_rtgs2, container, false);
         btnBack = view.findViewById(R.id.btn_back4);
         choose_gallery = (LinearLayout) view.findViewById(R.id.choose_gallery);
-        et_NamaBank = view.findViewById(R.id.et_nama_bank);
-        et_RekPenerima = view.findViewById(R.id.et_rek_penerima);
-        et_serviceType = (AutoCompleteTextView) view.findViewById(R.id.et_serviceType);
-        et_NamaPenerima = view.findViewById(R.id.et_nama_penerima);
-        et_typePopulation = (AutoCompleteTextView) view.findViewById(R.id.et_typePopulation);
-        et_Nominal = view.findViewById(R.id.et_nominal);
-        et_benefitRec = (AutoCompleteTextView) view.findViewById(R.id.et_benefitRec);
-        et_Berita = view.findViewById(R.id.et_berita);
+        pager = (ViewPager) view.findViewById(R.id.pager);
+//        circleIndicator = (CircleIndicator) view.findViewById(R.id.indicator);
         btnProses = view.findViewById(R.id.btnProsesRTGS);
-        et_source_account = (AutoCompleteTextView) view.findViewById(R.id.et_source_account);
         return view;
     }
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        layouts.add(R.layout.content_form_rtgs);
+        dataNoForm.add("2103212");
+        initPager();
+
         idDips = sessions.getKEY_IdDips();
         sourceBenefit = new String[]{getResources().getString(R.string.perorangan), getResources().getString(R.string.perusahaan), getResources().getString(R.string.pemerintah)};
         sourcePopulation = new String[]{getResources().getString(R.string.penduduk), getResources().getString(R.string.bukan_penduduk)};
@@ -123,7 +140,7 @@ public class frag_rtgs extends Fragment {
                 chooseFromSD();
             }
         });
-        et_Nominal.addTextChangedListener(new TextWatcher() {
+        /*et_Nominal.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
@@ -145,7 +162,7 @@ public class frag_rtgs extends Fragment {
             public void afterTextChanged(Editable s) {
 
             }
-        });
+        });*/
         btnBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -154,7 +171,7 @@ public class frag_rtgs extends Fragment {
             }
         });
 
-        AdapterSourceAccount adapterSourceAcc = new AdapterSourceAccount(context,R.layout.list_item_souceacc,sourceAcc);
+        /*AdapterSourceAccount adapterSourceAcc = new AdapterSourceAccount(context,R.layout.list_item_souceacc,sourceAcc);
         et_source_account.setAdapter(adapterSourceAcc);
         et_source_account.setBackground(context.getResources().getDrawable(R.drawable.blue_button_background));
         et_source_account.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -334,7 +351,7 @@ public class frag_rtgs extends Fragment {
             public void afterTextChanged(Editable s) {
 
             }
-        });
+        });*/
 
         btnProses.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -371,6 +388,57 @@ public class frag_rtgs extends Fragment {
 
             }
         });
+    }
+
+    private void initPager() {
+        if (myViewPagerAdapter == null) {
+            myViewPagerAdapter = new MyViewPagerAdapter();
+        }
+        pager.setAdapter(myViewPagerAdapter);
+//        circleIndicator.setViewPager(pager);
+    }
+
+    private void savedRTGS() {
+        Log.d("CEK","MASUK savedRTGS");
+        try {
+            JSONArray jsArr = new JSONArray(dataRTGS);
+            int len = jsArr.length();
+            for (int i = 0; i < len; i++) {
+                String dataArr = jsArr.get(i).toString();
+                JSONObject dataJs = new JSONObject(dataArr);
+                String idForm = dataJs.getString("idForm");
+                String sourceBank = dataJs.getString("sourceBank");
+                String sourceTypeService = dataJs.getString("sourceTypeService");
+                String sourceBenefit = dataJs.getString("sourceBenefit");
+                String sourcePopulation = dataJs.getString("sourcePopulation");
+                String rek_penerima = dataJs.getString("rek_penerima");
+                String nama_penerima = dataJs.getString("nama_penerima");
+                String nominal = dataJs.getString("nominal");
+                String berita = dataJs.getString("berita");
+
+                if (i > 0) {
+                    layouts.add(R.layout.content_form_rtgs);
+                }
+
+                if (i == 0) {
+                    dataNoForm.set(i,idForm);
+                } else {
+                    dataNoForm.add(idForm);
+                }
+                dataBankName.add(sourceBank);
+                dataAccountReceive.add(rek_penerima);
+                dataNameReceive.add(nama_penerima);
+                dataNominal.add(nominal);
+                dataService.add(sourceTypeService);
+                dataBenefit.add(sourceBenefit);
+                dataPopulation.add(sourcePopulation);
+                dataNews.add(berita);
+
+                initPager();
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
     private void chooseFromSD() {
@@ -431,7 +499,8 @@ public class frag_rtgs extends Fragment {
                 String idForm = dataJs.getString("idForm");
 
                 if (resulText.equals(idForm)) {
-                    String SourceBank = dataJs.getString("sourceBank");
+                    savedRTGS();
+                    /*String SourceBank = dataJs.getString("sourceBank");
                     String SourceTypeService = dataJs.getString("sourceTypeService");
                     String SourceBenefit = dataJs.getString("sourceBenefit");
                     String SourcePopulation = dataJs.getString("sourcePopulation");
@@ -445,12 +514,12 @@ public class frag_rtgs extends Fragment {
                         }
                     }
 
-                    /*if (posSourceBenefit > -1) {
+                    *//*if (posSourceBenefit > -1) {
                         et_benefitRec.setText(et_benefitRec.getAdapter().getItem(posSourceBenefit).toString(), false);
                     }
                     if (posSourcePopulation > -1) {
                         et_typePopulation.setText(et_typePopulation.getAdapter().getItem(posSourcePopulation).toString(), false);
-                    }*/
+                    }*//*
 
                     if (!SourceBenefit.isEmpty()){
                         et_benefitRec.setText(SourceBenefit);
@@ -475,7 +544,7 @@ public class frag_rtgs extends Fragment {
                     }
                     if (!berita.isEmpty()) {
                         et_Berita.setText(berita);
-                    }
+                    }*/
 
                 } else {
                     SweetAlertDialog sWA = new SweetAlertDialog(context, SweetAlertDialog.WARNING_TYPE);
@@ -592,5 +661,440 @@ public class frag_rtgs extends Fragment {
                 Log.d("MIRROR","Mirroring Gagal");
             }
         });
+    }
+
+    private class MyViewPagerAdapter extends PagerAdapter {
+        private LayoutInflater layoutInflater;
+
+        @NonNull
+        @Override
+        public Object instantiateItem(@NonNull ViewGroup container, int position) {
+            Log.d("CEK","MyViewPagerAdapter layouts : "+layouts.size()+" | position : "+position);
+            layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+
+            View view = layoutInflater.inflate(layouts.get(position), container, false);
+            container.addView(view);
+
+            iniatilizeElement(view,position);
+
+            return view;
+        }
+
+        private void iniatilizeElement(View view, int position) {
+            int positionE = position;
+            int indexMirror = position + 1;
+
+            LinearLayout llSourceAccount = (LinearLayout) view.findViewById(R.id.llSourceAccount);
+            AutoCompleteTextView et_source_accountpager = (AutoCompleteTextView) view.findViewById(R.id.et_source_account);
+            TextView tvNoFormulir = (TextView) view.findViewById(R.id.tvNoFormulir);
+            AutoCompleteTextView et_nama_bank = (AutoCompleteTextView) view.findViewById(R.id.et_nama_bank);
+            AutoCompleteTextView et_serviceType = (AutoCompleteTextView) view.findViewById(R.id.et_serviceType);
+            AutoCompleteTextView et_benefitRec = (AutoCompleteTextView) view.findViewById(R.id.et_benefitRec);
+            AutoCompleteTextView et_typePopulation = (AutoCompleteTextView) view.findViewById(R.id.et_typePopulation);
+            EditText et_rek_penerima = (EditText) view.findViewById(R.id.et_rek_penerima);
+            EditText et_nama_penerima = (EditText) view.findViewById(R.id.et_nama_penerima);
+            EditText et_nominal = (EditText) view.findViewById(R.id.et_nominal);
+            EditText et_berita = (EditText) view.findViewById(R.id.et_berita);
+
+            llSourceAccount.setVisibility(View.VISIBLE);
+
+            AdapterSourceAccount adapterSourceAcc = new AdapterSourceAccount(context,R.layout.list_item_souceacc,sourceAcc);
+            et_source_accountpager.setAdapter(adapterSourceAcc);
+            et_source_accountpager.setBackground(context.getResources().getDrawable(R.drawable.blue_button_background));
+            et_source_accountpager.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    //String selection = (String) parent.getItemAtPosition(position);
+                }
+            });
+            et_source_accountpager.addTextChangedListener(new TextWatcher() {
+                String textContent = "";
+                @Override
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                }
+
+                @Override
+                public void onTextChanged(CharSequence s, int start, int before, int count) {
+                    textContent = s.toString();
+
+                }
+
+                @Override
+                public void afterTextChanged(Editable s) {
+                    String[] strings = textContent.split("\\r?\\n");
+                    String titleAcc = strings[0]+"\n";
+                    s.setSpan(new StyleSpan(android.graphics.Typeface.BOLD), 0, titleAcc.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                    Mirroring(false,s,et_nama_bank.getText().toString(),et_rek_penerima.getText().toString(),et_nama_penerima.getText().toString(),
+                            et_nominal.getText().toString(),et_serviceType.getText().toString(),et_benefitRec.getText().toString(),
+                            et_typePopulation.getText().toString(),et_berita.getText().toString(),indexMirror,layouts.size());
+                }
+
+
+            });
+
+            et_nominal.addTextChangedListener(new TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+                }
+
+                @Override
+                public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+                }
+
+                @Override
+                public void afterTextChanged(Editable s) {
+                    et_nominal.removeTextChangedListener(this);
+                    BigDecimal parsed = parseCurrencyValue(et_nominal.getText().toString());
+                    String formatted = numberFormat.format(parsed);
+                    et_nominal.setText(formatted);
+                    et_nominal.setSelection(formatted.length());
+                    et_nominal.addTextChangedListener(this);
+                    Mirroring(false,et_source_accountpager.getText().toString(),et_nama_bank.getText().toString(),et_rek_penerima.getText().toString(),et_nama_penerima.getText().toString(),
+                            et_nominal.getText().toString(),et_serviceType.getText().toString(),et_benefitRec.getText().toString(),
+                            et_typePopulation.getText().toString(),et_berita.getText().toString(),indexMirror,layouts.size());
+                }
+            });
+
+            fillBankList();
+            AdapterBank2 adapterBank2 = new AdapterBank2(context,bankList);
+            et_nama_bank.setAdapter(adapterBank2);
+            et_nama_bank.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+                @Override
+                public void onFocusChange(View v, boolean hasFocus) {
+                    if (hasFocus) {
+                        et_nama_bank.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                et_nama_bank.showDropDown();
+                            }
+                        }, 500);
+                    } else {
+                        et_nama_bank.dismissDropDown();
+                        if (dataBankName.size() > 0) {
+                            String dataB = et_nama_bank.getText().toString();
+                            if (dataBankName.size() == positionE) {
+                                dataBankName.add(positionE, dataB);
+                            } else {
+                                dataBankName.set(positionE, dataB);
+                            }
+                            Mirroring(false,et_source_accountpager.getText().toString(),et_nama_bank.getText().toString(),et_rek_penerima.getText().toString(),et_nama_penerima.getText().toString(),
+                                    et_nominal.getText().toString(),et_serviceType.getText().toString(),et_benefitRec.getText().toString(),
+                                    et_typePopulation.getText().toString(),et_berita.getText().toString(),indexMirror,layouts.size());
+                        }
+                    }
+                }
+            });
+            et_nama_bank.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    String dataB = et_nama_bank.getText().toString();
+                    if (dataBankName.size() == 0) {
+                        dataBankName.add(positionE, dataB);
+                    } else {
+                        if (dataBankName.size() == positionE) {
+                            dataBankName.add(positionE, dataB);
+                        } else {
+                            dataBankName.set(positionE, dataB);
+                        }
+                    }
+                    Mirroring(false,et_source_accountpager.getText().toString(),et_nama_bank.getText().toString(),et_rek_penerima.getText().toString(),et_nama_penerima.getText().toString(),
+                            et_nominal.getText().toString(),et_serviceType.getText().toString(),et_benefitRec.getText().toString(),
+                            et_typePopulation.getText().toString(),et_berita.getText().toString(),indexMirror,layouts.size());
+                }
+            });
+
+            fillTypeServiceList();
+            AdapterTypeService adapterTypeService = new AdapterTypeService(context,typeServiceList);
+            et_serviceType.setAdapter(adapterTypeService);
+            et_serviceType.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+                @Override
+                public void onFocusChange(View v, boolean hasFocus) {
+                    if (!hasFocus) {
+                        et_serviceType.dismissDropDown();
+                        if (dataService.size() > 0) {
+                            String dataB = et_serviceType.getText().toString();
+                            if (dataService.size() == positionE) {
+                                dataService.add(positionE, dataB);
+                            } else {
+                                dataService.set(positionE, dataB);
+                            }
+                            Mirroring(false,et_source_accountpager.getText().toString(),et_nama_bank.getText().toString(),et_rek_penerima.getText().toString(),et_nama_penerima.getText().toString(),
+                                    et_nominal.getText().toString(),et_serviceType.getText().toString(),et_benefitRec.getText().toString(),
+                                    et_typePopulation.getText().toString(),et_berita.getText().toString(),indexMirror,layouts.size());
+                        }
+                    }
+                }
+            });
+            et_serviceType.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    String dataB = et_serviceType.getText().toString();
+                    if (dataService.size() == 0) {
+                        dataService.add(positionE, dataB);
+                    } else {
+                        if (dataService.size() == positionE) {
+                            dataService.add(positionE, dataB);
+                        } else {
+                            dataService.set(positionE, dataB);
+                        }
+                    }
+                    Mirroring(false,et_source_accountpager.getText().toString(),et_nama_bank.getText().toString(),et_rek_penerima.getText().toString(),et_nama_penerima.getText().toString(),
+                            et_nominal.getText().toString(),et_serviceType.getText().toString(),et_benefitRec.getText().toString(),
+                            et_typePopulation.getText().toString(),et_berita.getText().toString(),indexMirror,layouts.size());
+                }
+            });
+
+            ArrayAdapter<String> adapterBenefit = new ArrayAdapter<String>(context,R.layout.list_item, sourceBenefit);
+            et_benefitRec.setAdapter(adapterBenefit);
+            et_benefitRec.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    String dataB = et_benefitRec.getText().toString();
+                    if (dataBenefit.size() == 0) {
+                        dataBenefit.add(positionE, dataB);
+                    } else {
+                        if (dataBenefit.size() == positionE) {
+                            dataBenefit.add(positionE, dataB);
+                        } else {
+                            dataBenefit.set(positionE, dataB);
+                        }
+                    }
+                    Mirroring(false,et_source_accountpager.getText().toString(),et_nama_bank.getText().toString(),et_rek_penerima.getText().toString(),et_nama_penerima.getText().toString(),
+                            et_nominal.getText().toString(),et_serviceType.getText().toString(),et_benefitRec.getText().toString(),
+                            et_typePopulation.getText().toString(),et_berita.getText().toString(),indexMirror,layouts.size());
+                }
+            });
+
+            ArrayAdapter<String> adapterPopulation = new ArrayAdapter<String>(context,R.layout.list_item, sourcePopulation);
+            et_typePopulation.setAdapter(adapterPopulation);
+            et_typePopulation.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    String dataB = et_typePopulation.getText().toString();
+                    if (dataPopulation.size() == 0) {
+                        dataPopulation.add(positionE, dataB);
+                    } else {
+                        if (dataPopulation.size() == positionE) {
+                            dataPopulation.add(positionE, dataB);
+                        } else {
+                            dataPopulation.set(positionE, dataB);
+                        }
+                    }
+                    Mirroring(false,et_source_accountpager.getText().toString(),et_nama_bank.getText().toString(),et_rek_penerima.getText().toString(),et_nama_penerima.getText().toString(),
+                            et_nominal.getText().toString(),et_serviceType.getText().toString(),et_benefitRec.getText().toString(),
+                            et_typePopulation.getText().toString(),et_berita.getText().toString(),indexMirror,layouts.size());
+                }
+            });
+
+            et_rek_penerima.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+                @Override
+                public void onFocusChange(View v, boolean hasFocus) {
+                    if (!hasFocus) {
+                        String dataB = et_rek_penerima.getText().toString();
+                        if (dataAccountReceive.size() == 0) {
+                            dataAccountReceive.add(positionE,dataB);
+                        } else {
+                            if (dataAccountReceive.size() == positionE) {
+                                dataAccountReceive.add(positionE,dataB);
+                            } else {
+                                dataAccountReceive.set(positionE, dataB);
+                            }
+                        }
+                        Mirroring(false,et_source_accountpager.getText().toString(),et_nama_bank.getText().toString(),et_rek_penerima.getText().toString(),et_nama_penerima.getText().toString(),
+                                et_nominal.getText().toString(),et_serviceType.getText().toString(),et_benefitRec.getText().toString(),
+                                et_typePopulation.getText().toString(),et_berita.getText().toString(),indexMirror,layouts.size());
+
+                    }
+                }
+            });
+
+            et_nama_penerima.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+                @Override
+                public void onFocusChange(View v, boolean hasFocus) {
+                    if (!hasFocus) {
+                        String dataB = et_nama_penerima.getText().toString();
+                        if (dataNameReceive.size() == 0) {
+                            dataNameReceive.add(positionE, dataB);
+                        } else {
+                            if (dataNameReceive.size() == positionE) {
+                                dataNameReceive.add(positionE, dataB);
+                            } else {
+                                dataNameReceive.set(positionE, dataB);
+                            }
+                        }
+                        Mirroring(false,et_source_accountpager.getText().toString(),et_nama_bank.getText().toString(),et_rek_penerima.getText().toString(),et_nama_penerima.getText().toString(),
+                                et_nominal.getText().toString(),et_serviceType.getText().toString(),et_benefitRec.getText().toString(),
+                                et_typePopulation.getText().toString(),et_berita.getText().toString(),indexMirror,layouts.size());
+                    }
+                }
+            });
+
+            et_nominal.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+                @Override
+                public void onFocusChange(View v, boolean hasFocus) {
+                    if (!hasFocus) {
+                        String dataB = et_nominal.getText().toString();
+                        if (dataNominal.size() == 0) {
+                            dataNominal.add(positionE, dataB);
+                        } else {
+                            if (dataNominal.size() == positionE) {
+                                dataNominal.add(positionE, dataB);
+                            } else {
+                                dataNominal.set(positionE, dataB);
+                            }
+                        }
+                        Mirroring(false,et_source_accountpager.getText().toString(),et_nama_bank.getText().toString(),et_rek_penerima.getText().toString(),et_nama_penerima.getText().toString(),
+                                et_nominal.getText().toString(),et_serviceType.getText().toString(),et_benefitRec.getText().toString(),
+                                et_typePopulation.getText().toString(),et_berita.getText().toString(),indexMirror,layouts.size());
+                    }
+                }
+            });
+
+            et_berita.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+                @Override
+                public void onFocusChange(View v, boolean hasFocus) {
+                    if (!hasFocus) {
+                        if (dataNews.size() < positionE) {
+                            int lenN = dataNews.size();
+                            for (int i = lenN; i <= positionE; i++) {
+                                dataNews.add(i, "");
+                            }
+                        }
+                        String dataB = et_berita.getText().toString();
+                        if (dataNews.size() == 0) {
+                            dataNews.add(positionE, dataB);
+                        } else {
+                            if (dataNews.size() == positionE) {
+                                dataNews.add(positionE, dataB);
+                            } else {
+                                dataNews.set(positionE, dataB);
+                            }
+                        }
+                        Mirroring(false,et_source_accountpager.getText().toString(),et_nama_bank.getText().toString(),et_rek_penerima.getText().toString(),et_nama_penerima.getText().toString(),
+                                et_nominal.getText().toString(),et_serviceType.getText().toString(),et_benefitRec.getText().toString(),
+                                et_typePopulation.getText().toString(),et_berita.getText().toString(),indexMirror,layouts.size());
+                    }
+                }
+            });
+
+            et_berita.addTextChangedListener(new TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+                }
+
+                @Override
+                public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+                }
+
+                @Override
+                public void afterTextChanged(Editable s) {
+                    et_berita.removeTextChangedListener(this);
+                    String valB = et_berita.getText().toString();
+                    et_berita.setText(valB);
+                    getBerita = valB;
+                    et_berita.setSelection(valB.length());
+                    et_berita.addTextChangedListener(this);
+                    Mirroring(false,et_source_accountpager.getText().toString(),et_nama_bank.getText().toString(),et_rek_penerima.getText().toString(),et_nama_penerima.getText().toString(),
+                            et_nominal.getText().toString(),et_serviceType.getText().toString(),et_benefitRec.getText().toString(),
+                            et_typePopulation.getText().toString(),et_berita.getText().toString(),indexMirror,layouts.size());
+                }
+            });
+
+
+            //============ View Get Data ========//
+            tvNoFormulir.setText(dataNoForm.get(positionE));
+
+            if (dataBankName.size() > 0) {
+                if (positionE < dataBankName.size()) {
+                    et_nama_bank.setText(dataBankName.get(positionE));
+                    Mirroring(false,et_source_accountpager.getText().toString(),et_nama_bank.getText().toString(),et_rek_penerima.getText().toString(),et_nama_penerima.getText().toString(),
+                            et_nominal.getText().toString(),et_serviceType.getText().toString(),et_benefitRec.getText().toString(),
+                            et_typePopulation.getText().toString(),et_berita.getText().toString(),indexMirror,layouts.size());
+                }
+            }
+
+            if (dataAccountReceive.size() > 0) {
+                if (positionE < dataAccountReceive.size()) {
+                    et_rek_penerima.setText(dataAccountReceive.get(positionE));
+                    Mirroring(false,et_source_accountpager.getText().toString(),et_nama_bank.getText().toString(),et_rek_penerima.getText().toString(),et_nama_penerima.getText().toString(),
+                            et_nominal.getText().toString(),et_serviceType.getText().toString(),et_benefitRec.getText().toString(),
+                            et_typePopulation.getText().toString(),et_berita.getText().toString(),indexMirror,layouts.size());
+                }
+            }
+
+            if (dataNameReceive.size() > 0) {
+                if (positionE < dataNameReceive.size()) {
+                    et_nama_penerima.setText(dataNameReceive.get(positionE));
+                    Mirroring(false,et_source_accountpager.getText().toString(),et_nama_bank.getText().toString(),et_rek_penerima.getText().toString(),et_nama_penerima.getText().toString(),
+                            et_nominal.getText().toString(),et_serviceType.getText().toString(),et_benefitRec.getText().toString(),
+                            et_typePopulation.getText().toString(),et_berita.getText().toString(),indexMirror,layouts.size());
+                }
+            }
+
+            if (dataNominal.size() > 0) {
+                if (positionE < dataNominal.size()) {
+                    et_nominal.setText(dataNominal.get(positionE));
+                    Mirroring(false,et_source_accountpager.getText().toString(),et_nama_bank.getText().toString(),et_rek_penerima.getText().toString(),et_nama_penerima.getText().toString(),
+                            et_nominal.getText().toString(),et_serviceType.getText().toString(),et_benefitRec.getText().toString(),
+                            et_typePopulation.getText().toString(),et_berita.getText().toString(),indexMirror,layouts.size());
+                }
+            }
+
+            if (dataService.size() > 0) {
+                if (positionE < dataService.size()) {
+                    et_serviceType.setText(dataService.get(positionE));
+                    Mirroring(false,et_source_accountpager.getText().toString(),et_nama_bank.getText().toString(),et_rek_penerima.getText().toString(),et_nama_penerima.getText().toString(),
+                            et_nominal.getText().toString(),et_serviceType.getText().toString(),et_benefitRec.getText().toString(),
+                            et_typePopulation.getText().toString(),et_berita.getText().toString(),indexMirror,layouts.size());
+                }
+            }
+
+            if (dataBenefit.size() > 0) {
+                if (positionE < dataBenefit.size()) {;
+                    et_benefitRec.setText(dataBenefit.get(positionE));
+                    Mirroring(false,et_source_accountpager.getText().toString(),et_nama_bank.getText().toString(),et_rek_penerima.getText().toString(),et_nama_penerima.getText().toString(),
+                            et_nominal.getText().toString(),et_serviceType.getText().toString(),et_benefitRec.getText().toString(),
+                            et_typePopulation.getText().toString(),et_berita.getText().toString(),indexMirror,layouts.size());
+                }
+            }
+
+            if (dataPopulation.size() > 0) {
+                if (positionE < dataPopulation.size()) {
+                    et_typePopulation.setText(dataPopulation.get(positionE));
+                    Mirroring(false,et_source_accountpager.getText().toString(),et_nama_bank.getText().toString(),et_rek_penerima.getText().toString(),et_nama_penerima.getText().toString(),
+                            et_nominal.getText().toString(),et_serviceType.getText().toString(),et_benefitRec.getText().toString(),
+                            et_typePopulation.getText().toString(),et_berita.getText().toString(),indexMirror,layouts.size());
+                }
+            }
+
+            if (dataNews.size() > 0) {
+                if (positionE < dataNews.size()) {
+                    et_berita.setText(dataNews.get(positionE));
+                    Mirroring(false,et_source_accountpager.getText().toString(),et_nama_bank.getText().toString(),et_rek_penerima.getText().toString(),et_nama_penerima.getText().toString(),
+                            et_nominal.getText().toString(),et_serviceType.getText().toString(),et_benefitRec.getText().toString(),
+                            et_typePopulation.getText().toString(),et_berita.getText().toString(),indexMirror,layouts.size());
+                }
+            }
+        }
+
+        @Override
+        public int getCount() {
+            return layouts.size();
+        }
+
+        @Override
+        public boolean isViewFromObject(@NonNull View view, @NonNull Object object) {
+            return view == object;
+        }
+
+        @Override
+        public void destroyItem(@NonNull ViewGroup container, int position, @NonNull Object object) {
+            View view = (View) object;
+            container.removeView(view);
+        }
     }
 }
