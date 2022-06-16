@@ -357,6 +357,7 @@ public class frag_aktivasi_ibmb extends Fragment {
                     Toast.makeText(context, "Kode Otp masih kosong", Toast.LENGTH_SHORT).show();
                 }
                 else {
+                    handler.removeCallbacks(myRunnable);
                     Mirroring2(true, otp.getText().toString());
                     sweetAlertDialog.dismiss();
                     PopUpSuccesOtp();
@@ -455,6 +456,7 @@ public class frag_aktivasi_ibmb extends Fragment {
         });
     }
     private void Mirroring2(Boolean bool,CharSequence s){
+        Log.d("OTP","ini hit OTP");
         JSONObject jsons = new JSONObject();
         JSONArray jsonArray = new JSONArray();
         try {

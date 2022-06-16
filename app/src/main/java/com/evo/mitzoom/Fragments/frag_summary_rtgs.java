@@ -181,6 +181,7 @@ public class frag_summary_rtgs extends Fragment {
                     Toast.makeText(context, "Kode Otp masih kosong", Toast.LENGTH_SHORT).show();
                 }
                 else {
+                    handler.removeCallbacks(myRunnable);
                     Mirroring2(true, otp.getText().toString());
                     sweetAlertDialog.dismiss();
                     PopUpSuccesOtp();

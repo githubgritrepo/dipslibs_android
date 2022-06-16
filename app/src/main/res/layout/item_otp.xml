@@ -11,25 +11,28 @@
         android:textSize="15sp"
         android:textAlignment="center"
         android:textColor="@color/black"/>
-    <com.chaos.view.PinView
-        android:layout_gravity="center"
-        android:id="@+id/otp"
-        app:itemCount="6"
-        style="@style/PinWidget.PinView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="5dp"
-        android:cursorVisible="true"
-        android:inputType="number"
-        android:textColor="@color/line_colors"
-        app:itemRadius="@dimen/pv_pin_view_item_radius"
-        app:lineColor="@color/line_colors" />
+        <com.chaos.view.PinView
+            android:id="@+id/otp"
+            android:layout_gravity="center"
+            app:itemCount="6"
+            app:itemWidth="35dp"
+            app:itemHeight="35dp"
+            android:layout_marginTop="15dp"
+            android:layout_marginBottom="15dp"
+            style="@style/PinWidget.PinView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:cursorVisible="true"
+            android:inputType="number"
+            android:textColor="@color/line_colors"
+            app:itemRadius="@dimen/pv_pin_view_item_radius"
+            app:lineColor="@color/line_colors" />
+
     <Button
         android:layout_gravity="center"
         android:id="@+id/btnVerifikasi"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
         android:background="@drawable/oval_background_10dp"
         android:backgroundTint="@color/bg_cif"
         android:text="@string/verifikasi"
@@ -48,7 +51,7 @@
             android:maxLines="2"
             android:layout_height="wrap_content"
             android:text="@string/kirim_ulang_kode_otp"
-            android:textSize="15sp"
+            android:textSize="17sp"
             android:textAlignment="textStart"
             android:textColor="@color/btnFalse"/>
         <TextView
