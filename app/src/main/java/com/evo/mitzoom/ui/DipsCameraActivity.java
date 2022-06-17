@@ -105,7 +105,7 @@ public class DipsCameraActivity extends AppCompatActivity {
         btnTake.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (camera != null) {
+                try {
                     camera.takePicture(null, null, null, new Camera.PictureCallback() {
                         @Override
                         public void onPictureTaken(byte[] data, Camera camera) {
@@ -153,10 +153,11 @@ public class DipsCameraActivity extends AppCompatActivity {
                             }
                         }
                     });
-                } else {
+                } catch (Exception e) {
                     onPause();
                     onResume();
                 }
+
             }
         });
 

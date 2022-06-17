@@ -83,7 +83,7 @@ public class frag_inputdata extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         idDips = session.getKEY_IdDips();
-        Popup();
+        //Popup();
         et_NamaNasabah.setFilters(new InputFilter[]{
             new InputFilter() {
                 @Override

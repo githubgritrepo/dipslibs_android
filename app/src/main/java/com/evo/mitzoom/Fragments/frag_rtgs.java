@@ -4,6 +4,7 @@ import static android.app.Activity.RESULT_OK;
 
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
@@ -93,6 +94,7 @@ public class frag_rtgs extends Fragment {
     private CircleIndicator circleIndicator;
     private ViewPager pager;
     private String getBerita = "";
+    private String filename = "";
     private ArrayList<Integer> layouts = new ArrayList<Integer>();
     private ArrayList<String> dataAccount = new ArrayList<String>();
     private ArrayList<String> dataNoForm = new ArrayList<String>();
@@ -120,7 +122,7 @@ public class frag_rtgs extends Fragment {
         btnBack = view.findViewById(R.id.btn_back4);
         choose_gallery = (LinearLayout) view.findViewById(R.id.choose_gallery);
         pager = (ViewPager) view.findViewById(R.id.pager);
-//        circleIndicator = (CircleIndicator) view.findViewById(R.id.indicator);
+        circleIndicator = (CircleIndicator) view.findViewById(R.id.indicator);
         btnProses = view.findViewById(R.id.btnProsesRTGS);
         return view;
     }
@@ -167,7 +169,7 @@ public class frag_rtgs extends Fragment {
         btnBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Mirroring2(15,false);
+                Mirroring2(15,true);
                 getFragmentPage(new frag_service());
             }
         });
@@ -359,6 +361,7 @@ public class frag_rtgs extends Fragment {
             public void onClick(View v) {
                 boolean cekData = processSavedInstance();
                 if (cekData) {
+                    Mirroring2(17,true);
                     Fragment fragment = new frag_summary_rtgs();
                     getFragmentPage(fragment);
                 }
@@ -401,7 +404,47 @@ public class frag_rtgs extends Fragment {
             myViewPagerAdapter = new MyViewPagerAdapter();
         }
         pager.setAdapter(myViewPagerAdapter);
-//        circleIndicator.setViewPager(pager);
+        pager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                mirroringPagerRTGS(position);
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
+        });
+        circleIndicator.setViewPager(pager);
+    }
+
+    private void mirroringPagerRTGS(int position) {
+        try {
+            JSONArray jsArr = new JSONArray(dataRTGS);
+            int len = jsArr.length();
+            int idx = position + 1;
+            String dataArr = jsArr.get(position).toString();
+            JSONObject dataJs = new JSONObject(dataArr);
+            String idForm = dataJs.getString("idForm");
+            String sourceBank = dataJs.getString("sourceBank");
+            String sourceTypeService = dataJs.getString("sourceTypeService");
+            String sourceBenefit = dataJs.getString("sourceBenefit");
+            String sourcePopulation = dataJs.getString("sourcePopulation");
+            String rek_penerima = dataJs.getString("rek_penerima");
+            String nama_penerima = dataJs.getString("nama_penerima");
+            String nominal = dataJs.getString("nominal");
+            String berita = dataJs.getString("berita");
+
+            Mirroring(true, "", sourceBank, rek_penerima, nama_penerima, nominal,
+                    sourceTypeService, sourceBenefit, sourcePopulation, berita, idx, len);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
     private void savedRTGS() {
@@ -443,8 +486,10 @@ public class frag_rtgs extends Fragment {
 
                 initPager();
 
-                Mirroring(true,"",sourceBank,rek_penerima,nama_penerima,nominal,
-                        sourceTypeService,sourceBenefit,sourcePopulation,berita,idx,len);
+                if (i == 0) {
+                    Mirroring(true, "", sourceBank, rek_penerima, nama_penerima, nominal,
+                            sourceTypeService, sourceBenefit, sourcePopulation, berita, idx, len);
+                }
 
                 idx++;
             }
@@ -551,8 +596,8 @@ public class frag_rtgs extends Fragment {
                 jsons.put("nominal",nominal);
                 jsons.put("berita",berita);
 
-                Mirroring(true,SourceAccount,SumberBank,rek_penerima,nama_penerima,nominal,
-                        JenisLayanan,posSourceBenefit,posSourcePopulation,berita,idx,lenL);
+//                Mirroring(true,SourceAccount,SumberBank,rek_penerima,nama_penerima,nominal,
+//                        JenisLayanan,posSourceBenefit,posSourcePopulation,berita,idx,lenL);
 
                 idx++;
 
@@ -579,10 +624,28 @@ public class frag_rtgs extends Fragment {
         if (resultCode == RESULT_OK) {
             if (requestCode == 2){
                 Uri selectedImage = data.getData();
+                getFilePath(selectedImage);
                 barcodeDecoder(selectedImage);
             }
         }
     }
+
+    private void getFilePath(Uri selectedImage) {
+        String[] filePath = { MediaStore.Images.Media.DATA };
+        Cursor c = context.getContentResolver().query(selectedImage,filePath, null, null, null);
+        c.moveToFirst();
+        int columnIndex = c.getColumnIndex(filePath[0]);
+        String picturePath = c.getString(columnIndex);
+        c.close();
+
+        Log.d("CEK","picturePath : "+picturePath);
+        int cut = picturePath.lastIndexOf('/');
+        if (cut != -1) {
+            filename = picturePath.substring(cut + 1);
+        }
+
+    }
+
     private void barcodeDecoder(Uri selectedImage) {
         try {
             InputStream inputStream = getActivity().getContentResolver().openInputStream(selectedImage);
@@ -729,7 +792,19 @@ public class frag_rtgs extends Fragment {
         JSONObject jsons = new JSONObject();
         JSONArray jsonArray = new JSONArray();
         try {
-            jsonArray.put(sumberRekening);
+            jsonArray.put(filename);
+            String dataRekening = sumberRekening.toString();
+            if (dataRekening.indexOf("\n") > 0) {
+                String[] sp = dataRekening.split("\n");
+                String noRek = sp[0];
+                String namaRek = sp[1];
+                String valueRek = sp[2];
+                jsonArray.put(noRek);
+                jsonArray.put(namaRek);
+                jsonArray.put(valueRek);
+            } else {
+                jsonArray.put(dataRekening);
+            }
             jsonArray.put(bank);
             jsonArray.put(rekening);
             jsonArray.put(nama);
@@ -769,7 +844,7 @@ public class frag_rtgs extends Fragment {
             jsonArray.put(nextCode);
             jsonArray.put(bool);
             jsons.put("idDips",idDips);
-            jsons.put("code",15);
+            jsons.put("code",nextCode);
             jsons.put("data",jsonArray);
         } catch (JSONException e) {
             e.printStackTrace();

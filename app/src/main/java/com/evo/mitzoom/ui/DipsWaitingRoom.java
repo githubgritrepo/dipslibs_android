@@ -116,6 +116,7 @@ public class DipsWaitingRoom extends AppCompatActivity {
     private TextView myTicket, lastTicket;
     private SweetAlertDialog dialogWaiting;
     private SweetAlertDialog dialogSuccess;
+    private SweetAlertDialog dialogConfirm;
     private DisplayMetrics displayMetrics;
 
     private Socket mSocket;
@@ -541,8 +542,8 @@ public class DipsWaitingRoom extends AppCompatActivity {
                 @Override
                 public void onClick(SweetAlertDialog sweetAlertDialog) {
                     sweetAlertDialog.dismissWithAnimation();
-                    processJoinVideo();
                     dialogSuccess = null;
+                    Popup();
                 }
             });
             dialogSuccess.setCancelClickListener(new SweetAlertDialog.OnSweetClickListener() {
@@ -554,6 +555,25 @@ public class DipsWaitingRoom extends AppCompatActivity {
                 }
             });
         }
+    }
+
+    private void Popup(){
+        if (dialogConfirm == null) {
+            dialogConfirm = new SweetAlertDialog(mContext, SweetAlertDialog.WARNING_TYPE);
+        }
+        dialogConfirm.setContentText(getResources().getString(R.string.content_input));
+        dialogConfirm.setConfirmText(getResources().getString(R.string.btn_continue));
+        dialogConfirm.show();
+        dialogConfirm.setCancelable(false);
+        Button btnConfirm = (Button) dialogConfirm.findViewById(cn.pedant.SweetAlert.R.id.confirm_button);
+        btnConfirm.setBackgroundTintList(mContext.getResources().getColorStateList(R.color.Blue));
+        btnConfirm.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialogConfirm.dismiss();
+                processJoinVideo();
+            }
+        });
     }
 
     public void setCameraDisplayOrientation(){

@@ -208,7 +208,7 @@ public class frag_opening_account extends Fragment {
                 int bitmapByteCount= BitmapCompat.getAllocationByteCount(bitmap);
                 Log.d("CEK","bitmapByteCount : "+bitmapByteCount);
                 viewImage.setImageBitmap(bitmap);
-                imgtoBase64(bitmap);
+                processSendImage(bitmap);
             }
             else if (requestCode == 2){
                 Uri selectedImage = data.getData();
@@ -231,6 +231,30 @@ public class frag_opening_account extends Fragment {
             }
         }
     }
+
+    private void processSendImage(Bitmap bitmap) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Thread.sleep(1000);
+                    for (int k = 0; k < 10; k++){
+                        int onOfCamera = session.getCamera();
+                        Log.d("CEK","onOfCamera loop-"+k+" : "+onOfCamera);
+                        if (onOfCamera == 1) {
+                            Log.d("CEK","MASUK KIRIM IMAGE");
+                            imgtoBase64(bitmap);
+                            break;
+                        }
+                        Thread.sleep(500);
+                    }
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+    }
+
     private void getFragmentPage(Fragment fragment){
         getActivity().getSupportFragmentManager()
                 .beginTransaction()
@@ -356,7 +380,7 @@ public class frag_opening_account extends Fragment {
         bm.recycle();
         viewImage.setImageBitmap(resizedBitmap);
         //return resizedBitmap;
-        imgtoByteArray(resizedBitmap);
+        //imgtoByteArray(resizedBitmap);
         imgtoBase64(resizedBitmap);
     }
     private void imgtoByteArray(Bitmap bitmap) {
@@ -371,6 +395,7 @@ public class frag_opening_account extends Fragment {
         byte[] imageBytes = baos.toByteArray();
         String encodedImage = Base64.encodeToString(imageBytes, Base64.NO_WRAP);
         Mirroring(false,encodedImage);
+        KTP = imageBytes;
         KTP_BASE64 = encodedImage;
     }
     private void saveImage(){

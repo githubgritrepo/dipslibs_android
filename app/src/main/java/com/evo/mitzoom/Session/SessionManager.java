@@ -29,6 +29,7 @@ public class SessionManager {
     public static final String KEY_iSCust = "isCust";
     public static final String KEY_FLAG_UPDOC = "FLAG_UPLOADDOC";
     public static final String KEY_MEDIA = "MEDIA";
+    public static final String KEY_CAMERA = "CAMERA";
 
     // Constructor
     public SessionManager(Context context){
@@ -76,6 +77,12 @@ public class SessionManager {
         editor.putInt(KEY_MEDIA,data);
         editor.commit();
     }
+
+    public void saveCamera(int data){
+        editor.putInt(KEY_CAMERA,data);
+        editor.commit();
+    }
+
     public void clearData(){
         editor.clear();
         editor.commit();
@@ -110,6 +117,9 @@ public class SessionManager {
     }
     public int getMedia (){
         return pref.getInt(KEY_MEDIA,0);
+    }
+    public int getCamera (){
+        return pref.getInt(KEY_CAMERA,0);
     }
 
 }
