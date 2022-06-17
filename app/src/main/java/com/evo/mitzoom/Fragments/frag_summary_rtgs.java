@@ -172,8 +172,10 @@ public class frag_summary_rtgs extends Fragment {
                 };
                 handler.postDelayed(myRunnable, 1500);
                 otp.addTextChangedListener(this);
-                if (s.length() == 0){
+                if (otp.length() == 6 || otp.length() == 0){
+                    handler.removeMessages(0);
                     handler.removeCallbacks(myRunnable);
+                    Log.d("TAG","STOP Loop");
                 }
             }
         });
@@ -184,7 +186,6 @@ public class frag_summary_rtgs extends Fragment {
                     Toast.makeText(context, "Kode Otp masih kosong", Toast.LENGTH_SHORT).show();
                 }
                 else {
-                    handler.removeCallbacks(myRunnable);
                     Mirroring2(true, otp.getText().toString());
                     sweetAlertDialog.dismiss();
                     PopUpSuccesOtp();
