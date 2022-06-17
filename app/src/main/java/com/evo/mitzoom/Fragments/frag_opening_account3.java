@@ -168,7 +168,9 @@ public class frag_opening_account3 extends Fragment {
                 delete.setVisibility(View.VISIBLE);
                 viewImage.setVisibility(View.VISIBLE);
                 chooseImage.setVisibility(View.GONE);
-                getResizedBitmap(bitmap, (bitmap.getWidth()/6), (bitmap.getHeight()/6));
+                //getResizedBitmap(bitmap, (bitmap.getWidth()/6), (bitmap.getHeight()/6));
+                viewImage.setImageBitmap(bitmap);
+                imgtoBase64(bitmap);
             }
             else if (requestCode == 2){
                 Uri selectedImage = data.getData();

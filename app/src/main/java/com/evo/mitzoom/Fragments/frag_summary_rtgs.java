@@ -58,12 +58,15 @@ public class frag_summary_rtgs extends Fragment {
     private String idDips;
     private Handler handler;
     private Runnable myRunnable;
+    private String dataRTGS;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         context = getContext();
         session = new SessionManager(context);
+        dataRTGS = session.getRTGS();
+        Log.d("CEK","dataRTGS : "+dataRTGS);
     }
 
     @Nullable
@@ -87,7 +90,7 @@ public class frag_summary_rtgs extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         idDips = session.getKEY_IdDips();
-        Bundle terima = getArguments();
+        /*Bundle terima = getArguments();
         RekeningSumber = terima.getString("rekeningSumber");
         JenisLayanan = terima.getString("jenisLayanan");
         NamaBank = terima.getString("namaBank");
@@ -105,7 +108,7 @@ public class frag_summary_rtgs extends Fragment {
         tv_JenisPenduduk.setText(JenisPenduduk);
         tv_Berita.setText(Berita);
         tv_Biaya.setText("Rp2.500");
-        tv_Nominal.setText("Rp"+Nominal);
+        tv_Nominal.setText("Rp"+Nominal);*/
 
         btnBack.setOnClickListener(new View.OnClickListener() {
             @Override

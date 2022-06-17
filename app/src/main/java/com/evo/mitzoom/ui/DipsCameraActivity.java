@@ -114,7 +114,7 @@ public class DipsCameraActivity extends AppCompatActivity {
 
                                 Bitmap bitmap = BitmapFactory.decodeByteArray(dataImage, 0, dataImage.length);
                                 //Bitmap bitmapCrop = resizeAndCropCenter2(bitmap, 640, false);
-                                Bitmap bitmapCrop = getResizedBitmap(bitmap, (bitmap.getWidth() / 2), (bitmap.getHeight() / 2));
+                                Bitmap bitmapCrop = getResizedBitmap(bitmap, (bitmap.getWidth() / 4), (bitmap.getHeight() / 4));
 
                                 int rotation = 0;
                                 try {

@@ -94,6 +94,7 @@ public class frag_rtgs extends Fragment {
     private ViewPager pager;
     private String getBerita = "";
     private ArrayList<Integer> layouts = new ArrayList<Integer>();
+    private ArrayList<String> dataAccount = new ArrayList<String>();
     private ArrayList<String> dataNoForm = new ArrayList<String>();
     private ArrayList<String> dataBankName = new ArrayList<String>();
     private ArrayList<String> dataAccountReceive = new ArrayList<>();
@@ -356,7 +357,12 @@ public class frag_rtgs extends Fragment {
         btnProses.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                RekeningSumber = et_source_account.getText().toString();
+                boolean cekData = processSavedInstance();
+                if (cekData) {
+                    Fragment fragment = new frag_summary_rtgs();
+                    getFragmentPage(fragment);
+                }
+                /*RekeningSumber = et_source_account.getText().toString();
                 NamaBank = et_NamaBank.getText().toString();
                 RekPenerima = et_RekPenerima.getText().toString();
                 NamaPenerima = et_NamaPenerima.getText().toString();
@@ -384,7 +390,7 @@ public class frag_rtgs extends Fragment {
                     bundle.putString("rekPenerima",RekPenerima);
                     fragment.setArguments(bundle);
                     getFragmentPage(fragment);
-                }
+                }*/
 
             }
         });
@@ -403,6 +409,7 @@ public class frag_rtgs extends Fragment {
         try {
             JSONArray jsArr = new JSONArray(dataRTGS);
             int len = jsArr.length();
+            int idx = 1;
             for (int i = 0; i < len; i++) {
                 String dataArr = jsArr.get(i).toString();
                 JSONObject dataJs = new JSONObject(dataArr);
@@ -435,10 +442,130 @@ public class frag_rtgs extends Fragment {
                 dataNews.add(berita);
 
                 initPager();
+
+                Mirroring(true,"",sourceBank,rek_penerima,nama_penerima,nominal,
+                        sourceTypeService,sourceBenefit,sourcePopulation,berita,idx,len);
+
+                idx++;
             }
         } catch (JSONException e) {
             e.printStackTrace();
         }
+    }
+
+    private String dataArrF(int index) {
+        ArrayList<String> arrF = new ArrayList<>();
+        arrF.add(getResources().getString(R.string.label_first));
+        arrF.add(getResources().getString(R.string.label_second));
+        arrF.add(getResources().getString(R.string.label_third));
+        arrF.add(getResources().getString(R.string.label_fourth));
+        arrF.add(getResources().getString(R.string.label_fifth));
+
+        return  arrF.get(index).toString();
+    }
+
+    private boolean processSavedInstance() {
+        int lenL = layouts.size();
+        JSONArray jsonArray = new JSONArray();
+        int idx = 1;
+        for (int i = 0; i < lenL; i++) {
+            JSONObject jsons = new JSONObject();
+            try {
+                String noFormulir = dataNoForm.get(i);
+
+                if (dataAccount.size() == 0 || (dataAccount.size() == i) || (dataAccount.size() > 0 && dataAccount.get(i).isEmpty())) {
+                    Toast.makeText(context,"Data "+getResources().getString(R.string.source_account)+" "+
+                            getResources().getString(R.string.alertRTGS)+" "+dataArrF(i),Toast.LENGTH_SHORT).show();
+                    return false;
+                }
+
+                if (dataBankName.size() == 0 || (dataBankName.size() == i) || (dataBankName.size() > 0 && dataBankName.get(i).isEmpty())) {
+                    Toast.makeText(context,"Data "+getResources().getString(R.string.BankReceive)+" "+
+                            getResources().getString(R.string.alertRTGS)+" "+dataArrF(i),Toast.LENGTH_SHORT).show();
+                    return false;
+                }
+                if (dataAccountReceive.size() == 0 || (dataAccountReceive.size() == i) || (dataAccountReceive.size() > 0 && dataAccountReceive.get(i).isEmpty())) {
+                    Toast.makeText(context,"Data "+getResources().getString(R.string.ReceiverAccount2)+" "+
+                            getResources().getString(R.string.alertRTGS)+" "+dataArrF(i),Toast.LENGTH_SHORT).show();
+                    return false;
+                }
+                if (dataNameReceive.size() == 0 || (dataNameReceive.size() == i) || (dataNameReceive.size() > 0 && dataNameReceive.get(i).isEmpty())) {
+                    Toast.makeText(context,"Data "+getResources().getString(R.string.ReceiverName2)+" "+
+                            getResources().getString(R.string.alertRTGS)+" "+dataArrF(i),Toast.LENGTH_SHORT).show();
+                    return false;
+                }
+                if (dataNominal.size() == 0 || (dataNominal.size() == i) || (dataNominal.size() > 0 && dataNominal.get(i).isEmpty())) {
+                    Toast.makeText(context,"Data "+getResources().getString(R.string.Amount)+" "+
+                            getResources().getString(R.string.alertRTGS)+" "+dataArrF(i),Toast.LENGTH_SHORT).show();
+                    return false;
+                }
+                if (dataService.size() == 0 || (dataService.size() == i) || (dataService.size() > 0 && dataService.get(i).isEmpty())) {
+                    Toast.makeText(context,"Data "+getResources().getString(R.string.jenis_layanan)+" "+
+                            getResources().getString(R.string.alertRTGS)+" "+dataArrF(i),Toast.LENGTH_SHORT).show();
+                    return false;
+                }
+                if (dataBenefit.size() == 0 || (dataBenefit.size() == i) || (dataBenefit.size() > 0 && dataBenefit.get(i).isEmpty())) {
+                    Toast.makeText(context,"Data "+getResources().getString(R.string.penerima_manfaat)+" "+
+                            getResources().getString(R.string.alertRTGS)+" "+dataArrF(i),Toast.LENGTH_SHORT).show();
+                    return false;
+                }
+                if (dataPopulation.size() == 0 || (dataPopulation.size() == i) || (dataPopulation.size() > 0 && dataPopulation.get(i).isEmpty())) {
+                    Toast.makeText(context,"Data "+getResources().getString(R.string.ResidentType)+" "+
+                            getResources().getString(R.string.alertRTGS)+" "+dataArrF(i),Toast.LENGTH_SHORT).show();
+                    return false;
+                }
+
+                String SourceAccount = dataAccount.get(i);
+                String SumberBank = dataBankName.get(i);
+                String JenisLayanan = dataService.get(i);
+                String posSourceBenefit = dataBenefit.get(i);
+                String posSourcePopulation = dataPopulation.get(i);
+                String rek_penerima = dataAccountReceive.get(i);
+                String nama_penerima = dataNameReceive.get(i);
+                String nominal = dataNominal.get(i);
+                String berita = "";
+                if (dataNews.size() == 0) {
+                    berita = getBerita;
+                } else {
+                    if (dataNews.size() < i) {
+                        int lenN = dataNews.size();
+                        for (int k = lenN; k <= i; k++) {
+                            dataNews.add(k, "");
+                        }
+                    }
+                    if (dataNews.size() == i) {
+                        berita = getBerita;
+                    } else {
+                        berita = dataNews.get(i);
+                    }
+                }
+
+                jsons.put("idForm",noFormulir);
+                jsons.put("sourceAccount",SourceAccount);
+                jsons.put("sourceBank",SumberBank);
+                jsons.put("sourceTypeService",JenisLayanan);
+                jsons.put("sourceBenefit",posSourceBenefit);
+                jsons.put("sourcePopulation",posSourcePopulation);
+                jsons.put("rek_penerima",rek_penerima);
+                jsons.put("nama_penerima",nama_penerima);
+                jsons.put("nominal",nominal);
+                jsons.put("berita",berita);
+
+                Mirroring(true,SourceAccount,SumberBank,rek_penerima,nama_penerima,nominal,
+                        JenisLayanan,posSourceBenefit,posSourcePopulation,berita,idx,lenL);
+
+                idx++;
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+            jsonArray.put(jsons);
+        }
+
+        String dataJs = jsonArray.toString();
+        sessions.saveRTGS(dataJs);
+        return true;
     }
 
     private void chooseFromSD() {
@@ -705,6 +832,16 @@ public class frag_rtgs extends Fragment {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                     //String selection = (String) parent.getItemAtPosition(position);
+                    String dataB = et_source_accountpager.getText().toString();
+                    if (dataAccount.size() == 0) {
+                        dataAccount.add(positionE, dataB);
+                    } else {
+                        if (dataAccount.size() == positionE) {
+                            dataAccount.add(positionE, dataB);
+                        } else {
+                            dataAccount.set(positionE, dataB);
+                        }
+                    }
                 }
             });
             et_source_accountpager.addTextChangedListener(new TextWatcher() {

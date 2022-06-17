@@ -30,6 +30,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
+import androidx.core.graphics.BitmapCompat;
 import androidx.fragment.app.Fragment;
 
 import com.evo.mitzoom.API.ApiService;
@@ -203,7 +204,11 @@ public class frag_opening_account extends Fragment {
                 delete.setVisibility(View.VISIBLE);
                 viewImage.setVisibility(View.VISIBLE);
                 chooseImage.setVisibility(View.GONE);
-                getResizedBitmap(bitmap, (bitmap.getWidth()/6), (bitmap.getHeight()/6));
+                //getResizedBitmap(bitmap, (bitmap.getWidth()/2), (bitmap.getHeight()/2));
+                int bitmapByteCount= BitmapCompat.getAllocationByteCount(bitmap);
+                Log.d("CEK","bitmapByteCount : "+bitmapByteCount);
+                viewImage.setImageBitmap(bitmap);
+                imgtoBase64(bitmap);
             }
             else if (requestCode == 2){
                 Uri selectedImage = data.getData();
@@ -220,7 +225,9 @@ public class frag_opening_account extends Fragment {
                 delete.setVisibility(View.VISIBLE);
                 viewImage.setVisibility(View.VISIBLE);
                 chooseImage.setVisibility(View.GONE);
-               getResizedBitmap(thumbnail, (thumbnail.getWidth()/2), (thumbnail.getHeight()/2));
+                int bitmapByteCount= BitmapCompat.getAllocationByteCount(thumbnail);
+                Log.d("CEK","bitmapByteCount : "+bitmapByteCount);
+                getResizedBitmap(thumbnail, (thumbnail.getWidth()/2), (thumbnail.getHeight()/2));
             }
         }
     }
@@ -362,7 +369,7 @@ public class frag_opening_account extends Fragment {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         bitmap.compress(Bitmap.CompressFormat.JPEG,100, baos);
         byte[] imageBytes = baos.toByteArray();
-        String encodedImage = Base64.encodeToString(imageBytes, Base64.DEFAULT);
+        String encodedImage = Base64.encodeToString(imageBytes, Base64.NO_WRAP);
         Mirroring(false,encodedImage);
         KTP_BASE64 = encodedImage;
     }
