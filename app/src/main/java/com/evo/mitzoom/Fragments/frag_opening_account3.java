@@ -168,7 +168,9 @@ public class frag_opening_account3 extends Fragment {
                 delete.setVisibility(View.VISIBLE);
                 viewImage.setVisibility(View.VISIBLE);
                 chooseImage.setVisibility(View.GONE);
-                getResizedBitmap(bitmap, (bitmap.getWidth()/6), (bitmap.getHeight()/6));
+                //getResizedBitmap(bitmap, (bitmap.getWidth()/6), (bitmap.getHeight()/6));
+                viewImage.setImageBitmap(bitmap);
+                processSendImage(bitmap);
             }
             else if (requestCode == 2){
                 Uri selectedImage = data.getData();
@@ -188,7 +190,31 @@ public class frag_opening_account3 extends Fragment {
                 getResizedBitmap(thumbnail, (thumbnail.getWidth()/2), (thumbnail.getHeight()/2));
             }
         }
-        }
+    }
+
+    private void processSendImage(Bitmap bitmap) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Thread.sleep(1000);
+                    for (int k = 0; k < 10; k++){
+                        int onOfCamera = session.getCamera();
+                        Log.d("CEK","onOfCamera loop-"+k+" : "+onOfCamera);
+                        if (onOfCamera == 1) {
+                            Log.d("CEK","MASUK KIRIM IMAGE");
+                            imgtoBase64(bitmap);
+                            break;
+                        }
+                        Thread.sleep(500);
+                    }
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+    }
+
     private void getFragmentPage(Fragment fragment){
         getActivity().getSupportFragmentManager()
                 .beginTransaction()
@@ -211,7 +237,7 @@ public class frag_opening_account3 extends Fragment {
                 bm, 0, 0, width, height, matrix, false);
         bm.recycle();
         viewImage.setImageBitmap(resizedBitmap);
-        imgtoByteArray(resizedBitmap);
+        //imgtoByteArray(resizedBitmap);
         imgtoBase64(resizedBitmap);
         //return resizedBitmap;
     }
@@ -227,6 +253,7 @@ public class frag_opening_account3 extends Fragment {
         byte[] imageBytes = baos.toByteArray();
         String encodedImage = Base64.encodeToString(imageBytes, Base64.DEFAULT);
         Mirroring(false,encodedImage);
+        TTD = imageBytes;
         TTD_BASE64 = encodedImage;
     }
     private void saveImage(){

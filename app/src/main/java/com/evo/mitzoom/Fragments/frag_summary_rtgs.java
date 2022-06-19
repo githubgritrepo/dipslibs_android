@@ -4,24 +4,36 @@ import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.Editable;
+import android.text.Spannable;
 import android.text.TextWatcher;
+import android.text.style.StyleSpan;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.viewpager.widget.PagerAdapter;
+import androidx.viewpager.widget.ViewPager;
 
 import com.chaos.view.PinView;
 import com.dhairytripathi.library.EditTextPin;
 import com.evo.mitzoom.API.ApiService;
 import com.evo.mitzoom.API.Server;
+import com.evo.mitzoom.Adapter.AdapterBank2;
+import com.evo.mitzoom.Adapter.AdapterSourceAccount;
+import com.evo.mitzoom.Adapter.AdapterTypeService;
 import com.evo.mitzoom.R;
 import com.evo.mitzoom.Session.SessionManager;
 import com.google.gson.JsonObject;
@@ -30,9 +42,12 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Locale;
 
 import cn.pedant.SweetAlert.SweetAlertDialog;
+import me.relex.circleindicator.CircleIndicator;
 import okhttp3.MediaType;
 import okhttp3.RequestBody;
 import retrofit2.Call;
@@ -41,8 +56,7 @@ import retrofit2.Response;
 
 public class frag_summary_rtgs extends Fragment {
     private Context context;
-    private TextView Timer, Resend_Otp, tv_RekeningSumber, tv_RekeningPenerima, tv_JenisLayanan, tv_PenerimaManfaat, tv_JenisPenduduk, tv_Berita, tv_Biaya, tv_Nominal;
-    private String RekeningSumber, JenisLayanan, NamaBank, NamaPenerima, PenerimaManfaat, JenisPenduduk, Berita, Nominal, RekPenerima;
+    private TextView Timer, Resend_Otp;
     private ImageView btnBack;
     private Button btnTransfer;
     private LayoutInflater inflater;
@@ -58,12 +72,29 @@ public class frag_summary_rtgs extends Fragment {
     private String idDips;
     private Handler handler;
     private Runnable myRunnable;
+    private String dataRTGS;
+    private MyViewPagerAdapter myViewPagerAdapter;
+    private ViewPager pager;
+    private CircleIndicator circleIndicator;
+    private ArrayList<Integer> layouts = new ArrayList<Integer>();
+    private ArrayList<String> dataAccount = new ArrayList<String>();
+    private ArrayList<String> dataNoForm = new ArrayList<String>();
+    private ArrayList<String> dataBankName = new ArrayList<String>();
+    private ArrayList<String> dataAccountReceive = new ArrayList<>();
+    private ArrayList<String> dataNameReceive = new ArrayList<>();
+    private ArrayList<String> dataNominal = new ArrayList<>();
+    private ArrayList<String> dataService = new ArrayList<>();
+    private ArrayList<String> dataBenefit = new ArrayList<>();
+    private ArrayList<String> dataPopulation = new ArrayList<>();
+    private ArrayList<String> dataNews = new ArrayList<>();
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         context = getContext();
         session = new SessionManager(context);
+        dataRTGS = session.getRTGS();
+        Log.d("CEK","dataRTGS : "+dataRTGS);
     }
 
     @Nullable
@@ -71,15 +102,9 @@ public class frag_summary_rtgs extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.summary_rtgs, container, false);
         btnBack = view.findViewById(R.id.btn_back5);
+        pager = (ViewPager) view.findViewById(R.id.pager);
+        circleIndicator = (CircleIndicator) view.findViewById(R.id.indicator);
         btnTransfer = view.findViewById(R.id.btnTransfer);
-        tv_RekeningSumber = view.findViewById(R.id.RekeningSumber);
-        tv_RekeningPenerima = view.findViewById(R.id.RekeningPenerima);
-        tv_JenisLayanan = view.findViewById(R.id.JenisLayanan);
-        tv_PenerimaManfaat = view.findViewById(R.id.PenerimaManfaat);
-        tv_JenisPenduduk = view.findViewById(R.id.JenisPenduduk);
-        tv_Berita = view.findViewById(R.id.Berita);
-        tv_Biaya = view.findViewById(R.id.Biaya);
-        tv_Nominal = view.findViewById(R.id.Nominal);
         return view;
     }
 
@@ -87,25 +112,10 @@ public class frag_summary_rtgs extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         idDips = session.getKEY_IdDips();
-        Bundle terima = getArguments();
-        RekeningSumber = terima.getString("rekeningSumber");
-        JenisLayanan = terima.getString("jenisLayanan");
-        NamaBank = terima.getString("namaBank");
-        NamaPenerima = terima.getString("namaPenerima");
-        PenerimaManfaat = terima.getString("penerimaManfaat");
-        JenisPenduduk = terima.getString("jenisPenduduk");
-        Berita = terima.getString("berita");
-        Nominal = terima.getString("nominal");
-        RekPenerima = terima.getString("rekPenerima");
 
-        tv_RekeningSumber.setText(RekeningSumber);
-        tv_RekeningPenerima.setText(NamaBank+"\n"+RekPenerima+" - "+NamaPenerima);
-        tv_JenisLayanan.setText(JenisLayanan);
-        tv_PenerimaManfaat.setText(PenerimaManfaat);
-        tv_JenisPenduduk.setText(JenisPenduduk);
-        tv_Berita.setText(Berita);
-        tv_Biaya.setText("Rp2.500");
-        tv_Nominal.setText("Rp"+Nominal);
+        if (dataRTGS != null) {
+            savedRTGS();
+        }
 
         btnBack.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -122,8 +132,147 @@ public class frag_summary_rtgs extends Fragment {
             }
         });
 
-        ///SetText
     }
+
+    private void initPager() {
+        if (myViewPagerAdapter == null) {
+            myViewPagerAdapter = new MyViewPagerAdapter();
+        }
+        pager.setAdapter(myViewPagerAdapter);
+        pager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                mirroringPagerRTGS(position);
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
+        });
+        circleIndicator.setViewPager(pager);
+    }
+
+    private void savedRTGS() {
+        Log.d("CEK","MASUK savedRTGS");
+        try {
+            JSONArray jsArr = new JSONArray(dataRTGS);
+            int len = jsArr.length();
+            int idx = 1;
+            for (int i = 0; i < len; i++) {
+                String dataArr = jsArr.get(i).toString();
+                JSONObject dataJs = new JSONObject(dataArr);
+                String idForm = dataJs.getString("idForm");
+                String sourceAccount = dataJs.getString("sourceAccount");
+                String sourceBank = dataJs.getString("sourceBank");
+                String sourceTypeService = dataJs.getString("sourceTypeService");
+                String sourceBenefit = dataJs.getString("sourceBenefit");
+                String sourcePopulation = dataJs.getString("sourcePopulation");
+                String rek_penerima = dataJs.getString("rek_penerima");
+                String nama_penerima = dataJs.getString("nama_penerima");
+                String nominal = dataJs.getString("nominal");
+                String berita = dataJs.getString("berita");
+
+                layouts.add(R.layout.content_summary_rtgs);
+
+                dataNoForm.add(idForm);
+                dataAccount.add(sourceAccount);
+                dataBankName.add(sourceBank);
+                dataAccountReceive.add(rek_penerima);
+                dataNameReceive.add(nama_penerima);
+                dataNominal.add(nominal);
+                dataService.add(sourceTypeService);
+                dataBenefit.add(sourceBenefit);
+                dataPopulation.add(sourcePopulation);
+                dataNews.add(berita);
+
+                initPager();
+
+                if (i == 0) {
+                    Mirroring(true,false,idx,len);
+                }
+
+                idx++;
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void mirroringPagerRTGS(int position) {
+        int lenL = layouts.size();
+        int idx = position + 1;
+        JSONArray jsonArray = new JSONArray();
+        JSONObject jsons = new JSONObject();
+
+        try {
+            String noFormulir = dataNoForm.get(position);
+            if (dataAccount.size() == 0 || (dataAccount.size() == position) || (dataAccount.size() > 0 && dataAccount.get(position).isEmpty())) {
+                dataAccount.add("");
+            }
+            if (dataBankName.size() == 0 || (dataBankName.size() == position) || (dataBankName.size() > 0 && dataBankName.get(position).isEmpty())) {
+                dataBankName.add("");
+            }
+            if (dataAccountReceive.size() == 0 || (dataAccountReceive.size() == position) || (dataAccountReceive.size() > 0 && dataAccountReceive.get(position).isEmpty())) {
+                dataAccountReceive.add("");
+            }
+            if (dataNameReceive.size() == 0 || (dataNameReceive.size() == position) || (dataNameReceive.size() > 0 && dataNameReceive.get(position).isEmpty())) {
+                dataNameReceive.add("");
+            }
+            if (dataNominal.size() == 0 || (dataNominal.size() == position) || (dataNominal.size() > 0 && dataNominal.get(position).isEmpty())) {
+                dataNominal.add("0");
+            }
+            if (dataService.size() == 0 || (dataService.size() == position) || (dataService.size() > 0 && dataService.get(position).isEmpty())) {
+                dataService.add("");
+            }
+            if (dataBenefit.size() == 0 || (dataBenefit.size() == position) || (dataBenefit.size() > 0 && dataBenefit.get(position).isEmpty())) {
+                dataBenefit.add("");
+            }
+            if (dataPopulation.size() == 0 || (dataPopulation.size() == position) || (dataPopulation.size() > 0 && dataPopulation.get(position).isEmpty())) {
+                dataPopulation.add("");
+            }
+            if (dataNews.size() == 0 || (dataNews.size() == position) || (dataNews.size() > 0 && dataNews.get(position).isEmpty())) {
+                dataNews.add("");
+            }
+
+            String SourceAccount = dataAccount.get(position);
+            String SumberBank = dataBankName.get(position);
+            String JenisLayanan = dataService.get(position);
+            String posSourceBenefit = dataBenefit.get(position);
+            String posSourcePopulation = dataPopulation.get(position);
+            String rek_penerima = dataAccountReceive.get(position);
+            String nama_penerima = dataNameReceive.get(position);
+            String nominal = dataNominal.get(position);
+            String berita = dataNews.get(position);
+
+            jsons.put("idForm",noFormulir);
+            jsons.put("sourceAccount",SourceAccount);
+            jsons.put("sourceBank",SumberBank);
+            jsons.put("sourceTypeService",JenisLayanan);
+            jsons.put("sourceBenefit",posSourceBenefit);
+            jsons.put("sourcePopulation",posSourcePopulation);
+            jsons.put("rek_penerima",rek_penerima);
+            jsons.put("nama_penerima",nama_penerima);
+            jsons.put("nominal",nominal);
+            jsons.put("berita",berita);
+
+            Mirroring(true,false,idx,lenL);
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        jsonArray.put(jsons);
+
+        String dataJs = jsonArray.toString();
+        session.saveRTGS(dataJs);
+    }
+
     private void getFragmentPage(Fragment fragment){
         getActivity().getSupportFragmentManager()
                 .beginTransaction()
@@ -142,6 +291,7 @@ public class frag_summary_rtgs extends Fragment {
         btnVerifikasi = dialogView.findViewById(R.id.btnVerifikasi);
         Timer = dialogView.findViewById(R.id.timer_otp);
         Resend_Otp = dialogView.findViewById(R.id.btn_resend_otp);
+        otp = dialogView.findViewById(R.id.otp);
         otp.setAnimationEnable(true);
         otp.addTextChangedListener(new TextWatcher() {
             @Override
@@ -236,7 +386,7 @@ public class frag_summary_rtgs extends Fragment {
                 Mirroring3(true);
                 Fragment fragment = new frag_resi();
                 Bundle bundle = new Bundle();
-                bundle.putString("rekeningSumber",RekeningSumber);
+                /*bundle.putString("rekeningSumber",RekeningSumber);
                 bundle.putString("jenisLayanan",JenisLayanan);
                 bundle.putString("namaBank",NamaBank);
                 bundle.putString("namaPenerima",NamaPenerima);
@@ -244,7 +394,7 @@ public class frag_summary_rtgs extends Fragment {
                 bundle.putString("jenisPenduduk",JenisPenduduk);
                 bundle.putString("berita",Berita);
                 bundle.putString("nominal",Nominal);
-                bundle.putString("rekPenerima",RekPenerima);
+                bundle.putString("rekPenerima",RekPenerima);*/
                 fragment.setArguments(bundle);
                 getFragmentPage(fragment);
                 sweetAlertDialog.dismiss();
@@ -352,5 +502,101 @@ public class frag_summary_rtgs extends Fragment {
                 Log.d("MIRROR","Mirroring Gagal");
             }
         });
+    }
+
+    private class MyViewPagerAdapter extends PagerAdapter {
+        private LayoutInflater layoutInflater;
+
+        @NonNull
+        @Override
+        public Object instantiateItem(@NonNull ViewGroup container, int position) {
+            layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+
+            View view = layoutInflater.inflate(layouts.get(position), container, false);
+            container.addView(view);
+
+            iniatilizeElement(view,position);
+
+            return view;
+        }
+
+        private void iniatilizeElement(View view, int position) {
+            int positionE = position;
+            int indexMirror = position + 1;
+
+            TextView tv_RekeningSumber = (TextView) view.findViewById(R.id.RekeningSumber);
+            TextView tv_RekeningPenerima = (TextView) view.findViewById(R.id.RekeningPenerima);
+            TextView tv_JenisLayanan = (TextView) view.findViewById(R.id.JenisLayanan);
+            TextView tv_PenerimaManfaat = (TextView) view.findViewById(R.id.PenerimaManfaat);
+            TextView tv_JenisPenduduk = (TextView) view.findViewById(R.id.JenisPenduduk);
+            TextView tv_Berita = (TextView) view.findViewById(R.id.Berita);
+            TextView tv_Biaya = (TextView) view.findViewById(R.id.Biaya);
+            TextView tv_Nominal = (TextView) view.findViewById(R.id.Nominal);
+
+            if (dataAccount.size() > 0 ) {
+                if (positionE < dataAccount.size()) {
+                    tv_RekeningSumber.setText(dataAccount.get(positionE));
+                }
+            }
+
+            if (dataBankName.size() > 0 ) {
+                if (positionE < dataBankName.size()) {
+                    String NamaBank = dataBankName.get(positionE);
+                    String RekPenerima = dataAccountReceive.get(positionE);
+                    String NamaPenerima = dataNameReceive.get(positionE);
+
+                    tv_RekeningPenerima.setText(NamaBank+"\n"+RekPenerima+" - "+NamaPenerima);
+                }
+            }
+
+            if (dataService.size() > 0 ) {
+                if (positionE < dataService.size()) {
+                    tv_JenisLayanan.setText(dataService.get(positionE));
+                }
+            }
+
+            if (dataBenefit.size() > 0 ) {
+                if (positionE < dataBenefit.size()) {
+                    tv_PenerimaManfaat.setText(dataBenefit.get(positionE));
+                }
+            }
+
+            if (dataPopulation.size() > 0 ) {
+                if (positionE < dataPopulation.size()) {
+                    tv_JenisPenduduk.setText(dataPopulation.get(positionE));
+                }
+            }
+
+            if (dataNews.size() > 0 ) {
+                if (positionE < dataNews.size()) {
+                    tv_Berita.setText(dataNews.get(positionE));
+                }
+            }
+
+            tv_Biaya.setText(getResources().getString(R.string.mata_uang)+" 2.500");
+
+            if (dataNominal.size() > 0 ) {
+                if (positionE < dataNominal.size()) {
+                    tv_Nominal.setText(getResources().getString(R.string.mata_uang)+" "+dataNominal.get(positionE));
+                }
+            }
+
+        }
+
+        @Override
+        public int getCount() {
+            return layouts.size();
+        }
+
+        @Override
+        public boolean isViewFromObject(@NonNull View view, @NonNull Object object) {
+            return view == object;
+        }
+
+        @Override
+        public void destroyItem(@NonNull ViewGroup container, int position, @NonNull Object object) {
+            View view = (View) object;
+            container.removeView(view);
+        }
     }
 }

@@ -1,6 +1,8 @@
 package com.evo.mitzoom;
 
 import static com.evo.mitzoom.ui.DipsSplashScreen.setLocale;
+import static com.evo.mitzoom.ui.DipsVideoConfren.text_timer;
+import static com.evo.mitzoom.ui.DipsVideoConfren.timer;
 
 import android.annotation.SuppressLint;
 import android.app.Dialog;
@@ -58,6 +60,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+import cn.pedant.SweetAlert.SweetAlertDialog;
 import us.zoom.sdk.ZoomVideoSDK;
 import us.zoom.sdk.ZoomVideoSDKAudioHelper;
 import us.zoom.sdk.ZoomVideoSDKAudioRawData;
@@ -288,6 +291,7 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
             sessions.saveMedia(0);
             Log.d("CEK","ON OFF VIDEO is ON");
             onOffVideo();
+
         }
 
     }
@@ -875,6 +879,9 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
 
         adapter.onUserJoin(UserHelper.getAllUsers());
         refreshUserListAdapter();
+
+        timer.setVisibility(View.VISIBLE);
+        runTimer(text_timer);
     }
 
     @Override
@@ -943,6 +950,8 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
             if (userList.contains(zoomSDKUserInfo)) {
                 //checkMoreAction();
             }
+
+            sessions.saveCamera(isOn);
 
             boolean flagDoc = sessions.getFlagUpDoc();
             Log.d("CEK","flagDoc : "+flagDoc);

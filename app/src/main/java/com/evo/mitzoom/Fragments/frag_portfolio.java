@@ -66,12 +66,14 @@ public class frag_portfolio extends Fragment {
     private String bahasa;
     private boolean cekCust;
     ImageView btnToogleShow, btnToogleHide;
+    private String dataCIF;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         context = getContext();
         sessionManager = new SessionManager(context);
+        dataCIF = sessionManager.getCIF();
     }
 
     @Nullable
@@ -257,7 +259,16 @@ public class frag_portfolio extends Fragment {
         pieChart.setDrawEntryLabels(false);
         pieChart.getDescription().setEnabled(false);
         if (pieEntryList.size() < 1){
-            pieEntryList.add(new PieEntry(100,getResources().getString(R.string.tabungan_a)));
+            String produk = "";
+            if (dataCIF != null) {
+                try {
+                    JSONObject obj = new JSONObject(dataCIF);
+                    produk = obj.getString("produk");
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+            pieEntryList.add(new PieEntry(100,produk));
         }
         PieDataSet pieDataSet = new PieDataSet(pieEntryList,"");
         pieDataSet.setColors(ColorTemplate.MATERIAL_COLORS);
@@ -292,7 +303,17 @@ public class frag_portfolio extends Fragment {
     }
     private void addDataDanaPihakKetigaEmpty(){
         data = new ArrayList<>();
-        data.add(new PortfolioModel("3",getResources().getString(R.string.TABUNGAN_DIPS),getResources().getString(R.string.mata_uang)+" 0",R.drawable.porto2));
+        String portfolio = "";
+        if (dataCIF != null) {
+            try {
+                JSONObject obj = new JSONObject(dataCIF);
+                String produk = obj.getString("produk");
+                portfolio = produk+" - 123456789";
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+        data.add(new PortfolioModel("3",portfolio,getResources().getString(R.string.mata_uang)+" 0",R.drawable.porto2));
     }
     private void addDataDanaPihakKetigaMasking(){
         data = new ArrayList<>();
@@ -302,7 +323,17 @@ public class frag_portfolio extends Fragment {
     }
     private void addDataDanaPihakKetigaNewMasking(){
         data = new ArrayList<>();
-        data.add(new PortfolioModel("1",getResources().getString(R.string.TABUNGAN_DIPS),getResources().getString(R.string.mata_uang)+" XXXXXX",R.drawable.porto2));
+        String portfolio = "";
+        if (dataCIF != null) {
+            try {
+                JSONObject obj = new JSONObject(dataCIF);
+                String produk = obj.getString("produk");
+                portfolio = produk+" - 123456789";
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+        data.add(new PortfolioModel("1",portfolio,getResources().getString(R.string.mata_uang)+" XXXXXX",R.drawable.porto2));
     }
 
     /// Data Investasi

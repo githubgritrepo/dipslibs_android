@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -33,12 +34,15 @@ public class frag_aktivasi_berhasil extends Fragment {
     private Context context;
     private String idDips;
     private SessionManager session;
+    private TextView nama;
+    private String dataCIF;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         context = getContext();
         session = new SessionManager(context);
+        dataCIF = session.getCIF();
     }
 
     @Nullable
@@ -46,11 +50,22 @@ public class frag_aktivasi_berhasil extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.aktivasi_berhasil, container, false);
         btnSelesai = view.findViewById(R.id.btnSelesai);
+        nama = (TextView) view.findViewById(R.id.nama);
         return view;
     }
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        String namaRek = "";
+        if (dataCIF != null) {
+            try {
+                JSONObject obj = new JSONObject(dataCIF);
+                namaRek = obj.getString("nama");
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+        nama.setText(namaRek);
         idDips = session.getKEY_IdDips();
         btnSelesai.setOnClickListener(new View.OnClickListener() {
             @Override

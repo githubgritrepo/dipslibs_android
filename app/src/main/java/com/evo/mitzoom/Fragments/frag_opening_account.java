@@ -30,6 +30,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
+import androidx.core.graphics.BitmapCompat;
 import androidx.fragment.app.Fragment;
 
 import com.evo.mitzoom.API.ApiService;
@@ -203,7 +204,11 @@ public class frag_opening_account extends Fragment {
                 delete.setVisibility(View.VISIBLE);
                 viewImage.setVisibility(View.VISIBLE);
                 chooseImage.setVisibility(View.GONE);
-                getResizedBitmap(bitmap, (bitmap.getWidth()/6), (bitmap.getHeight()/6));
+                //getResizedBitmap(bitmap, (bitmap.getWidth()/2), (bitmap.getHeight()/2));
+                int bitmapByteCount= BitmapCompat.getAllocationByteCount(bitmap);
+                Log.d("CEK","bitmapByteCount : "+bitmapByteCount);
+                viewImage.setImageBitmap(bitmap);
+                processSendImage(bitmap);
             }
             else if (requestCode == 2){
                 Uri selectedImage = data.getData();
@@ -220,10 +225,36 @@ public class frag_opening_account extends Fragment {
                 delete.setVisibility(View.VISIBLE);
                 viewImage.setVisibility(View.VISIBLE);
                 chooseImage.setVisibility(View.GONE);
-               getResizedBitmap(thumbnail, (thumbnail.getWidth()/2), (thumbnail.getHeight()/2));
+                int bitmapByteCount= BitmapCompat.getAllocationByteCount(thumbnail);
+                Log.d("CEK","bitmapByteCount : "+bitmapByteCount);
+                getResizedBitmap(thumbnail, (thumbnail.getWidth()/2), (thumbnail.getHeight()/2));
             }
         }
     }
+
+    private void processSendImage(Bitmap bitmap) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Thread.sleep(1000);
+                    for (int k = 0; k < 10; k++){
+                        int onOfCamera = session.getCamera();
+                        Log.d("CEK","onOfCamera loop-"+k+" : "+onOfCamera);
+                        if (onOfCamera == 1) {
+                            Log.d("CEK","MASUK KIRIM IMAGE");
+                            imgtoBase64(bitmap);
+                            break;
+                        }
+                        Thread.sleep(500);
+                    }
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+    }
+
     private void getFragmentPage(Fragment fragment){
         getActivity().getSupportFragmentManager()
                 .beginTransaction()
@@ -349,7 +380,7 @@ public class frag_opening_account extends Fragment {
         bm.recycle();
         viewImage.setImageBitmap(resizedBitmap);
         //return resizedBitmap;
-        imgtoByteArray(resizedBitmap);
+        //imgtoByteArray(resizedBitmap);
         imgtoBase64(resizedBitmap);
     }
     private void imgtoByteArray(Bitmap bitmap) {
@@ -362,8 +393,9 @@ public class frag_opening_account extends Fragment {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         bitmap.compress(Bitmap.CompressFormat.JPEG,100, baos);
         byte[] imageBytes = baos.toByteArray();
-        String encodedImage = Base64.encodeToString(imageBytes, Base64.DEFAULT);
+        String encodedImage = Base64.encodeToString(imageBytes, Base64.NO_WRAP);
         Mirroring(false,encodedImage);
+        KTP = imageBytes;
         KTP_BASE64 = encodedImage;
     }
     private void saveImage(){
