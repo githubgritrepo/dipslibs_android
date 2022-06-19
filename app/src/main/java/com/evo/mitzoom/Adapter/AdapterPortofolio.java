@@ -34,7 +34,6 @@ public class AdapterPortofolio extends RecyclerView.Adapter<AdapterPortofolio.It
       holder.NamaPortfolio.setText(dataList.get(position).getNamaPortfolio());
       holder.NominalPortfolio.setText(dataList.get(position).getNominalPortfolio());
       holder.GambarItem.setImageResource(dataList.get(position).getGambarPortfolio());
-
     }
 
     @Override
