@@ -76,7 +76,6 @@ public class frag_summary_rtgs extends Fragment {
     private MyViewPagerAdapter myViewPagerAdapter;
     private ViewPager pager;
     private CircleIndicator circleIndicator;
-    private String getBerita = "";
     private ArrayList<Integer> layouts = new ArrayList<Integer>();
     private ArrayList<String> dataAccount = new ArrayList<String>();
     private ArrayList<String> dataNoForm = new ArrayList<String>();
@@ -106,14 +105,6 @@ public class frag_summary_rtgs extends Fragment {
         pager = (ViewPager) view.findViewById(R.id.pager);
         circleIndicator = (CircleIndicator) view.findViewById(R.id.indicator);
         btnTransfer = view.findViewById(R.id.btnTransfer);
-//        tv_RekeningSumber = view.findViewById(R.id.RekeningSumber);
-//        tv_RekeningPenerima = view.findViewById(R.id.RekeningPenerima);
-//        tv_JenisLayanan = view.findViewById(R.id.JenisLayanan);
-//        tv_PenerimaManfaat = view.findViewById(R.id.PenerimaManfaat);
-//        tv_JenisPenduduk = view.findViewById(R.id.JenisPenduduk);
-//        tv_Berita = view.findViewById(R.id.Berita);
-//        tv_Biaya = view.findViewById(R.id.Biaya);
-//        tv_Nominal = view.findViewById(R.id.Nominal);
         return view;
     }
 
@@ -125,26 +116,6 @@ public class frag_summary_rtgs extends Fragment {
         if (dataRTGS != null) {
             savedRTGS();
         }
-
-        /*Bundle terima = getArguments();
-        RekeningSumber = terima.getString("rekeningSumber");
-        JenisLayanan = terima.getString("jenisLayanan");
-        NamaBank = terima.getString("namaBank");
-        NamaPenerima = terima.getString("namaPenerima");
-        PenerimaManfaat = terima.getString("penerimaManfaat");
-        JenisPenduduk = terima.getString("jenisPenduduk");
-        Berita = terima.getString("berita");
-        Nominal = terima.getString("nominal");
-        RekPenerima = terima.getString("rekPenerima");
-
-        tv_RekeningSumber.setText(RekeningSumber);
-        tv_RekeningPenerima.setText(NamaBank+"\n"+RekPenerima+" - "+NamaPenerima);
-        tv_JenisLayanan.setText(JenisLayanan);
-        tv_PenerimaManfaat.setText(PenerimaManfaat);
-        tv_JenisPenduduk.setText(JenisPenduduk);
-        tv_Berita.setText(Berita);
-        tv_Biaya.setText("Rp2.500");
-        tv_Nominal.setText("Rp"+Nominal);*/
 
         btnBack.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -161,7 +132,6 @@ public class frag_summary_rtgs extends Fragment {
             }
         });
 
-        ///SetText
     }
 
     private void initPager() {
@@ -169,6 +139,22 @@ public class frag_summary_rtgs extends Fragment {
             myViewPagerAdapter = new MyViewPagerAdapter();
         }
         pager.setAdapter(myViewPagerAdapter);
+        pager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                mirroringPagerRTGS(position);
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
+        });
         circleIndicator.setViewPager(pager);
     }
 
@@ -207,8 +193,9 @@ public class frag_summary_rtgs extends Fragment {
 
                 initPager();
 
-                /*Mirroring(true,"",sourceBank,rek_penerima,nama_penerima,nominal,
-                        sourceTypeService,sourceBenefit,sourcePopulation,berita,idx,len);*/
+                if (i == 0) {
+                    Mirroring(true,false,idx,len);
+                }
 
                 idx++;
             }
@@ -217,15 +204,73 @@ public class frag_summary_rtgs extends Fragment {
         }
     }
 
-    private String dataArrF(int index) {
-        ArrayList<String> arrF = new ArrayList<>();
-        arrF.add(getResources().getString(R.string.label_first));
-        arrF.add(getResources().getString(R.string.label_second));
-        arrF.add(getResources().getString(R.string.label_third));
-        arrF.add(getResources().getString(R.string.label_fourth));
-        arrF.add(getResources().getString(R.string.label_fifth));
+    private void mirroringPagerRTGS(int position) {
+        int lenL = layouts.size();
+        int idx = position + 1;
+        JSONArray jsonArray = new JSONArray();
+        JSONObject jsons = new JSONObject();
 
-        return  arrF.get(index).toString();
+        try {
+            String noFormulir = dataNoForm.get(position);
+            if (dataAccount.size() == 0 || (dataAccount.size() == position) || (dataAccount.size() > 0 && dataAccount.get(position).isEmpty())) {
+                dataAccount.add("");
+            }
+            if (dataBankName.size() == 0 || (dataBankName.size() == position) || (dataBankName.size() > 0 && dataBankName.get(position).isEmpty())) {
+                dataBankName.add("");
+            }
+            if (dataAccountReceive.size() == 0 || (dataAccountReceive.size() == position) || (dataAccountReceive.size() > 0 && dataAccountReceive.get(position).isEmpty())) {
+                dataAccountReceive.add("");
+            }
+            if (dataNameReceive.size() == 0 || (dataNameReceive.size() == position) || (dataNameReceive.size() > 0 && dataNameReceive.get(position).isEmpty())) {
+                dataNameReceive.add("");
+            }
+            if (dataNominal.size() == 0 || (dataNominal.size() == position) || (dataNominal.size() > 0 && dataNominal.get(position).isEmpty())) {
+                dataNominal.add("0");
+            }
+            if (dataService.size() == 0 || (dataService.size() == position) || (dataService.size() > 0 && dataService.get(position).isEmpty())) {
+                dataService.add("");
+            }
+            if (dataBenefit.size() == 0 || (dataBenefit.size() == position) || (dataBenefit.size() > 0 && dataBenefit.get(position).isEmpty())) {
+                dataBenefit.add("");
+            }
+            if (dataPopulation.size() == 0 || (dataPopulation.size() == position) || (dataPopulation.size() > 0 && dataPopulation.get(position).isEmpty())) {
+                dataPopulation.add("");
+            }
+            if (dataNews.size() == 0 || (dataNews.size() == position) || (dataNews.size() > 0 && dataNews.get(position).isEmpty())) {
+                dataNews.add("");
+            }
+
+            String SourceAccount = dataAccount.get(position);
+            String SumberBank = dataBankName.get(position);
+            String JenisLayanan = dataService.get(position);
+            String posSourceBenefit = dataBenefit.get(position);
+            String posSourcePopulation = dataPopulation.get(position);
+            String rek_penerima = dataAccountReceive.get(position);
+            String nama_penerima = dataNameReceive.get(position);
+            String nominal = dataNominal.get(position);
+            String berita = dataNews.get(position);
+
+            jsons.put("idForm",noFormulir);
+            jsons.put("sourceAccount",SourceAccount);
+            jsons.put("sourceBank",SumberBank);
+            jsons.put("sourceTypeService",JenisLayanan);
+            jsons.put("sourceBenefit",posSourceBenefit);
+            jsons.put("sourcePopulation",posSourcePopulation);
+            jsons.put("rek_penerima",rek_penerima);
+            jsons.put("nama_penerima",nama_penerima);
+            jsons.put("nominal",nominal);
+            jsons.put("berita",berita);
+
+            Mirroring(true,false,idx,lenL);
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        jsonArray.put(jsons);
+
+        String dataJs = jsonArray.toString();
+        session.saveRTGS(dataJs);
     }
 
     private void getFragmentPage(Fragment fragment){
@@ -246,6 +291,7 @@ public class frag_summary_rtgs extends Fragment {
         btnVerifikasi = dialogView.findViewById(R.id.btnVerifikasi);
         Timer = dialogView.findViewById(R.id.timer_otp);
         Resend_Otp = dialogView.findViewById(R.id.btn_resend_otp);
+        otp = dialogView.findViewById(R.id.otp);
         otp.setAnimationEnable(true);
         otp.addTextChangedListener(new TextWatcher() {
             @Override
@@ -527,11 +573,11 @@ public class frag_summary_rtgs extends Fragment {
                 }
             }
 
-            tv_Biaya.setText("Rp2.500");
+            tv_Biaya.setText(getResources().getString(R.string.mata_uang)+" 2.500");
 
             if (dataNominal.size() > 0 ) {
                 if (positionE < dataNominal.size()) {
-                    tv_Nominal.setText(dataNominal.get(positionE));
+                    tv_Nominal.setText(getResources().getString(R.string.mata_uang)+" "+dataNominal.get(positionE));
                 }
             }
 

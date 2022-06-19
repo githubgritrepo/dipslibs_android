@@ -30,6 +30,7 @@ public class SessionManager {
     public static final String KEY_FLAG_UPDOC = "FLAG_UPLOADDOC";
     public static final String KEY_MEDIA = "MEDIA";
     public static final String KEY_CAMERA = "CAMERA";
+    public static final String KEY_CIF = "CIF";
 
     // Constructor
     public SessionManager(Context context){
@@ -43,6 +44,10 @@ public class SessionManager {
     }
     public void saveRTGS(String data) {
         editor.putString(KEY_RTGS,data);
+        editor.commit();
+    }
+    public void saveCIF(String data) {
+        editor.putString(KEY_CIF,data);
         editor.commit();
     }
     public void saveChat(String data) {
@@ -93,6 +98,9 @@ public class SessionManager {
     }
     public String getRTGS() {
         return pref.getString(KEY_RTGS,null);
+    }
+    public String getCIF() {
+        return pref.getString(KEY_CIF,null);
     }
     public String getKEY_IdDips (){
         return pref.getString(KEY_IdDips,null);

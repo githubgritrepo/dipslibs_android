@@ -392,7 +392,8 @@ public class frag_aktivasi_ibmb extends Fragment {
             @Override
             public void run() {
                 Mirroring3(true);
-                getFragmentPage(new frag_aktivasi_berhasil());
+                Fragment fragment = new frag_aktivasi_berhasil();
+                getFragmentPage(fragment);
                 sweetAlertDialog.dismiss();
             }
         },5000);

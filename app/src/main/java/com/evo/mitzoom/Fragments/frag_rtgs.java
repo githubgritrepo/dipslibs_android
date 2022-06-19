@@ -85,7 +85,7 @@ public class frag_rtgs extends Fragment {
     private List<TypeServiceItem> typeServiceList;
     String[] sourceBenefit;
     String[] sourcePopulation;
-    private Button btnProses;
+    private Button btnProses, btnAdd;
     private String RekeningSumber, NamaBank, RekPenerima, NamaPenerima, Nominal, JenisLayanan, PenerimaManfaat,JenisPenduduk,Berita;
     public static final NumberFormat numberFormat = NumberFormat.getInstance(new Locale("id", "ID"));
     private String dataRTGS, idDips;
@@ -124,6 +124,7 @@ public class frag_rtgs extends Fragment {
         pager = (ViewPager) view.findViewById(R.id.pager);
         circleIndicator = (CircleIndicator) view.findViewById(R.id.indicator);
         btnProses = view.findViewById(R.id.btnProsesRTGS);
+        btnAdd = (Button) view.findViewById(R.id.btnAdd);
         return view;
     }
     @Override
@@ -143,29 +144,7 @@ public class frag_rtgs extends Fragment {
                 chooseFromSD();
             }
         });
-        /*et_Nominal.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                et_Nominal.removeTextChangedListener(this);
-                BigDecimal parsed = parseCurrencyValue(et_Nominal.getText().toString());
-                String formatted = numberFormat.format(parsed);
-                et_Nominal.setText(formatted);
-                et_Nominal.setSelection(formatted.length());
-                et_Nominal.addTextChangedListener(this);
-                Mirroring(false,et_source_account.getText().toString(),et_NamaBank.getText().toString(),et_RekPenerima.getText().toString(),et_NamaPenerima.getText().toString(),s,et_serviceType.getText().toString(),et_benefitRec.getText().toString(),et_typePopulation.getText().toString(),et_Berita.getText().toString(),1,1);
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-
-            }
-        });*/
         btnBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -174,227 +153,41 @@ public class frag_rtgs extends Fragment {
             }
         });
 
-        /*AdapterSourceAccount adapterSourceAcc = new AdapterSourceAccount(context,R.layout.list_item_souceacc,sourceAcc);
-        et_source_account.setAdapter(adapterSourceAcc);
-        et_source_account.setBackground(context.getResources().getDrawable(R.drawable.blue_button_background));
-        et_source_account.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                //String selection = (String) parent.getItemAtPosition(position);
-            }
-        });
-        et_source_account.addTextChangedListener(new TextWatcher() {
-            String textContent = "";
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                textContent = s.toString();
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                String[] strings = textContent.split("\\r?\\n");
-                String titleAcc = strings[0]+"\n";
-                s.setSpan(new StyleSpan(android.graphics.Typeface.BOLD), 0, titleAcc.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-                Mirroring(false,s,et_NamaBank.getText().toString(),et_RekPenerima.getText().toString(),et_NamaPenerima.getText().toString(),et_Nominal.getText().toString(),et_serviceType.getText().toString(),et_benefitRec.getText().toString(),et_typePopulation.getText().toString(),et_Berita.getText().toString(),1,1);
-            }
-
-
-        });
-
-        fillBankList();
-        AdapterBank2 adapterBank2 = new AdapterBank2(context,bankList);
-        et_NamaBank.setAdapter(adapterBank2);
-        et_NamaBank.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            }
-        });
-        et_NamaBank.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                Mirroring(false,et_source_account.getText().toString(),s,et_RekPenerima.getText().toString(),et_NamaPenerima.getText().toString(),et_Nominal.getText().toString(),et_serviceType.getText().toString(),et_benefitRec.getText().toString(),et_typePopulation.getText().toString(),et_Berita.getText().toString(),1,1);
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-
-            }
-        });
-
-        et_RekPenerima.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                Mirroring(false,et_source_account.getText().toString(),et_NamaBank.getText().toString(),s,et_NamaPenerima.getText().toString(),et_Nominal.getText().toString(),et_serviceType.getText().toString(),et_benefitRec.getText().toString(),et_typePopulation.getText().toString(),et_Berita.getText().toString(),1,1);
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-
-            }
-        });
-        et_NamaPenerima.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                Mirroring(false,et_source_account.getText().toString(),et_NamaBank.getText().toString(),et_RekPenerima.getText().toString(),s,et_Nominal.getText().toString(),et_serviceType.getText().toString(),et_benefitRec.getText().toString(),et_typePopulation.getText().toString(),et_Berita.getText().toString(),1,1);
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-
-            }
-        });
-
-        fillTypeServiceList();
-        AdapterTypeService adapterTypeService = new AdapterTypeService(context,typeServiceList);
-        et_serviceType.setAdapter(adapterTypeService);
-        et_serviceType.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            }
-        });
-        et_serviceType.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                Mirroring(false,et_source_account.getText().toString(),et_NamaBank.getText().toString(),et_RekPenerima.getText().toString(),et_NamaPenerima.getText().toString(),et_Nominal.getText().toString(),s,et_benefitRec.getText().toString(),et_typePopulation.getText().toString(),et_Berita.getText().toString(),1,1);
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-
-            }
-        });
-
-        ArrayAdapter<String> adapterBenefit = new ArrayAdapter<String>(context,R.layout.list_item, sourceBenefit);
-        et_benefitRec.setAdapter(adapterBenefit);
-        et_benefitRec.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                posSourceBenefit = position;
-            }
-        });
-        et_benefitRec.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                Mirroring(false,et_source_account.getText().toString(),et_NamaBank.getText().toString(),et_RekPenerima.getText().toString(),et_NamaPenerima.getText().toString(),et_Nominal.getText().toString(),et_serviceType.getText().toString(),s,et_typePopulation.getText().toString(),et_Berita.getText().toString(),1,1);
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-
-            }
-        });
-
-        ArrayAdapter<String> adapterPopulation = new ArrayAdapter<String>(context,R.layout.list_item, sourcePopulation);
-        et_typePopulation.setAdapter(adapterPopulation);
-        et_typePopulation.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                posSourcePopulation = position;
-            }
-        });
-        et_typePopulation.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                Mirroring(false,et_source_account.getText().toString(),et_NamaBank.getText().toString(),et_RekPenerima.getText().toString(),et_NamaPenerima.getText().toString(),et_Nominal.getText().toString(),et_serviceType.getText().toString(),et_benefitRec.getText().toString(),s,et_Berita.getText().toString(),1,1);
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-
-            }
-        });
-
-        et_Berita.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                Mirroring(false,et_source_account.getText().toString(),et_NamaBank.getText().toString(),et_RekPenerima.getText().toString(),et_NamaPenerima.getText().toString(),et_Nominal.getText().toString(),et_serviceType.getText().toString(),et_benefitRec.getText().toString(),et_typePopulation.getText().toString(),s,1,1);
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-
-            }
-        });*/
-
         btnProses.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 boolean cekData = processSavedInstance();
                 if (cekData) {
-                    Mirroring2(17,true);
+                    //Mirroring2(17,true);
                     Fragment fragment = new frag_summary_rtgs();
                     getFragmentPage(fragment);
                 }
-                /*RekeningSumber = et_source_account.getText().toString();
-                NamaBank = et_NamaBank.getText().toString();
-                RekPenerima = et_RekPenerima.getText().toString();
-                NamaPenerima = et_NamaPenerima.getText().toString();
-                Nominal = et_Nominal.getText().toString();
-                JenisLayanan = et_serviceType.getText().toString();
-                PenerimaManfaat = et_benefitRec.getText().toString();
-                JenisPenduduk = et_typePopulation.getText().toString();
-                Berita = et_Berita.getText().toString();
+            }
+        });
 
-                if (RekeningSumber.isEmpty() || NamaBank.isEmpty() || RekPenerima.isEmpty() || NamaPenerima.isEmpty() || Nominal.isEmpty() || JenisLayanan.isEmpty() || PenerimaManfaat.isEmpty() || JenisPenduduk.isEmpty()){
-                    Toast.makeText(context, getResources().getString(R.string.empty_field), Toast.LENGTH_SHORT).show();
+        btnAdd.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                int lens = layouts.size();
+                int indexL = lens - 1;
+
+                if (lens > 4) {
+                    Toast.makeText(context,"Maksimal 5 Formulir.",Toast.LENGTH_LONG).show();
+                    return;
                 }
-                else{
-                    Mirroring(true,et_source_account.getText().toString(),et_NamaBank.getText().toString(),et_RekPenerima.getText().toString(),et_NamaPenerima.getText().toString(),et_Nominal.getText().toString(),et_serviceType.getText().toString(),et_benefitRec.getText().toString(),et_typePopulation.getText().toString(),et_Berita.getText().toString(),1,1);
-                    Fragment fragment = new frag_summary_rtgs();
-                    Bundle bundle = new Bundle();
-                    bundle.putString("rekeningSumber",RekeningSumber);
-                    bundle.putString("jenisLayanan",JenisLayanan);
-                    bundle.putString("namaBank",NamaBank);
-                    bundle.putString("namaPenerima",NamaPenerima);
-                    bundle.putString("penerimaManfaat",PenerimaManfaat);
-                    bundle.putString("jenisPenduduk",JenisPenduduk);
-                    bundle.putString("berita",Berita);
-                    bundle.putString("nominal",Nominal);
-                    bundle.putString("rekPenerima",RekPenerima);
-                    fragment.setArguments(bundle);
-                    getFragmentPage(fragment);
-                }*/
+                layouts.add(R.layout.content_form_rtgs);
+                int len = layouts.size();
+                String no_form = dataNoForm.get(indexL);
+                int intForm = Integer.valueOf(no_form) + 1;
+                String NoForm = String.valueOf(intForm);
+                dataNoForm.add(NoForm);
 
+                initPager();
+                int currPos = len - 1;
+                pager.setCurrentItem(currPos);
+
+                mirroringPagerRTGS(currPos);
             }
         });
     }
@@ -424,10 +217,13 @@ public class frag_rtgs extends Fragment {
     }
 
     private void mirroringPagerRTGS(int position) {
-        try {
+        //try {
+            processSavedInstancePager(position);
+            /*int len = 0;
+            int idx;
             JSONArray jsArr = new JSONArray(dataRTGS);
-            int len = jsArr.length();
-            int idx = position + 1;
+            len = jsArr.length();
+            idx = position + 1;
             String dataArr = jsArr.get(position).toString();
             JSONObject dataJs = new JSONObject(dataArr);
             String idForm = dataJs.getString("idForm");
@@ -441,10 +237,10 @@ public class frag_rtgs extends Fragment {
             String berita = dataJs.getString("berita");
 
             Mirroring(true, "", sourceBank, rek_penerima, nama_penerima, nominal,
-                    sourceTypeService, sourceBenefit, sourcePopulation, berita, idx, len);
-        } catch (JSONException e) {
+                    sourceTypeService, sourceBenefit, sourcePopulation, berita, idx, len);*/
+        /*} catch (JSONException e) {
             e.printStackTrace();
-        }
+        }*/
     }
 
     private void savedRTGS() {
@@ -596,8 +392,8 @@ public class frag_rtgs extends Fragment {
                 jsons.put("nominal",nominal);
                 jsons.put("berita",berita);
 
-//                Mirroring(true,SourceAccount,SumberBank,rek_penerima,nama_penerima,nominal,
-//                        JenisLayanan,posSourceBenefit,posSourcePopulation,berita,idx,lenL);
+                Mirroring(true,SourceAccount,SumberBank,rek_penerima,nama_penerima,nominal,
+                        JenisLayanan,posSourceBenefit,posSourcePopulation,berita,idx,lenL);
 
                 idx++;
 
@@ -607,6 +403,91 @@ public class frag_rtgs extends Fragment {
 
             jsonArray.put(jsons);
         }
+
+        String dataJs = jsonArray.toString();
+        sessions.saveRTGS(dataJs);
+        return true;
+    }
+
+    private boolean processSavedInstancePager(int position) {
+        int lenL = layouts.size();
+        int idx = position + 1;
+        JSONArray jsonArray = new JSONArray();
+        JSONObject jsons = new JSONObject();
+
+        try {
+            String noFormulir = dataNoForm.get(position);
+            if (dataAccount.size() == 0 || (dataAccount.size() == position) || (dataAccount.size() > 0 && dataAccount.get(position).isEmpty())) {
+                dataAccount.add("");
+            }
+            if (dataBankName.size() == 0 || (dataBankName.size() == position) || (dataBankName.size() > 0 && dataBankName.get(position).isEmpty())) {
+                dataBankName.add("");
+            }
+            if (dataAccountReceive.size() == 0 || (dataAccountReceive.size() == position) || (dataAccountReceive.size() > 0 && dataAccountReceive.get(position).isEmpty())) {
+                dataAccountReceive.add("");
+            }
+            if (dataNameReceive.size() == 0 || (dataNameReceive.size() == position) || (dataNameReceive.size() > 0 && dataNameReceive.get(position).isEmpty())) {
+                dataNameReceive.add("");
+            }
+            if (dataNominal.size() == 0 || (dataNominal.size() == position) || (dataNominal.size() > 0 && dataNominal.get(position).isEmpty())) {
+                dataNominal.add("0");
+            }
+            if (dataService.size() == 0 || (dataService.size() == position) || (dataService.size() > 0 && dataService.get(position).isEmpty())) {
+                dataService.add("");
+            }
+            if (dataBenefit.size() == 0 || (dataBenefit.size() == position) || (dataBenefit.size() > 0 && dataBenefit.get(position).isEmpty())) {
+                dataBenefit.add("");
+            }
+            if (dataPopulation.size() == 0 || (dataPopulation.size() == position) || (dataPopulation.size() > 0 && dataPopulation.get(position).isEmpty())) {
+                dataPopulation.add("");
+            }
+
+            String SourceAccount = dataAccount.get(position);
+            String SumberBank = dataBankName.get(position);
+            String JenisLayanan = dataService.get(position);
+            String posSourceBenefit = dataBenefit.get(position);
+            String posSourcePopulation = dataPopulation.get(position);
+            String rek_penerima = dataAccountReceive.get(position);
+            String nama_penerima = dataNameReceive.get(position);
+            String nominal = dataNominal.get(position);
+            String berita = "";
+
+            if (dataNews.size() == 0) {
+                berita = getBerita;
+                dataNews.add(berita);
+            } else {
+                if (dataNews.size() < position) {
+                    int lenN = dataNews.size();
+                    for (int k = lenN; k <= position; k++) {
+                        dataNews.add(k, "");
+                    }
+                }
+                if (dataNews.size() == position) {
+                    berita = getBerita;
+                } else {
+                    berita = dataNews.get(position);
+                }
+            }
+
+            jsons.put("idForm",noFormulir);
+            jsons.put("sourceAccount",SourceAccount);
+            jsons.put("sourceBank",SumberBank);
+            jsons.put("sourceTypeService",JenisLayanan);
+            jsons.put("sourceBenefit",posSourceBenefit);
+            jsons.put("sourcePopulation",posSourcePopulation);
+            jsons.put("rek_penerima",rek_penerima);
+            jsons.put("nama_penerima",nama_penerima);
+            jsons.put("nominal",nominal);
+            jsons.put("berita",berita);
+
+            Mirroring(false, SourceAccount, SumberBank, rek_penerima, nama_penerima, nominal,
+                    JenisLayanan, posSourceBenefit, posSourcePopulation, berita, idx, lenL);
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        jsonArray.put(jsons);
 
         String dataJs = jsonArray.toString();
         sessions.saveRTGS(dataJs);
@@ -690,52 +571,6 @@ public class frag_rtgs extends Fragment {
 
                 if (resulText.equals(idForm)) {
                     savedRTGS();
-                    /*String SourceBank = dataJs.getString("sourceBank");
-                    String SourceTypeService = dataJs.getString("sourceTypeService");
-                    String SourceBenefit = dataJs.getString("sourceBenefit");
-                    String SourcePopulation = dataJs.getString("sourcePopulation");
-                    String rek_penerima = dataJs.getString("rek_penerima");
-                    String nama_penerima = dataJs.getString("nama_penerima");
-                    String nominal = dataJs.getString("nominal");
-                    String berita = "";
-                    if (dataJs.has("berita")) {
-                        if (!dataJs.isNull("berita")) {
-                            berita = dataJs.getString("berita");
-                        }
-                    }
-
-                    *//*if (posSourceBenefit > -1) {
-                        et_benefitRec.setText(et_benefitRec.getAdapter().getItem(posSourceBenefit).toString(), false);
-                    }
-                    if (posSourcePopulation > -1) {
-                        et_typePopulation.setText(et_typePopulation.getAdapter().getItem(posSourcePopulation).toString(), false);
-                    }*//*
-
-                    if (!SourceBenefit.isEmpty()){
-                        et_benefitRec.setText(SourceBenefit);
-                    }
-                    if (!SourcePopulation.isEmpty()){
-                        et_typePopulation.setText(SourcePopulation);
-                    }
-                    if (!SourceBank.isEmpty()){
-                        et_NamaBank.setText(SourceBank);
-                    }
-                    if (!SourceTypeService.isEmpty()){
-                        et_serviceType.setText(SourceTypeService);
-                    }
-                    if (!rek_penerima.isEmpty()) {
-                        et_RekPenerima.setText(rek_penerima);
-                    }
-                    if (!nama_penerima.isEmpty()) {
-                        et_NamaPenerima.setText(nama_penerima);
-                    }
-                    if (!nominal.isEmpty()) {
-                        et_Nominal.setText(nominal);
-                    }
-                    if (!berita.isEmpty()) {
-                        et_Berita.setText(berita);
-                    }*/
-
                 } else {
                     SweetAlertDialog sWA = new SweetAlertDialog(context, SweetAlertDialog.WARNING_TYPE);
                     sWA.setContentText("Data tidak ditemukan");
@@ -944,31 +779,6 @@ public class frag_rtgs extends Fragment {
 
             });
 
-            et_nominal.addTextChangedListener(new TextWatcher() {
-                @Override
-                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-                }
-
-                @Override
-                public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-                }
-
-                @Override
-                public void afterTextChanged(Editable s) {
-                    et_nominal.removeTextChangedListener(this);
-                    BigDecimal parsed = parseCurrencyValue(et_nominal.getText().toString());
-                    String formatted = numberFormat.format(parsed);
-                    et_nominal.setText(formatted);
-                    et_nominal.setSelection(formatted.length());
-                    et_nominal.addTextChangedListener(this);
-                    Mirroring(false,et_source_accountpager.getText().toString(),et_nama_bank.getText().toString(),et_rek_penerima.getText().toString(),et_nama_penerima.getText().toString(),
-                            et_nominal.getText().toString(),et_serviceType.getText().toString(),et_benefitRec.getText().toString(),
-                            et_typePopulation.getText().toString(),et_berita.getText().toString(),indexMirror,layouts.size());
-                }
-            });
-
             fillBankList();
             AdapterBank2 adapterBank2 = new AdapterBank2(context,bankList);
             et_nama_bank.setAdapter(adapterBank2);
@@ -996,6 +806,24 @@ public class frag_rtgs extends Fragment {
                                     et_typePopulation.getText().toString(),et_berita.getText().toString(),indexMirror,layouts.size());
                         }
                     }
+                }
+            });
+            et_nama_bank.addTextChangedListener(new TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+                }
+
+                @Override
+                public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+                }
+
+                @Override
+                public void afterTextChanged(Editable s) {
+                    Mirroring(false,et_source_accountpager.getText().toString(),et_nama_bank.getText().toString(),et_rek_penerima.getText().toString(),et_nama_penerima.getText().toString(),
+                            et_nominal.getText().toString(),et_serviceType.getText().toString(),et_benefitRec.getText().toString(),
+                            et_typePopulation.getText().toString(),et_berita.getText().toString(),indexMirror,layouts.size());
                 }
             });
             et_nama_bank.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -1121,6 +949,24 @@ public class frag_rtgs extends Fragment {
                     }
                 }
             });
+            et_rek_penerima.addTextChangedListener(new TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+                }
+
+                @Override
+                public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+                }
+
+                @Override
+                public void afterTextChanged(Editable s) {
+                    Mirroring(false,et_source_accountpager.getText().toString(),et_nama_bank.getText().toString(),et_rek_penerima.getText().toString(),et_nama_penerima.getText().toString(),
+                            et_nominal.getText().toString(),et_serviceType.getText().toString(),et_benefitRec.getText().toString(),
+                            et_typePopulation.getText().toString(),et_berita.getText().toString(),indexMirror,layouts.size());
+                }
+            });
 
             et_nama_penerima.setOnFocusChangeListener(new View.OnFocusChangeListener() {
                 @Override
@@ -1142,6 +988,24 @@ public class frag_rtgs extends Fragment {
                     }
                 }
             });
+            et_nama_penerima.addTextChangedListener(new TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+                }
+
+                @Override
+                public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+                }
+
+                @Override
+                public void afterTextChanged(Editable s) {
+                    Mirroring(false,et_source_accountpager.getText().toString(),et_nama_bank.getText().toString(),et_rek_penerima.getText().toString(),et_nama_penerima.getText().toString(),
+                            et_nominal.getText().toString(),et_serviceType.getText().toString(),et_benefitRec.getText().toString(),
+                            et_typePopulation.getText().toString(),et_berita.getText().toString(),indexMirror,layouts.size());
+                }
+            });
 
             et_nominal.setOnFocusChangeListener(new View.OnFocusChangeListener() {
                 @Override
@@ -1161,6 +1025,30 @@ public class frag_rtgs extends Fragment {
                                 et_nominal.getText().toString(),et_serviceType.getText().toString(),et_benefitRec.getText().toString(),
                                 et_typePopulation.getText().toString(),et_berita.getText().toString(),indexMirror,layouts.size());
                     }
+                }
+            });
+            et_nominal.addTextChangedListener(new TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+                }
+
+                @Override
+                public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+                }
+
+                @Override
+                public void afterTextChanged(Editable s) {
+                    et_nominal.removeTextChangedListener(this);
+                    BigDecimal parsed = parseCurrencyValue(et_nominal.getText().toString());
+                    String formatted = numberFormat.format(parsed);
+                    et_nominal.setText(formatted);
+                    et_nominal.setSelection(formatted.length());
+                    et_nominal.addTextChangedListener(this);
+                    Mirroring(false,et_source_accountpager.getText().toString(),et_nama_bank.getText().toString(),et_rek_penerima.getText().toString(),et_nama_penerima.getText().toString(),
+                            et_nominal.getText().toString(),et_serviceType.getText().toString(),et_benefitRec.getText().toString(),
+                            et_typePopulation.getText().toString(),et_berita.getText().toString(),indexMirror,layouts.size());
                 }
             });
 

@@ -402,6 +402,24 @@ public class frag_form_opening extends Fragment {
                 else {
                     Mirroring(true,Nama2,NIK2,Email2,NoHp2,Alamat2,Agama2,Status2,Produk,aBoolean);
                     iconForm.setBackgroundTintList(context.getResources().getColorStateList(R.color.bg_cif_success));
+
+                    JSONObject obj = new JSONObject();
+                    try {
+                        obj.put("nama",Nama2);
+                        obj.put("nik",NIK2);
+                        obj.put("email",Email2);
+                        obj.put("nohp",NoHp2);
+                        obj.put("alamat",Alamat2);
+                        obj.put("agama",Agama2);
+                        obj.put("status",Status2);
+                        obj.put("produk",Produk);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
+                    String dataS = obj.toString();
+
+                    session.saveCIF(dataS);
                     PopUpSuccesRegistration();
                 }
             }
@@ -461,7 +479,8 @@ public class frag_form_opening extends Fragment {
                         @Override
                         public void onClick(SweetAlertDialog sweetAlertDialog) {
                             Mirroring2(true);
-                            getFragmentPage(new frag_aktivasi_ibmb());
+                            Fragment fragment = new frag_aktivasi_ibmb();
+                            getFragmentPage(fragment);
                             sweetAlertDialog.dismiss();
                         }
                     });
