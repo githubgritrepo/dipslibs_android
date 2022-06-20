@@ -138,6 +138,7 @@ public class frag_rtgs extends Fragment {
         idDips = sessions.getKEY_IdDips();
         sourceBenefit = new String[]{getResources().getString(R.string.perorangan), getResources().getString(R.string.perusahaan), getResources().getString(R.string.pemerintah)};
         sourcePopulation = new String[]{getResources().getString(R.string.penduduk), getResources().getString(R.string.bukan_penduduk)};
+
         choose_gallery.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

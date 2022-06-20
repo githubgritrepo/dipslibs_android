@@ -40,23 +40,24 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <androidx.viewpager.widget.ViewPager
-                android:id="@+id/pager"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:focusableInTouchMode="true" />
 
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
 
+                <androidx.viewpager.widget.ViewPager
+                    android:id="@+id/pager"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_above="@+id/buttonSummary"
+                    android:focusableInTouchMode="true" />
                 <RelativeLayout
+                    android:id="@+id/buttonSummary"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_alignParentBottom="true">
-
                     <LinearLayout
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="vertical"
                         android:layout_centerInParent="true">
@@ -72,7 +73,9 @@
                             android:id="@+id/btnTransfer"
                             android:layout_width="match_parent"
                             android:layout_height="40dp"
-                            android:layout_marginTop="10dp"
+                            android:layout_marginBottom="20dp"
+                            android:layout_marginStart="15dp"
+                            android:layout_marginEnd="15dp"
                             android:background="@drawable/oval_background_10dp"
                             android:backgroundTint="@color/bg_cif"
                             android:text="@string/btn_continue"
@@ -81,8 +84,7 @@
                     </LinearLayout>
                 </RelativeLayout>
             </RelativeLayout>
-
-        </androidx.coordinatorlayout.widget.CoordinatorLayout>>
+        </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
     </RelativeLayout>
 

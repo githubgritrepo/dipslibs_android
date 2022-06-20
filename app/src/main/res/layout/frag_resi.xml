@@ -29,19 +29,17 @@
         android:textColor="@color/bg_cif_success"
         android:gravity="center|center_vertical"
         android:text="@string/transaksi_anda_berhasil"/>
-
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content">
         <androidx.coordinatorlayout.widget.CoordinatorLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
-
         <androidx.viewpager.widget.ViewPager
             android:id="@+id/pager"
             android:layout_width="match_parent"
-            android:layout_height="500dp"
+            android:layout_height="450dp"
             android:focusableInTouchMode="true" />
         </androidx.coordinatorlayout.widget.CoordinatorLayout>
     </RelativeLayout>

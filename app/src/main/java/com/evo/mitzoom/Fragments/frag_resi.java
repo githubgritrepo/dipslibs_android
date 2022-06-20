@@ -171,6 +171,7 @@ public class frag_resi extends Fragment {
                 .addToBackStack(null)
                 .commit();
     }
+
     private void Mirroring(boolean bool, int page, int pageAll){
         JSONObject jsons = new JSONObject();
         JSONArray jsonArray = new JSONArray();
@@ -205,7 +206,6 @@ public class frag_resi extends Fragment {
         int idx = position + 1;
         JSONArray jsonArray = new JSONArray();
         JSONObject jsons = new JSONObject();
-
         try {
             String noFormulir = dataNoForm.get(position);
             if (dataAccount.size() == 0 || (dataAccount.size() == position) || (dataAccount.size() > 0 && dataAccount.get(position).isEmpty())) {

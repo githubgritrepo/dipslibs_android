@@ -7,21 +7,24 @@
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
+
         <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="20dp"
+            android:layout_margin="30dp"
             app:cardCornerRadius="10dp"
             app:cardElevation="0dp">
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="20dp"
                 android:orientation="vertical">
+
                 <RelativeLayout
-                    android:layout_marginBottom="20dp"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginBottom="20dp"
                     android:background="@drawable/bg_textinput">
 
                     <LinearLayout
@@ -116,88 +119,100 @@
                             android:textStyle="bold" />
                     </LinearLayout>
                 </RelativeLayout>
+
                 <TextView
-                    android:textStyle="bold"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/jenis_layanan"
                     android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-                    android:textSize="17sp" />
+                    android:textSize="17sp"
+                    android:textStyle="bold" />
+
                 <TextView
-                    android:layout_marginBottom="10dp"
                     android:id="@+id/JenisLayanan"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginBottom="10dp"
                     android:textAppearance="@style/TextAppearance.AppCompat.Body2"
                     android:textSize="14sp" />
+
                 <TextView
-                    android:textStyle="bold"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/penerima_manfaat"
                     android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-                    android:textSize="17sp" />
+                    android:textSize="17sp"
+                    android:textStyle="bold" />
+
                 <TextView
-                    android:layout_marginBottom="10dp"
                     android:id="@+id/PenerimaManfaat"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginBottom="10dp"
                     android:textAppearance="@style/TextAppearance.AppCompat.Body2"
                     android:textSize="14sp" />
+
                 <TextView
-                    android:textStyle="bold"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/ResidentType"
                     android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-                    android:textSize="17sp" />
+                    android:textSize="17sp"
+                    android:textStyle="bold" />
+
                 <TextView
-                    android:layout_marginBottom="10dp"
                     android:id="@+id/JenisPenduduk"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginBottom="10dp"
                     android:textAppearance="@style/TextAppearance.AppCompat.Body2"
                     android:textSize="14sp" />
+
                 <TextView
-                    android:textStyle="bold"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/berita"
                     android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-                    android:textSize="17sp" />
+                    android:textSize="17sp"
+                    android:textStyle="bold" />
+
                 <TextView
-                    android:layout_marginBottom="10dp"
                     android:id="@+id/Berita"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginBottom="10dp"
                     android:textAppearance="@style/TextAppearance.AppCompat.Body2"
                     android:textSize="14sp" />
+
                 <TextView
-                    android:textStyle="bold"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/biaya"
                     android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-                    android:textSize="17sp" />
+                    android:textSize="17sp"
+                    android:textStyle="bold" />
+
                 <TextView
-                    android:layout_marginBottom="10dp"
                     android:id="@+id/Biaya"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginBottom="10dp"
                     android:textAppearance="@style/TextAppearance.AppCompat.Body2"
                     android:textSize="14sp" />
+
                 <TextView
-                    android:textStyle="bold"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/Amount"
                     android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-                    android:textSize="17sp" />
+                    android:textSize="17sp"
+                    android:textStyle="bold" />
+
                 <TextView
-                    android:layout_marginBottom="10dp"
                     android:id="@+id/Nominal"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginBottom="10dp"
                     android:textAppearance="@style/TextAppearance.AppCompat.Body2"
                     android:textSize="14sp" />
 
