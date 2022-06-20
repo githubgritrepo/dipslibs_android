@@ -10,6 +10,7 @@ import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.graphics.Color;
 import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Build;
@@ -638,7 +639,33 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
 
     public void onClickEnd(View view) {
         ZoomVideoSDKUser userInfo = session.getMySelf();
-        final Dialog builder = new Dialog(this, R.style.MyDialog);
+
+        SweetAlertDialog dialogEnd = new SweetAlertDialog(mContext,SweetAlertDialog.WARNING_TYPE);
+        dialogEnd.setContentText(getString(R.string.leave_message));
+        dialogEnd.setCancelable(true);
+        dialogEnd.setConfirmText(getString(R.string.leave_leave_text));
+        dialogEnd.setConfirmButtonBackgroundColor(getColor(R.color.zm_v1_red_A100));
+        dialogEnd.setCancelText(getString(R.string.cancel));
+        dialogEnd.setCancelButtonBackgroundColor(getColor(R.color.Blue));
+        dialogEnd.setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
+            @Override
+            public void onClick(SweetAlertDialog sweetAlertDialog) {
+                dialogEnd.dismissWithAnimation();
+                releaseResource();
+                int ret = ZoomVideoSDK.getInstance().leaveSession(false);
+                startActivity(new Intent(getApplicationContext(), RatingActivity.class));
+                sessions.clearData();
+            }
+        });
+        dialogEnd.setCancelClickListener(new SweetAlertDialog.OnSweetClickListener() {
+            @Override
+            public void onClick(SweetAlertDialog sweetAlertDialog) {
+                dialogEnd.dismissWithAnimation();
+            }
+        });
+        dialogEnd.show();
+
+        /*final Dialog builder = new Dialog(this, R.style.MyDialog);
         builder.setCanceledOnTouchOutside(true);
         builder.setCancelable(true);
         builder.setContentView(R.layout.dialog_leave_alert);
@@ -670,7 +697,7 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
                 }
             }
         });
-        builder.show();
+        builder.show();*/
     }
     public void onClickChat(View view) {
         btnChat.setFocusable(true);
