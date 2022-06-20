@@ -204,8 +204,6 @@ public class frag_resi extends Fragment {
     private void mirroringPagerRTGS(int position) {
         int lenL = layouts.size();
         int idx = position + 1;
-        JSONArray jsonArray = new JSONArray();
-        JSONObject jsons = new JSONObject();
         try {
             String noFormulir = dataNoForm.get(position);
             if (dataAccount.size() == 0 || (dataAccount.size() == position) || (dataAccount.size() > 0 && dataAccount.get(position).isEmpty())) {
@@ -236,7 +234,7 @@ public class frag_resi extends Fragment {
                 dataNews.add("");
             }
 
-            String SourceAccount = dataAccount.get(position);
+            /*String SourceAccount = dataAccount.get(position);
             String SumberBank = dataBankName.get(position);
             String JenisLayanan = dataService.get(position);
             String posSourceBenefit = dataBenefit.get(position);
@@ -245,28 +243,13 @@ public class frag_resi extends Fragment {
             String nama_penerima = dataNameReceive.get(position);
             String nominal = dataNominal.get(position);
             String berita = dataNews.get(position);
-
-            jsons.put("idForm",noFormulir);
-            jsons.put("sourceAccount",SourceAccount);
-            jsons.put("sourceBank",SumberBank);
-            jsons.put("sourceTypeService",JenisLayanan);
-            jsons.put("sourceBenefit",posSourceBenefit);
-            jsons.put("sourcePopulation",posSourcePopulation);
-            jsons.put("rek_penerima",rek_penerima);
-            jsons.put("nama_penerima",nama_penerima);
-            jsons.put("nominal",nominal);
-            jsons.put("berita",berita);
+*/
 
             Mirroring(false,idx,lenL);
 
-        } catch (JSONException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
-
-        jsonArray.put(jsons);
-
-        String dataJs = jsonArray.toString();
-        sessions.saveRTGS(dataJs);
     }
 
     private class MyViewPagerAdapter extends PagerAdapter {
