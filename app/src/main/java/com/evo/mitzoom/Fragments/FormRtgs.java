@@ -37,6 +37,7 @@ import androidx.viewpager.widget.ViewPager;
 
 import com.evo.mitzoom.Adapter.AdapterBank2;
 import com.evo.mitzoom.Adapter.AdapterTypeService;
+import com.evo.mitzoom.Helper.SingleMediaScanner;
 import com.evo.mitzoom.Model.BankItem;
 import com.evo.mitzoom.Model.TypeServiceItem;
 import com.evo.mitzoom.R;
@@ -549,7 +550,8 @@ public class FormRtgs extends Fragment {
         fos.flush();
         fos.close();
 
-        galleryAddPic(mediaFile.getPath());
+        //galleryAddPic(mediaFile.getPath());
+        new SingleMediaScanner(mContext,mediaFile);
 
         return mediaFile;
     }

@@ -121,7 +121,11 @@ public class frag_summary_rtgs extends Fragment {
             @Override
             public void onClick(View v) {
                 Mirroring(true,true,1,1);
-                getFragmentPage(new frag_rtgs());
+                Fragment fragment = new frag_rtgs();
+                Bundle bundle = new Bundle();
+                bundle.putBoolean("SUMMARY",true);
+                fragment.setArguments(bundle);
+                getFragmentPage(fragment);
             }
         });
         btnTransfer.setOnClickListener(new View.OnClickListener() {
@@ -207,8 +211,6 @@ public class frag_summary_rtgs extends Fragment {
     private void mirroringPagerRTGS(int position) {
         int lenL = layouts.size();
         int idx = position + 1;
-        JSONArray jsonArray = new JSONArray();
-        JSONObject jsons = new JSONObject();
 
         try {
             String noFormulir = dataNoForm.get(position);
@@ -240,7 +242,7 @@ public class frag_summary_rtgs extends Fragment {
                 dataNews.add("");
             }
 
-            String SourceAccount = dataAccount.get(position);
+            /*String SourceAccount = dataAccount.get(position);
             String SumberBank = dataBankName.get(position);
             String JenisLayanan = dataService.get(position);
             String posSourceBenefit = dataBenefit.get(position);
@@ -248,29 +250,13 @@ public class frag_summary_rtgs extends Fragment {
             String rek_penerima = dataAccountReceive.get(position);
             String nama_penerima = dataNameReceive.get(position);
             String nominal = dataNominal.get(position);
-            String berita = dataNews.get(position);
+            String berita = dataNews.get(position);*/
 
-            jsons.put("idForm",noFormulir);
-            jsons.put("sourceAccount",SourceAccount);
-            jsons.put("sourceBank",SumberBank);
-            jsons.put("sourceTypeService",JenisLayanan);
-            jsons.put("sourceBenefit",posSourceBenefit);
-            jsons.put("sourcePopulation",posSourcePopulation);
-            jsons.put("rek_penerima",rek_penerima);
-            jsons.put("nama_penerima",nama_penerima);
-            jsons.put("nominal",nominal);
-            jsons.put("berita",berita);
+            Mirroring(false,false,idx,lenL);
 
-            Mirroring(true,false,idx,lenL);
-
-        } catch (JSONException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
-
-        jsonArray.put(jsons);
-
-        String dataJs = jsonArray.toString();
-        session.saveRTGS(dataJs);
     }
 
     private void getFragmentPage(Fragment fragment){
@@ -386,15 +372,6 @@ public class frag_summary_rtgs extends Fragment {
                 Mirroring3(true);
                 Fragment fragment = new frag_resi();
                 Bundle bundle = new Bundle();
-                /*bundle.putString("rekeningSumber",RekeningSumber);
-                bundle.putString("jenisLayanan",JenisLayanan);
-                bundle.putString("namaBank",NamaBank);
-                bundle.putString("namaPenerima",NamaPenerima);
-                bundle.putString("penerimaManfaat",PenerimaManfaat);
-                bundle.putString("jenisPenduduk",JenisPenduduk);
-                bundle.putString("berita",Berita);
-                bundle.putString("nominal",Nominal);
-                bundle.putString("rekPenerima",RekPenerima);*/
                 fragment.setArguments(bundle);
                 getFragmentPage(fragment);
                 sweetAlertDialog.dismiss();
