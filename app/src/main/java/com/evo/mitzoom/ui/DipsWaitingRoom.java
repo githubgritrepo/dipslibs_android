@@ -3,6 +3,7 @@ package com.evo.mitzoom.ui;
 import static com.evo.mitzoom.ui.DipsSplashScreen.setLocale;
 
 import android.Manifest;
+import android.app.ActivityManager;
 import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -44,6 +45,7 @@ import com.evo.mitzoom.API.Server;
 import com.evo.mitzoom.BaseMeetingActivity;
 import com.evo.mitzoom.Constants.AuthConstants;
 import com.evo.mitzoom.Fragments.frag_berita;
+import com.evo.mitzoom.Helper.OutboundService;
 import com.evo.mitzoom.R;
 import com.evo.mitzoom.Session.SessionManager;
 import com.evo.mitzoom.util.ErrorMsgUtil;
@@ -131,7 +133,10 @@ public class DipsWaitingRoom extends AppCompatActivity {
         Log.d("CEK","MASUK onCreate");
         super.onCreate(savedInstanceState);
         mContext = this;
-
+        if(!foregroundServiceRunning()) {
+            Intent serviceIntent = new Intent(this, OutboundService.class);
+            startForegroundService(serviceIntent);
+        }
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
         getSupportActionBar().hide();
@@ -692,6 +697,15 @@ public class DipsWaitingRoom extends AppCompatActivity {
                 Toast.makeText(mContext,t.getMessage(),Toast.LENGTH_SHORT).show();
             }
         });
+    }
+    public boolean foregroundServiceRunning(){
+        ActivityManager activityManager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+        for(ActivityManager.RunningServiceInfo service: activityManager.getRunningServices(Integer.MAX_VALUE)) {
+            if(OutboundService.class.getName().equals(service.service.getClassName())) {
+                return true;
+            }
+        }
+        return false;
     }
     private void processJoinVideo() {
         if (!requestPermission())
