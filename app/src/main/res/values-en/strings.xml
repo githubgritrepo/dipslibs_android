@@ -184,4 +184,8 @@
     <string name="min_MPIN">Your MPIN is less than 6 digit</string>
     <string name="max_mpin">Enter 6 digit MPIN</string>
     <string name="empty_field">Data cannot be empty</string>
+    <string name="incoming_call">Incoming call</string>
+    <string name="incoming_call1">Incoming call .</string>
+    <string name="incoming_call2">Incoming Call . .</string>
+    <string name="incoming_call3">Incoming call . . .</string>
 </resources>
