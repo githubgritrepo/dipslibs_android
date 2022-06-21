@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.DipsCapture">
+    tools:context=".ui.DipsOutboundCall">
 
     <FrameLayout
         android:layout_width="match_parent"
@@ -21,27 +22,34 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"/>
 
-            <SurfaceView
-                android:id="@+id/transSurface"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent" />
-
             <LinearLayout
                 android:id="@+id/llMsg"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_alignParentBottom="true"
                 android:layout_centerInParent="true"
                 android:layout_marginBottom="50dp"
-                android:background="@drawable/oval_background">
+                android:orientation="horizontal"
+                android:gravity="center">
 
-                <TextView
+                <Button
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/wink"
-                    android:textAlignment="center"
-                    android:textColor="@color/black"
-                    android:textStyle="bold" />
+                    android:background="@drawable/oval_background"
+                    android:drawableTop="@drawable/ic_capture"
+                    android:drawableTint="@color/red_btn_bg_color"
+                    android:drawablePadding="-15dp"
+                    android:layout_marginRight="50dp"/>
+
+                <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/oval_background"
+                    android:drawableTop="@drawable/ic_capture"
+                    android:drawableTint="@color/red_btn_bg_color"
+                    android:layout_marginLeft="50dp"
+                    android:drawablePadding="-15dp"/>
+
             </LinearLayout>
 
         </RelativeLayout>
@@ -55,22 +63,22 @@
         android:orientation="vertical"
         android:padding="15dp">
 
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/imgCS"
+            android:layout_width="120dp"
+            android:layout_height="120dp"
+            android:layout_gravity="center"
+            android:src="@drawable/ads1"/>
+
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="15dp"
             android:gravity="center"
-            android:text="@string/welcometext"
+            android:text="Panggilan Masuk"
             android:textColor="@color/black"
             android:textSize="18sp"
             android:textStyle="bold" />
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="5dp"
-            android:gravity="center"
-            android:text="@string/desc_welcome" />
 
     </LinearLayout>
 

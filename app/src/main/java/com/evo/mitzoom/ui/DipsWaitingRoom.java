@@ -133,10 +133,7 @@ public class DipsWaitingRoom extends AppCompatActivity {
         Log.d("CEK","MASUK onCreate");
         super.onCreate(savedInstanceState);
         mContext = this;
-        if(!foregroundServiceRunning()) {
-            Intent serviceIntent = new Intent(this, OutboundService.class);
-            startForegroundService(serviceIntent);
-        }
+
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
         getSupportActionBar().hide();
@@ -172,6 +169,12 @@ public class DipsWaitingRoom extends AppCompatActivity {
         Log.d("CEK", "idDips : "+idDips);
 
         initializeSdk();
+
+        if(!foregroundServiceRunning()) {
+            Intent serviceIntent = new Intent(this, OutboundService.class);
+            serviceIntent.putExtra("idDips",idDips);
+            startForegroundService(serviceIntent);
+        }
 
         /*btnSchedule = (MaterialButton) findViewById(R.id.btnSchedule);
         btnEndCall = findViewById(R.id.end_call);*/
