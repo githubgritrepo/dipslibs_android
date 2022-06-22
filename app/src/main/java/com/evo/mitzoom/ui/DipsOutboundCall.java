@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
 import android.Manifest;
+import android.app.KeyguardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -12,6 +13,7 @@ import android.graphics.PixelFormat;
 import android.hardware.Camera;
 import android.hardware.camera2.CameraAccessException;
 import android.hardware.camera2.CameraManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -79,8 +81,25 @@ public class DipsOutboundCall extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dips_outbound_call);
+
+        getPackageManager().getLaunchIntentForPackage("com.evo.mitzoom");
+
         getSupportActionBar().hide();
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
+            setShowWhenLocked(true);
+            setTurnScreenOn(true);
+            KeyguardManager keyguardManager = (KeyguardManager) getSystemService(this.KEYGUARD_SERVICE);
+            keyguardManager.requestDismissKeyguard(this,null);
+        } else {
+            getWindow().addFlags(WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD |
+                    WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED |
+                    WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON |
+                    WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        }
+
         incomingcall = findViewById(R.id.incomingcall);
         AnimationCall();
         accept = findViewById(R.id.acceptCall);
@@ -113,6 +132,21 @@ public class DipsOutboundCall extends AppCompatActivity {
         //startPreview();
         cameraConfigured = false;
         previewHolder();
+    }
+
+    @Override
+    protected void onPause() {
+        if (inPreview) {
+            camera.stopPreview();
+        }
+
+        if (camera != null) {
+            camera.release();
+            camera = null;
+            inPreview = false;
+        }
+
+        super.onPause();
     }
 
     private void previewHolder(){

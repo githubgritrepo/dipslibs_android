@@ -2,9 +2,11 @@ package com.evo.mitzoom.Helper;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.AlarmManager;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -13,6 +15,7 @@ import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
+import android.os.PowerManager;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -63,9 +66,19 @@ public class OutboundService extends Service {
     public static String idDips;
     public static String username_agent;
     public static String password_session;
+    private static String TAG = "OutboundService";
+    private Context mContext;
 
     @Override
-    public int onStartCommand(Intent intent, int flags, int startId) {
+    public void onCreate() {
+        super.onCreate();
+
+        mContext = this;
+
+        /*PowerManager pm = (PowerManager)getSystemService(POWER_SERVICE);
+        PowerManager.WakeLock mWakeLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, TAG);
+        mWakeLock.acquire();*/
+
         try {
             mSocket = IO.socket(Server.BASE_URL_API);
         } catch (URISyntaxException e) {
@@ -73,6 +86,11 @@ public class OutboundService extends Service {
         }
         mSocket.on("outbound", outboundListener);
         mSocket.connect();
+    }
+
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        Log.i(TAG,"MASUK onStartCommand");
 
         idDips = intent.getStringExtra("idDips");
         callOutbound(idDips);
@@ -82,7 +100,12 @@ public class OutboundService extends Service {
                     @Override
                     public void run() {
                         while (true) {
-                            Log.e("Service", "Service is running...");
+                            Log.i(TAG+"_Service", "Service is running idDips : "+idDips+" | mSocket.connected() : "+mSocket.connected());
+                            if (!mSocket.connected()) {
+                                Log.i(TAG,"CONNECTED AGAIN");
+                                mSocket.connect();
+                                callOutbound(idDips);
+                            }
                             try {
                                 Thread.sleep(2000);
                             } catch (InterruptedException e) {
@@ -108,19 +131,40 @@ public class OutboundService extends Service {
 
         startForeground(1001, notification.build());
 
-        return super.onStartCommand(intent, flags, startId);
+        //return super.onStartCommand(intent, flags, startId);
+        return START_STICKY;
     }
     private Emitter.Listener outboundListener = new Emitter.Listener() {
         @Override
         public void call(final Object... args) {
-            Log.d("OUTBOUND","masuk call");
+            Log.i(TAG,"masuk call");
             try {
                 JSONArray dataArr = new JSONArray(args);
-                Log.d("OUTBOUND","dataArr Outbound : "+dataArr);
+                Log.i(TAG,"dataArr Outbound : "+dataArr);
                 int code = (int) dataArr.get(0);
                 if (code == 0) {
-                    Intent intent = new Intent(getApplicationContext(), DipsOutboundCall.class);
-                    startActivity(intent);
+                    Intent intent = new Intent(getApplicationContext(), MyBroadcastReceiver.class);
+                    //intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    //startActivity(intent);
+
+                    PendingIntent pendingIntent = null;
+                    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
+                        pendingIntent = PendingIntent.getBroadcast
+                                (getApplicationContext(), 0, intent, 0);
+                    }
+                    else
+                    {
+                        pendingIntent = PendingIntent.getBroadcast
+                                (getApplicationContext(), 0, intent, 0);
+                    }
+
+                    Log.i(TAG,"currentTimeMillis : "+System.currentTimeMillis());
+                    long addTimes = System.currentTimeMillis() + 10000;
+                    Log.i(TAG,"currentTimeMillis add : "+addTimes);
+
+                    AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+                    alarmManager.set(AlarmManager.RTC_WAKEUP,addTimes,pendingIntent);
+
                     username_agent = dataArr.get(1).toString();
                     password_session = dataArr.get(2).toString();
                     //acceptCall(usernameAgent);
@@ -131,6 +175,11 @@ public class OutboundService extends Service {
             }
         }
     };
+
+    @Override
+    public void onTaskRemoved(Intent rootIntent) {
+        Log.i(TAG,"MASUK onTaskRemoved");
+    }
 
     public static String getPassword_session(){
         return password_session;
@@ -147,6 +196,7 @@ public class OutboundService extends Service {
     }
 
     private void callOutbound(String queueID) {
+        Log.i(TAG,"MASUK callOutbound");
         JSONObject object = new JSONObject();
         try {
             object.put("room", queueID);
@@ -171,7 +221,7 @@ public class OutboundService extends Service {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
                 if (response.isSuccessful() && response.body().size() > 0) {
-                    Log.d("LOG ACCEPT",""+response.body());
+                    Log.i(TAG+"_ACCEPT",""+response.body());
                 }
             }
 
@@ -197,7 +247,7 @@ public class OutboundService extends Service {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
                 if (response.isSuccessful() && response.body().size() > 0) {
-                    Log.d("LOG REJECT",""+response.body());
+                    Log.i(TAG+"_REJECT",""+response.body());
                 }
             }
 

@@ -41,10 +41,24 @@
         android:roundIcon="@mipmap/dips361_round"
         android:supportsRtl="true"
         android:usesCleartextTraffic="true">
+
         <activity
             android:name=".ui.DipsOutboundCall"
-            android:exported="false"
-            android:theme="@style/Theme.MITZoom"/>
+            android:exported="true"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.MITZoom"
+            android:launchMode="singleTask"
+            android:taskAffinity=""
+            android:excludeFromRecents="true"
+            android:showOnLockScreen="true"
+            android:showWhenLocked="true"
+            android:turnScreenOn="true"
+            android:showForAllUsers="true">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
         <activity
             android:name=".ui.DipsCameraActivity"
             android:exported="false"
@@ -95,15 +109,11 @@
                 android:resource="@xml/provider_path" />
         </provider>
 
-        <service android:name=".Helper.OutboundService" />
+        <service android:name=".Helper.OutboundService" android:exported="true" />
 
         <receiver
             android:name=".Helper.MyBroadcastReceiver"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.BOOT_COMPLETED" />
-            </intent-filter>
-        </receiver>
+            android:exported="true"/>
     </application>
 
 </manifest>

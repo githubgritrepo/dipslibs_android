@@ -7,8 +7,10 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.content.res.Resources;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -43,6 +45,7 @@ public class DipsSplashScreen extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.i("CEK","MASUK");
         setContentView(R.layout.activity_dips_splash_screen);
 
         imgSplash = (ImageView) findViewById(R.id.imgSplash);
@@ -52,6 +55,12 @@ public class DipsSplashScreen extends AppCompatActivity {
         getSupportActionBar().hide();
 
         mContext = this;
+
+        if (!Settings.canDrawOverlays(this)) {
+            Log.i("CEK","MASUK canDrawOverlays");
+            Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:" + getPackageName()));
+            startActivityForResult(intent, 1);
+        }
 
         sessions = new SessionManager(mContext);
 

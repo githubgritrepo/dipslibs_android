@@ -11,6 +11,7 @@ import android.content.pm.PackageManager;
 import android.hardware.Camera;
 import android.hardware.camera2.CameraAccessException;
 import android.hardware.camera2.CameraManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.DisplayMetrics;
@@ -174,6 +175,11 @@ public class DipsWaitingRoom extends AppCompatActivity {
             Intent serviceIntent = new Intent(this, OutboundService.class);
             serviceIntent.putExtra("idDips",idDips);
             startForegroundService(serviceIntent);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                startForegroundService(serviceIntent);
+            } else {
+                startService(serviceIntent);
+            }
         }
 
         /*btnSchedule = (MaterialButton) findViewById(R.id.btnSchedule);
