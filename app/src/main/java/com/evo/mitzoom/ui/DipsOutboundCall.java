@@ -5,6 +5,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
 import android.Manifest;
+import android.app.Activity;
+import android.app.DatePickerDialog;
 import android.app.KeyguardManager;
 import android.content.Context;
 import android.content.Intent;
@@ -17,13 +19,19 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -38,12 +46,14 @@ import com.evo.mitzoom.R;
 import com.evo.mitzoom.util.NetworkUtil;
 import com.google.android.gms.vision.CameraSource;
 import com.google.android.gms.vision.face.LargestFaceFocusingProcessor;
+import com.google.android.material.button.MaterialButton;
 import com.google.gson.JsonObject;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
 
@@ -75,6 +85,17 @@ public class DipsOutboundCall extends AppCompatActivity {
     public static Integer useFacing = null;
     private static final String KEY_USE_FACING = "use_facing";
     private static int degreeFront = 0;
+    private LayoutInflater inflater;
+    private View dialogView;
+    private ImageView btnclose;
+    private TextView et_Date, textView;
+    private AutoCompleteTextView et_time;
+    private int year, month, day;
+    private String tanggal, waktu;
+    private String Savetanggal;
+    private int Savewaktu;
+    String [] time = {"08.00 - 10.00", "10.00 - 12.00", "12.00 - 14.00", "14.00 - 16.00", "16.00 - 17.00"};
+    private MaterialButton btnSchedule2;
 
 
     @Override
@@ -121,10 +142,130 @@ public class DipsOutboundCall extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 OutboundService.rejectCall();
+                PopUpSchedule();
             }
         });
     }
+    private void PopUpSchedule(){
+        inflater = getLayoutInflater();
+        dialogView = inflater.inflate(R.layout.item_schedule,null);
+        SweetAlertDialog sweetAlertDialog = new SweetAlertDialog(DipsOutboundCall.this, SweetAlertDialog.NORMAL_TYPE);
+        sweetAlertDialog.setCustomView(dialogView);
+        sweetAlertDialog.hideConfirmButton();
+        sweetAlertDialog.show();
+        ArrayAdapter<String> adapterTime = new ArrayAdapter<String>(DipsOutboundCall.this,R.layout.list_item, time);
+        btnclose = dialogView.findViewById(R.id.btn_close_schedule);
+        et_Date = dialogView.findViewById(R.id.et_Date);
+        textView = dialogView.findViewById(R.id.textHeadSchedule);
+        textView.setVisibility(View.GONE);
+        et_time = dialogView.findViewById(R.id.et_time);
+        et_time.setAdapter(adapterTime);
+        btnSchedule2 = dialogView.findViewById(R.id.btnSchedule2);
 
+        et_time.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Savewaktu = position;
+
+            }
+        });
+        et_Date.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final Calendar c = Calendar.getInstance();
+                year = c.get(Calendar.YEAR);
+                month = c.get(Calendar.MONTH);
+                day = c.get(Calendar.DAY_OF_MONTH);
+                DatePickerDialog datePickerDialog = new DatePickerDialog(DipsOutboundCall.this, new DatePickerDialog.OnDateSetListener() {
+                    @Override
+                    public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+                        tanggal = dayOfMonth+"/"+(month + 1)+"/"+year;
+                        Savetanggal = year+""+(month + 1)+""+dayOfMonth;
+                        et_Date.setText(tanggal);
+                    }
+                }, year, month, day);
+                datePickerDialog.getDatePicker().setMinDate(System.currentTimeMillis() - 1000);
+                datePickerDialog.show();
+            }
+        });
+        btnclose.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                sweetAlertDialog.dismissWithAnimation();
+            }
+        });
+        btnSchedule2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                tanggal = et_Date.getText().toString();
+                waktu = et_time.getText().toString();
+                if (tanggal.trim().equals("")){
+                    Toast.makeText(getApplicationContext(), R.string.notif_blank, Toast.LENGTH_SHORT).show();
+                }
+                else if (waktu.trim().equals("")){
+                    Toast.makeText(getApplicationContext(), R.string.notif_blank, Toast.LENGTH_SHORT).show();
+                }
+                else {
+                    saveSchedule();
+                    Toast.makeText(getApplicationContext(), "Jadwal panggilan anda "+tanggal+" jam "+waktu, Toast.LENGTH_LONG).show();
+                    sweetAlertDialog.dismissWithAnimation();
+                    sweetAlertDialog.setCancelable(false);
+                    SweetAlertDialog sweetAlertDialog = new SweetAlertDialog(DipsOutboundCall.this, SweetAlertDialog.SUCCESS_TYPE);
+                    sweetAlertDialog.setContentText(getResources().getString(R.string.content_after_schedule));
+                    sweetAlertDialog.setConfirmText(getResources().getString(R.string.done));
+                    sweetAlertDialog.show();
+                    Button btnConfirm = (Button) sweetAlertDialog.findViewById(cn.pedant.SweetAlert.R.id.confirm_button);
+                    btnConfirm.setBackgroundTintList(DipsOutboundCall.this.getResources().getColorStateList(R.color.Blue));
+                    btnConfirm.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            sweetAlertDialog.dismiss();
+                            OutApps();
+                        }
+                    });
+                }
+
+            }
+        });
+        btnSchedule2.setBackgroundTintList(DipsOutboundCall.this.getResources().getColorStateList(R.color.Blue));
+    }
+    private void saveSchedule(){
+        JSONObject jsons = new JSONObject();
+        try {
+            jsons.put("idDips",idDips);
+            jsons.put("tanggal",Savetanggal);
+            jsons.put("grup",Savewaktu);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        Log.d("PARAMS JADWAL","idDips = "+idDips+", Tanggal = "+Savetanggal+", Grup index Time of ["+Savewaktu+"]");
+        RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), jsons.toString());
+        ApiService API = Server.getAPIService();
+        Call<JsonObject> call = API.saveSchedule(requestBody);
+        call.enqueue(new Callback<JsonObject>() {
+            @Override
+            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                if (response.isSuccessful() && response.body().size() > 0) {
+                }
+            }
+
+            @Override
+            public void onFailure(Call<JsonObject> call, Throwable t) {
+
+            }
+        });
+
+    }
+
+    private void OutApps(){
+        Intent intent = new Intent(Intent.ACTION_MAIN);
+        intent.addCategory(Intent.CATEGORY_HOME);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(intent);
+        DipsOutboundCall.this.overridePendingTransition(0,0);
+        DipsOutboundCall.this.finish();
+        System.exit(0);
+    }
     @Override
     protected void onResume() {
         super.onResume();
@@ -278,7 +419,6 @@ public class DipsOutboundCall extends AppCompatActivity {
             inPreview = true;
         }
     }
-
     private void AnimationCall(){
         final Handler handler = new Handler();
         Runnable runnable = new Runnable() {

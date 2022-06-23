@@ -1,14 +1,18 @@
 package com.evo.mitzoom.Fragments;
 
+import static com.evo.mitzoom.Helper.OutboundService.idDips;
+
 import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
@@ -24,12 +28,19 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.ViewPager;
 
+import com.evo.mitzoom.API.ApiService;
+import com.evo.mitzoom.API.Server;
 import com.evo.mitzoom.Adapter.AdapterSlide;
 import com.evo.mitzoom.Adapter.GridProductAdapter;
 import com.evo.mitzoom.R;
 import com.evo.mitzoom.ui.DipsSplashScreen;
 import com.google.android.material.button.MaterialButton;
+import com.google.gson.JsonObject;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Timer;
@@ -37,6 +48,11 @@ import java.util.TimerTask;
 
 import cn.pedant.SweetAlert.SweetAlertDialog;
 import me.relex.circleindicator.CircleIndicator;
+import okhttp3.MediaType;
+import okhttp3.RequestBody;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class frag_berita extends Fragment {
     private Context context;
@@ -52,6 +68,8 @@ public class frag_berita extends Fragment {
     String [] time = {"08.00 - 10.00", "10.00 - 12.00", "12.00 - 14.00", "14.00 - 16.00", "16.00 - 17.00"};
     private int year, month, day, waktu_tunggu = 6000;
     private String tanggal, waktu;
+    private String Savetanggal;
+    private int Savewaktu;
 
 
     @Override
@@ -161,6 +179,13 @@ public class frag_berita extends Fragment {
         EditText et_Date = (EditText) dialogView.findViewById(R.id.et_Date);
         AutoCompleteTextView et_time = (AutoCompleteTextView) dialogView.findViewById(R.id.et_time);
         et_time.setAdapter(adapterTime);
+        et_time.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Savewaktu = position;
+
+            }
+        });
         btnSchedule2 = dialogView.findViewById(R.id.btnSchedule2);
         et_Date.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -173,6 +198,7 @@ public class frag_berita extends Fragment {
                     @Override
                     public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
                         tanggal = dayOfMonth+"/"+(month + 1)+"/"+year;
+                        Savetanggal = year+""+(month + 1)+""+dayOfMonth;
                         et_Date.setText(tanggal);
                     }
                 }, year, month, day);
@@ -198,6 +224,7 @@ public class frag_berita extends Fragment {
                     Toast.makeText(context.getApplicationContext(), R.string.notif_blank, Toast.LENGTH_SHORT).show();
                 }
                 else {
+                    saveSchedule();
                     Toast.makeText(context.getApplicationContext(), getResources().getString(R.string.schedule)+tanggal+" & "+getResources().getString(R.string.jam)+waktu, Toast.LENGTH_LONG).show();
                     sweetAlertDialog.dismiss();
                     SweetAlertDialog sweetAlertDialog = new SweetAlertDialog(context, SweetAlertDialog.SUCCESS_TYPE);
@@ -211,5 +238,32 @@ public class frag_berita extends Fragment {
             }
         });
         btnSchedule2.setBackgroundTintList(context.getResources().getColorStateList(R.color.Blue));
+    }
+    private void saveSchedule(){
+        JSONObject jsons = new JSONObject();
+        try {
+            jsons.put("idDips",idDips);
+            jsons.put("tanggal",Savetanggal);
+            jsons.put("grup",Savewaktu);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        Log.d("PARAMS JADWAL","idDips = "+idDips+", Tanggal = "+Savetanggal+", Grup index Time of ["+Savewaktu+"]");
+        RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), jsons.toString());
+        ApiService API = Server.getAPIService();
+        Call<JsonObject> call = API.saveSchedule(requestBody);
+        call.enqueue(new Callback<JsonObject>() {
+            @Override
+            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                if (response.isSuccessful() && response.body().size() > 0) {
+                }
+            }
+
+            @Override
+            public void onFailure(Call<JsonObject> call, Throwable t) {
+
+            }
+        });
+
     }
 }

@@ -45,5 +45,9 @@ public interface ApiService {
     @POST("api/outbound/reject")
     Call<JsonObject> rejectCall(@Body RequestBody body);
 
+    @Headers("Content-Type: "+ MyConstants.CONTENT_TYPE)
+    @POST("api/scheduled/save")
+    Call<JsonObject> saveSchedule(@Body RequestBody body);
+
 
 }

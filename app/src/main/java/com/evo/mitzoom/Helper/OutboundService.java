@@ -159,7 +159,7 @@ public class OutboundService extends Service {
                     }
 
                     Log.i(TAG,"currentTimeMillis : "+System.currentTimeMillis());
-                    long addTimes = System.currentTimeMillis() + 10000;
+                    long addTimes = System.currentTimeMillis() + 5000;
                     Log.i(TAG,"currentTimeMillis add : "+addTimes);
 
                     AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);

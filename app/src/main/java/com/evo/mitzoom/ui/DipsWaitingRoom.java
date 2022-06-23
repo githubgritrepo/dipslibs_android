@@ -24,6 +24,7 @@ import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
@@ -121,6 +122,8 @@ public class DipsWaitingRoom extends AppCompatActivity {
     private SweetAlertDialog dialogSuccess;
     private SweetAlertDialog dialogConfirm;
     private DisplayMetrics displayMetrics;
+    private String Savetanggal;
+    private int Savewaktu;
 
     private Socket mSocket;
     {
@@ -467,6 +470,13 @@ public class DipsWaitingRoom extends AppCompatActivity {
         et_Date = dialogView.findViewById(R.id.et_Date);
         et_time = dialogView.findViewById(R.id.et_time);
         et_time.setAdapter(adapterTime);
+        et_time.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Savewaktu = position;
+
+            }
+        });
         btnSchedule2 = dialogView.findViewById(R.id.btnSchedule2);
 
         et_Date.setOnClickListener(new View.OnClickListener() {
@@ -480,6 +490,7 @@ public class DipsWaitingRoom extends AppCompatActivity {
                     @Override
                     public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
                         tanggal = dayOfMonth+"/"+(month + 1)+"/"+year;
+                        Savetanggal = year+""+(month + 1)+""+dayOfMonth;
                         et_Date.setText(tanggal);
                     }
                 }, year, month, day);
@@ -505,6 +516,7 @@ public class DipsWaitingRoom extends AppCompatActivity {
                     Toast.makeText(getApplicationContext(), R.string.notif_blank, Toast.LENGTH_SHORT).show();
                 }
                 else {
+                    saveSchedule();
                     Toast.makeText(getApplicationContext(), "Jadwal panggilan anda "+tanggal+" jam "+waktu, Toast.LENGTH_LONG).show();
                     sweetAlertDialog.dismissWithAnimation();
                     SweetAlertDialog sweetAlertDialog = new SweetAlertDialog(DipsWaitingRoom.this, SweetAlertDialog.SUCCESS_TYPE);
@@ -519,7 +531,33 @@ public class DipsWaitingRoom extends AppCompatActivity {
         });
         btnSchedule2.setBackgroundTintList(DipsWaitingRoom.this.getResources().getColorStateList(R.color.Blue));
     }
+    private void saveSchedule(){
+        JSONObject jsons = new JSONObject();
+        try {
+            jsons.put("idDips",idDips);
+            jsons.put("tanggal",Savetanggal);
+            jsons.put("grup",Savewaktu);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        Log.d("PARAMS JADWAL","idDips = "+idDips+", Tanggal = "+Savetanggal+", Grup index Time of ["+Savewaktu+"]");
+        RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), jsons.toString());
+        ApiService API = Server.getAPIService();
+        Call<JsonObject> call = API.saveSchedule(requestBody);
+        call.enqueue(new Callback<JsonObject>() {
+            @Override
+            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                if (response.isSuccessful() && response.body().size() > 0) {
+                }
+            }
 
+            @Override
+            public void onFailure(Call<JsonObject> call, Throwable t) {
+
+            }
+        });
+
+    }
 
     private void PopUpWaiting(){
         if (dialogWaiting == null) {
