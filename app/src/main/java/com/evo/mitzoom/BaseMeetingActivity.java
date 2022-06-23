@@ -43,6 +43,8 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.evo.mitzoom.API.ApiService;
+import com.evo.mitzoom.API.Server;
 import com.evo.mitzoom.Adapter.UserVideoAdapter;
 import com.evo.mitzoom.Fragments.frag_chat;
 import com.evo.mitzoom.Fragments.frag_conferee_agree;
@@ -56,12 +58,22 @@ import com.evo.mitzoom.util.ErrorMsgUtil;
 import com.evo.mitzoom.util.UserHelper;
 import com.evo.mitzoom.util.ZMAdapterOsBugHelper;
 import com.evo.mitzoom.view.KeyBoardLayout;
+import com.google.gson.JsonObject;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
 import cn.pedant.SweetAlert.SweetAlertDialog;
+import okhttp3.MediaType;
+import okhttp3.RequestBody;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 import us.zoom.sdk.ZoomVideoSDK;
 import us.zoom.sdk.ZoomVideoSDKAudioHelper;
 import us.zoom.sdk.ZoomVideoSDKAudioRawData;
@@ -158,6 +170,16 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
 
         if (!renderWithSurfaceView) {
             getWindow().setFlags(WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED, WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED);
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
+            setShowWhenLocked(true);
+            setTurnScreenOn(true);
+        } else {
+            getWindow().addFlags(WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED |
+                    WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON |
+                    WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON |
+                    WindowManager.LayoutParams.FLAG_ALLOW_LOCK_WHILE_SCREEN_ON);
         }
 
         getWindow().addFlags(WindowManager.LayoutParams.
@@ -330,7 +352,7 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
         }
         ZoomVideoSDK.getInstance().removeListener(this);
         adapter.onDestroyed();
-        sessions.clearData();
+        sessions.clearPartData();
     }
 
     @Override
@@ -653,8 +675,9 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
                 dialogEnd.dismissWithAnimation();
                 releaseResource();
                 int ret = ZoomVideoSDK.getInstance().leaveSession(false);
+                sessions.clearPartData();
+                MirroringEnd();
                 startActivity(new Intent(getApplicationContext(), RatingActivity.class));
-                sessions.clearData();
             }
         });
         dialogEnd.setCancelClickListener(new SweetAlertDialog.OnSweetClickListener() {
@@ -665,40 +688,36 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
         });
         dialogEnd.show();
 
-        /*final Dialog builder = new Dialog(this, R.style.MyDialog);
-        builder.setCanceledOnTouchOutside(true);
-        builder.setCancelable(true);
-        builder.setContentView(R.layout.dialog_leave_alert);
-        builder.findViewById(R.id.btn_leave).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                builder.dismiss();
-                releaseResource();
-                int ret = ZoomVideoSDK.getInstance().leaveSession(false);
-                Log.d(TAG, "leaveSession ret = " + ret);
-                startActivity(new Intent(getApplicationContext(), RatingActivity.class));
-                sessions.clearData();
-            }
-        });
-        boolean end = false;
-        if (null != userInfo && userInfo.isHost()) {
-            ((TextView) builder.findViewById(R.id.btn_end)).setText(getString(R.string.leave_end_text));
-            end = true;
-        }
-        final boolean endSession = end;
-        builder.findViewById(R.id.btn_end).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                builder.dismiss();
-                if (endSession) {
-                    releaseResource();
-                    int ret = ZoomVideoSDK.getInstance().leaveSession(true);
-                    Log.d(TAG, "leaveSession ret = " + ret);
-                }
-            }
-        });
-        builder.show();*/
     }
+
+    private void MirroringEnd(){
+        String idDips = sessions.getKEY_IdDips();
+        JSONObject jsons = new JSONObject();
+        JSONArray jsonArray = new JSONArray();
+        try {
+            jsonArray.put(true);
+            jsons.put("idDips",idDips);
+            jsons.put("code",99);
+            jsons.put("data",jsonArray);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), jsons.toString());
+        ApiService API = Server.getAPIService();
+        Call<JsonObject> call = API.Mirroring(requestBody);
+        call.enqueue(new Callback<JsonObject>() {
+            @Override
+            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                Log.d("MIRROR","Mirroring Sukses");
+            }
+
+            @Override
+            public void onFailure(Call<JsonObject> call, Throwable t) {
+                Log.d("MIRROR","Mirroring Gagal");
+            }
+        });
+    }
+    
     public void onClickChat(View view) {
         btnChat.setFocusable(true);
         getFragmentPage(new frag_chat());

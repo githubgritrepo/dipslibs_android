@@ -122,6 +122,7 @@ public class frag_berita extends Fragment {
         sweetAlertDialog.setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
             @Override
             public void onClick(SweetAlertDialog sweetAlertDialog) {
+                sweetAlertDialog.dismissWithAnimation();
                 Toast.makeText(context,getResources().getString(R.string.end_call2), Toast.LENGTH_LONG);
                 OutApps();
 
@@ -137,7 +138,7 @@ public class frag_berita extends Fragment {
         startActivity(intent);
         ((Activity)context).overridePendingTransition(0,0);
         ((Activity)context).finish();
-        System.exit(0);
+        //System.exit(0);
     }
     private void initPager() {
         for (int i = 0; i < img.length; i++) {
@@ -197,8 +198,13 @@ public class frag_berita extends Fragment {
                 DatePickerDialog datePickerDialog = new DatePickerDialog(context, new DatePickerDialog.OnDateSetListener() {
                     @Override
                     public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-                        tanggal = dayOfMonth+"/"+(month + 1)+"/"+year;
-                        Savetanggal = year+""+(month + 1)+""+dayOfMonth;
+                        int addmonths = (month + 1);
+                        String months = String.valueOf(addmonths);
+                        if (addmonths < 10) {
+                            months = "0"+months;
+                        }
+                        tanggal = dayOfMonth+"/"+months+"/"+year;
+                        Savetanggal = year+""+months+""+dayOfMonth;
                         et_Date.setText(tanggal);
                     }
                 }, year, month, day);

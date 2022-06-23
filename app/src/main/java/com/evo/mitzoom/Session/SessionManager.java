@@ -88,6 +88,17 @@ public class SessionManager {
         editor.commit();
     }
 
+    public void clearPartData(){
+        editor.putString(KEY_RTGS,null);
+        editor.putString(KEY_CIF,null);
+        editor.putString(KEY_CHAT,null);
+        editor.putString(KEY_KTP,null);
+        editor.putString(KEY_NPWP,null);
+        editor.putString(KEY_TTD,null);
+        editor.putBoolean(KEY_iSCust,false);
+        editor.commit();
+    }
+
     public void clearData(){
         editor.clear();
         editor.commit();

@@ -13,6 +13,7 @@ import android.hardware.camera2.CameraAccessException;
 import android.hardware.camera2.CameraManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -59,8 +60,15 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.nio.MappedByteBuffer;
+import java.nio.channels.FileChannel;
+import java.nio.charset.Charset;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
@@ -172,17 +180,13 @@ public class DipsWaitingRoom extends AppCompatActivity {
 
         Log.d("CEK", "idDips : "+idDips);
 
+        savedAuthCredentialIDDiPS(idDips);
+
         initializeSdk();
 
         if(!foregroundServiceRunning()) {
             Intent serviceIntent = new Intent(this, OutboundService.class);
-            serviceIntent.putExtra("idDips",idDips);
             startForegroundService(serviceIntent);
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                startForegroundService(serviceIntent);
-            } else {
-                startService(serviceIntent);
-            }
         }
 
         /*btnSchedule = (MaterialButton) findViewById(R.id.btnSchedule);
@@ -199,6 +203,7 @@ public class DipsWaitingRoom extends AppCompatActivity {
         cardSurf.setLayoutParams(lp);
 
     }
+
     @Override
     protected void onResume() {
         super.onResume();
@@ -325,6 +330,50 @@ public class DipsWaitingRoom extends AppCompatActivity {
             Toast.makeText(this, ErrorMsgUtil.getMsgByErrorCode(initResult), Toast.LENGTH_LONG).show();
         }
 
+    }
+
+    private void savedAuthCredentialIDDiPS(String idDips) {
+        try {
+            JSONObject dataObj = new JSONObject();
+            dataObj.put("idDips",idDips);
+
+            String dataAuth = dataObj.toString();
+
+            String filename = "Auth_Credential.json";
+            try {
+                createTemporaryFile(dataAuth,filename);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private File createDir() {
+        String appName = getString(R.string.app_name_dips);
+        String IMAGE_DIRECTORY_NAME = appName;
+        File mediaStorageDir = new File(
+                Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS), IMAGE_DIRECTORY_NAME);
+
+        return mediaStorageDir;
+    }
+
+    private File createTemporaryFile(String dataAuth, String filename) throws Exception {
+        File mediaStorageDir = createDir();
+
+        mediaStorageDir.mkdirs();
+
+        File mediaFile;
+        mediaFile = new File(mediaStorageDir.getPath() + File.separator +
+                filename);
+
+        FileWriter writer = new FileWriter(mediaFile);
+        writer.append(dataAuth);
+        writer.flush();
+        writer.close();
+
+        return mediaFile;
     }
 
     private Emitter.Listener waitingListener = new Emitter.Listener() {
@@ -519,12 +568,24 @@ public class DipsWaitingRoom extends AppCompatActivity {
                     saveSchedule();
                     Toast.makeText(getApplicationContext(), "Jadwal panggilan anda "+tanggal+" jam "+waktu, Toast.LENGTH_LONG).show();
                     sweetAlertDialog.dismissWithAnimation();
-                    SweetAlertDialog sweetAlertDialog = new SweetAlertDialog(DipsWaitingRoom.this, SweetAlertDialog.SUCCESS_TYPE);
-                    sweetAlertDialog.setContentText(getResources().getString(R.string.content_after_schedule));
-                    sweetAlertDialog.setConfirmText(getResources().getString(R.string.done));
-                    sweetAlertDialog.show();
-                    Button btnConfirm = (Button) sweetAlertDialog.findViewById(cn.pedant.SweetAlert.R.id.confirm_button);
+                    SweetAlertDialog sweetAlertDialogEnd = new SweetAlertDialog(DipsWaitingRoom.this, SweetAlertDialog.SUCCESS_TYPE);
+                    sweetAlertDialogEnd.setContentText(getResources().getString(R.string.content_after_schedule));
+                    sweetAlertDialogEnd.setConfirmText(getResources().getString(R.string.done));
+                    sweetAlertDialogEnd.show();
+                    Button btnConfirm = (Button) sweetAlertDialogEnd.findViewById(cn.pedant.SweetAlert.R.id.confirm_button);
                     btnConfirm.setBackgroundTintList(DipsWaitingRoom.this.getResources().getColorStateList(R.color.Blue));
+                    btnConfirm.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            sweetAlertDialogEnd.dismissWithAnimation();
+                            Intent intent = new Intent(Intent.ACTION_MAIN);
+                            intent.addCategory(Intent.CATEGORY_HOME);
+                            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                            startActivity(intent);
+                            overridePendingTransition(0,0);
+                            finish();
+                        }
+                    });
                 }
 
             }

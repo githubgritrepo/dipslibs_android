@@ -47,8 +47,6 @@
             android:exported="true"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.MITZoom"
-            android:launchMode="singleTask"
-            android:taskAffinity=""
             android:excludeFromRecents="true"
             android:showOnLockScreen="true"
             android:showWhenLocked="true"

@@ -1,20 +1,28 @@
 package com.evo.mitzoom.ui;
 
+import static com.evo.mitzoom.ui.DipsSplashScreen.setLocale;
+
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.app.ActivityCompat;
 
 import android.Manifest;
 import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.KeyguardManager;
+import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.PixelFormat;
 import android.hardware.Camera;
 import android.hardware.camera2.CameraAccessException;
 import android.hardware.camera2.CameraManager;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -43,6 +51,7 @@ import com.evo.mitzoom.BaseMeetingActivity;
 import com.evo.mitzoom.Helper.GraphicFaceTracker;
 import com.evo.mitzoom.Helper.OutboundService;
 import com.evo.mitzoom.R;
+import com.evo.mitzoom.Session.SessionManager;
 import com.evo.mitzoom.util.NetworkUtil;
 import com.google.android.gms.vision.CameraSource;
 import com.google.android.gms.vision.face.LargestFaceFocusingProcessor;
@@ -53,11 +62,13 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
 
 import cn.pedant.SweetAlert.SweetAlertDialog;
+import de.hdodenhof.circleimageview.CircleImageView;
 import okhttp3.MediaType;
 import okhttp3.RequestBody;
 import retrofit2.Call;
@@ -96,40 +107,61 @@ public class DipsOutboundCall extends AppCompatActivity {
     private int Savewaktu;
     String [] time = {"08.00 - 10.00", "10.00 - 12.00", "12.00 - 14.00", "14.00 - 16.00", "16.00 - 17.00"};
     private MaterialButton btnSchedule2;
+    private Context mContext;
+    private SessionManager sessions;
+    private boolean isCust = false;
+    private String customerName = "Customer";
+    private String imageAgent = null;
+    private CircleImageView imgCS;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_dips_outbound_call);
+
+        mContext = this;
+        sessions = new SessionManager(mContext);
+        idDips = sessions.getKEY_IdDips();
+        isCust = sessions.getKEY_iSCust();
+        String lang = sessions.getLANG();
+        setLocale(this,lang);
 
         getPackageManager().getLaunchIntentForPackage("com.evo.mitzoom");
 
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
         getSupportActionBar().hide();
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
+        setContentView(R.layout.activity_dips_outbound_call);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
             setShowWhenLocked(true);
             setTurnScreenOn(true);
-            KeyguardManager keyguardManager = (KeyguardManager) getSystemService(this.KEYGUARD_SERVICE);
-            keyguardManager.requestDismissKeyguard(this,null);
+            /*KeyguardManager keyguardManager = (KeyguardManager) getSystemService(this.KEYGUARD_SERVICE);
+            keyguardManager.requestDismissKeyguard(this,null);*/
         } else {
-            getWindow().addFlags(WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD |
-                    WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED |
+            getWindow().addFlags(WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED |
                     WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON |
-                    WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+                    WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON |
+                    WindowManager.LayoutParams.FLAG_ALLOW_LOCK_WHILE_SCREEN_ON);
         }
 
         incomingcall = findViewById(R.id.incomingcall);
         AnimationCall();
+        imgCS = (CircleImageView) findViewById(R.id.imgCS);
         accept = findViewById(R.id.acceptCall);
         preview = (SurfaceView) findViewById(R.id.mySurfaceOutbound);
         reject = findViewById(R.id.rejectCall);
         Intent intent = getIntent();
         useFacing = intent.getIntExtra(KEY_USE_FACING, Camera.CameraInfo.CAMERA_FACING_FRONT);
         passSession = OutboundService.getPassword_session();
-        idDips = OutboundService.getIdDips();
+        customerName = OutboundService.getCustomerName();
+        imageAgent = OutboundService.getImagesAgent();
+
+        Log.i("CEK","imageAgent  : "+imageAgent);
+
+        //new DownloadImageTask(imgCS).execute(imageAgent);
 
         accept.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -146,6 +178,32 @@ public class DipsOutboundCall extends AppCompatActivity {
             }
         });
     }
+
+    private class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
+        CircleImageView bmImage;
+
+        public DownloadImageTask(CircleImageView bmImage) {
+            this.bmImage = bmImage;
+        }
+
+        protected Bitmap doInBackground(String... urls) {
+            String urldisplay = urls[0];
+            Bitmap mIcon11 = null;
+            try {
+                InputStream in = new java.net.URL(urldisplay).openStream();
+                mIcon11 = BitmapFactory.decodeStream(in);
+            } catch (Exception e) {
+                Log.e("Error", e.getMessage());
+                e.printStackTrace();
+            }
+            return mIcon11;
+        }
+
+        protected void onPostExecute(Bitmap result) {
+            bmImage.setImageBitmap(result);
+        }
+    }
+
     private void PopUpSchedule(){
         inflater = getLayoutInflater();
         dialogView = inflater.inflate(R.layout.item_schedule,null);
@@ -219,7 +277,10 @@ public class DipsOutboundCall extends AppCompatActivity {
                     btnConfirm.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
+                            Log.i("CEK","MASUK BUTTON CONFIRM");
                             sweetAlertDialog.dismiss();
+                            NotificationManager notificationManagerCompat = (NotificationManager) getApplicationContext().getSystemService(Context.NOTIFICATION_SERVICE);
+                            notificationManagerCompat.cancel(OutboundService.NOTIFICATION_IDOutbound);
                             OutApps();
                         }
                     });
@@ -489,6 +550,8 @@ public class DipsOutboundCall extends AppCompatActivity {
             public void onClick(View v) {
                 dialogConfirm.dismiss();
                 processJoinVideo();
+                NotificationManager notificationManagerCompat = (NotificationManager) getApplicationContext().getSystemService(Context.NOTIFICATION_SERVICE);
+                notificationManagerCompat.cancel(OutboundService.NOTIFICATION_IDOutbound);
             }
         });
     }
@@ -513,7 +576,7 @@ public class DipsOutboundCall extends AppCompatActivity {
             jsons.put("sessionName",idDips);
             jsons.put("role",0);
             jsons.put("sessionKey",passSession);
-            jsons.put("userIdentity", "customer");
+            jsons.put("userIdentity", customerName);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -583,8 +646,9 @@ public class DipsOutboundCall extends AppCompatActivity {
         intent.putExtra("password", sessionPass);
         intent.putExtra("sessionName", sessionName);
         intent.putExtra("render_type", renderType);
-        intent.putExtra("ISCUSTOMER", false);
+        intent.putExtra("ISCUSTOMER", isCust);
         startActivity(intent);
+        finish();
     }
 
 }
