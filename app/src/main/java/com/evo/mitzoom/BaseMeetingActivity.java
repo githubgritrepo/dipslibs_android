@@ -10,7 +10,6 @@ import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
-import android.graphics.Color;
 import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Build;
@@ -678,6 +677,7 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
                 sessions.clearPartData();
                 MirroringEnd();
                 startActivity(new Intent(getApplicationContext(), RatingActivity.class));
+                finish();
             }
         });
         dialogEnd.setCancelClickListener(new SweetAlertDialog.OnSweetClickListener() {

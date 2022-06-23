@@ -1,7 +1,5 @@
 package com.evo.mitzoom.Fragments;
 
-import static com.evo.mitzoom.Helper.OutboundService.idDips;
-
 import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.content.Context;
@@ -33,14 +31,13 @@ import com.evo.mitzoom.API.Server;
 import com.evo.mitzoom.Adapter.AdapterSlide;
 import com.evo.mitzoom.Adapter.GridProductAdapter;
 import com.evo.mitzoom.R;
-import com.evo.mitzoom.ui.DipsSplashScreen;
+import com.evo.mitzoom.Session.SessionManager;
 import com.google.android.material.button.MaterialButton;
 import com.google.gson.JsonObject;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Timer;
@@ -70,12 +67,16 @@ public class frag_berita extends Fragment {
     private String tanggal, waktu;
     private String Savetanggal;
     private int Savewaktu;
+    private SessionManager sessions;
+    private String idDips;
 
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         context = getContext();
+        sessions = new SessionManager(context);
+        idDips = sessions.getKEY_IdDips();
     }
 
     @Nullable

@@ -11,7 +11,6 @@ import android.content.pm.PackageManager;
 import android.hardware.Camera;
 import android.hardware.camera2.CameraAccessException;
 import android.hardware.camera2.CameraManager;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
@@ -61,14 +60,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.nio.MappedByteBuffer;
-import java.nio.channels.FileChannel;
-import java.nio.charset.Charset;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
@@ -151,7 +145,6 @@ public class DipsWaitingRoom extends AppCompatActivity {
         getSupportActionBar().hide();
 
         AnimationCall();
-
 
         mSocket.on("waiting", waitingListener);
         mSocket.connect();

@@ -2,27 +2,16 @@ package com.evo.mitzoom.ui;
 
 import static com.evo.mitzoom.ui.DipsSplashScreen.setLocale;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.app.AppCompatDelegate;
-import androidx.core.app.ActivityCompat;
-
 import android.Manifest;
-import android.app.Activity;
 import android.app.DatePickerDialog;
-import android.app.KeyguardManager;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.PixelFormat;
 import android.hardware.Camera;
 import android.hardware.camera2.CameraAccessException;
 import android.hardware.camera2.CameraManager;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -43,18 +32,26 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
+import androidx.core.app.ActivityCompat;
+
 import com.auth0.android.jwt.Claim;
 import com.auth0.android.jwt.JWT;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.target.SimpleTarget;
+import com.bumptech.glide.request.transition.Transition;
 import com.evo.mitzoom.API.ApiService;
 import com.evo.mitzoom.API.Server;
 import com.evo.mitzoom.BaseMeetingActivity;
-import com.evo.mitzoom.Helper.GraphicFaceTracker;
+import com.evo.mitzoom.Constants.AuthConstants;
 import com.evo.mitzoom.Helper.OutboundService;
 import com.evo.mitzoom.R;
 import com.evo.mitzoom.Session.SessionManager;
+import com.evo.mitzoom.util.ErrorMsgUtil;
 import com.evo.mitzoom.util.NetworkUtil;
-import com.google.android.gms.vision.CameraSource;
-import com.google.android.gms.vision.face.LargestFaceFocusingProcessor;
 import com.google.android.material.button.MaterialButton;
 import com.google.gson.JsonObject;
 
@@ -62,7 +59,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
@@ -76,6 +72,9 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import us.zoom.sdk.ZoomVideoSDK;
 import us.zoom.sdk.ZoomVideoSDKAudioOption;
+import us.zoom.sdk.ZoomVideoSDKErrors;
+import us.zoom.sdk.ZoomVideoSDKInitParams;
+import us.zoom.sdk.ZoomVideoSDKRawDataMemoryMode;
 import us.zoom.sdk.ZoomVideoSDKSession;
 import us.zoom.sdk.ZoomVideoSDKSessionContext;
 import us.zoom.sdk.ZoomVideoSDKVideoOption;
@@ -147,6 +146,8 @@ public class DipsOutboundCall extends AppCompatActivity {
                     WindowManager.LayoutParams.FLAG_ALLOW_LOCK_WHILE_SCREEN_ON);
         }
 
+        initializeSdk();
+
         incomingcall = findViewById(R.id.incomingcall);
         AnimationCall();
         imgCS = (CircleImageView) findViewById(R.id.imgCS);
@@ -160,6 +161,18 @@ public class DipsOutboundCall extends AppCompatActivity {
         imageAgent = OutboundService.getImagesAgent();
 
         Log.i("CEK","imageAgent  : "+imageAgent);
+        String imageAgentnew = imageAgent.replace("https://dips.grit.id:6503/", Server.BASE_URL_API);
+
+        Glide.with(mContext)
+            .asBitmap()
+            .load(imageAgentnew)
+            .circleCrop()
+            .into(new SimpleTarget<Bitmap>() {
+                @Override
+                public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
+                    imgCS.setImageBitmap(resource);
+                }
+        });
 
         //new DownloadImageTask(imgCS).execute(imageAgent);
 
@@ -179,29 +192,19 @@ public class DipsOutboundCall extends AppCompatActivity {
         });
     }
 
-    private class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
-        CircleImageView bmImage;
+    private void initializeSdk() {
+        ZoomVideoSDKInitParams params = new ZoomVideoSDKInitParams();
+        params.domain = AuthConstants.WEB_DOMAIN; // Required
+        params.enableLog = true; // Optional for debugging
+        params.videoRawDataMemoryMode = ZoomVideoSDKRawDataMemoryMode.ZoomVideoSDKRawDataMemoryModeHeap;
+        params.audioRawDataMemoryMode = ZoomVideoSDKRawDataMemoryMode.ZoomVideoSDKRawDataMemoryModeHeap;
+        params.shareRawDataMemoryMode = ZoomVideoSDKRawDataMemoryMode.ZoomVideoSDKRawDataMemoryModeHeap;
 
-        public DownloadImageTask(CircleImageView bmImage) {
-            this.bmImage = bmImage;
+        int initResult = ZoomVideoSDK.getInstance().initialize(this, params);
+        if (initResult != ZoomVideoSDKErrors.Errors_Success) {
+            Toast.makeText(this, ErrorMsgUtil.getMsgByErrorCode(initResult), Toast.LENGTH_LONG).show();
         }
 
-        protected Bitmap doInBackground(String... urls) {
-            String urldisplay = urls[0];
-            Bitmap mIcon11 = null;
-            try {
-                InputStream in = new java.net.URL(urldisplay).openStream();
-                mIcon11 = BitmapFactory.decodeStream(in);
-            } catch (Exception e) {
-                Log.e("Error", e.getMessage());
-                e.printStackTrace();
-            }
-            return mIcon11;
-        }
-
-        protected void onPostExecute(Bitmap result) {
-            bmImage.setImageBitmap(result);
-        }
     }
 
     private void PopUpSchedule(){
@@ -612,6 +615,7 @@ public class DipsOutboundCall extends AppCompatActivity {
         });
     }
     private void processCreateVideo(String signatures) {
+        Log.i("CEK","masuk processCreateVideo");
         JWT jwt = new JWT(signatures);
         Map<String, Claim> allClaims = jwt.getClaims();
         String name = allClaims.get("user_identity").asString();
@@ -638,8 +642,11 @@ public class DipsOutboundCall extends AppCompatActivity {
         ZoomVideoSDKSession session = ZoomVideoSDK.getInstance().joinSession(sessionContext);
 
         if(null==session){
+            Log.i("CEK","SESSION NULL");
             return;
         }
+
+        Log.i("CEK","LANJUUTT");
 
         Intent intent = new Intent(this, DipsVideoConfren.class);
         intent.putExtra("name", name);

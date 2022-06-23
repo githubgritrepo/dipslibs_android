@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.util.Log;
 
 import com.evo.mitzoom.ui.DipsOutboundCall;
-import com.evo.mitzoom.ui.DipsSplashScreen;
 
 public class MyBroadcastReceiver extends BroadcastReceiver {
     @Override

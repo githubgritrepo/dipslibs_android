@@ -1,46 +1,28 @@
 package com.evo.mitzoom.Helper;
 
-import android.Manifest;
-import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.media.RingtoneManager;
 import android.net.Uri;
-import android.os.Bundle;
 import android.os.Environment;
-import android.os.Handler;
 import android.os.IBinder;
-import android.os.PowerManager;
 import android.util.Log;
-import android.view.View;
-import android.widget.Button;
-import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
 import androidx.core.content.ContextCompat;
 
-import com.auth0.android.jwt.Claim;
-import com.auth0.android.jwt.JWT;
 import com.evo.mitzoom.API.ApiService;
 import com.evo.mitzoom.API.Server;
-import com.evo.mitzoom.BaseMeetingActivity;
-import com.evo.mitzoom.IntegrationActivity;
 import com.evo.mitzoom.R;
 import com.evo.mitzoom.Session.SessionManager;
 import com.evo.mitzoom.ui.DipsOutboundCall;
-import com.evo.mitzoom.ui.DipsVideoConfren;
-import com.evo.mitzoom.util.NetworkUtil;
 import com.google.gson.JsonObject;
 
 import org.json.JSONArray;
@@ -58,7 +40,6 @@ import java.nio.charset.Charset;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import cn.pedant.SweetAlert.SweetAlertDialog;
 import io.socket.client.IO;
 import io.socket.client.Socket;
 import io.socket.emitter.Emitter;
@@ -67,11 +48,6 @@ import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import us.zoom.sdk.ZoomVideoSDK;
-import us.zoom.sdk.ZoomVideoSDKAudioOption;
-import us.zoom.sdk.ZoomVideoSDKSession;
-import us.zoom.sdk.ZoomVideoSDKSessionContext;
-import us.zoom.sdk.ZoomVideoSDKVideoOption;
 
 
 public class OutboundService extends Service implements SocketEventListener.Listener{
