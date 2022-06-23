@@ -12,10 +12,15 @@ public class MyBroadcastReceiver extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         Log.i("CEK","MyBroadcastReceiver");
 
-        Intent alarmIntent = new Intent(context.getApplicationContext(), DipsOutboundCall.class);
-        alarmIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        alarmIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        alarmIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        context.getApplicationContext().startActivity(alarmIntent);
+        if (intent.getAction().equals(Intent.ACTION_BOOT_COMPLETED)) {
+            Intent serviceIntent = new Intent(context,OutboundService.class);
+            context.startForegroundService(serviceIntent);
+        } else {
+            Intent alarmIntent = new Intent(context.getApplicationContext(), DipsOutboundCall.class);
+            alarmIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            alarmIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            alarmIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            context.getApplicationContext().startActivity(alarmIntent);
+        }
     }
 }

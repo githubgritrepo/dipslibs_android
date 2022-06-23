@@ -2,6 +2,7 @@ package com.evo.mitzoom.Fragments;
 
 import android.app.Activity;
 import android.app.DatePickerDialog;
+import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -30,6 +31,7 @@ import com.evo.mitzoom.API.ApiService;
 import com.evo.mitzoom.API.Server;
 import com.evo.mitzoom.Adapter.AdapterSlide;
 import com.evo.mitzoom.Adapter.GridProductAdapter;
+import com.evo.mitzoom.Helper.OutboundService;
 import com.evo.mitzoom.R;
 import com.evo.mitzoom.Session.SessionManager;
 import com.google.android.material.button.MaterialButton;
@@ -139,7 +141,7 @@ public class frag_berita extends Fragment {
         startActivity(intent);
         ((Activity)context).overridePendingTransition(0,0);
         ((Activity)context).finish();
-        //System.exit(0);
+        System.exit(0);
     }
     private void initPager() {
         for (int i = 0; i < img.length; i++) {
@@ -240,6 +242,13 @@ public class frag_berita extends Fragment {
                     sweetAlertDialog.show();
                     Button btnConfirm = (Button) sweetAlertDialog.findViewById(cn.pedant.SweetAlert.R.id.confirm_button);
                     btnConfirm.setBackgroundTintList(context.getResources().getColorStateList(R.color.Blue));
+                    btnConfirm.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            sweetAlertDialog.dismiss();
+                            OutApps();
+                        }
+                    });
                 }
 
             }

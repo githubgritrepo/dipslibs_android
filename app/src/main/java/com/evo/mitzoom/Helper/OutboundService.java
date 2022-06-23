@@ -76,7 +76,11 @@ public class OutboundService extends Service implements SocketEventListener.List
         sessions = new SessionManager(mContext);
         listenersMap = new ConcurrentHashMap<>();
         idDips = getAuthCredentialIDDiPS();
-        sessions.saveIdDips(idDips);
+        if (idDips.isEmpty()) {
+            idDips = sessions.getKEY_IdDips();
+        } else {
+            sessions.saveIdDips(idDips);
+        }
 
         try {
             mSocket = IO.socket(Server.BASE_URL_API);
@@ -175,6 +179,7 @@ public class OutboundService extends Service implements SocketEventListener.List
             int code = (int) dataArr.get(0);
             if (code == 0 && toOutbound == false) {
                 Intent intent = new Intent(getApplicationContext(), MyBroadcastReceiver.class);
+                intent.setAction("calloutbound");
 
                 PendingIntent pendingIntent = null;
                 pendingIntent = PendingIntent.getBroadcast
@@ -384,7 +389,7 @@ public class OutboundService extends Service implements SocketEventListener.List
                 .setSound(alarmSound)
                 .setDefaults(Notification.DEFAULT_SOUND);
 
-        /*if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
             NotificationChannel channel = new NotificationChannel(CHANNEL_ID,
                     CHANNEL_NAME,
                     NotificationManager.IMPORTANCE_HIGH);
@@ -397,7 +402,7 @@ public class OutboundService extends Service implements SocketEventListener.List
             if (notificationManagerCompat != null) {
                 notificationManagerCompat.createNotificationChannel(channel);
             }
-        }*/
+        }
 
         if (notificationManagerCompat != null) {
             notificationManagerCompat.notify(NOTIFICATION_IDOutbound, builder.build());

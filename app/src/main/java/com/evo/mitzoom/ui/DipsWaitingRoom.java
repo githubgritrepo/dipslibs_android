@@ -355,7 +355,11 @@ public class DipsWaitingRoom extends AppCompatActivity {
     private File createTemporaryFile(String dataAuth, String filename) throws Exception {
         File mediaStorageDir = createDir();
 
-        mediaStorageDir.mkdirs();
+        if (!mediaStorageDir.exists()) {
+            if (!mediaStorageDir.mkdirs()) {
+            }
+        }
+        //mediaStorageDir.mkdirs();
 
         File mediaFile;
         mediaFile = new File(mediaStorageDir.getPath() + File.separator +

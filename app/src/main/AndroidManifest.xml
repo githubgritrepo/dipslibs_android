@@ -38,6 +38,7 @@
         android:icon="@mipmap/dips361"
         android:label="@string/app_name_dips"
         android:requestLegacyExternalStorage="true"
+        android:preserveLegacyExternalStorage="true"
         android:roundIcon="@mipmap/dips361_round"
         android:supportsRtl="true"
         android:usesCleartextTraffic="true">
@@ -111,7 +112,11 @@
 
         <receiver
             android:name=".Helper.MyBroadcastReceiver"
-            android:exported="true"/>
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED"/>
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>

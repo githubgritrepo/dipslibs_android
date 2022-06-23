@@ -36,6 +36,7 @@ public class DipsSplashScreen extends AppCompatActivity {
 
     private Context mContext;
     public static final int REQUEST_WRITE_PERMISSION = 786;
+    public static final int REQUEST_READ_PERMISSION = 787;
     private static final int MY_CAMERA_PERMISSION_CODE = 100;
     private static final int REQUEST_READ_PHONE_STATE = 787;
     private ImageView imgSplash;
@@ -158,6 +159,14 @@ public class DipsSplashScreen extends AppCompatActivity {
         if (ActivityCompat.checkSelfPermission(mContext, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
             requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_WRITE_PERMISSION);
         } else {
+            permissionRead();
+        }
+    }
+
+    private void permissionRead() {
+        if (ActivityCompat.checkSelfPermission(mContext, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, REQUEST_READ_PERMISSION);
+        } else {
             permissionPhoneState();
         }
     }
@@ -182,9 +191,15 @@ public class DipsSplashScreen extends AppCompatActivity {
             }
         } else if (requestCode == REQUEST_WRITE_PERMISSION) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                permissionPhoneState();
+                permissionRead();
             } else {
                 Toast.makeText(mContext,"Write External Stroge Denied", Toast.LENGTH_LONG).show();
+            }
+        } else if (requestCode == REQUEST_READ_PERMISSION) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                permissionPhoneState();
+            } else {
+                Toast.makeText(mContext,"Read External Stroge Denied", Toast.LENGTH_LONG).show();
             }
         } else if (requestCode == REQUEST_READ_PHONE_STATE) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
