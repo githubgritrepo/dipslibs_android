@@ -190,6 +190,13 @@ public class DipsOutboundCall extends AppCompatActivity {
                 PopUpSchedule();
             }
         });
+
+        if (getIntent().getAction() != null) {
+            Log.i("CEK","MASUK ACTION");
+            if (getIntent().getAction().equals("endcall")) {
+                reject.performClick();
+            }
+        }
     }
 
     private void initializeSdk() {

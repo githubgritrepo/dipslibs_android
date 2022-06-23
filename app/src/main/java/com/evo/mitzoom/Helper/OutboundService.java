@@ -369,9 +369,15 @@ public class OutboundService extends Service implements SocketEventListener.List
         pendingIntentCall = PendingIntent.getActivity
                 (getApplicationContext(), 0, intent1, 0);
 
-        Intent intent = new Intent("close_app");
-        PendingIntent pIntentReject = PendingIntent.getBroadcast(this, (int)
-                System.currentTimeMillis(), intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        Intent intent2 = new Intent(getApplicationContext(), DipsOutboundCall.class);
+        intent2.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent2.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        intent2.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        intent2.setAction("endcall");
+
+        PendingIntent pendingIntentEnd = null;
+        pendingIntentEnd = PendingIntent.getActivity
+                (getApplicationContext(), 0, intent2, 0);
 
         Uri alarmSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_RINGTONE);
         String nameApps = getResources().getString(R.string.app_name_dips);
@@ -381,7 +387,7 @@ public class OutboundService extends Service implements SocketEventListener.List
                 .setContentTitle(nameApps+" Memanggil...")
                 .setContentText("Panggilan Masuk dari "+username_agent)
                 .addAction(R.drawable.ic_call,"Accept Call",pendingIntentCall)
-                .addAction(R.drawable.ic_call_end,"Reject Call",pIntentReject)
+                .addAction(R.drawable.ic_call_end,"Reject Call",pendingIntentEnd)
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
                 .setColor(ContextCompat.getColor(getApplicationContext(), android.R.color.transparent))
                 .setVibrate(new long[]{1000, 5000, 1000, 5000, 1000})
