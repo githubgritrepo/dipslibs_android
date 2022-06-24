@@ -98,7 +98,7 @@ public class DipsOutboundCall extends AppCompatActivity {
     private LayoutInflater inflater;
     private View dialogView;
     private ImageView btnclose;
-    private TextView et_Date, textView;
+    private TextView et_Date, textView, nama_agen;
     private AutoCompleteTextView et_time;
     private int year, month, day;
     private String tanggal, waktu;
@@ -111,6 +111,7 @@ public class DipsOutboundCall extends AppCompatActivity {
     private boolean isCust = false;
     private String customerName = "Customer";
     private String imageAgent = null;
+    private String nameAgent = null;
     private CircleImageView imgCS;
 
 
@@ -147,7 +148,7 @@ public class DipsOutboundCall extends AppCompatActivity {
         }
 
         initializeSdk();
-
+        nama_agen = findViewById(R.id.nama_agen);
         incomingcall = findViewById(R.id.incomingcall);
         AnimationCall();
         imgCS = (CircleImageView) findViewById(R.id.imgCS);
@@ -159,6 +160,8 @@ public class DipsOutboundCall extends AppCompatActivity {
         passSession = OutboundService.getPassword_session();
         customerName = OutboundService.getCustomerName();
         imageAgent = OutboundService.getImagesAgent();
+        nameAgent = OutboundService.getNameAgent();
+        nama_agen.setText(nameAgent);
 
         Log.i("CEK","imageAgent  : "+imageAgent);
         String imageAgentnew = imageAgent.replace("https://dips.grit.id:6503/", Server.BASE_URL_API);

@@ -68,17 +68,24 @@
             android:layout_height="120dp"
             android:layout_gravity="center"
             android:src="@drawable/agen_profile"/>
-
         <TextView
-            android:id="@+id/incomingcall"
+            android:id="@+id/nama_agen"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="15dp"
             android:gravity="center"
-            android:text="@string/incoming_call"
+            android:text="Agent Name"
             android:textColor="@color/black"
             android:textSize="20sp"
             android:textStyle="bold" />
+        <TextView
+            android:id="@+id/incomingcall"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="@string/incoming_call"
+            android:textColor="@color/black"
+            android:textSize="18sp" />
 
     </LinearLayout>
 

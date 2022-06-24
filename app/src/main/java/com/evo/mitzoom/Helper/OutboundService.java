@@ -60,6 +60,7 @@ public class OutboundService extends Service implements SocketEventListener.List
     public static String customerName;
     public static String password_session;
     public static String imagesAgent;
+    public static String nameAgent;
     private static String TAG = "OutboundService";
     private Context mContext;
     private boolean toOutbound = false;
@@ -195,6 +196,7 @@ public class OutboundService extends Service implements SocketEventListener.List
                 customerName = dataArr.get(3).toString();
                 boolean isCust = (boolean) dataArr.get(4);
                 imagesAgent = dataArr.get(5).toString();
+                nameAgent = dataArr.get(6).toString();
                 sessions.saveIsCust(isCust);
 
                 new Thread(new Runnable() {
@@ -233,6 +235,10 @@ public class OutboundService extends Service implements SocketEventListener.List
 
     public static String getImagesAgent(){
         return imagesAgent;
+    }
+
+    public static String getNameAgent(){
+        return nameAgent;
     }
 
     @Nullable

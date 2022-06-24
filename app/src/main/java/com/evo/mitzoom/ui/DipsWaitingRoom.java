@@ -11,6 +11,7 @@ import android.content.pm.PackageManager;
 import android.hardware.Camera;
 import android.hardware.camera2.CameraAccessException;
 import android.hardware.camera2.CameraManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
@@ -39,6 +40,7 @@ import androidx.appcompat.app.AppCompatDelegate;
 import androidx.cardview.widget.CardView;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
+import androidx.security.crypto.MasterKey;
 
 import com.auth0.android.jwt.Claim;
 import com.auth0.android.jwt.JWT;
@@ -53,6 +55,9 @@ import com.evo.mitzoom.Session.SessionManager;
 import com.evo.mitzoom.util.ErrorMsgUtil;
 import com.evo.mitzoom.util.NetworkUtil;
 import com.google.android.material.button.MaterialButton;
+import com.google.crypto.tink.KeysetHandle;
+import com.google.crypto.tink.aead.AeadKeyTemplates;
+import com.google.crypto.tink.integration.android.AndroidKeysetManager;
 import com.google.gson.JsonObject;
 
 import org.json.JSONArray;
@@ -63,6 +68,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.security.GeneralSecurityException;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
@@ -127,12 +133,15 @@ public class DipsWaitingRoom extends AppCompatActivity {
     private String Savetanggal;
     private int Savewaktu;
 
+
+
     private Socket mSocket;
     {
         try {
             mSocket = IO.socket(Server.BASE_URL_API);
         } catch (URISyntaxException e) {}
     }
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -318,7 +327,7 @@ public class DipsWaitingRoom extends AppCompatActivity {
         params.audioRawDataMemoryMode = ZoomVideoSDKRawDataMemoryMode.ZoomVideoSDKRawDataMemoryModeHeap;
         params.shareRawDataMemoryMode = ZoomVideoSDKRawDataMemoryMode.ZoomVideoSDKRawDataMemoryModeHeap;
 
-        int initResult = ZoomVideoSDK.getInstance().initialize(this, params);
+        int initResult = ZoomVideoSDK.getInstance().initialize(DipsWaitingRoom.this, params);
         if (initResult != ZoomVideoSDKErrors.Errors_Success) {
             Toast.makeText(this, ErrorMsgUtil.getMsgByErrorCode(initResult), Toast.LENGTH_LONG).show();
         }
