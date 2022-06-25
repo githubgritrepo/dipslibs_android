@@ -108,13 +108,19 @@
                 android:resource="@xml/provider_path" />
         </provider>
 
-        <service android:name=".Helper.OutboundService" android:exported="true" />
+        <service
+            android:stopWithTask="false"
+            android:enabled="true"
+            android:name=".Helper.OutboundService"
+            android:exported="true" />
 
         <receiver
             android:name=".Helper.MyBroadcastReceiver"
-            android:exported="true">
+            android:exported="true"
+            android:enabled="true">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED"/>
+                <action android:name="android.intent.action.INPUT_METHOD_CHANGED" />
             </intent-filter>
         </receiver>
     </application>

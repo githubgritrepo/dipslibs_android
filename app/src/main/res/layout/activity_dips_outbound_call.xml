@@ -84,7 +84,7 @@
             android:layout_height="wrap_content"
             android:gravity="center"
             android:text="@string/incoming_call"
-            android:textColor="@color/black"
+            android:textColor="@color/button_schedule"
             android:textSize="18sp" />
 
     </LinearLayout>

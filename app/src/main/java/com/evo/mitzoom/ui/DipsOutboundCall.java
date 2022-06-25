@@ -336,9 +336,8 @@ public class DipsOutboundCall extends AppCompatActivity {
         intent.addCategory(Intent.CATEGORY_HOME);
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(intent);
-        DipsOutboundCall.this.overridePendingTransition(0,0);
-        DipsOutboundCall.this.finish();
-        System.exit(0);
+        //DipsOutboundCall.this.overridePendingTransition(0,0);
+        //System.exit(0);
     }
     @Override
     protected void onResume() {

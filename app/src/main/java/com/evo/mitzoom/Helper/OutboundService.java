@@ -94,9 +94,19 @@ public class OutboundService extends Service implements SocketEventListener.List
         for (Map.Entry<String, SocketEventListener> entry : listenersMap.entrySet()) {
             mSocket.on(entry.getKey(), entry.getValue());
         }
+        processThreadNotif();
 
         //mSocket.on("outbound", outboundListener);
         mSocket.connect();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        Intent broadcastIntent = new Intent();
+        broadcastIntent.setAction("restartservice");
+        broadcastIntent.setClass(this, MyBroadcastReceiver.class);
+        this.sendBroadcast(broadcastIntent);
     }
 
     private void getSocketListener() {
@@ -120,9 +130,6 @@ public class OutboundService extends Service implements SocketEventListener.List
                 processThreadNotif();
             }
         }
-
-
-
         //return super.onStartCommand(intent, flags, startId);
         return START_STICKY;
     }
@@ -159,7 +166,7 @@ public class OutboundService extends Service implements SocketEventListener.List
         getSystemService(NotificationManager.class).createNotificationChannel(channel);
         Notification.Builder notification = new Notification.Builder(this, CHANNELID)
                 .setContentText("Service is running")
-                .setContentTitle("Service enabled")
+                .setContentTitle("Your idDips = "+idDips)
                 .setSmallIcon(R.mipmap.dips361);
 
         startForeground(1001, notification.build());
@@ -186,7 +193,7 @@ public class OutboundService extends Service implements SocketEventListener.List
                 pendingIntent = PendingIntent.getBroadcast
                         (getApplicationContext(), 0, intent, 0);
 
-                long addTimes = System.currentTimeMillis() + 5000;
+                long addTimes = System.currentTimeMillis() + 2000;
 
                 AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
                 alarmManager.set(AlarmManager.RTC_WAKEUP,addTimes,pendingIntent);
@@ -223,6 +230,8 @@ public class OutboundService extends Service implements SocketEventListener.List
     public void onTaskRemoved(Intent rootIntent) {
         Log.i(TAG,"MASUK onTaskRemoved");
         callOutbound(idDips);
+        Intent intent = new Intent("com.android.ServiceStopped");
+        sendBroadcast(intent);
     }
 
     public static String getPassword_session(){

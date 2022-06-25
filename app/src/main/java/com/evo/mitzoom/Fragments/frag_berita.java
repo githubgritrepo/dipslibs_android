@@ -140,8 +140,7 @@ public class frag_berita extends Fragment {
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(intent);
         ((Activity)context).overridePendingTransition(0,0);
-        ((Activity)context).finish();
-        System.exit(0);
+        //System.exit(0);
     }
     private void initPager() {
         for (int i = 0; i < img.length; i++) {

@@ -252,7 +252,5 @@ public class RatingActivity extends AppCompatActivity {
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(intent);
         overridePendingTransition(0,0);
-        finish();
-        System.exit(0);
     }
 }
