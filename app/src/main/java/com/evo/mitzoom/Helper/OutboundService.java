@@ -199,8 +199,15 @@ public class OutboundService extends Service implements SocketEventListener.List
                 intent.setAction("calloutbound");
 
                 PendingIntent pendingIntent = null;
-                pendingIntent = PendingIntent.getBroadcast
-                        (getApplicationContext(), 0, intent, 0);
+                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
+                    pendingIntent = PendingIntent.getBroadcast
+                            (this, 0, intent, PendingIntent.FLAG_MUTABLE);
+                }
+                else
+                {
+                    pendingIntent = PendingIntent.getBroadcast
+                            (this, 0, intent, PendingIntent.FLAG_ONE_SHOT);
+                }
 
                 long addTimes = System.currentTimeMillis() + 2000;
 
@@ -390,8 +397,15 @@ public class OutboundService extends Service implements SocketEventListener.List
         intent1.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
         PendingIntent pendingIntentCall = null;
-        pendingIntentCall = PendingIntent.getActivity
-                (getApplicationContext(), 0, intent1, 0);
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
+            pendingIntentCall = PendingIntent.getActivity
+                    (this, 0, intent1, PendingIntent.FLAG_MUTABLE);
+        }
+        else
+        {
+            pendingIntentCall = PendingIntent.getBroadcast
+                    (this, 0, intent1, PendingIntent.FLAG_ONE_SHOT);
+        }
 
         Intent intent2 = new Intent(getApplicationContext(), DipsOutboundCall.class);
         intent2.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -400,8 +414,15 @@ public class OutboundService extends Service implements SocketEventListener.List
         intent2.setAction("endcall");
 
         PendingIntent pendingIntentEnd = null;
-        pendingIntentEnd = PendingIntent.getActivity
-                (getApplicationContext(), 0, intent2, 0);
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
+            pendingIntentCall = PendingIntent.getActivity
+                    (this, 0, intent2, PendingIntent.FLAG_MUTABLE);
+        }
+        else
+        {
+            pendingIntentCall = PendingIntent.getBroadcast
+                    (this, 0, intent2, PendingIntent.FLAG_ONE_SHOT);
+        }
 
         Uri alarmSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_RINGTONE);
         String nameApps = getResources().getString(R.string.app_name_dips);
