@@ -52,6 +52,7 @@ import retrofit2.Response;
 
 public class OutboundService extends Service implements SocketEventListener.Listener{
     private Socket mSocket;
+    public static int IDSERVICES = 1001;
     private static final String EVENT_OUTBOUND = "outbound";
     private static final String EVENT_CALL = "call";
     public static int NOTIFICATION_IDOutbound;
@@ -124,6 +125,7 @@ public class OutboundService extends Service implements SocketEventListener.List
         if (intent != null) {
             if (!mSocket.connected()) {
                 mSocket.connect();
+                toOutbound = false;
                 Log.i(TAG, "connecting socket...");
             } else {
                 callOutbound(idDips);
@@ -143,6 +145,7 @@ public class OutboundService extends Service implements SocketEventListener.List
                             Log.i(TAG+"_Service", "Service is running idDips : "+idDips+" | mSocket.connected() : "+mSocket.connected());
                             if (!mSocket.connected()) {
                                 Log.i(TAG,"CONNECTED AGAIN");
+                                toOutbound = false;
                                 mSocket.connect();
                                 callOutbound(idDips);
                             }
@@ -169,7 +172,7 @@ public class OutboundService extends Service implements SocketEventListener.List
                 .setContentTitle("Your idDips = "+idDips)
                 .setSmallIcon(R.mipmap.dips361);
 
-        startForeground(1001, notification.build());
+        startForeground(IDSERVICES, notification.build());
     }
 
     private Emitter.Listener outboundListener = new Emitter.Listener() {
@@ -185,7 +188,7 @@ public class OutboundService extends Service implements SocketEventListener.List
             JSONArray dataArr = new JSONArray(args);
             Log.i(TAG,"dataArr Outbound : "+dataArr);
             int code = (int) dataArr.get(0);
-            if (code == 0 && toOutbound == false) {
+            if (code == 0) {
                 Intent intent = new Intent(getApplicationContext(), MyBroadcastReceiver.class);
                 intent.setAction("calloutbound");
 

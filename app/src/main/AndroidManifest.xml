@@ -120,7 +120,7 @@
             android:enabled="true">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED"/>
-                <action android:name="android.intent.action.INPUT_METHOD_CHANGED" />
+<!--                <action android:name="android.intent.action.INPUT_METHOD_CHANGED" />-->
             </intent-filter>
         </receiver>
     </application>

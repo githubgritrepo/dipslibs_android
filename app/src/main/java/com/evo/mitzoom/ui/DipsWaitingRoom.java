@@ -186,10 +186,10 @@ public class DipsWaitingRoom extends AppCompatActivity {
 
         initializeSdk();
 
-        if(!foregroundServiceRunning()) {
+        //if(!foregroundServiceRunning()) {
             Intent serviceIntent = new Intent(this, OutboundService.class);
             startForegroundService(serviceIntent);
-        }
+        //}
 
         /*btnSchedule = (MaterialButton) findViewById(R.id.btnSchedule);
         btnEndCall = findViewById(R.id.end_call);*/
@@ -545,7 +545,9 @@ public class DipsWaitingRoom extends AppCompatActivity {
                     @Override
                     public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
                         tanggal = dayOfMonth+"/"+(month + 1)+"/"+year;
+                        Log.i("Waiting", "month : "+month);
                         Savetanggal = year+""+(month + 1)+""+dayOfMonth;
+                        Log.i("Waiting", "Savetanggal : "+Savetanggal);
                         et_Date.setText(tanggal);
                     }
                 }, year, month, day);
@@ -589,6 +591,7 @@ public class DipsWaitingRoom extends AppCompatActivity {
                             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                             startActivity(intent);
                             overridePendingTransition(0,0);
+                            finish();
                         }
                     });
                 }

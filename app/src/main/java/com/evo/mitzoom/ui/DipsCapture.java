@@ -133,7 +133,7 @@ public class DipsCapture extends AppCompatActivity implements CameraSource.Pictu
             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);//***Change Here***
             startActivity(intent);
             finish();
-            System.exit(0);
+            //System.exit(0);
             return;
         }
 
@@ -450,7 +450,7 @@ public class DipsCapture extends AppCompatActivity implements CameraSource.Pictu
                                 intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);//***Change Here***
                                 startActivity(intent);
                                 finish();
-                                System.exit(0);
+                                //System.exit(0);
                             }
                         });
                         sweetDialog.show();
@@ -474,6 +474,7 @@ public class DipsCapture extends AppCompatActivity implements CameraSource.Pictu
                     intent.putExtra("SessionName", sessionName);
                     intent.putExtra("SessionPass", sessionPass);
                     startActivity(intent);
+                    finish();
 
                 } else {
                     startCamera();
