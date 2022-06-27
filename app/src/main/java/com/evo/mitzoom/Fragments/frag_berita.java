@@ -140,6 +140,7 @@ public class frag_berita extends Fragment {
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(intent);
         ((Activity)context).overridePendingTransition(0,0);
+        ((Activity) context).finish();
         //System.exit(0);
     }
     private void initPager() {
@@ -205,8 +206,12 @@ public class frag_berita extends Fragment {
                         if (addmonths < 10) {
                             months = "0"+months;
                         }
-                        tanggal = dayOfMonth+"/"+months+"/"+year;
-                        Savetanggal = year+""+months+""+dayOfMonth;
+                        String days = String.valueOf(dayOfMonth);
+                        if (dayOfMonth < 10 ) {
+                            days = "0"+days;
+                        }
+                        tanggal = days+"/"+months+"/"+year;
+                        Savetanggal = year+""+months+""+days;
                         et_Date.setText(tanggal);
                     }
                 }, year, month, day);

@@ -106,7 +106,7 @@ public class frag_conferee_agree extends Fragment {
         startActivity(intent);
         ((Activity)context).overridePendingTransition(0,0);
         ((Activity)context).finish();
-        System.exit(0);
+        //System.exit(0);
     }
     private void Mirroring(int codeEvent,int nextCode,boolean bool){
         JSONObject jsons = new JSONObject();

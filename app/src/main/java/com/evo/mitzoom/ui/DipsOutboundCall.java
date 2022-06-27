@@ -6,12 +6,14 @@ import android.Manifest;
 import android.app.DatePickerDialog;
 import android.app.NotificationManager;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.hardware.Camera;
 import android.hardware.camera2.CameraAccessException;
 import android.hardware.camera2.CameraManager;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -80,6 +82,7 @@ import us.zoom.sdk.ZoomVideoSDKSessionContext;
 import us.zoom.sdk.ZoomVideoSDKVideoOption;
 
 public class DipsOutboundCall extends AppCompatActivity {
+    private static String TAG = "DipsOutboundCall";
     private TextView incomingcall;
     private String passSession, idDips;
     public static ImageButton accept, reject;
@@ -113,6 +116,8 @@ public class DipsOutboundCall extends AppCompatActivity {
     private String imageAgent = null;
     private String nameAgent = null;
     private CircleImageView imgCS;
+    private boolean startTimeOut = true;
+    private int loop = 1;
 
 
     @Override
@@ -177,19 +182,19 @@ public class DipsOutboundCall extends AppCompatActivity {
                 }
         });
 
-        //new DownloadImageTask(imgCS).execute(imageAgent);
+        new AsynTimeout().execute();
 
         accept.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                OutboundService.acceptCall();
+                startTimeOut = false;
                 Popup();
             }
         });
         reject.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                OutboundService.rejectCall();
+                startTimeOut = false;
                 PopUpSchedule();
             }
         });
@@ -217,6 +222,36 @@ public class DipsOutboundCall extends AppCompatActivity {
 
     }
 
+    private class AsynTimeout extends AsyncTask<Void,Void,Void> {
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    while (startTimeOut) {
+                        Log.i(TAG,"startTimeOut "+loop+" : "+startTimeOut);
+                        if (loop == 30) {
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    OutApps();
+                                }
+                            });
+                        }
+                        try {
+                            Thread.sleep(1000);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                        loop++;
+                    }
+                }
+            }).start();
+            return null;
+        }
+    }
+
     private void PopUpSchedule(){
         inflater = getLayoutInflater();
         dialogView = inflater.inflate(R.layout.item_schedule,null);
@@ -224,6 +259,15 @@ public class DipsOutboundCall extends AppCompatActivity {
         sweetAlertDialog.setCustomView(dialogView);
         sweetAlertDialog.hideConfirmButton();
         sweetAlertDialog.show();
+
+        sweetAlertDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+            @Override
+            public void onDismiss(DialogInterface dialog) {
+                Log.i(TAG,"MASUK DISMISS");
+                startTimeOut = true;
+                new AsynTimeout().execute();
+            }
+        });
         ArrayAdapter<String> adapterTime = new ArrayAdapter<String>(DipsOutboundCall.this,R.layout.list_item, time);
         btnclose = dialogView.findViewById(R.id.btn_close_schedule);
         et_Date = dialogView.findViewById(R.id.et_Date);
@@ -250,8 +294,17 @@ public class DipsOutboundCall extends AppCompatActivity {
                 DatePickerDialog datePickerDialog = new DatePickerDialog(DipsOutboundCall.this, new DatePickerDialog.OnDateSetListener() {
                     @Override
                     public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-                        tanggal = dayOfMonth+"/"+(month + 1)+"/"+year;
-                        Savetanggal = year+""+(month + 1)+""+dayOfMonth;
+                        int addmonths = (month + 1);
+                        String months = String.valueOf(addmonths);
+                        if (addmonths < 10) {
+                            months = "0"+months;
+                        }
+                        String days = String.valueOf(dayOfMonth);
+                        if (dayOfMonth < 10 ) {
+                            days = "0"+days;
+                        }
+                        tanggal = days+"/"+months+"/"+year;
+                        Savetanggal = year+""+months+""+days;
                         et_Date.setText(tanggal);
                     }
                 }, year, month, day);
@@ -278,6 +331,7 @@ public class DipsOutboundCall extends AppCompatActivity {
                 }
                 else {
                     saveSchedule();
+                    OutboundService.rejectCall();
                     Toast.makeText(getApplicationContext(), "Jadwal panggilan anda "+tanggal+" jam "+waktu, Toast.LENGTH_LONG).show();
                     sweetAlertDialog.dismissWithAnimation();
                     sweetAlertDialog.setCancelable(false);
@@ -292,8 +346,6 @@ public class DipsOutboundCall extends AppCompatActivity {
                         public void onClick(View v) {
                             Log.i("CEK","MASUK BUTTON CONFIRM");
                             sweetAlertDialog.dismiss();
-                            NotificationManager notificationManagerCompat = (NotificationManager) getApplicationContext().getSystemService(Context.NOTIFICATION_SERVICE);
-                            notificationManagerCompat.cancel(OutboundService.NOTIFICATION_IDOutbound);
                             OutApps();
                         }
                     });
@@ -332,10 +384,14 @@ public class DipsOutboundCall extends AppCompatActivity {
     }
 
     private void OutApps(){
+        startTimeOut = false;
+        NotificationManager notificationManagerCompat = (NotificationManager) getApplicationContext().getSystemService(Context.NOTIFICATION_SERVICE);
+        notificationManagerCompat.cancel(OutboundService.NOTIFICATION_IDOutbound);
         Intent intent = new Intent(Intent.ACTION_MAIN);
         intent.addCategory(Intent.CATEGORY_HOME);
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(intent);
+        finish();
         //DipsOutboundCall.this.overridePendingTransition(0,0);
         //System.exit(0);
     }
@@ -560,6 +616,7 @@ public class DipsOutboundCall extends AppCompatActivity {
         btnConfirm.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                OutboundService.acceptCall();
                 dialogConfirm.dismiss();
                 processJoinVideo();
                 NotificationManager notificationManagerCompat = (NotificationManager) getApplicationContext().getSystemService(Context.NOTIFICATION_SERVICE);
