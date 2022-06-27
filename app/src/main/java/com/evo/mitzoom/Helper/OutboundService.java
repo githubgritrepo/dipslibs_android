@@ -51,7 +51,7 @@ import retrofit2.Response;
 
 
 public class OutboundService extends Service implements SocketEventListener.Listener{
-    private Socket mSocket;
+    private static Socket mSocket;
     public static int IDSERVICES = 1001;
     private static final String EVENT_OUTBOUND = "outbound";
     private static final String EVENT_CALL = "call";
@@ -104,6 +104,7 @@ public class OutboundService extends Service implements SocketEventListener.List
     @Override
     public void onDestroy() {
         super.onDestroy();
+        Log.i(TAG,"MASUK onDestroy");
         Intent broadcastIntent = new Intent();
         broadcastIntent.setAction("restartservice");
         broadcastIntent.setClass(this, MyBroadcastReceiver.class);
@@ -115,6 +116,11 @@ public class OutboundService extends Service implements SocketEventListener.List
         listenersMap.put(Socket.EVENT_DISCONNECT, new SocketEventListener(Socket.EVENT_DISCONNECT, this));
         listenersMap.put(Socket.EVENT_CONNECT_ERROR, new SocketEventListener(Socket.EVENT_CONNECT_ERROR, this));
         listenersMap.put(EVENT_OUTBOUND, new SocketEventListener(EVENT_OUTBOUND, this));
+    }
+
+    public static void closeSocketOutbound() {
+        mSocket.disconnect();
+        mSocket.off(EVENT_OUTBOUND);
     }
 
     @Override

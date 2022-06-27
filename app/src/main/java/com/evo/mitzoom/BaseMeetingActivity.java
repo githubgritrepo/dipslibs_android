@@ -49,6 +49,7 @@ import com.evo.mitzoom.Fragments.frag_chat;
 import com.evo.mitzoom.Fragments.frag_conferee_agree;
 import com.evo.mitzoom.Helper.NotificationMgr;
 import com.evo.mitzoom.Helper.NotificationService;
+import com.evo.mitzoom.Helper.OutboundService;
 import com.evo.mitzoom.Session.SessionManager;
 import com.evo.mitzoom.screenshare.ShareToolbar;
 import com.evo.mitzoom.ui.DipsVideoConfren;
@@ -709,6 +710,8 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
                 Log.d("MIRROR","Mirroring Sukses");
+                Intent serviceIntent = new Intent(mContext, OutboundService.class);
+                startForegroundService(serviceIntent);
             }
 
             @Override

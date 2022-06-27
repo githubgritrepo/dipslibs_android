@@ -6,6 +6,8 @@ import android.content.Intent;
 import android.os.Build;
 import android.util.Log;
 
+import androidx.core.content.ContextCompat;
+
 import com.evo.mitzoom.ui.DipsOutboundCall;
 
 public class MyBroadcastReceiver extends BroadcastReceiver {
@@ -14,7 +16,7 @@ public class MyBroadcastReceiver extends BroadcastReceiver {
         Log.i("CEK","MyBroadcastReceiver getAction : "+intent.getAction());
         if (intent.getAction().equals(Intent.ACTION_BOOT_COMPLETED) || intent.getAction().equals(Intent.ACTION_LOCKED_BOOT_COMPLETED)) {
             Intent serviceIntent = new Intent(context,OutboundService.class);
-            context.startForegroundService(serviceIntent);
+            ContextCompat.startForegroundService(context, serviceIntent);
 
         } else {
             Intent alarmIntent = new Intent(context.getApplicationContext(), DipsOutboundCall.class);
