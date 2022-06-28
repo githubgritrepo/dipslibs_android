@@ -2,9 +2,11 @@ package com.evo.mitzoom.ui;
 
 import android.Manifest;
 import android.app.Activity;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.net.Uri;
@@ -28,6 +30,7 @@ import androidx.core.app.ActivityCompat;
 import com.evo.mitzoom.R;
 import com.evo.mitzoom.Session.SessionManager;
 
+import java.util.List;
 import java.util.Locale;
 
 import cn.pedant.SweetAlert.SweetAlertDialog;
@@ -86,7 +89,6 @@ public class DipsSplashScreen extends AppCompatActivity {
             }
         }).start();
     }
-
     private void chooseLanguage() {
         imgSplash.setVisibility(View.INVISIBLE);
         LayoutInflater inflater = getLayoutInflater();
@@ -135,7 +137,6 @@ public class DipsSplashScreen extends AppCompatActivity {
             }
         });
     }
-
     private void startApp() {
         startActivity(new Intent(DipsSplashScreen.this, DipsCapture.class));
         finish();

@@ -113,10 +113,6 @@ public class OutboundService extends Service implements SocketEventListener.List
     public void onDestroy() {
         super.onDestroy();
         Log.i(TAG,"MASUK onDestroy");
-        Intent broadcastIntent = new Intent();
-        broadcastIntent.setAction("restartservice");
-        broadcastIntent.setClass(this, MyBroadcastReceiver.class);
-        this.sendBroadcast(broadcastIntent);
     }
 
     private void getSocketListener() {

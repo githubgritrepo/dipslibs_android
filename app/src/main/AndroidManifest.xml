@@ -34,7 +34,7 @@
     </queries>
 
     <application
-        android:allowBackup="true"
+        android:allowBackup="false"
         android:icon="@mipmap/dips361"
         android:label="@string/app_name_dips"
         android:requestLegacyExternalStorage="true"
