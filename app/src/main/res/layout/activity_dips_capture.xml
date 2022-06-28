@@ -73,7 +73,6 @@
             android:text="@string/desc_welcome" />
 
     </LinearLayout>
-
     <include layout="@layout/progress_loading" />
 
 </RelativeLayout>

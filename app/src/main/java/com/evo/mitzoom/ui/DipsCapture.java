@@ -457,7 +457,6 @@ public class DipsCapture extends AppCompatActivity implements CameraSource.Pictu
                         startCamera();
                         return;
                     }
-
                     boolean isCust = response.body().isCustomer();
                     String custName = response.body().getName();
                     String idDips = response.body().getIdDips();
