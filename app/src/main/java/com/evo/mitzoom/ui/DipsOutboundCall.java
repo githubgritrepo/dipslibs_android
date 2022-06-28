@@ -272,7 +272,7 @@ public class DipsOutboundCall extends AppCompatActivity {
         btnclose = dialogView.findViewById(R.id.btn_close_schedule);
         et_Date = dialogView.findViewById(R.id.et_Date);
         textView = dialogView.findViewById(R.id.textHeadSchedule);
-        textView.setVisibility(View.GONE);
+        textView.setText("Apakah anda ingin menjadwalkan panggilan ?");
         et_time = dialogView.findViewById(R.id.et_time);
         et_time.setAdapter(adapterTime);
         btnSchedule2 = dialogView.findViewById(R.id.btnSchedule2);

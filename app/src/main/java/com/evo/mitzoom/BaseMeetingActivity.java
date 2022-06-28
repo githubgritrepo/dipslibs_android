@@ -661,7 +661,6 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
 
     public void onClickEnd(View view) {
         ZoomVideoSDKUser userInfo = session.getMySelf();
-
         SweetAlertDialog dialogEnd = new SweetAlertDialog(mContext,SweetAlertDialog.WARNING_TYPE);
         dialogEnd.setContentText(getString(R.string.leave_message));
         dialogEnd.setCancelable(true);
@@ -688,7 +687,6 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
             }
         });
         dialogEnd.show();
-
     }
 
     private void MirroringEnd(){
