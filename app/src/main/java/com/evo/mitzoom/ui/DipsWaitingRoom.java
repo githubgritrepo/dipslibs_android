@@ -176,6 +176,9 @@ public class DipsWaitingRoom extends AppCompatActivity {
         SessionPass = getIntent().getExtras().getString("SessionPass");
         myTicket = findViewById(R.id.myticket2);
         lastTicket = findViewById(R.id.last_ticket2);
+
+        sessions.saveIdDips(idDips);
+
         processGetTicket(myTicket);
         AnimationCall = findViewById(R.id.AnimationCall);
         CardView cardSurf = (CardView) findViewById(R.id.cardSurf);
