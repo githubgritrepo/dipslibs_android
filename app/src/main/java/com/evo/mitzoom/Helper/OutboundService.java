@@ -73,13 +73,21 @@ public class OutboundService extends Service implements SocketEventListener.List
     public void onCreate() {
         super.onCreate();
 
+        Log.i(TAG,"MASUK onCreate");
+
         mContext = this;
 
         sessions = new SessionManager(mContext);
         listenersMap = new ConcurrentHashMap<>();
-        idDips = getAuthCredentialIDDiPS();
-        if (idDips.isEmpty()) {
-            idDips = sessions.getKEY_IdDips();
+        idDips = sessions.getKEY_IdDips();
+        Log.i(TAG,"idDips session : "+idDips);
+        if (idDips == null) {
+            try {
+                Thread.sleep(1000);
+                idDips = getAuthCredentialIDDiPS();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         } else {
             sessions.saveIdDips(idDips);
         }
@@ -126,7 +134,19 @@ public class OutboundService extends Service implements SocketEventListener.List
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         Log.i(TAG,"MASUK onStartCommand");
-        //callOutbound(idDips);
+
+        idDips = sessions.getKEY_IdDips();
+        Log.i(TAG,"idDips session : "+idDips);
+        if (idDips == null) {
+            try {
+                Thread.sleep(1000);
+                idDips = getAuthCredentialIDDiPS();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        } else {
+            sessions.saveIdDips(idDips);
+        }
 
         if (intent != null) {
             if (!mSocket.connected()) {
