@@ -118,6 +118,8 @@ public class DipsOutboundCall extends AppCompatActivity {
     private CircleImageView imgCS;
     private boolean startTimeOut = true;
     private int loop = 1;
+    private Handler handler;
+    private Runnable myRunnable;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -190,11 +192,21 @@ public class DipsOutboundCall extends AppCompatActivity {
         });
 
         new AsynTimeout().execute();
-
+        handler = new Handler();
+        myRunnable = new Runnable() {
+            @Override
+            public void run() {
+                Log.d("TIDAK DIANGKAT","");
+                OutApps();
+            }
+        };
+        handler.postDelayed(myRunnable, 30000);
         accept.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 startTimeOut = false;
+                handler.removeMessages(0);
+                handler.removeCallbacks(myRunnable);
                 Popup();
             }
         });
@@ -202,6 +214,8 @@ public class DipsOutboundCall extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 startTimeOut = false;
+                handler.removeMessages(0);
+                handler.removeCallbacks(myRunnable);
                 PopUpSchedule();
             }
         });
@@ -264,6 +278,7 @@ public class DipsOutboundCall extends AppCompatActivity {
         dialogView = inflater.inflate(R.layout.item_schedule,null);
         SweetAlertDialog sweetAlertDialog = new SweetAlertDialog(DipsOutboundCall.this, SweetAlertDialog.NORMAL_TYPE);
         sweetAlertDialog.setCustomView(dialogView);
+        sweetAlertDialog.setCancelable(false);
         sweetAlertDialog.hideConfirmButton();
         sweetAlertDialog.show();
 
