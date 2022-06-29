@@ -8,13 +8,13 @@ android {
         applicationId "com.evo.mitzoom"
         minSdk 26
         targetSdk 32
-        versionCode 9
-        versionName "1.0.8"
+        versionCode 11
+        versionName "1.1.0"
         vectorDrawables.useSupportLibrary = true
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
-    buildTypes {
+    buildTypes {wick
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'

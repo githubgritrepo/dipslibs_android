@@ -6,6 +6,7 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.media.RingtoneManager;
@@ -222,7 +223,7 @@ public class OutboundService extends Service implements SocketEventListener.List
                 else
                 {
                     pendingIntent = PendingIntent.getBroadcast
-                            (this, 0, intent, PendingIntent.FLAG_ONE_SHOT);
+                            (this, 0, intent, 0);
                 }
 
                 long addTimes = System.currentTimeMillis() + 2000;
@@ -408,9 +409,8 @@ public class OutboundService extends Service implements SocketEventListener.List
         NotificationManager notificationManagerCompat = (NotificationManager) getApplicationContext().getSystemService(Context.NOTIFICATION_SERVICE);
 
         Intent intent1 = new Intent(getApplicationContext(), DipsOutboundCall.class);
-        intent1.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        intent1.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        intent1.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        intent1.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+        //intent1.setAction("closeapps");
 
         PendingIntent pendingIntentCall = null;
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
@@ -419,25 +419,23 @@ public class OutboundService extends Service implements SocketEventListener.List
         }
         else
         {
-            pendingIntentCall = PendingIntent.getBroadcast
-                    (this, 0, intent1, PendingIntent.FLAG_ONE_SHOT);
+            pendingIntentCall = PendingIntent.getActivity
+                    (this, 0, intent1, 0);
         }
 
         Intent intent2 = new Intent(getApplicationContext(), DipsOutboundCall.class);
-        intent2.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        intent2.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        intent2.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        intent2.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
         intent2.setAction("endcall");
 
         PendingIntent pendingIntentEnd = null;
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
-            pendingIntentCall = PendingIntent.getActivity
+            pendingIntentEnd = PendingIntent.getActivity
                     (this, 0, intent2, PendingIntent.FLAG_MUTABLE);
         }
         else
         {
-            pendingIntentCall = PendingIntent.getBroadcast
-                    (this, 0, intent2, PendingIntent.FLAG_ONE_SHOT);
+            pendingIntentEnd = PendingIntent.getActivity
+                    (this, 0, intent2, 0);
         }
 
         Uri alarmSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_RINGTONE);

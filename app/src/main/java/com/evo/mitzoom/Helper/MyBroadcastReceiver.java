@@ -20,9 +20,8 @@ public class MyBroadcastReceiver extends BroadcastReceiver {
 
         } else {
             Intent alarmIntent = new Intent(context.getApplicationContext(), DipsOutboundCall.class);
-            alarmIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            alarmIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-            alarmIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            alarmIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+            alarmIntent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
             context.getApplicationContext().startActivity(alarmIntent);
         }
 

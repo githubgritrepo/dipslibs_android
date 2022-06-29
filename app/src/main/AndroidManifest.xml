@@ -22,6 +22,7 @@
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.GET_TASKS"/>
 
     <uses-feature android:glEsVersion="0x00020000" />
     <uses-feature android:name="android.hardware.camera" />
@@ -48,16 +49,11 @@
             android:exported="true"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.MITZoom"
-            android:excludeFromRecents="true"
             android:showOnLockScreen="true"
             android:showWhenLocked="true"
             android:turnScreenOn="true"
-            android:showForAllUsers="true">
-            <intent-filter>
-                <action android:name="android.intent.action.VIEW" />
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
-        </activity>
+            android:showForAllUsers="true"
+            android:launchMode="singleTop"/>
         <activity
             android:name=".ui.DipsCameraActivity"
             android:exported="false"

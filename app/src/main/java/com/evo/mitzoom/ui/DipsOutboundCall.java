@@ -119,10 +119,17 @@ public class DipsOutboundCall extends AppCompatActivity {
     private boolean startTimeOut = true;
     private int loop = 1;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        if (getIntent().getAction() != null) {
+            Log.i("CEK","MASUK ACTION : "+getIntent().getAction());
+            /*if (getIntent().getAction().equals("closeapps") || getIntent().getAction().equals("endcall")) {
+                finish();
+                return;
+            }*/
+        }
 
         mContext = this;
         sessions = new SessionManager(mContext);
@@ -200,7 +207,7 @@ public class DipsOutboundCall extends AppCompatActivity {
         });
 
         if (getIntent().getAction() != null) {
-            Log.i("CEK","MASUK ACTION");
+            Log.i("CEK","MASUK ACTION : "+getIntent().getAction());
             if (getIntent().getAction().equals("endcall")) {
                 reject.performClick();
             }
