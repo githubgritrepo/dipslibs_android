@@ -118,17 +118,43 @@ public class DipsOutboundCall extends AppCompatActivity {
     private CircleImageView imgCS;
     private boolean startTimeOut = true;
     private int loop = 1;
+    private String getAction = "";
+
+    private Runnable runnable = new Runnable() {
+        @Override
+        public void run() {
+            Log.i(TAG,"MASUK Run Timeout");
+            while (startTimeOut) {
+                Log.i(TAG,"startTimeOut "+loop+" : "+startTimeOut);
+                if (loop == 30) {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            OutApps();
+                        }
+                    });
+                }
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                loop++;
+            }
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         if (getIntent().getAction() != null) {
-            Log.i("CEK","MASUK ACTION : "+getIntent().getAction());
-            /*if (getIntent().getAction().equals("closeapps") || getIntent().getAction().equals("endcall")) {
+            getAction = getIntent().getAction();
+            Log.i("CEK","MASUK ACTION : "+getAction);
+            if (getIntent().getAction().equals("closeapps") || getIntent().getAction().equals("endcall")) {
                 finish();
                 return;
-            }*/
+            }
         }
 
         mContext = this;
@@ -176,6 +202,7 @@ public class DipsOutboundCall extends AppCompatActivity {
         nama_agen.setText(nameAgent);
 
         Log.i("CEK","imageAgent  : "+imageAgent);
+        Log.i("CEK","startTimeOut  : "+startTimeOut);
         String imageAgentnew = imageAgent.replace("https://dips.grit.id:6503/", Server.BASE_URL_API);
 
         Glide.with(mContext)
@@ -188,8 +215,6 @@ public class DipsOutboundCall extends AppCompatActivity {
                     imgCS.setImageBitmap(resource);
                 }
         });
-
-        new AsynTimeout().execute();
 
         accept.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -207,10 +232,13 @@ public class DipsOutboundCall extends AppCompatActivity {
         });
 
         if (getIntent().getAction() != null) {
-            Log.i("CEK","MASUK ACTION : "+getIntent().getAction());
-            if (getIntent().getAction().equals("endcall")) {
-                reject.performClick();
+            Log.i("CEK","MASUK ACTION : "+getAction);
+            if (getAction.equals("endcall")) {
+                startTimeOut = false;
+                PopUpSchedule();
             }
+        } else {
+            new AsynTimeout().execute();
         }
     }
 
@@ -233,7 +261,9 @@ public class DipsOutboundCall extends AppCompatActivity {
 
         @Override
         protected Void doInBackground(Void... voids) {
-            new Thread(new Runnable() {
+            Log.i(TAG,"MASUK BACKGROUND AsynTimeout");
+            new Thread(runnable).start();
+            /*new Thread(new Runnable() {
                 @Override
                 public void run() {
                     while (startTimeOut) {
@@ -254,7 +284,7 @@ public class DipsOutboundCall extends AppCompatActivity {
                         loop++;
                     }
                 }
-            }).start();
+            }).start();*/
             return null;
         }
     }
@@ -272,7 +302,9 @@ public class DipsOutboundCall extends AppCompatActivity {
             public void onDismiss(DialogInterface dialog) {
                 Log.i(TAG,"MASUK DISMISS");
                 startTimeOut = true;
-                new AsynTimeout().execute();
+                if (getAction.isEmpty()) {
+                    new AsynTimeout().execute();
+                }
             }
         });
         ArrayAdapter<String> adapterTime = new ArrayAdapter<String>(DipsOutboundCall.this,R.layout.list_item, time);
@@ -405,10 +437,20 @@ public class DipsOutboundCall extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        Log.i(TAG,"MASUK RESUME");
         camera = Camera.open(useFacing);
         //startPreview();
         cameraConfigured = false;
         previewHolder();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        Log.i(TAG,"MASUK Destroy");
+        startTimeOut = false;
+        Thread.interrupted();
+        finish();
     }
 
     @Override

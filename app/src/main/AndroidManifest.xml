@@ -52,8 +52,7 @@
             android:showOnLockScreen="true"
             android:showWhenLocked="true"
             android:turnScreenOn="true"
-            android:showForAllUsers="true"
-            android:launchMode="singleTop"/>
+            android:showForAllUsers="true" />
         <activity
             android:name=".ui.DipsCameraActivity"
             android:exported="false"
@@ -117,7 +116,8 @@
             android:permission="android.permission.RECEIVE_BOOT_COMPLETED">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED"/>
-<!--                <action android:name="android.intent.action.INPUT_METHOD_CHANGED" />-->
+                <action android:name="android.intent.action.INPUT_METHOD_CHANGED" />
+                <action android:name="android.intent.action.SCREEN_OFF"/>
             </intent-filter>
         </receiver>
     </application>

@@ -14,7 +14,8 @@ public class MyBroadcastReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         Log.i("CEK","MyBroadcastReceiver getAction : "+intent.getAction());
-        if (Intent.ACTION_BOOT_COMPLETED.equals(intent.getAction())) {
+        if (Intent.ACTION_BOOT_COMPLETED.equals(intent.getAction()) || Intent.ACTION_INPUT_METHOD_CHANGED.equals(intent.getAction())
+                || Intent.ACTION_SCREEN_OFF.equals(intent.getAction())) {
             Intent serviceIntent = new Intent(context,OutboundService.class);
             ContextCompat.startForegroundService(context, serviceIntent);
 
