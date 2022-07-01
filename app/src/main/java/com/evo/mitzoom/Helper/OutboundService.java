@@ -12,6 +12,7 @@ import android.content.Intent;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Environment;
+import android.os.Handler;
 import android.os.IBinder;
 import android.util.Log;
 
@@ -69,6 +70,8 @@ public class OutboundService extends Service implements SocketEventListener.List
     private SessionManager sessions;
     private ConcurrentHashMap<String, SocketEventListener> listenersMap;
     private Boolean isConnected = true;
+    private Handler handler;
+    private Runnable myRunnable;
 
     @Override
     public void onCreate() {
@@ -104,7 +107,7 @@ public class OutboundService extends Service implements SocketEventListener.List
         for (Map.Entry<String, SocketEventListener> entry : listenersMap.entrySet()) {
             mSocket.on(entry.getKey(), entry.getValue());
         }
-        processThreadNotif();
+       // processThreadNotif();
 
         //mSocket.on("outbound", outboundListener);
         mSocket.connect();
@@ -180,7 +183,8 @@ public class OutboundService extends Service implements SocketEventListener.List
                         }
                     }
                 }
-        ).start();
+       ).start();
+
 
         final String CHANNELID = "Foreground Service ID";
         NotificationChannel channel = new NotificationChannel(
