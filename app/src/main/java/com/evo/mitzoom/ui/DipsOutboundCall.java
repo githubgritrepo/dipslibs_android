@@ -5,6 +5,7 @@ import static com.evo.mitzoom.ui.DipsSplashScreen.setLocale;
 import android.Manifest;
 import android.app.DatePickerDialog;
 import android.app.NotificationManager;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -13,6 +14,9 @@ import android.graphics.Bitmap;
 import android.hardware.Camera;
 import android.hardware.camera2.CameraAccessException;
 import android.hardware.camera2.CameraManager;
+import android.media.Ringtone;
+import android.media.RingtoneManager;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -49,6 +53,8 @@ import com.evo.mitzoom.API.ApiService;
 import com.evo.mitzoom.API.Server;
 import com.evo.mitzoom.BaseMeetingActivity;
 import com.evo.mitzoom.Constants.AuthConstants;
+import com.evo.mitzoom.GlideApp;
+import com.evo.mitzoom.Helper.MyApplication;
 import com.evo.mitzoom.Helper.OutboundService;
 import com.evo.mitzoom.R;
 import com.evo.mitzoom.Session.SessionManager;
@@ -124,7 +130,7 @@ public class DipsOutboundCall extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        playNotificationSound();
         if (getIntent().getAction() != null) {
             Log.i("CEK","MASUK ACTION : "+getIntent().getAction());
             /*if (getIntent().getAction().equals("closeapps") || getIntent().getAction().equals("endcall")) {
@@ -179,17 +185,12 @@ public class DipsOutboundCall extends AppCompatActivity {
 
         Log.i("CEK","imageAgent  : "+imageAgent);
         String imageAgentnew = imageAgent.replace("https://dips.grit.id:6503/", Server.BASE_URL_API);
+        Log.i("CEK GAMBAR",""+imageAgentnew);
 
-        Glide.with(mContext)
-            .asBitmap()
+        GlideApp.with(mContext)
             .load(imageAgentnew)
-            .circleCrop()
-            .into(new SimpleTarget<Bitmap>() {
-                @Override
-                public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
-                    imgCS.setImageBitmap(resource);
-                }
-        });
+             .placeholder(R.drawable.agen_profile)
+            .into(imgCS);
 
         new AsynTimeout().execute();
         handler = new Handler();
@@ -201,6 +202,7 @@ public class DipsOutboundCall extends AppCompatActivity {
             }
         };
         handler.postDelayed(myRunnable, 30000);
+
         accept.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -227,7 +229,19 @@ public class DipsOutboundCall extends AppCompatActivity {
             }
         }
     }
-
+    private void playNotificationSound()
+    {
+        try
+        {
+            Uri alarmSound = Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE + "://" + MyApplication.getInstance().getApplicationContext().getPackageName() + "/raw/notification");
+            Ringtone r = RingtoneManager.getRingtone(MyApplication.getInstance().getApplicationContext(), alarmSound);
+            r.play();
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+    }
     private void initializeSdk() {
         ZoomVideoSDKInitParams params = new ZoomVideoSDKInitParams();
         params.domain = AuthConstants.WEB_DOMAIN; // Required
@@ -298,7 +312,6 @@ public class DipsOutboundCall extends AppCompatActivity {
         et_time = dialogView.findViewById(R.id.et_time);
         et_time.setAdapter(adapterTime);
         btnSchedule2 = dialogView.findViewById(R.id.btnSchedule2);
-
         et_time.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {

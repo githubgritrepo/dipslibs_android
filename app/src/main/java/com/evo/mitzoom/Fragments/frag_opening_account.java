@@ -225,7 +225,7 @@ public class frag_opening_account extends Fragment {
                 chooseImage.setVisibility(View.GONE);
                 int bitmapByteCount= BitmapCompat.getAllocationByteCount(thumbnail);
                 Log.d("CEK","bitmapByteCount : "+bitmapByteCount);
-                getResizedBitmap(thumbnail, (thumbnail.getWidth()/2), (thumbnail.getHeight()/2));
+                getResizedBitmap(thumbnail, (thumbnail.getWidth()/4), (thumbnail.getHeight()/4));
             }
         }
     }
