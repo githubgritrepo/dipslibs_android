@@ -114,13 +114,14 @@ public class DipsCameraActivity extends AppCompatActivity {
 
                                 Bitmap bitmap = BitmapFactory.decodeByteArray(dataImage, 0, dataImage.length);
                                 //Bitmap bitmapCrop = resizeAndCropCenter2(bitmap, 640, false);
-                                Bitmap bitmapCrop = getResizedBitmap(bitmap, (bitmap.getWidth() / 4), (bitmap.getHeight() / 4));
+                                //Bitmap bitmapCrop = getResizedBitmap(bitmap, (bitmap.getWidth() / 4), (bitmap.getHeight() / 4));
 
                                 int rotation = 0;
                                 try {
                                     File mediaFile = createTemporaryFile(dataImage);
                                     try {
                                         String pathFile = mediaFile.getAbsolutePath();
+                                        Bitmap bitmapCrop = prosesOptimalImage(bitmap, mediaFile);
                                         ExifInterface exif = new ExifInterface(pathFile);
                                         rotation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL);
                                         Log.d("CEK", "rotation : " + rotation);
@@ -136,20 +137,20 @@ public class DipsCameraActivity extends AppCompatActivity {
                                             }
                                         }
 
+                                        String imgBase64 = imageRotateBase64(bitmapCrop, rotation);
+
+                                        byte[] bytePhoto = Base64.decode(imgBase64, Base64.NO_WRAP);
+                                        Intent returnIntent = getIntent();
+                                        returnIntent.putExtra("result_camera", bytePhoto);
+                                        setResult(Activity.RESULT_OK, returnIntent);
+                                        finish();
+
                                     } catch (IOException e) {
                                         e.printStackTrace();
                                     }
                                 } catch (Exception e) {
                                     e.printStackTrace();
                                 }
-
-                                String imgBase64 = imageRotateBase64(bitmapCrop, rotation);
-
-                                byte[] bytePhoto = Base64.decode(imgBase64, Base64.NO_WRAP);
-                                Intent returnIntent = getIntent();
-                                returnIntent.putExtra("result_camera", bytePhoto);
-                                setResult(Activity.RESULT_OK, returnIntent);
-                                finish();
                             }
                         }
                     });
@@ -205,6 +206,26 @@ public class DipsCameraActivity extends AppCompatActivity {
             }
         });
 
+    }
+
+    private Bitmap prosesOptimalImage(Bitmap bitmap, File mediaFile) {
+        int file_size = Integer.parseInt(String.valueOf(mediaFile.length()/1024));
+        Log.d("CEK", "file_size : "+file_size);
+
+        int perDiff = 1;
+        if (file_size > 3072) {
+            perDiff = 8;
+        } else if (file_size > 2048) {
+            perDiff = 6;
+        } else if (file_size > 1024) {
+            perDiff = 4;
+        } else if (file_size > 550) {
+            perDiff = 2;
+        }
+
+        Bitmap bitmapCrop = getResizedBitmap(bitmap, (bitmap.getWidth() / perDiff), (bitmap.getHeight() / perDiff));
+
+        return bitmapCrop;
     }
 
     private void initialElements() {

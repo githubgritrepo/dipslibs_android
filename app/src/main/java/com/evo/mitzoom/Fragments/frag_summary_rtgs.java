@@ -371,7 +371,7 @@ public class frag_summary_rtgs extends Fragment {
         handler.post(new Runnable() {
             @Override
             public void run() {
-                int minutes = 1;
+                int minutes = 0;
                 int secs = seconds % 60;
                 String time = String.format(Locale.getDefault(),"%02d:%02d", minutes, secs);
                 timer_run.setText(time);

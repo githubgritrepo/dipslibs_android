@@ -346,13 +346,15 @@ public class frag_rtgs extends Fragment {
 
                 initPager();
 
-                if (i == 0) {
-                    Mirroring(true, "", sourceBank, rek_penerima, nama_penerima, nominal,
+                /*if (i == 0) {
+                    Mirroring(false, "", sourceBank, rek_penerima, nama_penerima, nominal,
                             sourceTypeService, sourceBenefit, sourcePopulation, berita, idx, len);
-                }
+                }*/
 
                 idx++;
             }
+
+            mirroringPagerRTGS(0);
         } catch (JSONException e) {
             e.printStackTrace();
         }

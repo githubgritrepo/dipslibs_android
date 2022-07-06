@@ -37,6 +37,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 
 import okhttp3.MediaType;
 import okhttp3.RequestBody;
@@ -182,9 +183,29 @@ public class frag_opening_account2 extends Fragment {
                 delete.setVisibility(View.VISIBLE);
                 viewImage.setVisibility(View.VISIBLE);
                 chooseImage.setVisibility(View.GONE);
+                /*File file = new File(picturePath);
+                prosesOptimalImage(thumbnail,file);*/
                 getResizedBitmap(thumbnail, (thumbnail.getWidth()/4), (thumbnail.getHeight()/4));
             }
         }
+    }
+
+    private void prosesOptimalImage(Bitmap bitmap, File mediaFile) {
+        int file_size = Integer.parseInt(String.valueOf(mediaFile.length()/1024));
+        Log.d("CEK", "file_size : "+file_size);
+
+        int perDiff = 1;
+        if (file_size > 3072) {
+            perDiff = 8;
+        } else if (file_size > 2048) {
+            perDiff = 6;
+        } else if (file_size > 1024) {
+            perDiff = 4;
+        } else if (file_size > 550) {
+            perDiff = 2;
+        }
+
+        getResizedBitmap(bitmap, (bitmap.getWidth()/perDiff), (bitmap.getHeight()/perDiff));
     }
 
     private void processSendImage(Bitmap bitmap) {

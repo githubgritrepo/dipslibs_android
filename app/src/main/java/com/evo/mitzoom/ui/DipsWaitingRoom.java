@@ -919,6 +919,7 @@ public class DipsWaitingRoom extends AppCompatActivity {
         intent.putExtra("render_type", renderType);
         intent.putExtra("ISCUSTOMER", isCust);
         startActivity(intent);
+        finish();
     }
     private boolean getFragmentPage(Fragment fragment){
         if (fragment != null) {
