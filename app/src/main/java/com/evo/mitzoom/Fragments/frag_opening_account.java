@@ -139,7 +139,7 @@ public class frag_opening_account extends Fragment {
                 }
                 else{
                     Mirroring(true,"");
-                    Mirroring2(false,"320124150585005","Andi Wijaya Lesmana","Bogor","13-03-1985");
+                    Mirroring2(true,"320124150585005","Andi Wijaya Lesmana","Bogor","13-03-1985");
                     saveImage();
                     PopUpOCR(KTP);
                 }
