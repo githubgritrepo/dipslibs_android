@@ -86,7 +86,7 @@ public class frag_resi extends Fragment {
         btnOK.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                sessions.saveIsCust(false);
+                //sessions.saveIsCust(false);
                 Mirroring(true,1,1);
                 getFragmentPage(new frag_portfolio());
             }

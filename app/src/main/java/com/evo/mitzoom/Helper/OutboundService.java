@@ -7,8 +7,10 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.ComponentName;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
+import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Environment;
@@ -73,6 +75,7 @@ public class OutboundService extends Service implements SocketEventListener.List
     private Handler handler;
     private Runnable myRunnable;
 
+
     @Override
     public void onCreate() {
         super.onCreate();
@@ -107,7 +110,7 @@ public class OutboundService extends Service implements SocketEventListener.List
         for (Map.Entry<String, SocketEventListener> entry : listenersMap.entrySet()) {
             mSocket.on(entry.getKey(), entry.getValue());
         }
-       // processThreadNotif();
+        //processThreadNotif();
 
         //mSocket.on("outbound", outboundListener);
         mSocket.connect();
@@ -262,6 +265,7 @@ public class OutboundService extends Service implements SocketEventListener.List
             e.printStackTrace();
         }
     }
+
 
     @Override
     public void onTaskRemoved(Intent rootIntent) {

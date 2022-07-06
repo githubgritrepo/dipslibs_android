@@ -393,42 +393,45 @@ public class frag_inputdata extends Fragment {
         dialogView = inflater.inflate(R.layout.item_tnc,null);
         if (sweetAlertDialogTNC == null) {
             sweetAlertDialogTNC = new SweetAlertDialog(context, SweetAlertDialog.NORMAL_TYPE);
+            sweetAlertDialogTNC.setCustomView(dialogView);
         }
-        sweetAlertDialogTNC.setCustomView(dialogView);
-        sweetAlertDialogTNC.hideConfirmButton();
-        sweetAlertDialogTNC.setCancelable(false);
-        sweetAlertDialogTNC.show();
-        CheckBox checkBox = dialogView.findViewById(R.id.checktnc);
-        Button btn = dialogView.findViewById(R.id.btnnexttnc);
-        btn.setClickable(false);
-        checkBox.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (checkBox.isChecked()){
-                    Log.d("CHECK","TRUE");
-                    btn.setBackgroundTintList(context.getResources().getColorStateList(R.color.Blue));
-                    btn.setClickable(true);
+        else{
+            sweetAlertDialogTNC.setCustomView(dialogView);
+            sweetAlertDialogTNC.hideConfirmButton();
+            sweetAlertDialogTNC.setCancelable(false);
+            sweetAlertDialogTNC.show();
+            CheckBox checkBox = dialogView.findViewById(R.id.checktnc);
+            Button btn = dialogView.findViewById(R.id.btnnexttnc);
+            btn.setClickable(false);
+            checkBox.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (checkBox.isChecked()){
+                        Log.d("CHECK","TRUE");
+                        btn.setBackgroundTintList(context.getResources().getColorStateList(R.color.Blue));
+                        btn.setClickable(true);
+                    }
+                    else {
+                        Log.d("CHECK","FALSE");
+                        btn.setBackgroundTintList(context.getResources().getColorStateList(R.color.btnFalse));
+                        btn.setClickable(false);
+                    }
                 }
-                else {
-                    Log.d("CHECK","FALSE");
-                    btn.setBackgroundTintList(context.getResources().getColorStateList(R.color.btnFalse));
-                    btn.setClickable(false);
+            });
+            btn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (checkBox.isChecked()){
+                        Mirroring2(true);
+                        Mirroring3(true);
+                        sweetAlertDialogTNC.dismiss();
+                        getFragmentPage(new frag_opening_account());
+                    }
+                    else {
+                        btn.setClickable(false);
+                    }
                 }
-            }
-        });
-        btn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (checkBox.isChecked()){
-                    Mirroring2(true);
-                    Mirroring3(true);
-                    sweetAlertDialogTNC.dismiss();
-                    getFragmentPage(new frag_opening_account());
-                }
-                else {
-                    btn.setClickable(false);
-                }
-            }
-        });
+            });
+        }
     }
 }
