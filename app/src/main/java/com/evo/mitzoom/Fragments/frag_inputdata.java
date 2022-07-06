@@ -76,6 +76,7 @@ public class frag_inputdata extends Fragment {
         et_NamaNasabah = view.findViewById(R.id.et_nama);
         et_NikNasabah = view.findViewById(R.id.et_nik);
         btnNext = view.findViewById(R.id.btnNext);
+        sweetAlertDialogTNC = new SweetAlertDialog(context, SweetAlertDialog.NORMAL_TYPE);
         return view;
     }
 
@@ -161,7 +162,7 @@ public class frag_inputdata extends Fragment {
                     et_NikNasabah.setError(getResources().getString(R.string.error_field));
                 }
                 else {
-                    Mirroring(true, Nama, NIK);
+
                     CekData();
                     //PopupChoose();
                 }
@@ -293,6 +294,7 @@ public class frag_inputdata extends Fragment {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
                 if (response.isSuccessful() && response.body().size() > 0) {
+                    Mirroring(true, Nama, NIK);
                     String dataS = response.body().toString();
                     try {
                         JSONObject jsObj = new JSONObject(dataS);
@@ -393,7 +395,6 @@ public class frag_inputdata extends Fragment {
         dialogView = inflater.inflate(R.layout.item_tnc,null);
         if (sweetAlertDialogTNC == null) {
             sweetAlertDialogTNC = new SweetAlertDialog(context, SweetAlertDialog.NORMAL_TYPE);
-            sweetAlertDialogTNC.setCustomView(dialogView);
         }
         else{
             sweetAlertDialogTNC.setCustomView(dialogView);
