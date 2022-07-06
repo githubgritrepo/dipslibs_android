@@ -138,8 +138,8 @@ public class frag_opening_account extends Fragment {
                     Toast.makeText(context, getResources().getString(R.string.error_image), Toast.LENGTH_SHORT).show();
                 }
                 else{
-                    Mirroring(true,"");
-                    Mirroring2(true,"320124150585005","Andi Wijaya Lesmana","Bogor","13-03-1985");
+                    Mirroring(false,KTP_BASE64);
+                    //Mirroring2(true,"320124150585005","Andi Wijaya Lesmana","Bogor","13-03-1985");
                     saveImage();
                     PopUpOCR(KTP);
                 }
@@ -373,6 +373,7 @@ public class frag_opening_account extends Fragment {
         btnOCR2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Mirroring(true,"");
                 Mirroring2(true,NIK.getText().toString(),Nama.getText().toString(),TTL.getText().toString(),TTL2.getText().toString());
                 sweetAlertDialog.dismiss();
                 sendDataFragment("ktp",DataKTP,new frag_opening_account2());

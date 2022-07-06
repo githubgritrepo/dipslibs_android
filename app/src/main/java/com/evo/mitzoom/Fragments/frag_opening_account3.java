@@ -188,14 +188,15 @@ public class frag_opening_account3 extends Fragment {
                 delete.setVisibility(View.VISIBLE);
                 viewImage.setVisibility(View.VISIBLE);
                 chooseImage.setVisibility(View.GONE);
-                /*File file = new File(picturePath);
-                prosesOptimalImage(thumbnail,file);*/
-                getResizedBitmap(thumbnail, (thumbnail.getWidth()/4), (thumbnail.getHeight()/4));
+                prosesOptimalImage(picturePath);
+                //getResizedBitmap(thumbnail, (thumbnail.getWidth()/4), (thumbnail.getHeight()/4));
             }
         }
     }
 
-    private void prosesOptimalImage(Bitmap bitmap, File mediaFile) {
+    private void prosesOptimalImage(String picturePath) {
+        File mediaFile = new File(picturePath);
+        Bitmap thumbnail = (BitmapFactory.decodeFile(picturePath));
         int file_size = Integer.parseInt(String.valueOf(mediaFile.length()/1024));
         Log.d("CEK", "file_size : "+file_size);
 
@@ -210,7 +211,12 @@ public class frag_opening_account3 extends Fragment {
             perDiff = 2;
         }
 
-        getResizedBitmap(bitmap, (bitmap.getWidth()/perDiff), (bitmap.getHeight()/perDiff));
+        if (perDiff == 1) {
+            viewImage.setImageBitmap(thumbnail);
+            imgtoBase64(thumbnail);
+        } else {
+            getResizedBitmap(thumbnail, (thumbnail.getWidth() / perDiff), (thumbnail.getHeight() / perDiff));
+        }
     }
 
     private void processSendImage(Bitmap bitmap) {

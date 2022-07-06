@@ -52,6 +52,7 @@ public class frag_aktivasi_ibmb extends Fragment {
     private int selPos;
     private String oldString, newString;
     private Handler handlerSuccess;
+    public int getMinutes = 2;
     public int seconds = 60;
     public boolean running = true;
     private String idDips, UserId2, Password2, Konfirmasi_password2, Mpin2, Konfirmasi_mpin2, Timer2, Resend_Otp2;
@@ -408,16 +409,22 @@ public class frag_aktivasi_ibmb extends Fragment {
         handler.post(new Runnable() {
             @Override
             public void run() {
-                int minutes = 0;
+                int minutes = getMinutes;
                 int secs = seconds % 60;
                 String time = String.format(Locale.getDefault(),"%02d:%02d", minutes, secs);
                 timer_run.setText(time);
                 if (running) {
                     seconds--;
                 }
-                if (seconds == 0){
+                if (seconds == 0 && minutes == 0){
                     running = false;
                     resend.setClickable(true);
+                } else if (seconds == 0 && minutes > 0){
+                    seconds = 59;
+                }
+
+                if (seconds == 59) {
+                    getMinutes--;
                 }
                 handler.postDelayed(this,1000);
             }

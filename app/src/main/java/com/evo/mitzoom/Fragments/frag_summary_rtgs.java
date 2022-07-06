@@ -51,6 +51,7 @@ public class frag_summary_rtgs extends Fragment {
     private View dialogView;
     private Handler handlerSuccess;
     private Button btnVerifikasi;
+    public int getMinutes = 2;
     public int seconds = 60;
     private PinView otp;
     private int selPos;
@@ -371,16 +372,22 @@ public class frag_summary_rtgs extends Fragment {
         handler.post(new Runnable() {
             @Override
             public void run() {
-                int minutes = 0;
+                int minutes = getMinutes;
                 int secs = seconds % 60;
                 String time = String.format(Locale.getDefault(),"%02d:%02d", minutes, secs);
                 timer_run.setText(time);
                 if (running) {
                     seconds--;
                 }
-                if (seconds == 0){
+                if (seconds == 0 && minutes == 0){
                     running = false;
                     resend.setClickable(true);
+                } else if (seconds == 0 && minutes > 0){
+                    seconds = 59;
+                }
+
+                if (seconds == 59) {
+                    getMinutes--;
                 }
                 handler.postDelayed(this,1000);
             }

@@ -146,17 +146,6 @@ public class frag_rtgs extends Fragment {
         choose_gallery.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                layouts = new ArrayList<Integer>();
-                dataAccount = new ArrayList<String>();
-                dataNoForm = new ArrayList<String>();
-                dataBankName = new ArrayList<String>();
-                dataAccountReceive = new ArrayList<>();
-                dataNameReceive = new ArrayList<>();
-                dataNominal = new ArrayList<>();
-                dataService = new ArrayList<>();
-                dataBenefit = new ArrayList<>();
-                dataPopulation = new ArrayList<>();
-                dataNews = new ArrayList<>();
                 chooseFromSD();
             }
         });
@@ -551,6 +540,18 @@ public class frag_rtgs extends Fragment {
                 String idForm = dataJs.getString("idForm");
 
                 if (resulText.equals(idForm)) {
+                    layouts = new ArrayList<Integer>();
+                    dataAccount = new ArrayList<String>();
+                    dataNoForm = new ArrayList<String>();
+                    dataBankName = new ArrayList<String>();
+                    dataAccountReceive = new ArrayList<>();
+                    dataNameReceive = new ArrayList<>();
+                    dataNominal = new ArrayList<>();
+                    dataService = new ArrayList<>();
+                    dataBenefit = new ArrayList<>();
+                    dataPopulation = new ArrayList<>();
+                    dataNews = new ArrayList<>();
+
                     savedRTGS();
                 } else {
                     SweetAlertDialog sWA = new SweetAlertDialog(context, SweetAlertDialog.WARNING_TYPE);
