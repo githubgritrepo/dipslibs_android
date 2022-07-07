@@ -206,13 +206,6 @@ public class OutboundService extends Service implements SocketEventListener.List
         startForeground(IDSERVICES, notification.build());
     }
 
-    private Emitter.Listener outboundListener = new Emitter.Listener() {
-        @Override
-        public void call(final Object... args) {
-            callbackCall(args);
-        }
-    };
-
     private void callbackCall(Object[] args) {
         Log.i(TAG,"masuk call");
         try {
@@ -251,7 +244,7 @@ public class OutboundService extends Service implements SocketEventListener.List
                     @Override
                     public void run() {
                         try {
-                            Thread.sleep(5000);
+                            Thread.sleep(1000);
                             showNotificationOutbound();
                         } catch (InterruptedException e) {
                             e.printStackTrace();
@@ -457,7 +450,7 @@ public class OutboundService extends Service implements SocketEventListener.List
                 .addAction(R.drawable.ic_call_end,"Reject Call",pendingIntentEnd)
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
                 .setColor(ContextCompat.getColor(getApplicationContext(), android.R.color.transparent))
-                .setVibrate(new long[]{1000, 5000, 1000, 5000, 1000})
+                .setVibrate(new long[]{1000, 2000, 1000, 2000, 1000})
                 .setAutoCancel(true)
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
                 .setCategory(NotificationCompat.CATEGORY_CALL);
@@ -469,7 +462,7 @@ public class OutboundService extends Service implements SocketEventListener.List
 
             channel.enableVibration(true);
             channel.setSound(null,null);
-            channel.setVibrationPattern(new long[]{1000, 5000, 1000, 5000, 1000});
+            channel.setVibrationPattern(new long[]{1000, 2000, 1000, 2000, 1000});
 
             builder.setChannelId(CHANNEL_ID);
 
