@@ -110,7 +110,7 @@ public class OutboundService extends Service implements SocketEventListener.List
         for (Map.Entry<String, SocketEventListener> entry : listenersMap.entrySet()) {
             mSocket.on(entry.getKey(), entry.getValue());
         }
-        //processThreadNotif();
+        handler = new Handler();
 
         //mSocket.on("outbound", outboundListener);
         mSocket.connect();
@@ -158,6 +158,8 @@ public class OutboundService extends Service implements SocketEventListener.List
                 Log.i(TAG, "connecting socket...");
             } else {
                 callOutbound(idDips);
+                handler.removeMessages(0);
+                handler.removeCallbacks(myRunnable);
                 processThreadNotif();
             }
         }
@@ -166,7 +168,7 @@ public class OutboundService extends Service implements SocketEventListener.List
     }
 
     private void processThreadNotif() {
-        new Thread(
+        myRunnable =
                 new Runnable() {
                     @Override
                     public void run() {
@@ -176,7 +178,6 @@ public class OutboundService extends Service implements SocketEventListener.List
                                 Log.i(TAG,"CONNECTED AGAIN");
                                 toOutbound = false;
                                 mSocket.connect();
-                                callOutbound(idDips);
                             }
                             try {
                                 Thread.sleep(2000);
@@ -185,8 +186,8 @@ public class OutboundService extends Service implements SocketEventListener.List
                             }
                         }
                     }
-                }
-       ).start();
+                };
+        new Thread(myRunnable).start();
 
 
         final String CHANNELID = "Foreground Service ID";
@@ -446,7 +447,6 @@ public class OutboundService extends Service implements SocketEventListener.List
                     (this, 0, intent2, 0);
         }
 
-        Uri alarmSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_RINGTONE);
         String nameApps = getResources().getString(R.string.app_name_dips);
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext(), CHANNEL_ID)
@@ -459,8 +459,8 @@ public class OutboundService extends Service implements SocketEventListener.List
                 .setColor(ContextCompat.getColor(getApplicationContext(), android.R.color.transparent))
                 .setVibrate(new long[]{1000, 5000, 1000, 5000, 1000})
                 .setAutoCancel(true)
-                .setSound(alarmSound)
-                .setDefaults(Notification.DEFAULT_SOUND);
+                .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+                .setCategory(NotificationCompat.CATEGORY_CALL);
 
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
             NotificationChannel channel = new NotificationChannel(CHANNEL_ID,
@@ -468,6 +468,7 @@ public class OutboundService extends Service implements SocketEventListener.List
                     NotificationManager.IMPORTANCE_HIGH);
 
             channel.enableVibration(true);
+            channel.setSound(null,null);
             channel.setVibrationPattern(new long[]{1000, 5000, 1000, 5000, 1000});
 
             builder.setChannelId(CHANNEL_ID);
@@ -478,7 +479,9 @@ public class OutboundService extends Service implements SocketEventListener.List
         }
 
         if (notificationManagerCompat != null) {
-            notificationManagerCompat.notify(NOTIFICATION_IDOutbound, builder.build());
+            Notification notification = builder.build();
+            notification.flags = notification.flags | Notification.FLAG_INSISTENT;
+            notificationManagerCompat.notify(NOTIFICATION_IDOutbound, notification);
         }
     }
 
@@ -489,6 +492,8 @@ public class OutboundService extends Service implements SocketEventListener.List
             case Socket.EVENT_CONNECT:
                 Log.i(TAG, "socket connected");
                 callOutbound(idDips);
+                handler.removeMessages(0);
+                handler.removeCallbacks(myRunnable);
                 processThreadNotif();
                 isConnected = true;
                 break;

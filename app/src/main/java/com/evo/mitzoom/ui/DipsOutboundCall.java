@@ -125,6 +125,7 @@ public class DipsOutboundCall extends AppCompatActivity {
     private boolean startTimeOut = true;
     private int loop = 1;
     private String getAction = "";
+    private Ringtone mRingtone = null;
 
     private Runnable runnable = new Runnable() {
         @Override
@@ -149,7 +150,7 @@ public class DipsOutboundCall extends AppCompatActivity {
             }
         }
     };
-    private Handler handler;
+    private Handler handlerTimes;
     private Runnable myRunnable;
 
     @Override
@@ -220,7 +221,7 @@ public class DipsOutboundCall extends AppCompatActivity {
             .into(imgCS);
 
         new AsynTimeout().execute();
-        handler = new Handler();
+        handlerTimes = new Handler();
         myRunnable = new Runnable() {
             @Override
             public void run() {
@@ -228,14 +229,19 @@ public class DipsOutboundCall extends AppCompatActivity {
                 OutApps();
             }
         };
-        handler.postDelayed(myRunnable, 30000);
+        handlerTimes.postDelayed(myRunnable, 30000);
 
         accept.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 startTimeOut = false;
-                handler.removeMessages(0);
-                handler.removeCallbacks(myRunnable);
+                handlerTimes.removeMessages(0);
+                handlerTimes.removeCallbacks(myRunnable);
+                NotificationManager notificationManagerCompat = (NotificationManager) getApplicationContext().getSystemService(Context.NOTIFICATION_SERVICE);
+                notificationManagerCompat.cancel(OutboundService.NOTIFICATION_IDOutbound);
+                if (mRingtone != null) {
+                    mRingtone.stop();
+                }
                 Popup();
             }
         });
@@ -243,8 +249,8 @@ public class DipsOutboundCall extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 startTimeOut = false;
-                handler.removeMessages(0);
-                handler.removeCallbacks(myRunnable);
+                handlerTimes.removeMessages(0);
+                handlerTimes.removeCallbacks(myRunnable);
                 PopUpSchedule();
             }
         });
@@ -263,9 +269,17 @@ public class DipsOutboundCall extends AppCompatActivity {
     {
         try
         {
-            Uri alarmSound = Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE + "://" + MyApplication.getInstance().getApplicationContext().getPackageName() + "/raw/notification");
-            Ringtone r = RingtoneManager.getRingtone(MyApplication.getInstance().getApplicationContext(), alarmSound);
-            r.play();
+            String paths = "/settings/system/ringtone";
+            //String paths = "/raw/notification";
+            //String ringtones = MyApplication.getInstance().getApplicationContext().getPackageName() + paths;
+            //Uri alarmSound = Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE + ":/" + ringtones);
+            Uri alarmSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_RINGTONE);
+            Log.i("CEK","alarmSound : "+alarmSound.getPath());
+            mRingtone = RingtoneManager.getRingtone(getApplicationContext(), alarmSound);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                mRingtone.setLooping(true);
+            }
+            mRingtone.play();
         }
         catch (Exception e)
         {
@@ -320,6 +334,9 @@ public class DipsOutboundCall extends AppCompatActivity {
     }
 
     private void PopUpSchedule(){
+        if (mRingtone != null) {
+            mRingtone.stop();
+        }
         inflater = getLayoutInflater();
         dialogView = inflater.inflate(R.layout.item_schedule,null);
         SweetAlertDialog sweetAlertDialog = new SweetAlertDialog(DipsOutboundCall.this, SweetAlertDialog.NORMAL_TYPE);
@@ -453,6 +470,9 @@ public class DipsOutboundCall extends AppCompatActivity {
     }
 
     private void OutApps(){
+        if (mRingtone != null) {
+            mRingtone.stop();
+        }
         startTimeOut = false;
         NotificationManager notificationManagerCompat = (NotificationManager) getApplicationContext().getSystemService(Context.NOTIFICATION_SERVICE);
         notificationManagerCompat.cancel(OutboundService.NOTIFICATION_IDOutbound);
@@ -698,8 +718,6 @@ public class DipsOutboundCall extends AppCompatActivity {
                 OutboundService.acceptCall();
                 dialogConfirm.dismiss();
                 processJoinVideo();
-                NotificationManager notificationManagerCompat = (NotificationManager) getApplicationContext().getSystemService(Context.NOTIFICATION_SERVICE);
-                notificationManagerCompat.cancel(OutboundService.NOTIFICATION_IDOutbound);
             }
         });
     }
