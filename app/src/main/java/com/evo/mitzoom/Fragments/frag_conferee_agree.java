@@ -95,6 +95,15 @@ public class frag_conferee_agree extends Fragment implements ZoomVideoSDKDelegat
         btn_tidak.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                boolean flagAgree = session.getFlagConfAgree();
+                if (flagAgree == false) {
+                    SweetAlertDialog dialogNotAgree = new SweetAlertDialog(context,SweetAlertDialog.WARNING_TYPE);
+                    dialogNotAgree.setContentText("Mohon tunggu, proses Join sedang berlangsung");
+                    dialogNotAgree.setCancelable(true);
+                    dialogNotAgree.setConfirmText("OK");
+                    dialogNotAgree.show();
+                    return;
+                }
                 SweetAlertDialog dialogEnd = new SweetAlertDialog(context,SweetAlertDialog.WARNING_TYPE);
                 dialogEnd.setContentText(getString(R.string.leave_message));
                 dialogEnd.setCancelable(true);
@@ -125,6 +134,15 @@ public class frag_conferee_agree extends Fragment implements ZoomVideoSDKDelegat
         btn_Setuju.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                boolean flagAgree = session.getFlagConfAgree();
+                if (flagAgree == false) {
+                    SweetAlertDialog dialogNotAgree = new SweetAlertDialog(context,SweetAlertDialog.WARNING_TYPE);
+                    dialogNotAgree.setContentText("Mohon tunggu, proses Join sedang berlangsung");
+                    dialogNotAgree.setCancelable(true);
+                    dialogNotAgree.setConfirmText("OK");
+                    dialogNotAgree.show();
+                    return;
+                }
                 cekData();
                 BaseMeetingActivity.btnChat.setBackgroundTintList(context.getResources().getColorStateList(R.color.Blue));
                 BaseMeetingActivity.btnChat.setClickable(true);

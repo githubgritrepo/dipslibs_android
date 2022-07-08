@@ -31,6 +31,7 @@ public class SessionManager {
     public static final String KEY_MEDIA = "MEDIA";
     public static final String KEY_CAMERA = "CAMERA";
     public static final String KEY_CIF = "CIF";
+    public static final String KEY_CONF_AGREE = "CONF_AGREE";
 
     // Constructor
     public SessionManager(Context context){
@@ -88,6 +89,11 @@ public class SessionManager {
         editor.commit();
     }
 
+    public void saveFlagConfAgree(boolean data) {
+        editor.putBoolean(KEY_CONF_AGREE,data);
+        editor.commit();
+    }
+
     public void clearPartData(){
         editor.putString(KEY_RTGS,null);
         editor.putString(KEY_CIF,null);
@@ -139,6 +145,9 @@ public class SessionManager {
     }
     public int getCamera (){
         return pref.getInt(KEY_CAMERA,0);
+    }
+    public boolean getFlagConfAgree (){
+        return pref.getBoolean(KEY_CONF_AGREE,false);
     }
 
 }

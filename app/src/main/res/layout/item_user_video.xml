@@ -50,7 +50,8 @@
             android:layout_height="200dp"
             android:layout_gravity="center"
             android:gravity="center"
-            android:scaleType="centerInside" />
+            android:scaleType="centerInside"
+            />
 
     </FrameLayout>
 

@@ -74,6 +74,7 @@ public class OutboundService extends Service implements SocketEventListener.List
     private Boolean isConnected = true;
     private Handler handler = null;
     private Runnable myRunnable = null;
+    private Thread myThread = null;
 
 
     @Override
@@ -157,13 +158,13 @@ public class OutboundService extends Service implements SocketEventListener.List
                 toJoin = false;
                 Log.i(TAG, "connecting socket...");
             } else {
-                if (handler != null && myRunnable != null) {
+                /*if (handler != null && myRunnable != null) {
                     handler.removeMessages(0);
                     handler.removeCallbacks(myRunnable);
-                    new Thread(myRunnable).interrupt();
+                    myThread.interrupt();
                 }
                 processThreadNotif();
-                callOutbound(idDips);
+                callOutbound(idDips);*/
             }
         }
         //return super.onStartCommand(intent, flags, startId);
@@ -182,14 +183,15 @@ public class OutboundService extends Service implements SocketEventListener.List
                                 //mSocket.connect();
                             }
                             try {
-                                Thread.sleep(2000);
+                                myThread.sleep(2000);
                             } catch (InterruptedException e) {
                                 e.printStackTrace();
                             }
                         }
                     }
                 };
-        new Thread(myRunnable).start();
+        myThread = new Thread(myRunnable);
+        myThread.start();
 
 
         final String CHANNELID = "Foreground Service ID";
@@ -264,6 +266,7 @@ public class OutboundService extends Service implements SocketEventListener.List
     @Override
     public void onTaskRemoved(Intent rootIntent) {
         Log.i(TAG,"MASUK onTaskRemoved");
+        //callOutbound(idDips);
         Intent intent = new Intent("com.android.ServiceStopped");
         sendBroadcast(intent);
     }
@@ -487,7 +490,7 @@ public class OutboundService extends Service implements SocketEventListener.List
                 if (handler != null && myRunnable != null) {
                     handler.removeMessages(0);
                     handler.removeCallbacks(myRunnable);
-                    new Thread(myRunnable).interrupt();
+                    myThread.interrupt();
                 }
                 processThreadNotif();
                 callOutbound(idDips);

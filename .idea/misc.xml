@@ -77,6 +77,7 @@
         <entry key="..\:/Project Mobile Apps/DiPS361/app/src/main/res/layout/list_item_souceacc.xml" value="0.25416666666666665" />
         <entry key="..\:/Project Mobile Apps/DiPS361/app/src/main/res/layout/portfolio.xml" value="0.25416666666666665" />
         <entry key="..\:/Project Mobile Apps/DiPS361/app/src/main/res/layout/progress_loading.xml" value="0.1539855072463768" />
+        <entry key="..\:/Project Mobile Apps/DiPS361/app/src/main/res/layout/progress_loading_zoom.xml" value="0.22826086956521738" />
         <entry key="..\:/Project Mobile Apps/DiPS361/app/src/main/res/layout/slide.xml" value="0.24682971014492755" />
         <entry key="..\:/Project Mobile Apps/DiPS361/app/src/main/res/layout/summary_rtgs.xml" value="0.22826086956521738" />
         <entry key="..\:/Project Mobile Apps/DiPS361/app/src/main/res/menu/navigation_primary.xml" value="0.11354166666666667" />
@@ -125,14 +126,13 @@
         <entry key="..\:/Users/Mohammad Rafii B/AndroidStudioProjects/DIPS 2/app/src/main/res/layout/frag_dialog_rtgs.xml" value="0.2" />
         <entry key="..\:/Users/Mohammad Rafii B/AndroidStudioProjects/DIPS 2/app/src/main/res/layout/frag_form_opening_account.xml" value="0.2" />
         <entry key="..\:/Users/Mohammad Rafii B/AndroidStudioProjects/DIPS 2/app/src/main/res/layout/frag_form_rtgs.xml" value="0.33" />
-        <entry key="..\:/Users/Mohammad Rafii B/AndroidStudioProjects/DIPS 2/app/src/main/res/layout/frag_form_rtgs2.xml" value="0.14" />
         <entry key="..\:/Users/Mohammad Rafii B/AndroidStudioProjects/DIPS 2/app/src/main/res/layout/frag_input_nik_nama.xml" value="0.33" />
         <entry key="..\:/Users/Mohammad Rafii B/AndroidStudioProjects/DIPS 2/app/src/main/res/layout/frag_opening_account.xml" value="0.2" />
-        <entry key="..\:/Users/Mohammad Rafii B/AndroidStudioProjects/DIPS 2/app/src/main/res/layout/frag_resi.xml" value="0.18" />
+        <entry key="..\:/Users/Mohammad Rafii B/AndroidStudioProjects/DIPS 2/app/src/main/res/layout/frag_resi.xml" value="0.22" />
         <entry key="..\:/Users/Mohammad Rafii B/AndroidStudioProjects/DIPS 2/app/src/main/res/layout/frag_services.xml" value="0.2" />
         <entry key="..\:/Users/Mohammad Rafii B/AndroidStudioProjects/DIPS 2/app/src/main/res/layout/frag_start_conferee.xml" value="0.2" />
         <entry key="..\:/Users/Mohammad Rafii B/AndroidStudioProjects/DIPS 2/app/src/main/res/layout/frag_tabungan.xml" value="0.2" />
-        <entry key="..\:/Users/Mohammad Rafii B/AndroidStudioProjects/DIPS 2/app/src/main/res/layout/fragment_form_rtgs.xml" value="0.14" />
+        <entry key="..\:/Users/Mohammad Rafii B/AndroidStudioProjects/DIPS 2/app/src/main/res/layout/fragment_form_rtgs.xml" value="0.22" />
         <entry key="..\:/Users/Mohammad Rafii B/AndroidStudioProjects/DIPS 2/app/src/main/res/layout/grid.xml" value="0.2" />
         <entry key="..\:/Users/Mohammad Rafii B/AndroidStudioProjects/DIPS 2/app/src/main/res/layout/item_ads.xml" value="0.2" />
         <entry key="..\:/Users/Mohammad Rafii B/AndroidStudioProjects/DIPS 2/app/src/main/res/layout/item_cif.xml" value="0.33" />

@@ -148,6 +148,8 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
     private int isOn = 0;
     private SessionManager sessions;
     private Context mContext;
+    private RelativeLayout llUsersVideo;
+    private RelativeLayout offUsersVideo;
 
     protected Handler handler = new Handler(Looper.getMainLooper());
 
@@ -161,6 +163,7 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
         String lang = sessions.getLANG();
         setLocale(this,lang);
         sessions.saveFlagUpDoc(false);
+        sessions.saveFlagConfAgree(false);
 
         if (savedInstanceState != null) {
             seconds = savedInstanceState.getInt("seconds");
@@ -195,7 +198,10 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
         initView();
         initMeeting();
         updateSessionInfo();
-        showProgress(true);
+        //showProgress(true);
+        DipsVideoConfren.LogoCompany.setVisibility(View.VISIBLE);
+        DipsVideoConfren.Zoom.setVisibility(View.VISIBLE);
+        getFragmentPage(new frag_conferee_agree());
 
     }
 
@@ -546,6 +552,10 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
         int dyWidth = (int) Math.ceil(widthDisp / 2);
 
         rlprogress = (RelativeLayout) findViewById(R.id.rlprogress);
+        llUsersVideo = (RelativeLayout) findViewById(R.id.llUsersVideo);
+        offUsersVideo= (RelativeLayout) findViewById(R.id.offUsersVideo);
+        ImageView video_off_tips2 = (ImageView) findViewById(R.id.video_off_tips2);
+        ImageView video_off_tips3 = (ImageView) findViewById(R.id.video_off_tips3);
         userVideoList = findViewById(R.id.userVideoList);
         videoListContain = findViewById(R.id.video_list_contain);
         adapter = new UserVideoAdapter(this, this, renderType, dyWidth);
@@ -559,6 +569,9 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
         iconVideo = findViewById(R.id.icon_video);
         videoOffView = findViewById(R.id.video_off_tips);
         btnChat = findViewById(R.id.icon_chat);
+
+        llUsersVideo.setVisibility(View.INVISIBLE);
+        offUsersVideo.setVisibility(View.VISIBLE);
 
         final int margin = (int) (5 * displayMetrics.scaledDensity);
         userVideoList.addItemDecoration(new RecyclerView.ItemDecoration() {
@@ -912,13 +925,16 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
 
     @Override
     public void onSessionJoin() {
+        llUsersVideo.setVisibility(View.VISIBLE);
+        offUsersVideo.setVisibility(View.INVISIBLE);
         btnChat.setBackgroundTintList(BaseMeetingActivity.this.getResources().getColorStateList(R.color.btnFalse));
         showProgress(false);
         btnChat.setClickable(false);
-        DipsVideoConfren.LogoCompany.setVisibility(View.VISIBLE);
-        DipsVideoConfren.Zoom.setVisibility(View.VISIBLE);
+        /*DipsVideoConfren.LogoCompany.setVisibility(View.VISIBLE);
+        DipsVideoConfren.Zoom.setVisibility(View.VISIBLE);*/
         updateSessionInfo();
-        getFragmentPage(new frag_conferee_agree());
+        //getFragmentPage(new frag_conferee_agree());
+        sessions.saveFlagConfAgree(true);
         actionBar.setVisibility(View.VISIBLE);
         if (ZoomVideoSDK.getInstance().getShareHelper().isSharingOut()) {
             ZoomVideoSDK.getInstance().getShareHelper().stopShare();
