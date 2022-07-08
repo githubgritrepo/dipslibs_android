@@ -55,9 +55,9 @@ import retrofit2.Response;
 
 
 public class OutboundService extends Service implements SocketEventListener.Listener{
-    private static Socket mSocket;
+    public static Socket mSocket = null;
     public static int IDSERVICES = 1001;
-    private static final String EVENT_OUTBOUND = "outbound";
+    public static final String EVENT_OUTBOUND = "outbound";
     private static final String EVENT_CALL = "call";
     public static int NOTIFICATION_IDOutbound;
     public static String idDips;
@@ -68,12 +68,12 @@ public class OutboundService extends Service implements SocketEventListener.List
     public static String nameAgent;
     private static String TAG = "OutboundService";
     private Context mContext;
-    private boolean toOutbound = false;
+    private boolean toJoin = false;
     private SessionManager sessions;
     private ConcurrentHashMap<String, SocketEventListener> listenersMap;
     private Boolean isConnected = true;
-    private Handler handler;
-    private Runnable myRunnable;
+    private Handler handler = null;
+    private Runnable myRunnable = null;
 
 
     @Override
@@ -113,7 +113,7 @@ public class OutboundService extends Service implements SocketEventListener.List
         handler = new Handler();
 
         //mSocket.on("outbound", outboundListener);
-        mSocket.connect();
+        //mSocket.connect();
     }
 
     @Override
@@ -154,13 +154,16 @@ public class OutboundService extends Service implements SocketEventListener.List
         if (intent != null) {
             if (!mSocket.connected()) {
                 mSocket.connect();
-                toOutbound = false;
+                toJoin = false;
                 Log.i(TAG, "connecting socket...");
             } else {
-                callOutbound(idDips);
-                handler.removeMessages(0);
-                handler.removeCallbacks(myRunnable);
+                if (handler != null && myRunnable != null) {
+                    handler.removeMessages(0);
+                    handler.removeCallbacks(myRunnable);
+                    new Thread(myRunnable).interrupt();
+                }
                 processThreadNotif();
+                callOutbound(idDips);
             }
         }
         //return super.onStartCommand(intent, flags, startId);
@@ -176,8 +179,7 @@ public class OutboundService extends Service implements SocketEventListener.List
                             Log.i(TAG+"_Service", "Service is running idDips : "+idDips+" | mSocket.connected() : "+mSocket.connected());
                             if (!mSocket.connected()) {
                                 Log.i(TAG,"CONNECTED AGAIN");
-                                toOutbound = false;
-                                mSocket.connect();
+                                //mSocket.connect();
                             }
                             try {
                                 Thread.sleep(2000);
@@ -251,8 +253,6 @@ public class OutboundService extends Service implements SocketEventListener.List
                         }
                     }
                 }).start();
-
-                toOutbound = true;
             }
 
         } catch (JSONException e) {
@@ -264,7 +264,6 @@ public class OutboundService extends Service implements SocketEventListener.List
     @Override
     public void onTaskRemoved(Intent rootIntent) {
         Log.i(TAG,"MASUK onTaskRemoved");
-        callOutbound(idDips);
         Intent intent = new Intent("com.android.ServiceStopped");
         sendBroadcast(intent);
     }
@@ -300,6 +299,7 @@ public class OutboundService extends Service implements SocketEventListener.List
             e.printStackTrace();
         }
         mSocket.emit(EVENT_CALL,"join",object);
+        toJoin = true;
     }
 
     public static void acceptCall() {
@@ -484,15 +484,19 @@ public class OutboundService extends Service implements SocketEventListener.List
         switch (event) {
             case Socket.EVENT_CONNECT:
                 Log.i(TAG, "socket connected");
-                callOutbound(idDips);
-                handler.removeMessages(0);
-                handler.removeCallbacks(myRunnable);
+                if (handler != null && myRunnable != null) {
+                    handler.removeMessages(0);
+                    handler.removeCallbacks(myRunnable);
+                    new Thread(myRunnable).interrupt();
+                }
                 processThreadNotif();
+                callOutbound(idDips);
                 isConnected = true;
                 break;
             case Socket.EVENT_DISCONNECT:
                 Log.i(TAG, "socket disconnected");
                 isConnected = false;
+                toJoin = false;
                 break;
             case Socket.EVENT_CONNECT_ERROR:
                 Log.i(TAG, "socket ERROR");

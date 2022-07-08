@@ -158,6 +158,11 @@ public class DipsWaitingRoom extends AppCompatActivity {
         mSocket.on("waiting", waitingListener);
         mSocket.connect();
 
+        if (OutboundService.mSocket != null) {
+            OutboundService.mSocket.disconnect();
+            OutboundService.mSocket.off(OutboundService.EVENT_OUTBOUND);
+        }
+
         sessions = new SessionManager(mContext);
         sessions.saveRTGS(null);
         String lang = sessions.getLANG();
