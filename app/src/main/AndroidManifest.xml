@@ -71,7 +71,7 @@
             android:exported="false"
             android:screenOrientation="portrait"
             android:theme="@style/ZMTheme.SubWindow"
-            android:windowSoftInputMode="adjustResize" />
+            android:windowSoftInputMode="adjustPan" />
         <activity
             android:name=".ui.DipsWaitingRoom"
             android:exported="false"
