@@ -138,7 +138,7 @@ public class frag_opening_account extends Fragment {
                     Toast.makeText(context, getResources().getString(R.string.error_image), Toast.LENGTH_SHORT).show();
                 }
                 else{
-                    Mirroring(false,KTP_BASE64);
+                    Mirroring(true,KTP_BASE64);
                     //Mirroring2(true,"320124150585005","Andi Wijaya Lesmana","Bogor","13-03-1985");
                     saveImage();
                     PopUpOCR(KTP);
@@ -268,6 +268,9 @@ public class frag_opening_account extends Fragment {
                             Log.d("CEK","MASUK KIRIM IMAGE");
                             imgtoBase64(bitmap);
                             break;
+                        }
+                        else{
+                            imgtoBase64(bitmap);
                         }
                         Thread.sleep(500);
                     }

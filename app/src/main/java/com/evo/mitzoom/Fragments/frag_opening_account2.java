@@ -228,6 +228,9 @@ public class frag_opening_account2 extends Fragment {
                             imgtoBase64(bitmap);
                             break;
                         }
+                        else{
+                            imgtoBase64(bitmap);
+                        }
                         Thread.sleep(500);
                     }
                 } catch (InterruptedException e) {

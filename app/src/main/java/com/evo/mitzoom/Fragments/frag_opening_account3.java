@@ -168,6 +168,7 @@ public class frag_opening_account3 extends Fragment {
                 btnNext.setClickable(true);
                 delete.setVisibility(View.VISIBLE);
                 viewImage.setVisibility(View.VISIBLE);
+                imgtoByteArray(bitmap); // <--- Untuk menghindari null pada foto
                 chooseImage.setVisibility(View.GONE);
                 //getResizedBitmap(bitmap, (bitmap.getWidth()/6), (bitmap.getHeight()/6));
                 viewImage.setImageBitmap(bitmap);
@@ -232,6 +233,9 @@ public class frag_opening_account3 extends Fragment {
                             Log.d("CEK","MASUK KIRIM IMAGE");
                             imgtoBase64(bitmap);
                             break;
+                        }
+                        else{
+                            imgtoBase64(bitmap);
                         }
                         Thread.sleep(500);
                     }

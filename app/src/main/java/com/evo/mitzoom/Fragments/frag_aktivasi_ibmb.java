@@ -357,6 +357,8 @@ public class frag_aktivasi_ibmb extends Fragment {
                     Toast.makeText(context, "Kode Otp masih kosong", Toast.LENGTH_SHORT).show();
                 }
                 else {
+                    handler.removeMessages(0);
+                    handler.removeCallbacks(myRunnable);
                     Mirroring2(true, otp.getText().toString());
                     sweetAlertDialog.dismiss();
                     PopUpSuccesOtp();
@@ -422,7 +424,6 @@ public class frag_aktivasi_ibmb extends Fragment {
                 } else if (seconds == 0 && minutes > 0){
                     seconds = 59;
                 }
-
                 if (seconds == 59) {
                     getMinutes--;
                 }
