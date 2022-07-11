@@ -278,6 +278,7 @@ public class frag_summary_rtgs extends Fragment {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
+                Log.i("CEK SUMMARY", "count : "+count);
                 Mirroring2(false,s);
             }
 
