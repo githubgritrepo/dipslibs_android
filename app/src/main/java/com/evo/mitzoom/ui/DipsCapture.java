@@ -39,6 +39,7 @@ import androidx.core.content.ContextCompat;
 import com.evo.mitzoom.API.ApiService;
 import com.evo.mitzoom.API.Server;
 import com.evo.mitzoom.Helper.GraphicFaceTracker;
+import com.evo.mitzoom.Helper.OutboundService;
 import com.evo.mitzoom.Model.Request.JsonCaptureIdentify;
 import com.evo.mitzoom.Model.Response.CaptureIdentify;
 import com.evo.mitzoom.R;
@@ -457,6 +458,12 @@ public class DipsCapture extends AppCompatActivity implements CameraSource.Pictu
                         startCamera();
                         return;
                     }
+
+                    String idDipsOld = sessions.getKEY_IdDips();
+                    if (idDipsOld != null && OutboundService.mSocket != null) {
+                        OutboundService.leaveOutbound(idDipsOld);
+                    }
+
                     boolean isCust = response.body().isCustomer();
                     String custName = response.body().getName();
                     String idDips = response.body().getIdDips();

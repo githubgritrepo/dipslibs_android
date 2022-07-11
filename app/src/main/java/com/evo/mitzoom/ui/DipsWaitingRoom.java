@@ -158,10 +158,10 @@ public class DipsWaitingRoom extends AppCompatActivity {
         mSocket.on("waiting", waitingListener);
         mSocket.connect();
 
-        if (OutboundService.mSocket != null) {
+        /*if (OutboundService.mSocket != null) {
             OutboundService.mSocket.disconnect();
             OutboundService.mSocket.off(OutboundService.EVENT_OUTBOUND);
-        }
+        }*/
 
         sessions = new SessionManager(mContext);
         sessions.saveRTGS(null);
@@ -366,6 +366,17 @@ public class DipsWaitingRoom extends AppCompatActivity {
         File mediaStorageDir = new File(
                 Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS), IMAGE_DIRECTORY_NAME);
 
+        if (mediaStorageDir.exists()) {
+            try {
+                mediaStorageDir.getCanonicalFile().delete();
+                if (mediaStorageDir.exists()) {
+                    getApplicationContext().deleteFile(mediaStorageDir.getName());
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
         return mediaStorageDir;
     }
 
@@ -374,9 +385,9 @@ public class DipsWaitingRoom extends AppCompatActivity {
 
         if (!mediaStorageDir.exists()) {
             if (!mediaStorageDir.mkdirs()) {
+                return null;
             }
         }
-        //mediaStorageDir.mkdirs();
 
         File mediaFile;
         mediaFile = new File(mediaStorageDir.getPath() + File.separator +

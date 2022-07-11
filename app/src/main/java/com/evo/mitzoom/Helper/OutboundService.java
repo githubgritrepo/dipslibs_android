@@ -112,9 +112,6 @@ public class OutboundService extends Service implements SocketEventListener.List
             mSocket.on(entry.getKey(), entry.getValue());
         }
         handler = new Handler();
-
-        //mSocket.on("outbound", outboundListener);
-        //mSocket.connect();
     }
 
     @Override
@@ -157,7 +154,13 @@ public class OutboundService extends Service implements SocketEventListener.List
                 mSocket.connect();
                 toJoin = false;
                 Log.i(TAG, "connecting socket...");
+                notifyForeground();
             } else {
+                stopForeground(IDSERVICES);
+
+                callOutbound(idDips);
+
+                notifyForeground();
                 /*if (handler != null && myRunnable != null) {
                     handler.removeMessages(0);
                     handler.removeCallbacks(myRunnable);
@@ -169,6 +172,23 @@ public class OutboundService extends Service implements SocketEventListener.List
         }
         //return super.onStartCommand(intent, flags, startId);
         return START_STICKY;
+    }
+
+    private void notifyForeground() {
+        final String CHANNELID = "Foreground Service ID";
+        NotificationChannel channel = new NotificationChannel(
+                CHANNELID,
+                CHANNELID,
+                NotificationManager.IMPORTANCE_LOW
+        );
+
+        getSystemService(NotificationManager.class).createNotificationChannel(channel);
+        Notification.Builder notification = new Notification.Builder(this, CHANNELID)
+                .setContentText("Service is running")
+                .setContentTitle("Your idDips = "+idDips)
+                .setSmallIcon(R.mipmap.dips361);
+
+        startForeground(IDSERVICES, notification.build());
     }
 
     private void processThreadNotif() {
@@ -303,6 +323,17 @@ public class OutboundService extends Service implements SocketEventListener.List
         }
         mSocket.emit(EVENT_CALL,"join",object);
         toJoin = true;
+    }
+
+    public static void leaveOutbound(String queueID) {
+        Log.i(TAG,"MASUK leaveOutbound");
+        JSONObject object = new JSONObject();
+        try {
+            object.put("room", queueID);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        mSocket.emit(EVENT_CALL,"leave",object);
     }
 
     public static void acceptCall() {
@@ -487,12 +518,12 @@ public class OutboundService extends Service implements SocketEventListener.List
         switch (event) {
             case Socket.EVENT_CONNECT:
                 Log.i(TAG, "socket connected");
-                if (handler != null && myRunnable != null) {
+                /*if (handler != null && myRunnable != null) {
                     handler.removeMessages(0);
                     handler.removeCallbacks(myRunnable);
                     myThread.interrupt();
                 }
-                processThreadNotif();
+                processThreadNotif();*/
                 callOutbound(idDips);
                 isConnected = true;
                 break;
