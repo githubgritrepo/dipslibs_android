@@ -42,6 +42,7 @@ public class DipsSplashScreen extends AppCompatActivity {
     public static final int REQUEST_READ_PERMISSION = 787;
     private static final int MY_CAMERA_PERMISSION_CODE = 100;
     private static final int REQUEST_READ_PHONE_STATE = 787;
+    private static final int REQUEST_ALL = 888;
     private ImageView imgSplash;
     private SessionManager sessions;
 
@@ -67,14 +68,27 @@ public class DipsSplashScreen extends AppCompatActivity {
 
         sessions = new SessionManager(mContext);
 
-        if (ActivityCompat.checkSelfPermission(mContext, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+        /*if (ActivityCompat.checkSelfPermission(mContext, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
             PermissionCamera();
         } else {
             permissionWrite();
-        }
+        }*/
+        reqPermission();
 
     }
+    private void reqPermission(){
+        if (ActivityCompat.checkSelfPermission(DipsSplashScreen.this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission(DipsSplashScreen.this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission(DipsSplashScreen.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission(DipsSplashScreen.this, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED){
 
+            requestPermissions(new String[]{Manifest.permission.READ_PHONE_STATE,Manifest.permission.CAMERA,Manifest.permission.WRITE_EXTERNAL_STORAGE,Manifest.permission.READ_EXTERNAL_STORAGE}, REQUEST_ALL);
+        }
+        else{
+            processNext();
+
+        }
+    }
     private void processNext() {
         new Thread(new Runnable() {
             @Override
@@ -141,7 +155,6 @@ public class DipsSplashScreen extends AppCompatActivity {
         startActivity(new Intent(DipsSplashScreen.this, DipsCapture.class));
         finish();
     }
-
     private void doWork() {
         for (int progress=0; progress<=100; progress+=20) {
             try {
@@ -152,65 +165,17 @@ public class DipsSplashScreen extends AppCompatActivity {
         }
     }
 
-    private void PermissionCamera() {
-        requestPermissions(new String[]{Manifest.permission.CAMERA}, MY_CAMERA_PERMISSION_CODE);
-    }
-
-    private void permissionWrite() {
-        if (ActivityCompat.checkSelfPermission(mContext, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-            requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_WRITE_PERMISSION);
-        } else {
-            permissionRead();
-        }
-    }
-
-    private void permissionRead() {
-        if (ActivityCompat.checkSelfPermission(mContext, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-            requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, REQUEST_READ_PERMISSION);
-        } else {
-            permissionPhoneState();
-        }
-    }
-
-    private void permissionPhoneState() {
-        if (ActivityCompat.checkSelfPermission(mContext, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
-            requestPermissions(new String[]{Manifest.permission.READ_PHONE_STATE}, REQUEST_READ_PHONE_STATE);
-        } else {
-            processNext();
-        }
-    }
-
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-
-        if (requestCode == MY_CAMERA_PERMISSION_CODE) {
-            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                permissionWrite();
-            } else {
-                Toast.makeText(mContext,"Camera Permission Denied", Toast.LENGTH_LONG).show();
-            }
-        } else if (requestCode == REQUEST_WRITE_PERMISSION) {
-            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                permissionRead();
-            } else {
-                Toast.makeText(mContext,"Write External Stroge Denied", Toast.LENGTH_LONG).show();
-            }
-        } else if (requestCode == REQUEST_READ_PERMISSION) {
-            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                permissionPhoneState();
-            } else {
-                Toast.makeText(mContext,"Read External Stroge Denied", Toast.LENGTH_LONG).show();
-            }
-        } else if (requestCode == REQUEST_READ_PHONE_STATE) {
+        if (requestCode == REQUEST_ALL) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 processNext();
             } else {
-                Toast.makeText(mContext,"Read Phone State Denied", Toast.LENGTH_LONG).show();
+                Toast.makeText(DipsSplashScreen.this,"Permission Denied", Toast.LENGTH_LONG).show();
             }
         }
     }
-
     public static void setLocale(Activity activity, String languageCode) {
         Locale locale = new Locale(languageCode);
         Locale.setDefault(locale);
@@ -219,7 +184,6 @@ public class DipsSplashScreen extends AppCompatActivity {
         config.setLocale(locale);
         resources.updateConfiguration(config, resources.getDisplayMetrics());
     }
-
     public void onRadioButtonClicked(View view) {
         boolean checked = ((RadioButton) view).isChecked();
 
