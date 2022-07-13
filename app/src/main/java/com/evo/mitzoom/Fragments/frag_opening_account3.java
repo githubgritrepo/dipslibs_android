@@ -103,6 +103,7 @@ public class frag_opening_account3 extends Fragment {
         btnGallery.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                session.saveMedia(2);
                 chooseFromSD();
             }
         });
@@ -142,23 +143,19 @@ public class frag_opening_account3 extends Fragment {
         });
     }
     private void chooseFromSD() {
-        Intent intent = new   Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivityForResult(intent, 2);
     }
     private void chooseFromCamera() {
         Intent intent = new Intent(context, DipsCameraActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivityForResult(intent, 1);
-        /*Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        File f = new File(Environment.getExternalStorageDirectory(), "temp.png");
-        intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(f));
-        intent.putExtra("android.intent.extras.LENS_FACING_FRONT", 1);
-        intent.putExtra("android.intent.extra.USE_FRONT_CAMERA", true);
-        startActivityForResult(intent, 1);*/
     }
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode == RESULT_OK) {
+        if (resultCode == RESULT_OK && data != null) {
             if (requestCode == 1){
                 session.saveFlagUpDoc(true);
                 byte[] resultCamera = data.getByteArrayExtra("result_camera");
@@ -175,6 +172,7 @@ public class frag_opening_account3 extends Fragment {
                 processSendImage(bitmap);
             }
             else if (requestCode == 2){
+                session.saveFlagUpDoc(true);
                 Uri selectedImage = data.getData();
                 String[] filePath = { MediaStore.Images.Media.DATA };
                 Cursor c = context.getContentResolver().query(selectedImage,filePath, null, null, null);
@@ -233,9 +231,6 @@ public class frag_opening_account3 extends Fragment {
                             Log.d("CEK","MASUK KIRIM IMAGE");
                             imgtoBase64(bitmap);
                             break;
-                        }
-                        else{
-                            imgtoBase64(bitmap);
                         }
                         Thread.sleep(500);
                     }
@@ -349,7 +344,7 @@ public class frag_opening_account3 extends Fragment {
             @Override
             public void onFailure(Call<JsonObject> call, Throwable t) {
                 Log.d("MIRROR","Mirroring Gagal");
-                Mirroring(false,base64);
+                //Mirroring(false,base64);
             }
         });
     }

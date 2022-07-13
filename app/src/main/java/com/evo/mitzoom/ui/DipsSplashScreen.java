@@ -97,7 +97,6 @@ public class DipsSplashScreen extends AppCompatActivity {
         sweetAlertDialog.setCustomView(dialogView);
         sweetAlertDialog.hideConfirmButton();
         sweetAlertDialog.setCancelable(false);
-        sweetAlertDialog.show();
 
         RadioGroup radioGroup = (RadioGroup) dialogView.findViewById(R.id.groupradio);
         Button btnNext = (Button) dialogView.findViewById(R.id.btnNext);
@@ -136,6 +135,8 @@ public class DipsSplashScreen extends AppCompatActivity {
                 }
             }
         });
+
+        sweetAlertDialog.show();
     }
     private void startApp() {
         startActivity(new Intent(DipsSplashScreen.this, DipsCapture.class));

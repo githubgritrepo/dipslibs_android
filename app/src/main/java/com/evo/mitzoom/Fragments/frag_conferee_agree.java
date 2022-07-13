@@ -98,7 +98,7 @@ public class frag_conferee_agree extends Fragment implements ZoomVideoSDKDelegat
                 boolean flagAgree = session.getFlagConfAgree();
                 if (flagAgree == false) {
                     SweetAlertDialog dialogNotAgree = new SweetAlertDialog(context,SweetAlertDialog.WARNING_TYPE);
-                    dialogNotAgree.setContentText("Mohon tunggu, proses Join sedang berlangsung");
+                    dialogNotAgree.setContentText(getString(R.string.waiting_conf));
                     dialogNotAgree.setCancelable(true);
                     dialogNotAgree.setConfirmText("OK");
                     dialogNotAgree.show();
@@ -137,7 +137,7 @@ public class frag_conferee_agree extends Fragment implements ZoomVideoSDKDelegat
                 boolean flagAgree = session.getFlagConfAgree();
                 if (flagAgree == false) {
                     SweetAlertDialog dialogNotAgree = new SweetAlertDialog(context,SweetAlertDialog.WARNING_TYPE);
-                    dialogNotAgree.setContentText("Mohon tunggu, proses Join sedang berlangsung");
+                    dialogNotAgree.setContentText(getString(R.string.waiting_conf));
                     dialogNotAgree.setCancelable(true);
                     dialogNotAgree.setConfirmText("OK");
                     dialogNotAgree.show();

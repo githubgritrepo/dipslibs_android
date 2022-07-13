@@ -33,6 +33,8 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Locale;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import cn.pedant.SweetAlert.SweetAlertDialog;
 import me.relex.circleindicator.CircleIndicator;
@@ -271,15 +273,19 @@ public class frag_summary_rtgs extends Fragment {
         otp.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                selPos = otp.getSelectionStart();
-                oldString = myFilter(s.toString());
+                /*selPos = otp.getSelectionStart();
+                oldString = myFilter(s.toString());*/
 
             }
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                Log.i("CEK SUMMARY", "count : "+count);
-                Mirroring2(false,s);
+                String patternStr = "[0-9]";
+                Pattern pattern = Pattern.compile(patternStr);
+                Matcher matcher = pattern.matcher(s);
+                if (matcher.find()) {
+                    Mirroring2(false, s);
+                }
             }
 
             @Override

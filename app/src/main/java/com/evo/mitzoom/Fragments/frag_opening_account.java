@@ -116,6 +116,7 @@ public class frag_opening_account extends Fragment {
                     Toast.makeText(context, "Permission denied",Toast.LENGTH_SHORT).show();
                     return;
                 }
+                session.saveMedia(2);
                 chooseFromSD();
             }
         });
@@ -138,7 +139,7 @@ public class frag_opening_account extends Fragment {
                     Toast.makeText(context, getResources().getString(R.string.error_image), Toast.LENGTH_SHORT).show();
                 }
                 else{
-                    Mirroring(true,KTP_BASE64);
+                    Mirroring(true,"");
                     //Mirroring2(true,"320124150585005","Andi Wijaya Lesmana","Bogor","13-03-1985");
                     saveImage();
                     PopUpOCR(KTP);
@@ -181,18 +182,20 @@ public class frag_opening_account extends Fragment {
         btnConfirm.setBackgroundTintList(context.getResources().getColorStateList(R.color.Blue));
     }
     private void chooseFromSD() {
-        Intent intent = new   Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivityForResult(intent, 2);
     }
     private void chooseFromCamera() {
         Intent intent = new Intent(context, DipsCameraActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivityForResult(intent, 1);
     }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode == RESULT_OK) {
+        if (resultCode == RESULT_OK && data != null) {
             if (requestCode == 1){
                 session.saveFlagUpDoc(true);
                 byte[] resultCamera = data.getByteArrayExtra("result_camera");
@@ -210,6 +213,7 @@ public class frag_opening_account extends Fragment {
                 processSendImage(bitmap);
             }
             else if (requestCode == 2){
+                session.saveFlagUpDoc(true);
                 Uri selectedImage = data.getData();
                 String[] filePath = { MediaStore.Images.Media.DATA };
                 Cursor c = context.getContentResolver().query(selectedImage,filePath, null, null, null);
@@ -268,9 +272,6 @@ public class frag_opening_account extends Fragment {
                             Log.d("CEK","MASUK KIRIM IMAGE");
                             imgtoBase64(bitmap);
                             break;
-                        }
-                        else{
-                            imgtoBase64(bitmap);
                         }
                         Thread.sleep(500);
                     }
@@ -486,7 +487,7 @@ public class frag_opening_account extends Fragment {
             @Override
             public void onFailure(Call<JsonObject> call, Throwable t) {
                 Log.d("MIRROR","Mirroring Gagal");
-                Mirroring(false, base64);
+                //Mirroring(false, base64);
             }
         });
     }

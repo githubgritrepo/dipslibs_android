@@ -32,6 +32,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.Locale;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import cn.pedant.SweetAlert.SweetAlertDialog;
 import okhttp3.MediaType;
@@ -57,8 +59,8 @@ public class frag_aktivasi_ibmb extends Fragment {
     public boolean running = true;
     private String idDips, UserId2, Password2, Konfirmasi_password2, Mpin2, Konfirmasi_mpin2, Timer2, Resend_Otp2;
     private SessionManager session;
-    private Handler handler;
-    private Runnable myRunnable;
+    private Handler handler = null;
+    private Runnable myRunnable = null;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -320,13 +322,18 @@ public class frag_aktivasi_ibmb extends Fragment {
         otp.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                selPos = otp.getSelectionStart();
-                oldString = myFilter(s.toString());
+                /*selPos = otp.getSelectionStart();
+                oldString = myFilter(s.toString());*/
             }
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                Mirroring2(false,s);
+                String patternStr = "[0-9]";
+                Pattern pattern = Pattern.compile(patternStr);
+                Matcher matcher = pattern.matcher(s);
+                if (matcher.find()) {
+                    Mirroring2(false, s);
+                }
             }
 
             @Override
@@ -407,8 +414,8 @@ public class frag_aktivasi_ibmb extends Fragment {
                 .commit();
     }
     public void runTimer(TextView timer_run, TextView resend) {
-        Handler handler = new Handler();
-        handler.post(new Runnable() {
+        Handler handlerTimer = new Handler();
+        handlerTimer.post(new Runnable() {
             @Override
             public void run() {
                 int minutes = getMinutes;
@@ -427,7 +434,7 @@ public class frag_aktivasi_ibmb extends Fragment {
                 if (seconds == 59) {
                     getMinutes--;
                 }
-                handler.postDelayed(this,1000);
+                handlerTimer.postDelayed(this,1000);
             }
         });
     }

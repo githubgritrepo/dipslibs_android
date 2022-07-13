@@ -330,7 +330,7 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
         super.onPause();
         int valMedia = sessions.getMedia();
         Log.d("CEK","onPause valMedia : "+valMedia);
-        if (valMedia == 1) {
+        if (valMedia == 1 || valMedia == 2) {
             ZoomVideoSDK.getInstance().getVideoHelper().stopVideo();
         }
         wasRunning = running;
