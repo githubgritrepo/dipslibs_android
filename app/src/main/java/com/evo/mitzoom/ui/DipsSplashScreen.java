@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.content.res.Configuration;
@@ -20,6 +21,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -44,15 +46,16 @@ public class DipsSplashScreen extends AppCompatActivity {
     private static final int REQUEST_READ_PHONE_STATE = 787;
     private static final int REQUEST_ALL = 888;
     private ImageView imgSplash;
+    private TextView tvVersion;
     private SessionManager sessions;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.i("CEK","MASUK");
         setContentView(R.layout.activity_dips_splash_screen);
 
         imgSplash = (ImageView) findViewById(R.id.imgSplash);
+        tvVersion = (TextView) findViewById(R.id.tvVersion);
 
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
@@ -60,8 +63,16 @@ public class DipsSplashScreen extends AppCompatActivity {
 
         mContext = this;
 
+        try {
+            PackageInfo info = mContext.getPackageManager().getPackageInfo(mContext.getPackageName(),0);
+            String version = info.versionName;
+            version = "V "+version;
+            tvVersion.setText(version);
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        }
+
         if (!Settings.canDrawOverlays(this)) {
-            Log.i("CEK","MASUK canDrawOverlays");
             Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:" + getPackageName()));
             startActivityForResult(intent, 1);
         }
