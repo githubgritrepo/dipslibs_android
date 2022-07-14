@@ -9,6 +9,8 @@
     <color name="button_end_call">#FF002E</color>
     <color name="button_schedule">#22D882</color>
     <color name="colorPrimary">#00c5ec</color>
+    <color name="ratingON">#FFDD03</color>
+    <color name="ratingOFF">#949393</color>
     <color name="colorPrimaryDark">#00574B</color>
     <color name="colorAccent">#D81B60</color>
     <color name="colorUtama">#4788C8</color>

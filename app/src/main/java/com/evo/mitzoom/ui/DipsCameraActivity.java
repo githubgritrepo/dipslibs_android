@@ -60,6 +60,7 @@ public class DipsCameraActivity extends AppCompatActivity {
     private Camera camera = null;
     private boolean inPreview=false;
     private boolean cameraConfigured=false;
+    Camera.Parameters parameters;
     private static final String KEY_USE_FACING = "use_facing";
     private static final int RESULT_CODE = 110;
     public static Integer useFacing = null;
@@ -85,6 +86,7 @@ public class DipsCameraActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dips_camera);
+
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
@@ -205,6 +207,8 @@ public class DipsCameraActivity extends AppCompatActivity {
                 onBackPressed();
             }
         });
+
+
 
     }
 
@@ -370,6 +374,12 @@ public class DipsCameraActivity extends AppCompatActivity {
     private void startPreview() {
         if (cameraConfigured && camera != null) {
             camera.startPreview();
+            parameters = camera.getParameters();
+            if (parameters.getSupportedFocusModes().contains(
+                    Camera.Parameters.FOCUS_MODE_CONTINUOUS_VIDEO)) {
+                parameters.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_VIDEO);
+            }
+            camera.setParameters(parameters);
             inPreview = true;
         }
     }
