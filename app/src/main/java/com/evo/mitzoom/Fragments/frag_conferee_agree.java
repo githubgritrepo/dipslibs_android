@@ -18,10 +18,8 @@ import com.evo.mitzoom.API.ApiService;
 import com.evo.mitzoom.API.Server;
 import com.evo.mitzoom.Adapter.UserVideoAdapter;
 import com.evo.mitzoom.BaseMeetingActivity;
-import com.evo.mitzoom.Helper.OutboundService;
 import com.evo.mitzoom.R;
 import com.evo.mitzoom.Session.SessionManager;
-import com.evo.mitzoom.ui.RatingActivity;
 import com.google.gson.JsonObject;
 
 import org.json.JSONArray;

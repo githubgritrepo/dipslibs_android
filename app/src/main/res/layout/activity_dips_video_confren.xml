@@ -23,7 +23,6 @@
             android:layout_height="wrap_content">
 
             <LinearLayout
-                android:id="@+id/video_list_contain2"
                 android:layout_width="match_parent"
                 android:layout_height="200dp"
                 android:gravity="center"

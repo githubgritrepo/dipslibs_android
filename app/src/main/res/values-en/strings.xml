@@ -14,7 +14,6 @@
     <string name="leave_message">Do you want to leave this session?</string>
     <string name="cancel">Cancel</string>
     <string name="leave_leave_text">Leave Session</string>
-    <string name="leave_end_text">End Session</string>
     <string name="call_is_being_connected">Call are connected</string>
     <string name="call_is_being_connected1">Calls are connected .</string>
     <string name="call_is_being_connected2">Calls are connected . .</string>
@@ -183,7 +182,6 @@
     <string name="min_password">Minimum password 8 characters</string>
     <string name="min_MPIN">Your MPIN is less than 6 digit</string>
     <string name="max_mpin">Enter 6 digit MPIN</string>
-    <string name="empty_field">Data cannot be empty</string>
     <string name="incoming_call">Incoming call</string>
     <string name="incoming_call1">Incoming call .</string>
     <string name="incoming_call2">Incoming Call . .</string>
