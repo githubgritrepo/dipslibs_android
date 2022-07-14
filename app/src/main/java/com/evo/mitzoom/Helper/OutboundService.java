@@ -6,13 +6,8 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
-import android.content.ComponentName;
-import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
-import android.media.Ringtone;
-import android.media.RingtoneManager;
-import android.net.Uri;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.IBinder;
@@ -46,7 +41,6 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import io.socket.client.IO;
 import io.socket.client.Socket;
-import io.socket.emitter.Emitter;
 import okhttp3.MediaType;
 import okhttp3.RequestBody;
 import retrofit2.Call;
@@ -161,59 +155,12 @@ public class OutboundService extends Service implements SocketEventListener.List
                 callOutbound(idDips);
 
                 notifyForeground();
-                /*if (handler != null && myRunnable != null) {
-                    handler.removeMessages(0);
-                    handler.removeCallbacks(myRunnable);
-                    myThread.interrupt();
-                }
-                processThreadNotif();
-                callOutbound(idDips);*/
             }
         }
-        //return super.onStartCommand(intent, flags, startId);
         return START_STICKY;
     }
 
     private void notifyForeground() {
-        final String CHANNELID = "Foreground Service ID";
-        NotificationChannel channel = new NotificationChannel(
-                CHANNELID,
-                CHANNELID,
-                NotificationManager.IMPORTANCE_LOW
-        );
-
-        getSystemService(NotificationManager.class).createNotificationChannel(channel);
-        Notification.Builder notification = new Notification.Builder(this, CHANNELID)
-                .setContentText("Service is running")
-                .setContentTitle("Your idDips = "+idDips)
-                .setSmallIcon(R.mipmap.dips361);
-
-        startForeground(IDSERVICES, notification.build());
-    }
-
-    private void processThreadNotif() {
-        myRunnable =
-                new Runnable() {
-                    @Override
-                    public void run() {
-                        while (true) {
-                            Log.i(TAG+"_Service", "Service is running idDips : "+idDips+" | mSocket.connected() : "+mSocket.connected());
-                            if (!mSocket.connected()) {
-                                Log.i(TAG,"CONNECTED AGAIN");
-                                //mSocket.connect();
-                            }
-                            try {
-                                myThread.sleep(2000);
-                            } catch (InterruptedException e) {
-                                e.printStackTrace();
-                            }
-                        }
-                    }
-                };
-        myThread = new Thread(myRunnable);
-        myThread.start();
-
-
         final String CHANNELID = "Foreground Service ID";
         NotificationChannel channel = new NotificationChannel(
                 CHANNELID,
@@ -286,7 +233,6 @@ public class OutboundService extends Service implements SocketEventListener.List
     @Override
     public void onTaskRemoved(Intent rootIntent) {
         Log.i(TAG,"MASUK onTaskRemoved");
-        //callOutbound(idDips);
         Intent intent = new Intent("com.android.ServiceStopped");
         sendBroadcast(intent);
     }
@@ -446,7 +392,6 @@ public class OutboundService extends Service implements SocketEventListener.List
 
         Intent intent1 = new Intent(getApplicationContext(), DipsOutboundCall.class);
         intent1.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-        //intent1.setAction("closeapps");
 
         PendingIntent pendingIntentCall = null;
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
@@ -518,12 +463,6 @@ public class OutboundService extends Service implements SocketEventListener.List
         switch (event) {
             case Socket.EVENT_CONNECT:
                 Log.i(TAG, "socket connected");
-                /*if (handler != null && myRunnable != null) {
-                    handler.removeMessages(0);
-                    handler.removeCallbacks(myRunnable);
-                    myThread.interrupt();
-                }
-                processThreadNotif();*/
                 callOutbound(idDips);
                 isConnected = true;
                 break;

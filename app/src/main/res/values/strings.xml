@@ -13,7 +13,6 @@
     <string name="leave_message">Apakah Anda yakin ingin mengakhiri sesi?</string>
     <string name="cancel">Batal</string>
     <string name="leave_leave_text">Tinggalkan Sesi</string>
-    <string name="leave_end_text">End Session</string>
     <string name="call_is_being_connected">Panggilan terhubung</string>
     <string name="call_is_being_connected1">Panggilan terhubung .</string>
     <string name="call_is_being_connected2">Panggilan terhubung . .</string>
@@ -182,7 +181,6 @@
     <string name="min_password">Password minimal 8 karakter</string>
     <string name="min_MPIN">MPIN anda kurang dari 6 digit</string>
     <string name="max_mpin">Masukkan 6 digit MPIN</string>
-    <string name="empty_field">Data tidak boleh kosong</string>
     <string name="incoming_call">Panggilan masuk</string>
     <string name="incoming_call1">Panggilan masuk .</string>
     <string name="incoming_call2">Panggilan masuk . .</string>

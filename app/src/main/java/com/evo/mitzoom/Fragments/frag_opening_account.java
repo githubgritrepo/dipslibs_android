@@ -139,7 +139,7 @@ public class frag_opening_account extends Fragment {
                     Toast.makeText(context, getResources().getString(R.string.error_image), Toast.LENGTH_SHORT).show();
                 }
                 else{
-                    Mirroring(true,"");
+                    //Mirroring(true,"");
                     //Mirroring2(true,"320124150585005","Andi Wijaya Lesmana","Bogor","13-03-1985");
                     saveImage();
                     PopUpOCR(KTP);

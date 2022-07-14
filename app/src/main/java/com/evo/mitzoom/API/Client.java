@@ -99,6 +99,9 @@ public class Client {
 
             OkHttpClient.Builder builder = new OkHttpClient.Builder();
             builder.addInterceptor(interceptor);
+            builder.connectTimeout(3, TimeUnit.MINUTES);
+            builder.readTimeout(3, TimeUnit.MINUTES);
+            builder.writeTimeout(3, TimeUnit.MINUTES);
             //builder.sslSocketFactory(sslSocketFactory);
             builder.sslSocketFactory(sslSocketFactory, (X509TrustManager) trustAllCerts[0]);
             builder.hostnameVerifier(new HostnameVerifier() {
