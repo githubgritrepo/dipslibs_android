@@ -10,7 +10,7 @@
         android:text="@string/pilih_bahasa"
         android:textStyle="bold"
         android:textColor="@color/black"
-        android:textSize="15sp"
+        android:textSize="15dp"
         android:gravity="center"/>
 
     <View
@@ -27,6 +27,7 @@
         android:orientation="vertical">
 
         <RadioButton
+            android:textSize="14dp"
             android:id="@+id/rbId"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -35,6 +36,7 @@
             android:onClick="onRadioButtonClicked"/>
 
         <RadioButton
+            android:textSize="14dp"
             android:id="@+id/rbEn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -45,6 +47,7 @@
     </RadioGroup>
 
     <Button
+        android:textSize="14dp"
         android:id="@+id/btnNext"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

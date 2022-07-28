@@ -30,7 +30,7 @@
     <string name="headline_success">Customer Support sudah siap melayani Anda.</string>
     <string name="btn_continue">Lanjut</string>
     <string name="back">Kembali</string>
-    <string name="name">Nama</string>
+    <string name="name">Nama Lengkap</string>
     <string name="nik">NIK</string>
     <string name="enter_your_message">Masukkan pesan Anda</string>
     <string name="create_new_account">Informasi &amp; Pembukaan Rekening</string>
@@ -186,4 +186,19 @@
     <string name="incoming_call2">Panggilan masuk . .</string>
     <string name="incoming_call3">Panggilan masuk . . .</string>
     <string name="waiting_conf">Mohon tunggu, proses Join sedang berlangsung</string>
+    <string name="isi_form">Isi Form</string>
+    <string name="konfirmasi_data">Konfirmasi Data</string>
+    <string name="pembukaan_akun">Pembukaan Akun</string>
+    <string name="tipe_produk_rekening">Tipe Produk Rekening</string>
+    <string name="setoran_awal">Setoran Awal</string>
+    <string name="saving_new_acc">Tabungan > Tabungan A</string>
+    <string name="saving_new_acc2">Tabungan > Tabungan B</string>
+    <string name="giro_new_acc">Giro</string>
+    <string name="deposito_new_acc">Deposito</string>
+    <string name="asuransi_new_acc">Asuransi</string>
+    <string name="Reksadana_new_acc">Reksadana</string>
+    <string name="tanggal_pembukaan_rekening">Tanggal Pembukaan Rekening</string>
+    <string name="berbagi_file">Berbagi File</string>
+    <string name="tab_1">Daftar File</string>
+    <string name="tab_2">Kirim File</string>
 </resources>

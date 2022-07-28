@@ -90,7 +90,7 @@
                 <TextView
                     android:id="@+id/text_timer"
                     android:layout_gravity="center_vertical"
-                    android:textSize="11sp"
+                    android:textSize="11dp"
                     android:textColor="@color/white"
                     android:layout_width="0dp"
                     android:layout_weight="1"

@@ -22,7 +22,7 @@
                 android:layout_height="wrap_content"
                 android:text="@string/aktivasi_m_banking"
                 android:textColor="@color/black"
-                android:textSize="19sp" />
+                android:textSize="18dp" />
         </LinearLayout>
 
         <androidx.core.widget.NestedScrollView
@@ -48,7 +48,7 @@
                         android:layout_height="wrap_content"
                         android:text="@string/user_id"
                         android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-                        android:textSize="16sp" />
+                        android:textSize="15dp" />
 
                     <com.google.android.material.textfield.TextInputLayout
                         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
@@ -67,7 +67,7 @@
                             android:background="@drawable/bg_textinput"
                             android:inputType="text"
                             android:padding="9dp"
-                            android:textSize="16sp"
+                            android:textSize="15dp"
                             tools:ignore="SpeakableTextPresentCheck" />
                     </com.google.android.material.textfield.TextInputLayout>
 
@@ -76,7 +76,7 @@
                         android:layout_height="wrap_content"
                         android:text="@string/kata_sandi"
                         android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-                        android:textSize="16sp" />
+                        android:textSize="15dp" />
 
                     <com.google.android.material.textfield.TextInputLayout
                         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
@@ -96,7 +96,7 @@
                             android:background="@drawable/bg_textinput"
                             android:inputType="text"
                             android:padding="9dp"
-                            android:textSize="16sp"
+                            android:textSize="15dp"
                             tools:ignore="SpeakableTextPresentCheck" />
                     </com.google.android.material.textfield.TextInputLayout>
 
@@ -105,7 +105,7 @@
                         android:layout_height="wrap_content"
                         android:text="@string/konfirmasi_kata_sandi"
                         android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-                        android:textSize="16sp" />
+                        android:textSize="15dp" />
 
                     <com.google.android.material.textfield.TextInputLayout
                         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
@@ -124,7 +124,7 @@
                             android:background="@drawable/bg_textinput"
                             android:inputType="text"
                             android:padding="9dp"
-                            android:textSize="16sp"
+                            android:textSize="15dp"
                             tools:ignore="SpeakableTextPresentCheck,SpeakableTextPresentCheck,SpeakableTextPresentCheck" />
                     </com.google.android.material.textfield.TextInputLayout>
 
@@ -135,14 +135,14 @@
                         android:text="@string/min_password"
                         android:textAppearance="@style/TextAppearance.AppCompat.Body2"
                         android:textColor="@color/Blue"
-                        android:textSize="12sp" />
+                        android:textSize="12dp" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/mpin"
                         android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-                        android:textSize="16sp" />
+                        android:textSize="15dp" />
 
                     <com.google.android.material.textfield.TextInputLayout
                         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
@@ -162,7 +162,7 @@
                             android:inputType="number"
                             android:maxLength="6"
                             android:padding="9dp"
-                            android:textSize="16sp"
+                            android:textSize="15dp"
                             tools:ignore="SpeakableTextPresentCheck" />
                     </com.google.android.material.textfield.TextInputLayout>
 
@@ -173,14 +173,14 @@
                         android:text="@string/max_mpin"
                         android:textAppearance="@style/TextAppearance.AppCompat.Body2"
                         android:textColor="@color/Blue"
-                        android:textSize="12sp" />
+                        android:textSize="12dp" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/konfirmasi_mpin"
                         android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-                        android:textSize="16sp" />
+                        android:textSize="15dp" />
 
                     <com.google.android.material.textfield.TextInputLayout
                         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
@@ -200,10 +200,11 @@
                             android:inputType="number"
                             android:maxLength="6"
                             android:padding="9dp"
-                            android:textSize="16sp" />
+                            android:textSize="15dp" />
                     </com.google.android.material.textfield.TextInputLayout>
 
                     <Button
+                        android:textSize="14dp"
                         android:id="@+id/btnProsesIbmb"
                         android:layout_width="match_parent"
                         android:layout_height="35dp"

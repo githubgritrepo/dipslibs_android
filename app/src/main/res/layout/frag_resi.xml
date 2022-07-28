@@ -17,7 +17,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textAlignment="center"
-                android:textSize="17sp"
+                android:textSize="16dp"
                 android:gravity="center|center_vertical"
                 android:text="@string/resi"/>
             <TextView
@@ -26,7 +26,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textAlignment="center"
-                android:textSize="17sp"
+                android:textSize="16dp"
                 android:textColor="@color/bg_cif_success"
                 android:gravity="center|center_vertical"
                 android:text="@string/transaksi_anda_berhasil"/>
@@ -73,10 +73,11 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:textAlignment="center"
-                            android:textSize="16sp"
+                            android:textSize="16dp"
                             android:gravity="center|center_vertical"
                             android:text="@string/resi_ini_akan_otomatis_dikirim_melalui_email_anda"/>
                         <Button
+                            android:textSize="14dp"
                             android:layout_margin="15dp"
                             android:id="@+id/btn_done_resi"
                             android:layout_width="match_parent"

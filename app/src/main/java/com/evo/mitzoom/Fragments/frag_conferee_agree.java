@@ -142,6 +142,9 @@ public class frag_conferee_agree extends Fragment implements ZoomVideoSDKDelegat
                     return;
                 }
                 cekData();
+                BaseMeetingActivity.btnFile.setBackgroundTintList(context.getResources().getColorStateList(R.color.Blue));
+                BaseMeetingActivity.btnFile.setClickable(true);
+
                 BaseMeetingActivity.btnChat.setBackgroundTintList(context.getResources().getColorStateList(R.color.Blue));
                 BaseMeetingActivity.btnChat.setClickable(true);
             }

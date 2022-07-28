@@ -19,6 +19,6 @@
         android:text="Stop Share"
         android:textAllCaps="false"
         android:textColor="#FFFFFF"
-        android:textSize="8sp" />
+        android:textSize="8dp" />
 
 </LinearLayout>

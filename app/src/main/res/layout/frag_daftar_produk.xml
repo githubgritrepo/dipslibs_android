@@ -30,7 +30,7 @@
                 android:layout_marginStart="6dp"
                 android:text="@string/product_list"
                 android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-                android:textSize="20sp"
+                android:textSize="19dp"
                 android:textStyle="bold" />
         </LinearLayout>
         <androidx.core.widget.NestedScrollView

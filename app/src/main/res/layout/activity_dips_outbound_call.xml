@@ -76,7 +76,7 @@
             android:gravity="center"
             android:text="Agent Name"
             android:textColor="@color/black"
-            android:textSize="20sp"
+            android:textSize="19dp"
             android:textStyle="bold" />
         <TextView
             android:id="@+id/incomingcall"
@@ -85,7 +85,7 @@
             android:gravity="center"
             android:text="@string/incoming_call"
             android:textColor="@color/button_schedule"
-            android:textSize="18sp" />
+            android:textSize="17dp" />
 
     </LinearLayout>
 

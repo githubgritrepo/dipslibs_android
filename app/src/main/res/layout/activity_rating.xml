@@ -25,7 +25,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
         android:layout_gravity="center"
-        android:textSize="16sp"
+        android:textSize="16dp"
         android:textAlignment="center"
         android:textColor="@color/black"
         android:text="@string/headline_rating"/>
@@ -36,7 +36,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
         android:layout_gravity="center"
-        android:textSize="16sp"
+        android:textSize="16dp"
         android:textAlignment="center"
         android:textColor="@color/black"
         android:text="@string/apakah_permasalahan_anda_n_selesai_dengan_baik"/>
@@ -67,7 +67,7 @@
         android:layout_marginStart="30dp"
         android:layout_marginEnd="30dp"
         android:layout_gravity="center"
-        android:textSize="16sp"
+        android:textSize="16dp"
         android:textAlignment="center"
         android:textColor="@color/black"
         android:text="@string/mohon_berikan_penilaian_anda_atas_npelayanan_dips_hari_ini"/>
@@ -121,6 +121,7 @@
         android:background="@drawable/oval_background_10dp"
         android:backgroundTint="@color/btnFalse"
         android:text="@string/send"
+        android:textSize="14dp"
         android:textColor="@color/white"
         android:textStyle="bold" />
 </LinearLayout>

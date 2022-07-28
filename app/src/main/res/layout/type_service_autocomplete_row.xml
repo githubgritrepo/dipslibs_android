@@ -6,6 +6,7 @@
     android:padding="4dp">
 
     <TextView
+        android:textSize="13dp"
         android:textAlignment="textStart"
         android:id="@+id/tv_headline"
         android:layout_width="match_parent"
@@ -14,8 +15,9 @@
         android:textAppearance="?android:attr/textAppearanceListItemSmall"
         />
     <TextView
+        android:textAlignment="textStart"
+        android:textSize="12dp"
         android:justificationMode="inter_word"
-        android:layout_gravity="center_horizontal|start"
         android:id="@+id/tv_content"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

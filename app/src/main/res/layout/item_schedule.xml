@@ -11,14 +11,14 @@
         android:layout_height="30dp"
         android:src="@drawable/ic_close"/>
     <TextView
+        android:textAlignment="textStart"
         android:id="@+id/textHeadSchedule"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal|start"
         android:text="@string/headline_schedule"
         android:textColor="@color/black"
-        android:textSize="15sp"
-        android:justificationMode="inter_word"
+        android:textSize="15dp"
         android:layout_marginBottom="25dp"/>
     <TextView
         android:layout_width="wrap_content"
@@ -26,7 +26,7 @@
         android:text="@string/day_date_schedule"
         android:textStyle="bold"
         android:textColor="@color/black"
-        android:textSize="15sp"
+        android:textSize="15dp"
         android:layout_marginBottom="10dp"/>
     <LinearLayout
         android:layout_width="match_parent"
@@ -43,7 +43,7 @@
                 android:id="@+id/et_Date"
                 android:drawableEnd="@drawable/ic_date"
                 android:drawableTint="@color/black"
-                android:textSize="15sp"
+                android:textSize="15dp"
                 android:inputType="none"
                 android:focusable="false"
                 android:layout_width="match_parent"
@@ -58,7 +58,7 @@
         android:text="@string/time"
         android:textStyle="bold"
         android:textColor="@color/black"
-        android:textSize="15sp"
+        android:textSize="15dp"
         android:layout_marginBottom="10dp"/>
 
     <LinearLayout
@@ -75,7 +75,7 @@
                 android:drawableEnd="@drawable/ic_time"
                 android:drawableTint="@color/black"
                 android:id="@+id/et_time"
-                android:textSize="15sp"
+                android:textSize="15dp"
                 android:focusable="false"
                 android:inputType="none"
                 android:layout_width="match_parent"
@@ -90,7 +90,7 @@
         android:layout_gravity="center"
         android:layout_margin="10dp"
         android:textStyle="bold"
-        android:textSize="15sp"
+        android:textSize="15dp"
         android:background="@drawable/oval_background_button"
         android:backgroundTint="@color/button_schedule"
         android:textAppearance="@style/TextAppearance.AppCompat.Button"

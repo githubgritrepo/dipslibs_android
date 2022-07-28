@@ -18,6 +18,7 @@
             android:orientation="vertical">
 
             <TextView
+                android:textSize="14dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="10dp"
@@ -26,6 +27,7 @@
                 android:textStyle="bold" />
 
             <TextView
+                android:textSize="14dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="10dp"
@@ -33,6 +35,7 @@
                 android:text="Belanja tak perlu keluar rumah, bisa langsung transaksi dengan mudah dan murah dari Company Brand menggunakan kartu XYZ tipe apapun! Discount hingga 50% khusus untuk pengguna baru dan dapatkan promo menarik lainnya!" />
 
             <TextView
+                android:textSize="14dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="10dp"
@@ -40,6 +43,7 @@
                 android:text="Belanja tak perlu keluar rumah, bisa langsung transaksi dengan mudah dan murah dari Company Brand menggunakan kartu XYZ tipe apapun! Discount hingga 50% khusus untuk pengguna baru dan dapatkan promo menarik lainnya!" />
 
             <TextView
+                android:textSize="14dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="10dp"
@@ -47,6 +51,7 @@
                 android:text="Belanja tak perlu keluar rumah, bisa langsung transaksi dengan mudah dan murah dari Company Brand menggunakan kartu XYZ tipe apapun! Discount hingga 50% khusus untuk pengguna baru dan dapatkan promo menarik lainnya!" />
 
             <TextView
+                android:textSize="14dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="10dp"
@@ -54,6 +59,7 @@
                 android:text="Belanja tak perlu keluar rumah, bisa langsung transaksi dengan mudah dan murah dari Company Brand menggunakan kartu XYZ tipe apapun! Discount hingga 50% khusus untuk pengguna baru dan dapatkan promo menarik lainnya!" />
 
             <TextView
+                android:textSize="14dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="10dp"
@@ -61,6 +67,7 @@
                 android:text="Belanja tak perlu keluar rumah, bisa langsung transaksi dengan mudah dan murah dari Company Brand menggunakan kartu XYZ tipe apapun! Discount hingga 50% khusus untuk pengguna baru dan dapatkan promo menarik lainnya!" />
 
             <TextView
+                android:textSize="14dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="10dp"
@@ -68,6 +75,7 @@
                 android:text="Belanja tak perlu keluar rumah, bisa langsung transaksi dengan mudah dan murah dari Company Brand menggunakan kartu XYZ tipe apapun! Discount hingga 50% khusus untuk pengguna baru dan dapatkan promo menarik lainnya!" />
 
             <TextView
+                android:textSize="14dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="10dp"
@@ -75,6 +83,7 @@
                 android:text="Belanja tak perlu keluar rumah, bisa langsung transaksi dengan mudah dan murah dari Company Brand menggunakan kartu XYZ tipe apapun! Discount hingga 50% khusus untuk pengguna baru dan dapatkan promo menarik lainnya!" />
 
             <TextView
+                android:textSize="14dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="10dp"
@@ -82,6 +91,7 @@
                 android:text="Belanja tak perlu keluar rumah, bisa langsung transaksi dengan mudah dan murah dari Company Brand menggunakan kartu XYZ tipe apapun! Discount hingga 50% khusus untuk pengguna baru dan dapatkan promo menarik lainnya!" />
 
             <TextView
+                android:textSize="14dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="10dp"
@@ -89,6 +99,7 @@
                 android:text="Belanja tak perlu keluar rumah, bisa langsung transaksi dengan mudah dan murah dari Company Brand menggunakan kartu XYZ tipe apapun! Discount hingga 50% khusus untuk pengguna baru dan dapatkan promo menarik lainnya!" />
 
             <TextView
+                android:textSize="14dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="10dp"
@@ -96,6 +107,7 @@
                 android:text="Belanja tak perlu keluar rumah, bisa langsung transaksi dengan mudah dan murah dari Company Brand menggunakan kartu XYZ tipe apapun! Discount hingga 50% khusus untuk pengguna baru dan dapatkan promo menarik lainnya!" />
 
             <TextView
+                android:textSize="14dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="10dp"
@@ -117,7 +129,7 @@
             android:textStyle="bold"
             android:layout_margin="15dp"
             android:textAlignment="center"
-            android:textSize="12sp"
+            android:textSize="12dp"
             app:icon="@drawable/ic_baseline_arrow_back_24"
             app:iconPadding="2dp"
             app:iconTint="@color/white"

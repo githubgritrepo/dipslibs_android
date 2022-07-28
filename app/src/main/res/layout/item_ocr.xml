@@ -14,7 +14,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textAlignment="center"
-            android:textSize="16sp"
+            android:textSize="15dp"
             android:textStyle="bold"
             android:textColor="@color/black"
             android:layout_marginBottom="10dp"
@@ -24,7 +24,7 @@
             android:layout_height="wrap_content"
             android:text="@string/nik"
             android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-            android:textSize="16sp" />
+            android:textSize="15dp" />
         <com.google.android.material.textfield.TextInputLayout
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="match_parent"
@@ -42,7 +42,7 @@
                 android:layout_height="35dp"
                 android:background="@drawable/bg_textinput"
                 android:inputType="number"
-                android:textSize="12sp"
+                android:textSize="12dp"
                 tools:ignore="SpeakableTextPresentCheck" />
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -51,7 +51,7 @@
             android:layout_height="wrap_content"
             android:text="@string/name"
             android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-            android:textSize="16sp" />
+            android:textSize="15dp" />
         <com.google.android.material.textfield.TextInputLayout
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="match_parent"
@@ -69,7 +69,7 @@
                 android:layout_height="35dp"
                 android:background="@drawable/bg_textinput"
                 android:inputType="text"
-                android:textSize="12sp"
+                android:textSize="12dp"
                 tools:ignore="SpeakableTextPresentCheck" />
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -78,7 +78,7 @@
             android:layout_height="wrap_content"
             android:text="@string/ttl"
             android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-            android:textSize="16sp" />
+            android:textSize="15dp" />
         <com.google.android.material.textfield.TextInputLayout
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="match_parent"
@@ -96,7 +96,7 @@
                 android:layout_height="35dp"
                 android:background="@drawable/bg_textinput"
                 android:inputType="text"
-                android:textSize="12sp"
+                android:textSize="12dp"
                 tools:ignore="SpeakableTextPresentCheck" />
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -105,7 +105,7 @@
             android:layout_height="wrap_content"
             android:text="@string/ttl2"
             android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-            android:textSize="16sp" />
+            android:textSize="15dp" />
         <com.google.android.material.textfield.TextInputLayout
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="match_parent"
@@ -123,7 +123,7 @@
                 android:layout_height="35dp"
                 android:background="@drawable/bg_textinput"
                 android:inputType="text"
-                android:textSize="12sp"
+                android:textSize="12dp"
                 tools:ignore="SpeakableTextPresentCheck" />
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -133,6 +133,7 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal">
             <Button
+                android:textSize="14dp"
                 android:id="@+id/btncncl"
                 android:layout_marginEnd="10dp"
                 android:layout_width="0dp"
@@ -145,6 +146,7 @@
                 android:textStyle="bold" />
 
             <Button
+                android:textSize="14dp"
                 android:id="@+id/btnlnjt"
                 android:layout_width="0dp"
                 android:layout_height="40dp"

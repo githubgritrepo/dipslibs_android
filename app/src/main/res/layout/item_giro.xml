@@ -31,7 +31,7 @@
                 android:layout_marginStart="50dp"
                 android:text="@string/giro"
                 android:textColor="#3E3E3E"
-                android:textSize="20sp"
+                android:textSize="20dp"
                 android:textStyle="bold" />
 
             <androidx.appcompat.widget.AppCompatImageView

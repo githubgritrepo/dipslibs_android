@@ -36,6 +36,7 @@
                 android:background="@drawable/oval_background">
 
                 <TextView
+                    android:textSize="12dp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/wink"
@@ -62,7 +63,7 @@
             android:gravity="center"
             android:text="@string/welcometext"
             android:textColor="@color/black"
-            android:textSize="18sp"
+            android:textSize="17dp"
             android:textStyle="bold" />
 
         <TextView
@@ -70,6 +71,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="5dp"
             android:gravity="center"
+            android:textSize="14dp"
             android:text="@string/desc_welcome" />
 
     </LinearLayout>

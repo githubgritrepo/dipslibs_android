@@ -24,18 +24,21 @@
                 android:layout_marginBottom="10dp"
                 android:gravity="center_vertical"
                 android:orientation="horizontal">
+
                 <RelativeLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1">
-                <TextView
-                    android:id="@+id/headline"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="@string/portofolio_saya"
-                    android:textAlignment="textStart"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Headline"
-                    android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/headline"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/portofolio_saya"
+                        android:textAlignment="textStart"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Headline"
+                        android:textSize="25dp"
+                        android:textStyle="bold" />
 
                     <TextView
                         android:id="@+id/currency"
@@ -43,16 +46,17 @@
                         android:layout_height="wrap_content"
                         android:layout_below="@+id/headline"
                         android:textAlignment="textStart"
-                        android:textSize="14sp" />
+                        android:textSize="14dp" />
                 </RelativeLayout>
+
                 <TextView
+                    android:id="@+id/date"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
                     android:layout_gravity="bottom|end"
-                        android:id="@+id/date"
-                        android:layout_width="0dp"
-                        android:layout_weight="1"
-                        android:layout_height="wrap_content"
-                        android:textAlignment="textEnd"
-                        android:textSize="14sp" />
+                    android:layout_weight="1"
+                    android:textAlignment="textEnd"
+                    android:textSize="14dp" />
             </LinearLayout>
             <LinearLayout
                 android:layout_marginBottom="10dp"
@@ -80,7 +84,7 @@
                     android:layout_height="wrap_content"
                     android:text="@string/informasi_portofolio"
                     android:textAlignment="textStart"
-                    android:textSize="17sp"
+                    android:textSize="17dp"
                     android:textStyle="bold" />
                 <ImageView
                     android:layout_marginStart="10dp"
@@ -113,7 +117,7 @@
                     android:layout_marginBottom="10dp"
                     android:text="@string/dana_pihak_ketiga"
                     android:textColor="@color/red_btn_bg_color"
-                    android:textSize="19sp"
+                    android:textSize="19dp"
                     android:textStyle="bold" />
 
                 <androidx.recyclerview.widget.RecyclerView
@@ -186,7 +190,7 @@
         android:layout_gravity="center|bottom"
         android:textStyle="bold"
         android:layout_marginBottom="20dp"
-        android:textSize="15sp"
+        android:textSize="14dp"
         app:icon="@drawable/ic_menu"
         app:iconTint="@color/white"
         app:iconSize="24sp"

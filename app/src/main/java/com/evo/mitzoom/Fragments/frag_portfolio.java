@@ -187,7 +187,6 @@ public class frag_portfolio extends Fragment {
             }
         });
 
-
     }
     private void Mirroring(boolean bool){
         JSONObject jsons = new JSONObject();

@@ -25,7 +25,7 @@
             android:layout_marginStart="6dp"
             android:text="@string/RTGS"
             android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-            android:textSize="20sp"
+            android:textSize="20dp"
             android:textStyle="bold" />
     </LinearLayout>
 
@@ -69,7 +69,7 @@
                         android:layout_marginEnd="10dp"
                         android:text="@string/upload_file"
                         android:textColor="@color/white"
-                        android:textSize="16sp" />
+                        android:textSize="15dp" />
                 </LinearLayout>
 
                 <androidx.coordinatorlayout.widget.CoordinatorLayout
@@ -108,7 +108,7 @@
                                     android:backgroundTint="@color/bg_cif"
                                     android:text="@string/btn_continue"
                                     android:textColor="@color/white"
-                                    android:textSize="12sp"
+                                    android:textSize="12dp"
                                     android:textStyle="bold" />
 
                                 <me.relex.circleindicator.CircleIndicator
@@ -129,7 +129,7 @@
                                     android:backgroundTint="@color/button_schedule"
                                     android:text="@string/add"
                                     android:textColor="@color/white"
-                                    android:textSize="12sp"
+                                    android:textSize="12dp"
                                     android:textStyle="bold" />
 
                             </LinearLayout>

@@ -28,7 +28,7 @@
             android:layout_height="wrap_content"
             android:text="@string/Photo_nktp"
             android:textColor="@color/black"
-            android:textSize="10sp" />
+            android:textSize="10dp" />
 
         <ImageView
             android:layout_width="12dp"
@@ -55,7 +55,7 @@
             android:layout_height="wrap_content"
             android:text="@string/photo_nnpwp"
             android:textColor="@color/black"
-            android:textSize="10sp" />
+            android:textSize="10dp" />
 
         <ImageView
             android:layout_width="12dp"
@@ -82,7 +82,7 @@
             android:layout_gravity="start|center_vertical"
             android:text="@string/foto_ntanda_ntangan"
             android:textColor="@color/black"
-            android:textSize="10sp" />
+            android:textSize="10dp" />
 
         <ImageView
             android:layout_width="12dp"
@@ -109,7 +109,7 @@
             android:layout_gravity="start|center_vertical"
             android:text="@string/formulir_npembukaan_nrekening"
             android:textColor="@color/black"
-            android:textSize="10sp" />
+            android:textSize="10dp" />
     </LinearLayout>
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
@@ -133,7 +133,7 @@
                     android:layout_height="wrap_content"
                     android:text="@string/name"
                     android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-                    android:textSize="16sp" />
+                    android:textSize="15dp" />
                 <com.google.android.material.textfield.TextInputLayout
                     style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                     android:layout_width="match_parent"
@@ -150,7 +150,7 @@
                         android:layout_height="35dp"
                         android:inputType="text"
                         android:paddingVertical="@dimen/dp_10"
-                        android:textSize="@dimen/textsize_12"
+                        android:textSize="12dp"
                         android:includeFontPadding="false"
                         android:gravity="center_vertical" />
 
@@ -160,7 +160,7 @@
                     android:layout_height="wrap_content"
                     android:text="@string/nik"
                     android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-                    android:textSize="16sp" />
+                    android:textSize="15dp" />
                 <com.google.android.material.textfield.TextInputLayout
                     style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                     android:layout_width="match_parent"
@@ -177,7 +177,7 @@
                         android:layout_height="35dp"
                         android:inputType="number"
                         android:paddingVertical="@dimen/dp_10"
-                        android:textSize="@dimen/textsize_12"
+                        android:textSize="12dp"
                         android:includeFontPadding="false"
                         android:gravity="center_vertical"/>
                 </com.google.android.material.textfield.TextInputLayout>
@@ -186,7 +186,7 @@
                     android:layout_height="wrap_content"
                     android:text="No Handphone"
                     android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-                    android:textSize="16sp" />
+                    android:textSize="15dp" />
                 <com.google.android.material.textfield.TextInputLayout
                     style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                     android:layout_width="match_parent"
@@ -203,7 +203,7 @@
                         android:layout_height="35dp"
                         android:inputType="number"
                         android:paddingVertical="@dimen/dp_10"
-                        android:textSize="@dimen/textsize_12"
+                        android:textSize="12dp"
                         android:includeFontPadding="false"
                         android:gravity="center_vertical"/>
                 </com.google.android.material.textfield.TextInputLayout>
@@ -212,7 +212,7 @@
                     android:layout_height="wrap_content"
                     android:text="@string/email"
                     android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-                    android:textSize="16sp" />
+                    android:textSize="15dp" />
                 <com.google.android.material.textfield.TextInputLayout
                     style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                     android:layout_width="match_parent"
@@ -229,7 +229,7 @@
                         android:layout_height="35dp"
                         android:inputType="textEmailAddress"
                         android:paddingVertical="@dimen/dp_10"
-                        android:textSize="@dimen/textsize_12"
+                        android:textSize="12dp"
                         android:includeFontPadding="false"
                         android:gravity="center_vertical"/>
                 </com.google.android.material.textfield.TextInputLayout>
@@ -238,7 +238,7 @@
                     android:layout_height="wrap_content"
                     android:text="@string/address"
                     android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-                    android:textSize="16sp" />
+                    android:textSize="15dp" />
                 <com.google.android.material.textfield.TextInputLayout
                     style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                     android:layout_width="match_parent"
@@ -260,7 +260,7 @@
                         android:minLines="6"
                         android:scrollbars="vertical"
                         android:paddingVertical="@dimen/dp_10"
-                        android:textSize="@dimen/textsize_12"
+                        android:textSize="12dp"
                         android:includeFontPadding="false" />
                 </com.google.android.material.textfield.TextInputLayout>
                 <TextView
@@ -268,7 +268,7 @@
                     android:layout_height="wrap_content"
                     android:text="@string/religion"
                     android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-                    android:textSize="16sp" />
+                    android:textSize="15dp" />
                 <com.google.android.material.textfield.TextInputLayout
                     style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                     android:layout_width="match_parent"
@@ -284,7 +284,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="35dp"
                         android:paddingVertical="@dimen/dp_10"
-                        android:textSize="@dimen/textsize_12"
+                        android:textSize="12dp"
                         android:includeFontPadding="false"
                         android:gravity="center_vertical" />
                 </com.google.android.material.textfield.TextInputLayout>
@@ -293,7 +293,7 @@
                     android:layout_height="wrap_content"
                     android:text="@string/status"
                     android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-                    android:textSize="16sp" />
+                    android:textSize="15dp" />
                 <com.google.android.material.textfield.TextInputLayout
                     style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                     android:layout_width="match_parent"
@@ -310,7 +310,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="35dp"
                         android:background="@drawable/bg_textinput"
-                        android:textSize="12sp" />
+                        android:textSize="12dp" />
                 </com.google.android.material.textfield.TextInputLayout>
                 <RadioGroup
                         android:id="@+id/groupradio2"
@@ -318,12 +318,14 @@
                         android:layout_height="wrap_content"
                         android:orientation="horizontal">
                         <RadioButton
+                            android:textSize="14dp"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/tabungan_a"
                             android:textStyle="bold"/>
 
                         <RadioButton
+                            android:textSize="14dp"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/tabungan_b"
@@ -335,7 +337,7 @@
                     android:layout_height="wrap_content"
                     android:text="KTP"
                     android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-                    android:textSize="16sp" />
+                    android:textSize="15dp" />
                 <ImageView
                     android:layout_marginBottom="10dp"
                     android:layout_gravity="start"
@@ -348,7 +350,7 @@
                     android:layout_height="wrap_content"
                     android:text="NPWP"
                     android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-                    android:textSize="16sp" />
+                    android:textSize="15dp" />
                 <ImageView
                     android:layout_marginBottom="10dp"
                     android:layout_gravity="start"
@@ -361,7 +363,7 @@
                     android:layout_height="wrap_content"
                     android:text="@string/tanda_tangan"
                     android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-                    android:textSize="16sp" />
+                    android:textSize="15dp" />
                 <ImageView
                     android:layout_marginBottom="20dp"
                     android:layout_gravity="start"
@@ -378,9 +380,10 @@
                     android:layout_height="wrap_content"
                     android:textAlignment="textStart"
                     android:text="@string/content_form_bottom"
-                    android:textSize="13sp"
+                    android:textSize="13dp"
                     android:textColor="@color/black"/>
                 <Button
+                    android:textSize="14dp"
                     android:id="@+id/btnProses"
                     android:layout_width="match_parent"
                     android:layout_height="35dp"

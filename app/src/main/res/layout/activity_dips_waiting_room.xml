@@ -24,7 +24,7 @@
             android:elevation="5dp">
             <TextView
                 android:id="@+id/AnimationCall"
-                android:textSize="12sp"
+                android:textSize="11dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/call_is_being_connected"
@@ -81,14 +81,14 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="A015"
-                        android:textSize="10sp"
+                        android:textSize="10dp"
                         android:textStyle="bold"
                         android:gravity="center_vertical"/>
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/antrian_sekarang"
-                        android:textSize="10sp"
+                        android:textSize="10dp"
                         android:textStyle="bold"
                         android:gravity="center_vertical"
                         android:layout_marginStart="2dp"/>
@@ -122,14 +122,14 @@
                         android:layout_height="wrap_content"
                         android:text="A021"
                         android:textColor="@color/white"
-                        android:textSize="10sp"
+                        android:textSize="10dp"
                         android:textStyle="bold" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/antrian_saya"
-                        android:textSize="10sp"
+                        android:textSize="10dp"
                         android:textColor="@color/white"
                         android:textStyle="bold"
                         android:gravity="center_vertical"

@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:theme="@style/Theme.MaterialComponents.DayNight.DarkActionBar">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="@color/bg_cif"
+        android:orientation="horizontal">
+        <ImageView
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="20dp"
+            android:layout_gravity="center_vertical"
+            android:layout_width="0dp"
+            android:layout_weight="0.1"
+            android:layout_height="30dp"
+            android:src="@drawable/ic_file"
+            app:tint="@color/white" />
+        <TextView
+            android:textColor="@color/white"
+            android:textAlignment="textStart"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start|center_vertical"
+            android:text="@string/berbagi_file"
+            android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+            android:textSize="17dp"
+            android:textStyle="bold" />
+        <ImageView
+            android:id="@+id/btnclose"
+            android:layout_marginEnd="10dp"
+            android:layout_gravity="center_vertical"
+            android:layout_width="0dp"
+            android:layout_weight="0.1"
+            android:layout_height="30dp"
+            android:src="@drawable/ic_close"
+            app:tint="@color/white" />
+    </LinearLayout>
+    <com.google.android.material.tabs.TabLayout
+        android:id="@+id/tabs"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        style="@style/Base.Widget.Design.TabLayout"
+        android:background="@color/bg_cif"
+        app:tabTextColor="@android:color/white"
+        app:tabSelectedTextColor="@color/bg_cif"
+        />
+    <androidx.viewpager.widget.ViewPager
+        android:id="@+id/view_pager"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        />
+    <FrameLayout
+        android:id="@+id/frame_fragment"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"/>
+</LinearLayout>

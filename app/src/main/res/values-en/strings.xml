@@ -187,4 +187,19 @@
     <string name="incoming_call2">Incoming Call . .</string>
     <string name="incoming_call3">Incoming call . . .</string>
     <string name="waiting_conf">Please wait, the Join process is in progress</string>
+    <string name="isi_form">Field Form</string>
+    <string name="konfirmasi_data">Data Confirmation</string>
+    <string name="pembukaan_akun">Opening Account</string>
+    <string name="tipe_produk_rekening">Product Account Type</string>
+    <string name="setoran_awal">Deposit Amount</string>
+    <string name="saving_new_acc">Savings > Saving A</string>
+    <string name="saving_new_acc2">Savings > Saving B</string>
+    <string name="giro_new_acc">Giro</string>
+    <string name="deposito_new_acc">Deposit</string>
+    <string name="asuransi_new_acc">Insurance</string>
+    <string name="Reksadana_new_acc">Mutual Funds</string>
+    <string name="tanggal_pembukaan_rekening">Created Account Date</string>
+    <string name="berbagi_file">Sharing Files</string>
+    <string name="tab_1">List Files</string>
+    <string name="tab_2">Send Files</string>
 </resources>

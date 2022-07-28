@@ -8,7 +8,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/content_otp"
-        android:textSize="15sp"
+        android:textSize="15dp"
         android:textAlignment="center"
         android:textColor="@color/black"/>
         <com.chaos.view.PinView
@@ -17,6 +17,7 @@
             app:itemCount="6"
             app:itemWidth="35dp"
             app:itemHeight="35dp"
+            android:textSize="17dp"
             android:layout_marginTop="15dp"
             android:layout_marginBottom="15dp"
             style="@style/PinWidget.PinView"
@@ -29,6 +30,7 @@
             app:lineColor="@color/line_colors" />
 
     <Button
+        android:textSize="12dp"
         android:layout_gravity="center"
         android:id="@+id/btnVerifikasi"
         android:layout_width="wrap_content"
@@ -51,7 +53,7 @@
             android:maxLines="2"
             android:layout_height="wrap_content"
             android:text="@string/kirim_ulang_kode_otp"
-            android:textSize="17sp"
+            android:textSize="15dp"
             android:textAlignment="textStart"
             android:textColor="@color/btnFalse"/>
         <TextView
@@ -60,7 +62,7 @@
             android:layout_weight="0.4"
             android:layout_height="wrap_content"
             android:text="00:00"
-            android:textSize="19sp"
+            android:textSize="18dp"
             android:textAlignment="center"
             android:textColor="@color/Blue"/>
     </LinearLayout>

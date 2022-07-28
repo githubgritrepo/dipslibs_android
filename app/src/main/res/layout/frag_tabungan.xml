@@ -36,7 +36,7 @@
                 android:layout_marginStart="6dp"
                 android:text="TABUNGAN A"
                 android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-                android:textSize="20sp"
+                android:textSize="20dp"
                 android:textStyle="bold" />
         </LinearLayout>
 
@@ -58,7 +58,7 @@
                     android:layout_marginBottom="10dp"
                     android:justificationMode="inter_word"
                     android:text="@string/lorem"
-                    android:textSize="16sp" />
+                    android:textSize="15dp" />
 
                 <TableLayout
                     android:layout_width="match_parent"
@@ -527,7 +527,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/lorem2"
-                    android:textSize="16sp" />
+                    android:textSize="15dp" />
             </LinearLayout>
         </androidx.core.widget.NestedScrollView>
     </RelativeLayout>

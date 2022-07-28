@@ -47,6 +47,7 @@ import com.evo.mitzoom.API.Server;
 import com.evo.mitzoom.Adapter.UserVideoAdapter;
 import com.evo.mitzoom.Fragments.frag_chat;
 import com.evo.mitzoom.Fragments.frag_conferee_agree;
+import com.evo.mitzoom.Fragments.frag_file;
 import com.evo.mitzoom.Helper.NotificationMgr;
 import com.evo.mitzoom.Helper.NotificationService;
 import com.evo.mitzoom.Helper.OutboundService;
@@ -142,6 +143,7 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
     protected boolean renderWithSurfaceView=true;
     private RelativeLayout rlprogress;
     public static Button btnChat;
+    public static Button btnFile;
     public int seconds = 0;
     public boolean running = true;
     public boolean wasRunning;
@@ -569,6 +571,7 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
         iconVideo = findViewById(R.id.icon_video);
         videoOffView = findViewById(R.id.video_off_tips);
         btnChat = findViewById(R.id.icon_chat);
+        btnFile = findViewById(R.id.icon_file);
 
         llUsersVideo.setVisibility(View.INVISIBLE);
         offUsersVideo.setVisibility(View.VISIBLE);
@@ -735,6 +738,9 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
     public void onClickChat(View view) {
         btnChat.setFocusable(true);
         getFragmentPage(new frag_chat());
+    }
+    public void onClickFile(View view) {
+        getFragmentPage(new frag_file());
     }
 
     private void releaseResource() {
@@ -927,8 +933,10 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
     public void onSessionJoin() {
         llUsersVideo.setVisibility(View.VISIBLE);
         offUsersVideo.setVisibility(View.INVISIBLE);
+        btnFile.setBackgroundTintList(BaseMeetingActivity.this.getResources().getColorStateList(R.color.btnFalse));
         btnChat.setBackgroundTintList(BaseMeetingActivity.this.getResources().getColorStateList(R.color.btnFalse));
         showProgress(false);
+        btnFile.setClickable(false);
         btnChat.setClickable(false);
         /*DipsVideoConfren.LogoCompany.setVisibility(View.VISIBLE);
         DipsVideoConfren.Zoom.setVisibility(View.VISIBLE);*/

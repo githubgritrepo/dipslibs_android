@@ -74,7 +74,7 @@
             android:singleLine="true"
             android:text="Star Lord"
             android:textColor="@android:color/white"
-            android:textSize="12sp" />
+            android:textSize="12dp" />
 
         <ImageView
             android:id="@+id/item_audio_status"

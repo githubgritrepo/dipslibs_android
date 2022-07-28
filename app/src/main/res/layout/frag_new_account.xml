@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:theme="@style/Theme.MaterialComponents.DayNight.DarkActionBar">
+    <include layout="@layout/header_new_account" />
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/header_new_account">
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="20dp"
+            app:cardCornerRadius="10dp"
+            app:cardElevation="0dp">
+            <LinearLayout
+                android:layout_margin="20dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/name"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+                    android:textSize="15dp" />
+                <com.google.android.material.textfield.TextInputLayout
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="10dp"
+                    app:boxCornerRadiusBottomEnd="10dp"
+                    app:boxCornerRadiusBottomStart="10dp"
+                    app:boxCornerRadiusTopEnd="10dp"
+                    app:boxCornerRadiusTopStart="10dp">
+
+                    <EditText
+                        android:id="@+id/et_nama_new"
+                        android:layout_width="match_parent"
+                        android:layout_height="35dp"
+                        android:inputType="text"
+                        android:paddingVertical="@dimen/dp_10"
+                        android:textSize="12dp"
+                        android:includeFontPadding="false"
+                        android:gravity="center_vertical" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/tipe_produk_rekening"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+                    android:textSize="15dp" />
+                <com.google.android.material.textfield.TextInputLayout
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="10dp"
+                    app:boxCornerRadiusBottomEnd="10dp"
+                    app:boxCornerRadiusBottomStart="10dp"
+                    app:boxCornerRadiusTopEnd="10dp"
+                    app:boxCornerRadiusTopStart="10dp">
+
+                    <AutoCompleteTextView
+                        android:id="@+id/et_productType"
+                        android:layout_width="match_parent"
+                        android:layout_height="35dp"
+                        android:drawableTint="@color/black"
+                        android:textSize="12dp"
+                        android:paddingVertical="@dimen/dp_10"
+                        android:includeFontPadding="false"
+                        android:gravity="center_vertical"
+                        android:singleLine="true"/>
+
+                </com.google.android.material.textfield.TextInputLayout>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/tanggal_pembukaan_rekening"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+                    android:textSize="15dp" />
+                <com.google.android.material.textfield.TextInputLayout
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="10dp"
+                    app:boxCornerRadiusBottomEnd="10dp"
+                    app:boxCornerRadiusBottomStart="10dp"
+                    app:boxCornerRadiusTopEnd="10dp"
+                    app:boxCornerRadiusTopStart="10dp">
+
+                    <EditText
+                        android:textColor="@color/selected_text"
+                        android:clickable="false"
+                        android:focusable="false"
+                        android:id="@+id/et_tgl_daftar"
+                        android:layout_width="match_parent"
+                        android:layout_height="35dp"
+                        android:inputType="text"
+                        android:paddingVertical="@dimen/dp_10"
+                        android:textSize="12dp"
+                        android:includeFontPadding="false"
+                        android:gravity="center_vertical" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/setoran_awal"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+                    android:textSize="15dp" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="10dp"
+                    android:orientation="horizontal">
+                    <androidx.cardview.widget.CardView
+                        android:layout_width="0dp"
+                        android:layout_weight="0.15"
+                        android:layout_marginTop="3dp"
+                        android:layout_gravity="center_vertical"
+                        android:layout_height="36dp"
+                        app:cardCornerRadius="2dp">
+                        <TextView
+                            android:background="@drawable/bg_curr"
+                            android:backgroundTint="@color/Blue"
+                            android:textAlignment="center"
+                            android:gravity="center_vertical|center"
+                            android:textColor="@color/white"
+                            android:textSize="17dp"
+                            android:textStyle="bold"
+                            android:layout_width="match_parent"
+                            android:layout_height="36dp"
+                            android:text="@string/mata_uang"/>
+                    </androidx.cardview.widget.CardView>
+                    <com.google.android.material.textfield.TextInputLayout
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                        android:layout_width="0dp"
+                        android:layout_marginStart="-10dp"
+                        android:layout_weight="1"
+                        android:layout_height="wrap_content"
+                        app:boxCornerRadiusBottomEnd="10dp"
+                        app:boxCornerRadiusTopEnd="10dp">
+                        <EditText
+                            android:paddingTop="9dp"
+                            android:paddingBottom="9dp"
+                            android:id="@+id/et_nominal_setoran"
+                            android:layout_width="match_parent"
+                            android:layout_height="35dp"
+                            android:inputType="number"
+                            android:textSize="14dp"
+                            android:includeFontPadding="false"/>
+                    </com.google.android.material.textfield.TextInputLayout>
+                </LinearLayout>
+
+                <Button
+                    android:textSize="14dp"
+                    android:id="@+id/btnProses_isi_form"
+                    android:layout_width="match_parent"
+                    android:layout_height="35dp"
+                    android:drawableTint="@color/Blue"
+                    android:background="@drawable/oval_background_10dp"
+                    android:backgroundTint="@color/Blue"
+                    android:text="@string/process"
+                    android:textColor="@color/white"
+                    android:textStyle="bold" />
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+    </androidx.core.widget.NestedScrollView>
+</RelativeLayout>

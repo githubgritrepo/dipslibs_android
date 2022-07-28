@@ -15,6 +15,7 @@
         android:layout_marginTop="@dimen/dp_20"/>
 
     <TextView
+        android:textSize="15dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Formulir RTGS Anda telah tersimpan, silakan unggah barcode terlampir untuk melakukan transaksi saat bertemu dengan Agent Kami"
