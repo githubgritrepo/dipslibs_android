@@ -78,6 +78,7 @@ public class frag_service extends Fragment {
 
     private void addData(){
         data = new ArrayList<>();
+        data.add(new ItemModel("0",getResources().getString(R.string.pembukaan_akun),R.drawable.item2));
         data.add(new ItemModel("1",getResources().getString(R.string.RTGS),R.drawable.item1));
         data.add(new ItemModel("2",getResources().getString(R.string.FOREX),R.drawable.item1));
         data.add(new ItemModel("3",getResources().getString(R.string.SKN),R.drawable.item2));

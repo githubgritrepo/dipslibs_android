@@ -463,12 +463,10 @@ public class frag_rtgs extends Fragment {
         sessions.saveRTGS(dataJs);
         return true;
     }
-
     private void chooseFromSD() {
         Intent intent = new   Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
         startActivityForResult(intent, 2);
     }
-
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -480,7 +478,6 @@ public class frag_rtgs extends Fragment {
             }
         }
     }
-
     private void getFilePath(Uri selectedImage) {
         String[] filePath = { MediaStore.Images.Media.DATA };
         Cursor c = context.getContentResolver().query(selectedImage,filePath, null, null, null);
@@ -494,9 +491,7 @@ public class frag_rtgs extends Fragment {
         if (cut != -1) {
             filename = picturePath.substring(cut + 1);
         }
-
     }
-
     private void barcodeDecoder(Uri selectedImage) {
         try {
             InputStream inputStream = getActivity().getContentResolver().openInputStream(selectedImage);
