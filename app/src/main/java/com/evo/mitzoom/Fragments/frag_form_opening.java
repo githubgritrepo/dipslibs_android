@@ -86,7 +86,6 @@ public class frag_form_opening extends Fragment {
         preview_npwp = view.findViewById(R.id.Imageview_npwp);
         preview_signature = view.findViewById(R.id.Imageview_tanda_tangan);
         pernyataan = view.findViewById(R.id.pernyataan);
-
         return view;
     }
     @Override

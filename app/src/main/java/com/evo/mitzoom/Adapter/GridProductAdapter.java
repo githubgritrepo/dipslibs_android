@@ -16,6 +16,7 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.evo.mitzoom.Fragments.FormRtgs;
+import com.evo.mitzoom.Fragments.frag_form_komplain;
 import com.evo.mitzoom.Fragments.frag_new_account;
 import com.evo.mitzoom.R;
 import com.evo.mitzoom.Session.SessionManager;
@@ -64,6 +65,13 @@ public class GridProductAdapter extends RecyclerView.Adapter<GridProductAdapter.
                 }
                 else if (pos == 1){
                     PopUpTnc();
+                }
+                else if (pos == 2){
+                    ((FragmentActivity)ctx).getSupportFragmentManager()
+                            .beginTransaction()
+                            .replace(R.id.layout_frame, new frag_form_komplain())
+                            .addToBackStack(null)
+                            .commit();
                 }
                 else {
                     popUpAds();

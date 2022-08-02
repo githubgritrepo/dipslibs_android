@@ -4,28 +4,23 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".ui.DipsCapture">
-
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_gravity="center"
         android:layout_marginTop="120dp">
-
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_gravity="center">
-
             <SurfaceView
                 android:id="@+id/mySurface"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"/>
-
             <SurfaceView
                 android:id="@+id/transSurface"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent" />
-
             <LinearLayout
                 android:id="@+id/llMsg"
                 android:layout_width="wrap_content"
@@ -34,7 +29,6 @@
                 android:layout_centerInParent="true"
                 android:layout_marginBottom="50dp"
                 android:background="@drawable/oval_background">
-
                 <TextView
                     android:textSize="12dp"
                     android:layout_width="wrap_content"
@@ -44,18 +38,14 @@
                     android:textColor="@color/black"
                     android:textStyle="bold" />
             </LinearLayout>
-
         </RelativeLayout>
-
     </FrameLayout>
-
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@drawable/head_background"
         android:orientation="vertical"
         android:padding="15dp">
-
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -65,7 +55,6 @@
             android:textColor="@color/black"
             android:textSize="17dp"
             android:textStyle="bold" />
-
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -73,8 +62,6 @@
             android:gravity="center"
             android:textSize="14dp"
             android:text="@string/desc_welcome" />
-
     </LinearLayout>
     <include layout="@layout/progress_loading" />
-
 </RelativeLayout>

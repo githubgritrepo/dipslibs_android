@@ -182,6 +182,7 @@ public class frag_new_account_cs extends Fragment {
                     Fragment fragment;
                     fragment = new frag_new_account_cs2();
                     Bundle bundle = new Bundle();
+                    bundle.putInt("typesend",typeSend);
                     bundle.putString("rek_sumber_dana",rekSumberdana);
                     bundle.putString("nama_lengkap",nama);
                     bundle.putString("tgl",tgl);

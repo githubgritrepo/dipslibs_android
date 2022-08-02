@@ -202,4 +202,12 @@
     <string name="berbagi_file">Sharing Files</string>
     <string name="tab_1">List Files</string>
     <string name="tab_2">Send Files</string>
+    <string name="selamat_npembukaan_akun_berhasil">Congratulations!\nOpening Account Succesfull</string>
+    <string name="nomor_akun">Account Number</string>
+    <string name="unduh_formulir">Download Forms</string>
+    <string name="formulir_komplain">Complaint Forms</string>
+    <string name="silahkan_isi_formulir_berikut_dengan_keluhan_anda_kami_akan_menindaklanjuti_sesegera_mungkin">Please fill out the following form with your complaint. We will follow up as soon as possible.</string>
+    <string name="perihal">About</string>
+    <string name="tanggal">Date</string>
+    <string name="detail_komplain">Details</string>
 </resources>

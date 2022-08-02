@@ -201,4 +201,12 @@
     <string name="berbagi_file">Berbagi File</string>
     <string name="tab_1">Daftar File</string>
     <string name="tab_2">Kirim File</string>
+    <string name="selamat_npembukaan_akun_berhasil">Selamat!\nPembukaan Akun Berhasil</string>
+    <string name="nomor_akun">Nomor Akun</string>
+    <string name="unduh_formulir">Unduh Formulir</string>
+    <string name="formulir_komplain">Formulir Komplain</string>
+    <string name="silahkan_isi_formulir_berikut_dengan_keluhan_anda_kami_akan_menindaklanjuti_sesegera_mungkin">Silahkan isi formulir berikut dengan keluhan Anda. Kami akan menindaklanjuti sesegera mungkin.</string>
+    <string name="perihal">Perihal</string>
+    <string name="tanggal">Tanggal</string>
+    <string name="detail_komplain">Detail Komplain</string>
 </resources>
