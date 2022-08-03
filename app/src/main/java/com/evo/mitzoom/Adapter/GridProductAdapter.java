@@ -2,6 +2,7 @@ package com.evo.mitzoom.Adapter;
 
 import android.app.Activity;
 import android.content.Context;
+import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,12 +13,14 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.evo.mitzoom.Fragments.FormRtgs;
 import com.evo.mitzoom.Fragments.frag_form_komplain;
 import com.evo.mitzoom.Fragments.frag_new_account;
+import com.evo.mitzoom.Fragments.frag_new_account2;
 import com.evo.mitzoom.R;
 import com.evo.mitzoom.Session.SessionManager;
 import com.github.javiersantos.materialstyleddialogs.MaterialStyledDialog;
@@ -67,17 +70,25 @@ public class GridProductAdapter extends RecyclerView.Adapter<GridProductAdapter.
                     PopUpTnc();
                 }
                 else if (pos == 2){
-                    ((FragmentActivity)ctx).getSupportFragmentManager()
-                            .beginTransaction()
-                            .replace(R.id.layout_frame, new frag_form_komplain())
-                            .addToBackStack(null)
-                            .commit();
+                    Fragment fragment;
+                    fragment = new frag_form_komplain();
+                    Bundle bundle = new Bundle();
+                    bundle.putInt("state",1);
+                    fragment.setArguments(bundle);
+                    getFragmentPage(fragment);
                 }
                 else {
                     popUpAds();
                 }
             }
         });
+    }
+    private void getFragmentPage(Fragment fragment){
+        ((FragmentActivity)ctx).getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.layout_frame, fragment)
+                .addToBackStack(null)
+                .commit();
     }
 
     @Override

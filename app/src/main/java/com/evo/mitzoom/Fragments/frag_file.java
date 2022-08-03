@@ -17,6 +17,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.viewpager.widget.ViewPager;
 
 import com.evo.mitzoom.Adapter.SectionsPagerAdapter;
@@ -65,7 +66,6 @@ public class frag_file extends Fragment {
                 BaseMeetingActivity.btnFile.setClickable(true);
                 FragmentManager fragmentManager = getFragmentManager();
                 fragmentManager.popBackStack();
-
             }
         });
         sectionsPagerAdapter = new SectionsPagerAdapter(getActivity().getSupportFragmentManager(), context);
@@ -73,19 +73,18 @@ public class frag_file extends Fragment {
         tabLayout.setupWithViewPager(viewPager);
         if (savedInstanceState != null) {
             pageContent = getActivity().getSupportFragmentManager().getFragment(savedInstanceState, KEY_FRAGMENT);
-            getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.frame_fragment, pageContent).commit();
+            getActivity().getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.frame_fragment, pageContent)
+                    .commit();
         } else {
             int tabSelect = viewPager.getCurrentItem();
             pageContent = sectionsPagerAdapter.getItem(tabSelect);
-            getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.frame_fragment, pageContent).commit();
+            getActivity().getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.frame_fragment, pageContent)
+                    .commit();
         }
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        getActivity().getSupportFragmentManager().beginTransaction().remove(new frag_file()).commitAllowingStateLoss();
-        Toast.makeText(context, "Destroy frag_file", Toast.LENGTH_SHORT).show();
     }
 
     @Override

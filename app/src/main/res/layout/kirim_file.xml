@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:theme="@style/Theme.MaterialComponents.DayNight.DarkActionBar">
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rv_kirim_file"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/navbawah"
+        tools:ignore="SpeakableTextPresentCheck"
+        tools:listitem="@layout/item_file"/>
+    <LinearLayout
+        android:id="@+id/navbawah"
+        android:layout_alignParentBottom="true"
+        android:background="@color/bg_cif"
+        android:layout_width="match_parent"
+        android:orientation="horizontal"
+        android:layout_height="wrap_content">
+        <Button
+            android:elevation="0dp"
+            android:textSize="12dp"
+            android:id="@+id/tambah_file"
+            android:layout_width="wrap_content"
+            android:layout_weight="1"
+            android:layout_height="40dp"
+            android:layout_marginEnd="12dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
+            android:layout_marginStart="15dp"
+            android:background="@drawable/oval_background_10dp"
+            android:backgroundTint="@color/bg_cif"
+            android:drawableStart="@drawable/ic_add_file"
+            android:text="Tambah File"
+            android:onClick="onClickFile"
+            android:textColor="@color/white"
+            android:textStyle="bold" />
+        <Button
+            android:elevation="0dp"
+            android:textSize="12dp"
+            android:id="@+id/kirim_file"
+            android:layout_width="wrap_content"
+            android:layout_weight="1"
+            android:layout_height="40dp"
+            android:layout_marginEnd="15dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
+            android:background="@drawable/oval_background_10dp"
+            android:backgroundTint="@color/white"
+            android:drawableStart="@drawable/ic_send"
+            android:drawableTint="@color/bg_cif"
+            android:text="Kirim File"
+            android:onClick="onClickFile"
+            android:textColor="@color/bg_cif"
+            android:textStyle="bold" />
+</LinearLayout>
+</RelativeLayout>

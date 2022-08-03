@@ -2,6 +2,7 @@ package com.evo.mitzoom.Adapter;
 
 import android.app.Activity;
 import android.content.Context;
+import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,6 +20,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.evo.mitzoom.API.ApiService;
 import com.evo.mitzoom.API.Server;
+import com.evo.mitzoom.Fragments.frag_form_komplain;
 import com.evo.mitzoom.Fragments.frag_new_account;
 import com.evo.mitzoom.Fragments.frag_new_account_cs;
 import com.evo.mitzoom.Fragments.frag_rtgs;
@@ -48,13 +50,10 @@ public class ItemServiceAdapter extends RecyclerView.Adapter<ItemServiceAdapter.
     private LayoutInflater inflater;
     private View dialogView;
     private SweetAlertDialog sweetAlertDialogTNC;
-
-
     public ItemServiceAdapter(Context ctx, ArrayList<ItemModel> dataList){
         this.dataList = dataList;
         this.ctx = ctx;
     }
-
     @Override
     public ItemHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_bank, parent, false);
@@ -62,7 +61,6 @@ public class ItemServiceAdapter extends RecyclerView.Adapter<ItemServiceAdapter.
         idDips = sessionManager.getKEY_IdDips();
         return new ItemHolder(view);
     }
-
     @Override
     public void onBindViewHolder(ItemHolder holder, int position) {
         holder.NamaItem.setText(dataList.get(position).getNamaItem());
@@ -77,15 +75,16 @@ public class ItemServiceAdapter extends RecyclerView.Adapter<ItemServiceAdapter.
                     getFragmentPage(new frag_rtgs());
                     return;
                 case "2" :
-                    Toast.makeText(ctx, R.string.SKN, Toast.LENGTH_SHORT).show();
-                    return;
-                case "3" :
-                    Toast.makeText(ctx, R.string.FOREX, Toast.LENGTH_SHORT).show();
+                    Fragment fragment;
+                    fragment = new frag_form_komplain();
+                    Bundle bundle = new Bundle();
+                    bundle.putInt("state",2);
+                    fragment.setArguments(bundle);
+                    getFragmentPage(fragment);
                     return;
             }
         });
     }
-
     @Override
     public int getItemCount() {
         return (dataList != null) ? dataList.size() : 0;

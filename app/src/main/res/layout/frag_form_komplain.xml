@@ -29,10 +29,11 @@
             android:textStyle="bold" />
     </RelativeLayout>
     <LinearLayout
+        android:padding="10dp"
         android:id="@+id/hint"
         android:layout_below="@+id/TopBar"
         android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
+        android:layout_height="wrap_content"
         android:background="@color/white"
         android:orientation="horizontal">
         <TextView
