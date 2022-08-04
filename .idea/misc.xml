@@ -269,6 +269,7 @@
         <entry key="..\:/Users/rafii/AndroidStudioProjects/DIPS 2/app/src/main/res/layout/activity_dips_video_confren.xml" value="0.20416666666666666" />
         <entry key="..\:/Users/rafii/AndroidStudioProjects/DIPS 2/app/src/main/res/layout/activity_dips_waiting_room.xml" value="0.20416666666666666" />
         <entry key="..\:/Users/rafii/AndroidStudioProjects/DIPS 2/app/src/main/res/layout/aktivasi_berhasil.xml" value="0.25" />
+        <entry key="..\:/Users/rafii/AndroidStudioProjects/DIPS 2/app/src/main/res/layout/aktivasi_ibmb.xml" value="0.17657657657657658" />
         <entry key="..\:/Users/rafii/AndroidStudioProjects/DIPS 2/app/src/main/res/layout/content_form_rtgs.xml" value="0.2" />
         <entry key="..\:/Users/rafii/AndroidStudioProjects/DIPS 2/app/src/main/res/layout/content_frag_resi.xml" value="0.25" />
         <entry key="..\:/Users/rafii/AndroidStudioProjects/DIPS 2/app/src/main/res/layout/content_summary_rtgs.xml" value="0.2" />
@@ -279,10 +280,12 @@
         <entry key="..\:/Users/rafii/AndroidStudioProjects/DIPS 2/app/src/main/res/layout/frag_daftar_produk.xml" value="0.13243243243243244" />
         <entry key="..\:/Users/rafii/AndroidStudioProjects/DIPS 2/app/src/main/res/layout/frag_dialog_rtgs.xml" value="0.20416666666666666" />
         <entry key="..\:/Users/rafii/AndroidStudioProjects/DIPS 2/app/src/main/res/layout/frag_file.xml" value="0.21" />
+        <entry key="..\:/Users/rafii/AndroidStudioProjects/DIPS 2/app/src/main/res/layout/frag_form_credit.xml" value="0.18" />
         <entry key="..\:/Users/rafii/AndroidStudioProjects/DIPS 2/app/src/main/res/layout/frag_form_komplain.xml" value="0.22" />
-        <entry key="..\:/Users/rafii/AndroidStudioProjects/DIPS 2/app/src/main/res/layout/frag_form_opening_account.xml" value="0.15" />
+        <entry key="..\:/Users/rafii/AndroidStudioProjects/DIPS 2/app/src/main/res/layout/frag_form_opening_account.xml" value="0.22" />
         <entry key="..\:/Users/rafii/AndroidStudioProjects/DIPS 2/app/src/main/res/layout/frag_form_rtgs2.xml" value="0.2" />
         <entry key="..\:/Users/rafii/AndroidStudioProjects/DIPS 2/app/src/main/res/layout/frag_input_nik_nama.xml" value="0.1675929884566054" />
+        <entry key="..\:/Users/rafii/AndroidStudioProjects/DIPS 2/app/src/main/res/layout/frag_interbank.xml" value="0.22" />
         <entry key="..\:/Users/rafii/AndroidStudioProjects/DIPS 2/app/src/main/res/layout/frag_kirim_file.xml" value="0.20416666666666666" />
         <entry key="..\:/Users/rafii/AndroidStudioProjects/DIPS 2/app/src/main/res/layout/frag_new_account.xml" value="0.22" />
         <entry key="..\:/Users/rafii/AndroidStudioProjects/DIPS 2/app/src/main/res/layout/frag_new_account2.xml" value="0.22" />

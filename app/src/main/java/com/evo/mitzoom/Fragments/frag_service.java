@@ -75,24 +75,23 @@ public class frag_service extends Fragment {
             }
         });
     }
-
     private void addData(){
         data = new ArrayList<>();
-        data.add(new ItemModel("0",getResources().getString(R.string.pembukaan_akun),R.drawable.item1));
-        data.add(new ItemModel("1",getResources().getString(R.string.Formulir_Transfer),R.drawable.item2));
-        data.add(new ItemModel("2",getResources().getString(R.string.CUSTOMER_COMPLAIN),R.drawable.item1));
-        data.add(new ItemModel("3",getResources().getString(R.string.INTERBANK_TRANSACTION),R.drawable.item2));
+        data.add(new ItemModel("0",getResources().getString(R.string.pembukaan_akun),R.drawable.item1)); //Sudah
+        data.add(new ItemModel("1",getResources().getString(R.string.Formulir_Transfer),R.drawable.item2)); //Sudah
+        data.add(new ItemModel("2",getResources().getString(R.string.CUSTOMER_COMPLAIN),R.drawable.item1)); //Sudah
+        data.add(new ItemModel("3",getResources().getString(R.string.INTERBANK_TRANSACTION),R.drawable.item2)); //Sudah
         data.add(new ItemModel("4",getResources().getString(R.string.KYC_UPDATING),R.drawable.item1));
-        data.add(new ItemModel("5",getResources().getString(R.string.DORMANT_ACTIVATION),R.drawable.item2));
+        data.add(new ItemModel("5",getResources().getString(R.string.DORMANT_ACTIVATION),R.drawable.item2)); //Sudah
         data.add(new ItemModel("6",getResources().getString(R.string.FOREX),R.drawable.item1));
         data.add(new ItemModel("7",getResources().getString(R.string.ATM_CARD),R.drawable.item2));
         data.add(new ItemModel("8",getResources().getString(R.string.POWER_OF_ATTORNEY),R.drawable.item1));
-        data.add(new ItemModel("9",getResources().getString(R.string.IBMB_REGISTRATION),R.drawable.item2));
-        data.add(new ItemModel("10",getResources().getString(R.string.CREDIT_FORM),R.drawable.item1));
+        data.add(new ItemModel("9",getResources().getString(R.string.IBMB_REGISTRATION),R.drawable.item2)); //Sudah
+        data.add(new ItemModel("10",getResources().getString(R.string.CREDIT_FORM),R.drawable.item1)); //Sudah
         data.add(new ItemModel("11",getResources().getString(R.string.REGISTER_WEALTH),R.drawable.item2));
         data.add(new ItemModel("12",getResources().getString(R.string.WEALTH_RISK_PROFILE),R.drawable.item1));
         data.add(new ItemModel("13",getResources().getString(R.string.FINANCIAL_PLANNING),R.drawable.item2));
-        data.add(new ItemModel("14",getResources().getString(R.string.WEALTH),R.drawable.item1));
+        data.add(new ItemModel("14",getResources().getString(R.string.WEALTH),R.drawable.item1)); //Sudah
     }
     private void Mirroring(int nextCode, boolean bool){
         JSONObject jsons = new JSONObject();
@@ -121,7 +120,6 @@ public class frag_service extends Fragment {
             }
         });
     }
-
     private void getFragmentPage(Fragment fragment){
         getActivity().getSupportFragmentManager()
                 .beginTransaction()

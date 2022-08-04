@@ -156,7 +156,7 @@
     <string name="CREATE_ATM_CARD">Create ATM Card</string>
     <string name="INTERBANK_TRANSACTION">Interbank Transaction</string>
     <string name="ATM_CARD">ATM Card</string>
-    <string name="KYC_UPDATING">KYC Updating</string>
+    <string name="KYC_UPDATING">Update Data</string>
     <string name="CUSTOMER_COMPLAIN">Customer Complain</string>
     <string name="DORMANT_ACTIVATION">Dormant Activation</string>
     <string name="rto_content">Minimum transaction amount is IDR 50.000 and maximum is IDR 50.000.000</string>
@@ -218,4 +218,14 @@
     <string name="WEALTH_RISK_PROFILE">Wealth Risk Profile</string>
     <string name="FINANCIAL_PLANNING">Financial Planning</string>
     <string name="WEALTH">Wealth</string>
+    <string name="antar_rekening">Inter Bank</string>
+    <string name="deposit">Deposit</string>
+    <string name="maintenance_deposit">Maintenance Deposit</string>
+    <string name="WEALTH_SUBSCRIPTION">Subscription</string>
+    <string name="WEALTH_SWITCHING">Switching</string>
+    <string name="WEALTH_REDEMPTION">Redemption</string>
+    <string name="_12_bulan">12 Month</string>
+    <string name="_24_bulan">24 Month</string>
+    <string name="_35_bulan">35 Month</string>
+    <string name="nominal_pengajuan">Nominal Submission</string>
 </resources>
