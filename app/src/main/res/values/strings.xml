@@ -227,4 +227,8 @@
     <string name="_24_bulan">24 Bulan</string>
     <string name="_35_bulan">35 Bulan</string>
     <string name="nominal_pengajuan">Nominal Pengajuan</string>
+    <string name="nomor_npwp">Nomor NPWP</string>
+    <string name="tanggal_transaksi">Tanggal Transaksi</string>
+    <string name="mata_uang_asing">Mata Uang Asing</string>
+    <string name="nominal_transaksi">Nominal Transaksi</string>
 </resources>

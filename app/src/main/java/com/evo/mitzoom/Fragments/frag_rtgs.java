@@ -154,7 +154,6 @@ public class frag_rtgs extends Fragment {
                 chooseFromSD();
             }
         });
-
         btnBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -200,12 +199,14 @@ public class frag_rtgs extends Fragment {
         });
         switch (state){
             case 1:
-                title.setText(getResources().getString(R.string.Formulir_Transfer));
+                title.setText(getString(R.string.Formulir_Transfer));
                 return;
             case 2:
-                title.setText(getResources().getString(R.string.INTERBANK_TRANSACTION));
+                title.setText(getString(R.string.INTERBANK_TRANSACTION));
+                return;
             case 3:
-                title.setText(getResources().getString(R.string.WEALTH));
+                title.setText(getString(R.string.WEALTH));
+                return;
         }
     }
 

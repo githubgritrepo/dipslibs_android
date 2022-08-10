@@ -23,10 +23,12 @@ import com.evo.mitzoom.API.Server;
 import com.evo.mitzoom.Fragments.frag_aktivasi_ibmb;
 import com.evo.mitzoom.Fragments.frag_form_credit;
 import com.evo.mitzoom.Fragments.frag_form_komplain;
+import com.evo.mitzoom.Fragments.frag_kartua_atm;
 import com.evo.mitzoom.Fragments.frag_new_account;
 import com.evo.mitzoom.Fragments.frag_new_account_cs;
 import com.evo.mitzoom.Fragments.frag_opening_account;
 import com.evo.mitzoom.Fragments.frag_rtgs;
+import com.evo.mitzoom.Fragments.frag_transaksi_valas;
 import com.evo.mitzoom.Model.ItemModel;
 import com.evo.mitzoom.R;
 import com.evo.mitzoom.Session.SessionManager;
@@ -101,28 +103,52 @@ public class ItemServiceAdapter extends RecyclerView.Adapter<ItemServiceAdapter.
                     getFragmentPage(fragment);
                     return;
                 case "4" :
+                    fragment = new frag_form_credit();
+                    bundle = new Bundle();
+                    bundle.putInt("state",2);
+                    fragment.setArguments(bundle);
+                    getFragmentPage(fragment);
                     return;
                 case "5" :
                     PopUpTnc("5");
                     return;
                 case "6" :
+                    PopUpTnc("6");
                     return;
                 case "7" :
+                    getFragmentPage(new frag_kartua_atm());
+                    return;
+                case "8" :
+                    fragment = new frag_form_credit();
+                    bundle = new Bundle();
+                    bundle.putInt("state",4);
+                    fragment.setArguments(bundle);
+                    getFragmentPage(fragment);
                     return;
                 case "9" :
                     getFragmentPage(new frag_aktivasi_ibmb());
                     return;
                 case "10" :
-                    getFragmentPage(new frag_form_credit());
+                    fragment = new frag_form_credit();
+                    bundle = new Bundle();
+                    bundle.putInt("state",1);
+                    fragment.setArguments(bundle);
+                    getFragmentPage(fragment);
                     return;
                 case "11" :
+                    PopUpTnc("11");
                     return;
                 case "12" :
                     return;
                 case "13" :
+                    fragment = new frag_form_credit();
+                    bundle = new Bundle();
+                    bundle.putInt("state",3);
+                    fragment.setArguments(bundle);
+                    getFragmentPage(fragment);
                     return;
                 case "14" :
-                    //STATE 2 UNTUK KE FORMULIR KEKAYAAN
+                    //STATE 3 UNTUK KE FORMULIR KEKAYAAN
                     fragment = new frag_rtgs();
                     bundle = new Bundle();
                     bundle.putInt("state",3);
@@ -185,6 +211,10 @@ public class ItemServiceAdapter extends RecyclerView.Adapter<ItemServiceAdapter.
                     if (checkBox.isChecked()){
                         if (statez.equals("0")){
                             getFragmentPage(new frag_new_account_cs());
+                            sweetAlertDialogTNC.dismiss();
+                        }
+                        else if (statez.equals("6")){
+                            getFragmentPage(new frag_transaksi_valas());
                             sweetAlertDialogTNC.dismiss();
                         }
                         else {

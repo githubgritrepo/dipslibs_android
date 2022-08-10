@@ -9,27 +9,25 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.chaos.view.PinView;
-import com.evo.mitzoom.Adapter.ItemServiceAdapter;
 import com.evo.mitzoom.R;
-import com.evo.mitzoom.Session.SessionManager;
 
 import java.math.BigDecimal;
-import java.text.NumberFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.regex.Matcher;
@@ -37,12 +35,15 @@ import java.util.regex.Pattern;
 
 import cn.pedant.SweetAlert.SweetAlertDialog;
 
-public class frag_form_credit extends Fragment {
+public class frag_kartua_atm extends Fragment {
+    private ImageView btnBack;
     private Context context;
+    private AutoCompleteTextView etJenisLayanan;
+    private EditText etTgl;
     private Button btnProses;
+    private String Tgl;
     private CheckBox pernyataan;
-    private EditText et_nominal;
-    private ImageView  btnBack;
+    String[] sourceService;
     private LayoutInflater inflater;
     private View dialogView;
     private Button btnVerifikasi;
@@ -55,11 +56,6 @@ public class frag_form_credit extends Fragment {
     private Handler handler = null;
     private Runnable myRunnable = null;
     private Handler handlerSuccess;
-    private int state;
-    private TextView judul, tenor, nominalPengajuan;
-    private RadioGroup radioTenor;
-    private LinearLayout LLNominal;
-    public static final NumberFormat numberFormat = NumberFormat.getInstance(new Locale("id", "ID"));
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -69,24 +65,23 @@ public class frag_form_credit extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.frag_form_credit, container, false);
-        btnProses = view.findViewById(R.id.btnProses_formKredit);
-        btnBack = view.findViewById(R.id.btn_back_formCredit);
-        pernyataan = view.findViewById(R.id.pernyataan_formKredit);
-        et_nominal = view.findViewById(R.id.et_nominalPengajuan);
-        tenor = view.findViewById(R.id.tenor);
-        radioTenor = view.findViewById(R.id.group_tenor);
-        nominalPengajuan = view.findViewById(R.id.tv_nominalPengajuan);
-        LLNominal = view.findViewById(R.id.nominal_pengajuanLL);
-        judul = view.findViewById(R.id.judul);
+        View view = inflater.inflate(R.layout.frag_kartu_atm, container, false);
+        btnBack = view.findViewById(R.id.btn_back_atm);
+        etTgl = view.findViewById(R.id.et_tgl_transaksi_atm);
+        btnProses = view.findViewById(R.id.btnProses_atm);
+        pernyataan = view.findViewById(R.id.pernyataan_atm);
+        etJenisLayanan = view.findViewById(R.id.et_jenisLayananATM);
         return view;
     }
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        Bundle arg = getArguments();
-        state = arg.getInt("state");
+        sourceService = new String[]{"Blokir Kartu ATM", "Aktivasi Kartu ATM", "Minta Kartu ATM"};
+        Calendar c = Calendar.getInstance();
+        SimpleDateFormat df = new SimpleDateFormat("dd/MM/yyy");
+        Tgl = df.format(c.getTime());
         btnProses.setEnabled(false);
+        etTgl.setText(Tgl);
         btnProses.setBackgroundTintList(context.getResources().getColorStateList(R.color.btnFalse));
         pernyataan.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -109,62 +104,15 @@ public class frag_form_credit extends Fragment {
                 getFragmentPage(new frag_service());
             }
         });
-        et_nominal.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                et_nominal.removeTextChangedListener(this);
-                BigDecimal parsed = parseCurrencyValue(et_nominal.getText().toString());
-                String formatted = numberFormat.format(parsed);
-                et_nominal.setText(formatted);
-                et_nominal.setSelection(formatted.length());
-                et_nominal.addTextChangedListener(this);
-            }
-        });
         btnProses.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 PopUp();
             }
         });
-        switch (state){
-            case 1:
-                judul.setText(getString(R.string.CREDIT_FORM));
-                tenor.setVisibility(View.VISIBLE);
-                radioTenor.setVisibility(View.VISIBLE);
-                nominalPengajuan.setVisibility(View.VISIBLE);
-                LLNominal.setVisibility(View.VISIBLE);
-                return;
-            case 2:
-                judul.setText(getString(R.string.KYC_UPDATING));
-                tenor.setVisibility(View.GONE);
-                radioTenor.setVisibility(View.GONE);
-                nominalPengajuan.setVisibility(View.GONE);
-                LLNominal.setVisibility(View.GONE);
-                return;
-            case 3:
-                judul.setText(getString(R.string.FINANCIAL_PLANNING));
-                tenor.setVisibility(View.GONE);
-                radioTenor.setVisibility(View.GONE);
-                nominalPengajuan.setVisibility(View.GONE);
-                LLNominal.setVisibility(View.GONE);
-                return;
-            case 4:
-                judul.setText(getString(R.string.POWER_OF_ATTORNEY));
-                tenor.setVisibility(View.GONE);
-                radioTenor.setVisibility(View.GONE);
-                nominalPengajuan.setVisibility(View.GONE);
-                LLNominal.setVisibility(View.GONE);
-        }
+
+        ArrayAdapter<String> adapterPopulation = new ArrayAdapter<String>(context,R.layout.list_item, sourceService);
+        etJenisLayanan.setAdapter(adapterPopulation);
     }
     private void PopUp(){
         inflater = getLayoutInflater();
@@ -287,16 +235,6 @@ public class frag_form_credit extends Fragment {
                 handlerTimer.postDelayed(this,1000);
             }
         });
-    }
-    public static BigDecimal parseCurrencyValue(String value) {
-        try {
-            String replaceRegex = String.format("[%s,.\\s]", Objects.requireNonNull(numberFormat.getCurrency()).getDisplayName());
-            String currencyValue = value.replaceAll(replaceRegex, "");
-            return new BigDecimal(currencyValue);
-        } catch (Exception e) {
-            Log.e("MyApp", e.getMessage(), e);
-        }
-        return BigDecimal.ZERO;
     }
     private void getFragmentPage(Fragment fragment){
         getActivity().getSupportFragmentManager()
