@@ -2,6 +2,7 @@ package com.evo.mitzoom.Adapter;
 
 import android.app.Activity;
 import android.content.Context;
+import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,9 +20,15 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.evo.mitzoom.API.ApiService;
 import com.evo.mitzoom.API.Server;
+import com.evo.mitzoom.Fragments.frag_aktivasi_ibmb;
+import com.evo.mitzoom.Fragments.frag_form_credit;
+import com.evo.mitzoom.Fragments.frag_form_komplain;
+import com.evo.mitzoom.Fragments.frag_kartua_atm;
 import com.evo.mitzoom.Fragments.frag_new_account;
 import com.evo.mitzoom.Fragments.frag_new_account_cs;
+import com.evo.mitzoom.Fragments.frag_opening_account;
 import com.evo.mitzoom.Fragments.frag_rtgs;
+import com.evo.mitzoom.Fragments.frag_transaksi_valas;
 import com.evo.mitzoom.Model.ItemModel;
 import com.evo.mitzoom.R;
 import com.evo.mitzoom.Session.SessionManager;
@@ -48,13 +55,12 @@ public class ItemServiceAdapter extends RecyclerView.Adapter<ItemServiceAdapter.
     private LayoutInflater inflater;
     private View dialogView;
     private SweetAlertDialog sweetAlertDialogTNC;
-
-
     public ItemServiceAdapter(Context ctx, ArrayList<ItemModel> dataList){
         this.dataList = dataList;
         this.ctx = ctx;
     }
-
+    private Bundle bundle;
+    private Fragment fragment;
     @Override
     public ItemHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_bank, parent, false);
@@ -62,7 +68,6 @@ public class ItemServiceAdapter extends RecyclerView.Adapter<ItemServiceAdapter.
         idDips = sessionManager.getKEY_IdDips();
         return new ItemHolder(view);
     }
-
     @Override
     public void onBindViewHolder(ItemHolder holder, int position) {
         holder.NamaItem.setText(dataList.get(position).getNamaItem());
@@ -70,22 +75,89 @@ public class ItemServiceAdapter extends RecyclerView.Adapter<ItemServiceAdapter.
         holder.parent_layout.setOnClickListener(v -> {
             switch (dataList.get(position).getId()){
                 case "0" :
-                    PopUpTnc();
+                    PopUpTnc("0");
                     return;
                 case "1" :
                     Mirroring(16,true);
-                    getFragmentPage(new frag_rtgs());
+                    fragment = new frag_rtgs();
+                    bundle = new Bundle();
+                    //STATE 1 UNTUK KE FORMULIR TRANSFER
+                    bundle.putInt("state",1);
+                    fragment.setArguments(bundle);
+                    getFragmentPage(fragment);
                     return;
                 case "2" :
-                    Toast.makeText(ctx, R.string.SKN, Toast.LENGTH_SHORT).show();
+                    //STATE 2 UNTUK BACK KE FRAGMENT DENGAN CS
+                    fragment = new frag_form_komplain();
+                    bundle = new Bundle();
+                    bundle.putInt("state",2);
+                    fragment.setArguments(bundle);
+                    getFragmentPage(fragment);
                     return;
-                case "3" :
-                    Toast.makeText(ctx, R.string.FOREX, Toast.LENGTH_SHORT).show();
+                case "3":
+                    //STATE 2 UNTUK KE FORMULIR TRANSFER
+                    fragment = new frag_rtgs();
+                    bundle = new Bundle();
+                    bundle.putInt("state",2);
+                    fragment.setArguments(bundle);
+                    getFragmentPage(fragment);
+                    return;
+                case "4" :
+                    fragment = new frag_form_credit();
+                    bundle = new Bundle();
+                    bundle.putInt("state",2);
+                    fragment.setArguments(bundle);
+                    getFragmentPage(fragment);
+                    return;
+                case "5" :
+                    PopUpTnc("5");
+                    return;
+                case "6" :
+                    PopUpTnc("6");
+                    return;
+                case "7" :
+                    getFragmentPage(new frag_kartua_atm());
+                    return;
+                case "8" :
+                    fragment = new frag_form_credit();
+                    bundle = new Bundle();
+                    bundle.putInt("state",4);
+                    fragment.setArguments(bundle);
+                    getFragmentPage(fragment);
+                    return;
+                case "9" :
+                    getFragmentPage(new frag_aktivasi_ibmb());
+                    return;
+                case "10" :
+                    fragment = new frag_form_credit();
+                    bundle = new Bundle();
+                    bundle.putInt("state",1);
+                    fragment.setArguments(bundle);
+                    getFragmentPage(fragment);
+                    return;
+                case "11" :
+                    PopUpTnc("11");
+                    return;
+                case "12" :
+                    return;
+                case "13" :
+                    fragment = new frag_form_credit();
+                    bundle = new Bundle();
+                    bundle.putInt("state",3);
+                    fragment.setArguments(bundle);
+                    getFragmentPage(fragment);
+                    return;
+                case "14" :
+                    //STATE 3 UNTUK KE FORMULIR KEKAYAAN
+                    fragment = new frag_rtgs();
+                    bundle = new Bundle();
+                    bundle.putInt("state",3);
+                    fragment.setArguments(bundle);
+                    getFragmentPage(fragment);
                     return;
             }
         });
     }
-
     @Override
     public int getItemCount() {
         return (dataList != null) ? dataList.size() : 0;
@@ -102,7 +174,7 @@ public class ItemServiceAdapter extends RecyclerView.Adapter<ItemServiceAdapter.
             parent_layout = itemView.findViewById(R.id.parent_layout);
         }
     }
-    private void PopUpTnc(){
+    private void PopUpTnc(String statez){
         sweetAlertDialogTNC = new SweetAlertDialog(ctx, SweetAlertDialog.NORMAL_TYPE);
         inflater = ((Activity)ctx).getLayoutInflater();
         dialogView = inflater.inflate(R.layout.item_tnc,null);
@@ -137,8 +209,18 @@ public class ItemServiceAdapter extends RecyclerView.Adapter<ItemServiceAdapter.
                 @Override
                 public void onClick(View v) {
                     if (checkBox.isChecked()){
-                        getFragmentPage(new frag_new_account_cs());
-                        sweetAlertDialogTNC.dismiss();
+                        if (statez.equals("0")){
+                            getFragmentPage(new frag_new_account_cs());
+                            sweetAlertDialogTNC.dismiss();
+                        }
+                        else if (statez.equals("6")){
+                            getFragmentPage(new frag_transaksi_valas());
+                            sweetAlertDialogTNC.dismiss();
+                        }
+                        else {
+                            getFragmentPage(new frag_opening_account());
+                            sweetAlertDialogTNC.dismiss();
+                        }
                     }
                     else {
                         btn.setClickable(false);

@@ -36,6 +36,7 @@ public class frag_form_komplain extends Fragment {
     private String Tgl;
     private CheckBox pernyataan;
     private Button btnProses;
+    private int state;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -57,12 +58,21 @@ public class frag_form_komplain extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        Bundle arg = getArguments();
+        state = arg.getInt("state");
         btnProses.setEnabled(false);
         btnProses.setBackgroundTintList(context.getResources().getColorStateList(R.color.btnFalse));
         btnBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                getFragmentPage(new frag_berita());
+                switch (state){
+                    case 1:
+                        getFragmentPage1(new frag_berita());
+                        return;
+                    case 2:
+                        getFragmentPage2(new frag_service());
+                        return;
+                }
             }
         });
         Calendar c = Calendar.getInstance();
@@ -87,15 +97,39 @@ public class frag_form_komplain extends Fragment {
         btnProses.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(context, "Terima kasih!, Komplain anda sedang kami proses", Toast.LENGTH_SHORT).show();
-                getFragmentPage(new frag_berita());
+                String hal = perihal.getText().toString();
+                String detail = detailKomplain.getText().toString();
+                if (hal.isEmpty()){
+                    Toast.makeText(context, getResources().getString(R.string.error_field), Toast.LENGTH_SHORT).show();
+                }
+                else if (detail.isEmpty()){
+                    Toast.makeText(context, getResources().getString(R.string.error_field), Toast.LENGTH_SHORT).show();
+                }
+                else {
+                    Toast.makeText(context, "Terima kasih!, Komplain anda sedang kami proses", Toast.LENGTH_SHORT).show();
+                    switch (state){
+                        case 1:
+                            getFragmentPage1(new frag_berita());
+                            return;
+                        case 2:
+                            getFragmentPage2(new frag_portfolio());
+                            return;
+                    }
+                }
             }
         });
     }
-    private void getFragmentPage(Fragment fragment){
+    private void getFragmentPage1(Fragment fragment){
         getActivity().getSupportFragmentManager()
                 .beginTransaction()
                 .replace(R.id.layout_frame, fragment)
+                .addToBackStack(null)
+                .commit();
+    }
+    private void getFragmentPage2(Fragment fragment){
+        getActivity().getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.layout_frame2, fragment)
                 .addToBackStack(null)
                 .commit();
     }

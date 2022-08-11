@@ -48,6 +48,8 @@ import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.math.BigDecimal;
 import java.text.NumberFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Locale;
 import java.util.Objects;
 
@@ -115,6 +117,12 @@ public class frag_new_account_cs extends Fragment {
             et_productType.setText(produk);
             et_tgl_daftar.setText(tgl);
             et_nominal_daftar.setText(nominal);
+        }
+        else{
+            Calendar c = Calendar.getInstance();
+            SimpleDateFormat df = new SimpleDateFormat("dd/MM/yyy");
+            tgl = df.format(c.getTime());
+            et_tgl_daftar.setText(tgl);
         }
         icon_isi_form.setBackgroundTintList(context.getResources().getColorStateList(R.color.bg_cif));
         btnBack.setOnClickListener(new View.OnClickListener() {

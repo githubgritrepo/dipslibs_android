@@ -93,7 +93,7 @@
     <string name="rating_pop_up_content">Thank you for your rating. Your rating is very valuable to us.</string>
     <string name="produk_layanan"><![CDATA[Service]]></string>
     <string name="verifikasi">Verified</string>
-    <string name="RTGS">Transfer Form</string>
+    <string name="Formulir_Transfer">Transfer Form</string>
     <string name="SKN">SKN Transaction</string>
     <string name="FOREX">Forex Transaction</string>
     <string name="ReceiverAccount2">Receiver Account</string>
@@ -106,7 +106,7 @@
     <string name="successTransaction">Your transaction is succes</string>
     <string name="aktivasi_m_banking">M-Banking Activation</string>
     <string name="BI_FAST">BI Fast Transaction</string>
-    <string name="ONLINE_TRANSACTION">Online Transaksi</string>
+    <string name="ONLINE_TRANSACTION">Interbank Transaction</string>
     <string name="pilih_bahasa">Bahasa / Language</string>
     <string name="lan_id">Indonesia</string>
     <string name="lan_en">English</string>
@@ -155,8 +155,8 @@
     <string name="REMITTANCE_TRANSACTION">Remittance Transaction</string>
     <string name="CREATE_ATM_CARD">Create ATM Card</string>
     <string name="INTERBANK_TRANSACTION">Interbank Transaction</string>
-    <string name="ATM_CARD_ACTIVATION">ATM Card Activation</string>
-    <string name="KYC_UPDATING">KYC Updating</string>
+    <string name="ATM_CARD">ATM Card</string>
+    <string name="KYC_UPDATING">Update Data</string>
     <string name="CUSTOMER_COMPLAIN">Customer Complain</string>
     <string name="DORMANT_ACTIVATION">Dormant Activation</string>
     <string name="rto_content">Minimum transaction amount is IDR 50.000 and maximum is IDR 50.000.000</string>
@@ -210,4 +210,26 @@
     <string name="perihal">About</string>
     <string name="tanggal">Date</string>
     <string name="detail_komplain">Details</string>
+    <string name="CARDLESS_TRANSACTION">Cardless Cash Transaction</string>
+    <string name="POWER_OF_ATTORNEY">Power Of Attorney</string>
+    <string name="IBMB_REGISTRATION">Register IBMB</string>
+    <string name="CREDIT_FORM">Credit Form</string>
+    <string name="REGISTER_WEALTH">Register Wealth</string>
+    <string name="WEALTH_RISK_PROFILE">Wealth Risk Profile</string>
+    <string name="FINANCIAL_PLANNING">Financial Planning</string>
+    <string name="WEALTH">Wealth</string>
+    <string name="antar_rekening">Inter Bank</string>
+    <string name="deposit">Deposit</string>
+    <string name="maintenance_deposit">Maintenance Deposit</string>
+    <string name="WEALTH_SUBSCRIPTION">Subscription</string>
+    <string name="WEALTH_SWITCHING">Switching</string>
+    <string name="WEALTH_REDEMPTION">Redemption</string>
+    <string name="_12_bulan">12 Month</string>
+    <string name="_24_bulan">24 Month</string>
+    <string name="_35_bulan">35 Month</string>
+    <string name="nominal_pengajuan">Nominal Submission</string>
+    <string name="nomor_npwp">NPWP</string>
+    <string name="tanggal_transaksi">Transaction Date</string>
+    <string name="mata_uang_asing">Foreign Currency</string>
+    <string name="nominal_transaksi">Transaction Amount</string>
 </resources>

@@ -162,7 +162,6 @@ public class frag_inputdata extends Fragment {
                     et_NikNasabah.setError(getResources().getString(R.string.error_field));
                 }
                 else {
-
                     CekData();
                     //PopupChoose();
                 }

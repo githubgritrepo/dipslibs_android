@@ -9,6 +9,7 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
 
 import com.evo.mitzoom.Fragments.frag_daftar_file;
+import com.evo.mitzoom.Fragments.frag_kirim_file;
 import com.evo.mitzoom.R;
 
 public class SectionsPagerAdapter extends FragmentPagerAdapter {
@@ -31,7 +32,7 @@ public class SectionsPagerAdapter extends FragmentPagerAdapter {
                 fragment = new frag_daftar_file();
                 break;
             case 1:
-                fragment = new frag_daftar_file();
+                fragment = new frag_kirim_file();
                 break;
         }
         return fragment;

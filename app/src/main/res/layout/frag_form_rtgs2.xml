@@ -19,11 +19,12 @@
             android:src="@drawable/ic_baseline_arrow_back_24" />
 
         <TextView
+            android:id="@+id/titleofhead"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:layout_marginStart="6dp"
-            android:text="@string/RTGS"
+            android:text="@string/Formulir_Transfer"
             android:textAppearance="@style/TextAppearance.AppCompat.Body1"
             android:textSize="20dp"
             android:textStyle="bold" />

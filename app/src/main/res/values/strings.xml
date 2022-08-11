@@ -92,7 +92,7 @@
     <string name="rating_pop_up_content">Terima kasih atas penilaian Anda. Penilaian Anda sangat berharga bagi kami.</string>
     <string name="produk_layanan"><![CDATA[Layanan]]></string>
     <string name="verifikasi">Verifikasi</string>
-    <string name="RTGS">Formulir Transfer</string>
+    <string name="Formulir_Transfer">Formulir Transfer</string>
     <string name="SKN">Transaksi SKN</string>
     <string name="FOREX">Transaksi Valas</string>
     <string name="ReceiverAccount2">Rekening Penerima</string>
@@ -105,7 +105,7 @@
     <string name="successTransaction">Anda berhasil melakukan transaksi</string>
     <string name="aktivasi_m_banking">Aktivasi M-Banking</string>
     <string name="BI_FAST">Transaksi BI Fast</string>
-    <string name="ONLINE_TRANSACTION">Transaksi Online</string>
+    <string name="ONLINE_TRANSACTION">Transaksi Antar Bank</string>
     <string name="pilih_bahasa">Bahasa / Language</string>
     <string name="lan_id">Indonesia</string>
     <string name="lan_en">English</string>
@@ -154,9 +154,9 @@
     <string name="REMITTANCE_TRANSACTION">Transaksi Remittance</string>
     <string name="CREATE_ATM_CARD">Pembuatan Kartu ATM</string>
     <string name="INTERBANK_TRANSACTION">Transaksi Antar Bank</string>
-    <string name="ATM_CARD_ACTIVATION">Aktivasi Kartu ATM</string>
-    <string name="KYC_UPDATING">Perbarui KYC</string>
-    <string name="CUSTOMER_COMPLAIN">Komplain Customer</string>
+    <string name="ATM_CARD">Kartu ATM</string>
+    <string name="KYC_UPDATING">Perbarui Data</string>
+    <string name="CUSTOMER_COMPLAIN">Komplain Nasabah</string>
     <string name="DORMANT_ACTIVATION">Aktivasi Dormant</string>
     <string name="rto_content">Nominal transaksi minimal Rp. 50.000,00 dan maksimal Rp. 50.000.000,00</string>
     <string name="skn_content">Nominal transaksi minimal Rp. 50.000,00 dan maksimal Rp. 1.000.000.000,00 pertransaksi</string>
@@ -209,4 +209,26 @@
     <string name="perihal">Perihal</string>
     <string name="tanggal">Tanggal</string>
     <string name="detail_komplain">Detail Komplain</string>
+    <string name="CARDLESS_TRANSACTION">Tarik Tunai Tanpa Kartu</string>
+    <string name="POWER_OF_ATTORNEY">Surat Kuasa</string>
+    <string name="IBMB_REGISTRATION">Aktivasi IBMB</string>
+    <string name="CREDIT_FORM">Formulir Kredit</string>
+    <string name="REGISTER_WEALTH">Daftar Sumber Kekayaan</string>
+    <string name="WEALTH_RISK_PROFILE">Profil Resiko Kekayaan</string>
+    <string name="FINANCIAL_PLANNING">Rencana Keuangan</string>
+    <string name="WEALTH">Kekayaan</string>
+    <string name="antar_rekening">Antar Rekening</string>
+    <string name="deposit">Setoran</string>
+    <string name="maintenance_deposit">Perubahan Setoran</string>
+    <string name="WEALTH_SUBSCRIPTION">Langganan</string>
+    <string name="WEALTH_SWITCHING">Beralih</string>
+    <string name="WEALTH_REDEMPTION">Tebusan</string>
+    <string name="_12_bulan">12 Bulan</string>
+    <string name="_24_bulan">24 Bulan</string>
+    <string name="_35_bulan">35 Bulan</string>
+    <string name="nominal_pengajuan">Nominal Pengajuan</string>
+    <string name="nomor_npwp">Nomor NPWP</string>
+    <string name="tanggal_transaksi">Tanggal Transaksi</string>
+    <string name="mata_uang_asing">Mata Uang Asing</string>
+    <string name="nominal_transaksi">Nominal Transaksi</string>
 </resources>

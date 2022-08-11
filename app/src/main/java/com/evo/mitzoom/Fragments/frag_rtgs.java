@@ -105,6 +105,8 @@ public class frag_rtgs extends Fragment {
     private ArrayList<String> dataBenefit = new ArrayList<>();
     private ArrayList<String> dataPopulation = new ArrayList<>();
     private ArrayList<String> dataNews = new ArrayList<>();
+    private int state;
+    private TextView title;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -124,6 +126,7 @@ public class frag_rtgs extends Fragment {
         circleIndicator = (CircleIndicator) view.findViewById(R.id.indicator);
         btnProses = view.findViewById(R.id.btnProsesRTGS);
         btnAdd = (Button) view.findViewById(R.id.btnAdd);
+        title = view.findViewById(R.id.titleofhead);
         return view;
     }
     @Override
@@ -133,9 +136,11 @@ public class frag_rtgs extends Fragment {
         layouts.add(R.layout.content_form_rtgs);
         dataNoForm.add("2103212");
 
-        if (getArguments() != null) {
+        if (getArguments() != null && dataRTGS != null) {
             savedRTGS();
         } else {
+            Bundle arg = getArguments();
+            state = arg.getInt("state");
             initPager();
         }
 
@@ -149,7 +154,6 @@ public class frag_rtgs extends Fragment {
                 chooseFromSD();
             }
         });
-
         btnBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -157,7 +161,6 @@ public class frag_rtgs extends Fragment {
                 getFragmentPage(new frag_service());
             }
         });
-
         btnProses.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -169,7 +172,6 @@ public class frag_rtgs extends Fragment {
                 }
             }
         });
-
         btnAdd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -195,6 +197,17 @@ public class frag_rtgs extends Fragment {
                 mirroringPagerRTGS(currPos);
             }
         });
+        switch (state){
+            case 1:
+                title.setText(getString(R.string.Formulir_Transfer));
+                return;
+            case 2:
+                title.setText(getString(R.string.INTERBANK_TRANSACTION));
+                return;
+            case 3:
+                title.setText(getString(R.string.WEALTH));
+                return;
+        }
     }
 
     private void initPager() {
@@ -596,9 +609,25 @@ public class frag_rtgs extends Fragment {
     }
     private void fillTypeServiceList(){
         typeServiceList = new ArrayList<>();
-        typeServiceList.add(new TypeServiceItem("RTO", getResources().getString(R.string.rto_content)));
-        typeServiceList.add(new TypeServiceItem("SKN",getResources().getString(R.string.skn_content)));
-        typeServiceList.add(new TypeServiceItem("RTGS", getResources().getString(R.string.rtgs_content)));
+        switch (state){
+            case 1:
+                typeServiceList.add(new TypeServiceItem("RTO", getResources().getString(R.string.rto_content)));
+                typeServiceList.add(new TypeServiceItem("SKN",getResources().getString(R.string.skn_content)));
+                typeServiceList.add(new TypeServiceItem("RTGS", getResources().getString(R.string.rtgs_content)));
+                return;
+            case 2:
+                typeServiceList.add(new TypeServiceItem(getResources().getString(R.string.antar_rekening), getResources().getString(R.string.rto_content)));
+                typeServiceList.add(new TypeServiceItem(getResources().getString(R.string.deposit),getResources().getString(R.string.skn_content)));
+                typeServiceList.add(new TypeServiceItem(getResources().getString(R.string.maintenance_deposit), getResources().getString(R.string.rtgs_content)));
+                return;
+            case 3:
+                typeServiceList.add(new TypeServiceItem(getResources().getString(R.string.WEALTH_SUBSCRIPTION), getResources().getString(R.string.rto_content)));
+                typeServiceList.add(new TypeServiceItem(getResources().getString(R.string.WEALTH_SWITCHING),getResources().getString(R.string.skn_content)));
+                typeServiceList.add(new TypeServiceItem(getResources().getString(R.string.WEALTH_REDEMPTION), getResources().getString(R.string.rtgs_content)));
+                return;
+
+        }
+
     }
     private void Mirroring(boolean bool, CharSequence sumberRekening, CharSequence bank, CharSequence rekening, CharSequence nama, CharSequence nominal, CharSequence layanan, CharSequence manfaat, CharSequence penduduk, CharSequence berita, int page, int allpage ){
         JSONObject jsons = new JSONObject();
@@ -822,6 +851,7 @@ public class frag_rtgs extends Fragment {
                             et_typePopulation.getText().toString(),et_berita.getText().toString(),indexMirror,layouts.size());
                 }
             });
+
 
             fillTypeServiceList();
             AdapterTypeService adapterTypeService = new AdapterTypeService(context,typeServiceList);

@@ -1,40 +1,33 @@
 package com.evo.mitzoom.Fragments;
 
-import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
+import android.widget.Button;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.evo.mitzoom.Adapter.AdapterFile;
-import com.evo.mitzoom.Adapter.AdapterPortofolio;
-import com.evo.mitzoom.Adapter.SectionsPagerAdapter;
-import com.evo.mitzoom.BaseMeetingActivity;
 import com.evo.mitzoom.Model.FileModel;
-import com.evo.mitzoom.Model.PortfolioModel;
 import com.evo.mitzoom.R;
 
 import java.util.ArrayList;
 
-public class frag_daftar_file extends Fragment {
+public class frag_kirim_file extends Fragment {
     private Context context;
     private RecyclerView recyclerView;
     private RecyclerView.Adapter recyclerViewAdapter;
     private RecyclerView.LayoutManager recylerViewLayoutManager;
     private ArrayList<FileModel> data;
     private View view;
+    private Button tambahFile, kirimFile;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -44,8 +37,10 @@ public class frag_daftar_file extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        view = inflater.inflate(R.layout.daftar_file, container, false);
-        recyclerView = view.findViewById(R.id.rv_item_file);
+        view = inflater.inflate(R.layout.kirim_file, container, false);
+        recyclerView = view.findViewById(R.id.rv_kirim_file);
+        tambahFile = view.findViewById(R.id.tambah_file);
+        kirimFile = view.findViewById(R.id.kirim_file);
         recyclerView.setHasFixedSize(true);
         return view;
     }
@@ -53,27 +48,26 @@ public class frag_daftar_file extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        addData();
+        tambahFile.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Toast.makeText(context, "Coming Soon", Toast.LENGTH_SHORT).show();
+            }
+        });
+        kirimFile.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Toast.makeText(context, "Coming Soon", Toast.LENGTH_SHORT).show();
+            }
+        });
         setRecyler();
     }
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-    }
-
     private void setRecyler(){
         recylerViewLayoutManager = new LinearLayoutManager(getContext());
         recyclerView.setLayoutManager(recylerViewLayoutManager);
-
         recyclerViewAdapter = new AdapterFile(getContext(), data);
         recyclerView.setAdapter(recyclerViewAdapter);
         recyclerViewAdapter.notifyDataSetChanged();
-
     }
     private void addData(){
         data = new ArrayList<>();

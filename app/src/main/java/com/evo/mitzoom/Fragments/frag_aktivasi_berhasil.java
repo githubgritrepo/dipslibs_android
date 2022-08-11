@@ -56,16 +56,21 @@ public class frag_aktivasi_berhasil extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        String namaRek = "";
+        String namaRek;
         if (dataCIF != null) {
             try {
                 JSONObject obj = new JSONObject(dataCIF);
                 namaRek = obj.getString("nama");
+                nama.setText(namaRek);
             } catch (JSONException e) {
                 e.printStackTrace();
             }
         }
-        nama.setText(namaRek);
+        else {
+            namaRek = "Mohammad Rafii BUrhanuddin";
+            nama.setText(namaRek);
+        }
+
         idDips = session.getKEY_IdDips();
         btnSelesai.setOnClickListener(new View.OnClickListener() {
             @Override
