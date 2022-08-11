@@ -1,5 +1,4 @@
 package com.evo.mitzoom.Fragments;
-
 import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
@@ -43,7 +42,6 @@ public class frag_service extends Fragment {
     ImageView btnBack;
     private SessionManager sessionManager;
     private String idDips;
-
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
