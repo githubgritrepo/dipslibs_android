@@ -250,4 +250,5 @@
     <string name="nama_ibu_kandung">Mother\'s Name</string>
     <string name="no_handphone">Phone\'s Number</string>
     <string name="status_rumah">House Status</string>
+    <string name="kecamatan">Districts</string>
 </resources>

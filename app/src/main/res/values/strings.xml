@@ -249,4 +249,5 @@
     <string name="nama_ibu_kandung">Nama Ibu Kandung</string>
     <string name="no_handphone">No Handphone</string>
     <string name="status_rumah">Status Rumah</string>
+    <string name="kecamatan">Kecamatan</string>
 </resources>

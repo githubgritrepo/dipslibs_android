@@ -12,6 +12,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
@@ -44,7 +45,8 @@ import retrofit2.Response;
 public class frag_form_opening extends Fragment {
     private Context context;
     private ImageView preview_ktp, preview_npwp, preview_signature;
-    private EditText Nama,NIK,Email,Alamat,Agama,Status,NoHp;
+    private EditText KelurahanDesa,Kecamatan,KabupatenKota,Provinsi,KodePos,Kewarganegaraan,Negara,namaSuami_Istri_OrangTua,JenisKelamin,jenisBuktiIdentitas,TanggalTerbitIdentitas, TanggalBerakhirIdentitas, NamaIbuKandung, NomorTelephone, NomorNPWP, Rt,Rw,Gelar,Nama,NIK,Email,Alamat,Agama,Status,NoHp;
+    private AutoCompleteTextView JenisIdentitasLain, JumlahTanggungan, Pendidikan, statusRumah;
     private String Nama2,NIK2,Email2,Alamat2,Agama2,Status2,NoHp2;
     private String Produk = "";
     private LinearLayout iconKtp, iconNpwp, iconSignature, iconForm;
@@ -71,21 +73,45 @@ public class frag_form_opening extends Fragment {
         View view = inflater.inflate(R.layout.frag_form_opening_account, container, false);
         iconKtp = view.findViewById(R.id.icon_ktp);
         iconNpwp = view.findViewById(R.id.icon_npwp);
-        radioGroup = view.findViewById(R.id.groupradio2);
         iconSignature = view.findViewById(R.id.icon_signature);
         iconForm = view.findViewById(R.id.icon_form);
+        radioGroup = view.findViewById(R.id.groupradio2);
+
+        //Inisiasi Field Form
+        Gelar = view.findViewById(R.id.et_gelar);
         Nama = view.findViewById(R.id.et_nama);
-        NIK = view.findViewById(R.id.et_nik);
-        Email = view.findViewById(R.id.et_email);
         Alamat = view.findViewById(R.id.et_alamat);
+        Rt = view.findViewById(R.id.et_rt);
+        Rw = view.findViewById(R.id.et_rw);
+        KelurahanDesa = view.findViewById(R.id.et_kelurahanDesa);
+        Kecamatan = view.findViewById(R.id.et_Kecamatan);
+        KabupatenKota = view.findViewById(R.id.et_KabupatenKota);
+        Provinsi = view.findViewById(R.id.et_Provinsi);
+        KodePos = view.findViewById(R.id.et_kodepos);
+        Kewarganegaraan = view.findViewById(R.id.et_kewarganegaraan);
+        Negara = view.findViewById(R.id.et_Negara);
+        JenisIdentitasLain = view.findViewById(R.id.et_identityType);
+        JumlahTanggungan = view.findViewById(R.id.et_jumlahTanggungan);
+        namaSuami_Istri_OrangTua = view.findViewById(R.id.et_namaSuami_Istri_Orangtua);
+        JenisKelamin = view.findViewById(R.id.et_jenisKelamin);
         Agama = view.findViewById(R.id.et_agama);
-        NoHp = view.findViewById(R.id.et_no_hp);
         Status = view.findViewById(R.id.et_status);
+        Pendidikan = view.findViewById(R.id.et_pendidikan);
+        NIK = view.findViewById(R.id.et_nik);
+        jenisBuktiIdentitas = view.findViewById(R.id.et_jenisBuktiIdentitas);
+        TanggalTerbitIdentitas = view.findViewById(R.id.et_tglTerbitIdentitas);
+        TanggalBerakhirIdentitas = view.findViewById(R.id.et_tglBerakhirIdentitas);
+        NamaIbuKandung = view.findViewById(R.id.et_namaIbuKandung);
+        Email = view.findViewById(R.id.et_email);
+        NoHp = view.findViewById(R.id.et_no_hp);
+        NomorTelephone = view.findViewById(R.id.et_no_telephone);
+        NomorNPWP = view.findViewById(R.id.et_npwp);
+        statusRumah = view.findViewById(R.id.et_statusRumah);
+
         btnProcess = view.findViewById(R.id.btnProses);
         preview_ktp = view.findViewById(R.id.Imageview_ktp);
         preview_npwp = view.findViewById(R.id.Imageview_npwp);
         preview_signature = view.findViewById(R.id.Imageview_tanda_tangan);
-        pernyataan = view.findViewById(R.id.pernyataan);
         return view;
     }
     @Override
@@ -101,23 +127,51 @@ public class frag_form_opening extends Fragment {
         KTP = arg.getByteArray("ktp");
         NPWP = arg.getByteArray("npwp");
         TTD = arg.getByteArray("ttd");
-        Log.d("CEK1","ktp "+KTP+" | npwp = "+NPWP+" | TTD = "+TTD);
         if (KTP == null && NPWP == null && TTD == null){
             KTP = session.getKEY_KTP().getBytes();
             NPWP = session.getKEY_NPWP().getBytes();
             TTD = session.getKEY_TTD().getBytes();
         }
-        Log.d("CEK2","ktp "+KTP+" | npwp = "+NPWP+" | TTD = "+TTD);
         ByteArraytoimg(KTP,preview_ktp);
         ByteArraytoimg(NPWP,preview_npwp);
         ByteArraytoimg(TTD,preview_signature);
 
-
+        //setOCR
+        Gelar.setText("Tn");
         Nama.setText("Andi Wijaya Lesmana");
-        NIK.setText("320124150585005");
         Alamat.setText("JL RAYA CISEENG NO.15 BLOK G, RT 12, RW 16, Kel CIBENTANG, Kec CISEENG");
+        Rt.setText("012");
+        Rw.setText("016");
+        KelurahanDesa.setText("CIBENTANG");
+        Kecamatan.setText("CISEENG");
+        KabupatenKota.setText("BOGOR");
+        Provinsi.setText("JAWA BARAT");
+        Kewarganegaraan.setText("WNI");
+        Negara.setText("INDONESIA");
+        JenisKelamin.setText("LAKI-LAKI");
         Agama.setText("Islam");
         Status.setText("Belum Kawin");
+        NIK.setText("320124150585005");
+        TanggalTerbitIdentitas.setText("15-09-2013");
+        TanggalBerakhirIdentitas.setText("SEUMUR HIDUP");
+
+        Gelar.setEnabled(false);
+        Nama.setEnabled(false);
+        Alamat.setEnabled(false);
+        Rt.setEnabled(false);
+        Rw.setEnabled(false);
+        KelurahanDesa.setEnabled(false);
+        Kecamatan.setEnabled(false);
+        KabupatenKota.setEnabled(false);
+        Provinsi.setEnabled(false);
+        Kewarganegaraan.setEnabled(false);
+        Negara.setEnabled(false);
+        JenisKelamin.setEnabled(false);
+        Agama.setEnabled(false);
+        Status.setEnabled(false);
+        NIK.setEnabled(false);
+        TanggalTerbitIdentitas.setEnabled(false);
+        TanggalBerakhirIdentitas.setEnabled(false);
 
         Nama2 = Nama.getText().toString();
         NIK2 = NIK.getText().toString();
@@ -127,14 +181,8 @@ public class frag_form_opening extends Fragment {
         Agama2 = Agama.getText().toString();
         Status2 = Status.getText().toString();
 
-        if (pernyataan.isChecked()){
-            aBoolean = true;
-        }
-        else if (!pernyataan.isChecked()){
-            aBoolean = false;
-        }
-
-        Mirroring(false,Nama2,NIK2,Email2,NoHp2,Alamat2,Agama2,Status2,Produk,aBoolean);
+        //aBoolean = false;
+        //Mirroring(false,Nama2,NIK2,Email2,NoHp2,Alamat2,Agama2,Status2,Produk,aBoolean);
 
         Email.setFilters(new InputFilter[]{
                 new InputFilter() {
@@ -151,38 +199,8 @@ public class frag_form_opening extends Fragment {
                     }
                 }
         });
-        Status.setFilters(new InputFilter[]{
-                new InputFilter() {
-                    @Override
-                    public CharSequence filter(CharSequence cs, int start, int end, Spanned dest, int dstart, int dend) {
-                        // TODO Auto-generated method stub
-                        if(cs.equals("")){ // for backspace
-                            return cs;
-                        }
-                        if(cs.toString().matches("[a-zA-Z ]+")){ // here no space character
-                            return cs;
-                        }
-                        return "";
-                    }
-                }
-        });
-        Agama.setFilters(new InputFilter[]{
-                new InputFilter() {
-                    @Override
-                    public CharSequence filter(CharSequence cs, int start, int end, Spanned dest, int dstart, int dend) {
-                        // TODO Auto-generated method stub
-                        if(cs.equals("")){ // for backspace
-                            return cs;
-                        }
-                        if(cs.toString().matches("[a-zA-Z]+")){ // here no space character
-                            return cs;
-                        }
-                        return "";
-                    }
-                }
-        });
         //Text Watcher
-        Nama.addTextChangedListener(new TextWatcher() {
+        /*Nama.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
@@ -299,7 +317,7 @@ public class frag_form_opening extends Fragment {
             public void afterTextChanged(Editable s) {
 
             }
-        });
+        });*/
         radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
@@ -307,18 +325,7 @@ public class frag_form_opening extends Fragment {
                 radioButton = view.findViewById(selectedId);
                 NoHp2 = NoHp.getText().toString();
                 Email2 = Email.getText().toString();
-                Log.d("RADIO", "Text : "+radioButton.getText());
-                if (pernyataan.isChecked()){
-                    Log.d("CEK","MASUK IF onCheckedChanged");
-                    aBoolean = true;
-                }
-                else if (!pernyataan.isChecked()){
-                    Log.d("CEK","MASUK ELSE IF onCheckedChanged");
-                    aBoolean = false;
-                }
-
                 if (radioButton.isChecked()){
-                    Log.d("CEK","MASUK ELSE IF 2 onCheckedChanged");
                     Produk = radioButton.getText().toString();
                 }
                 else if (!radioButton.isChecked()){
@@ -327,35 +334,7 @@ public class frag_form_opening extends Fragment {
                 }
                 Log.d("CEK","Produk : "+Produk);
                 Log.d("CEK","aBoolean : "+aBoolean);
-                Mirroring(false,Nama2,NIK2,Email2,NoHp2,Alamat2,Agama2,Status2,radioButton.getText(),aBoolean);
-            }
-        });
-        pernyataan.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                NoHp2 = NoHp.getText().toString();
-                Email2 = Email.getText().toString();
-                int selectedId = radioGroup.getCheckedRadioButtonId();
-                if (pernyataan.isChecked()){
-                    Log.d("CEK","MASUK IF onClick pernyataan");
-                    aBoolean = true;
-                }
-                else {
-                    Log.d("CEK","MASUK ELSE IF onClick pernyataan");
-                    aBoolean = false;
-                }
-
-                if (selectedId == -1){
-                    Log.d("CEK","MASUK ELSE IF 2 onClick pernyataan");
-                    Produk = "" ;
-                }
-                else {
-                    Log.d("CEK","MASUK ELSE IF 3 onClick pernyataan");
-                    Produk = radioButton.getText().toString();
-                }
-                Log.d("CEK","Produk : "+Produk);
-                Log.d("CEK","aBoolean : "+aBoolean);
-                Mirroring(false,Nama2,NIK2,Email2,NoHp2,Alamat2,Agama2,Status2,Produk,aBoolean);
+                //Mirroring(false,Nama2,NIK2,Email2,NoHp2,Alamat2,Agama2,Status2,radioButton.getText(),aBoolean);
             }
         });
         btnProcess.setOnClickListener(new View.OnClickListener() {
@@ -393,15 +372,11 @@ public class frag_form_opening extends Fragment {
                     Status.setError(getResources().getString(R.string.error_field));
                 }
                 else if (selectedId == -1){
-
-                }
-                else if(!pernyataan.isChecked()){
-                    pernyataan.setError(getResources().getString(R.string.error_field));
+                    Status.setError(getResources().getString(R.string.error_field));
                 }
                 else {
-                    Mirroring(true,Nama2,NIK2,Email2,NoHp2,Alamat2,Agama2,Status2,Produk,aBoolean);
-                    iconForm.setBackgroundTintList(context.getResources().getColorStateList(R.color.bg_cif_success));
-
+                    //Mirroring(true,Nama2,NIK2,Email2,NoHp2,Alamat2,Agama2,Status2,Produk,aBoolean);
+                    //iconForm.setBackgroundTintList(context.getResources().getColorStateList(R.color.bg_cif_success));
                     JSONObject obj = new JSONObject();
                     try {
                         obj.put("nama",Nama2);
@@ -415,11 +390,9 @@ public class frag_form_opening extends Fragment {
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
-
                     String dataS = obj.toString();
-
                     session.saveCIF(dataS);
-                    PopUpSuccesRegistration();
+                    //PopUpSuccesRegistration();
                 }
             }
         });
