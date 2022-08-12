@@ -577,6 +577,7 @@ public class FormRtgs extends Fragment {
         bankList.add(new BankItem("Bank Banten",R.mipmap.dips361));
         bankList.add(new BankItem("Bank Bengkulu",R.mipmap.dips361));
     }
+
     private void fillTypeServiceList(){
         typeServiceList = new ArrayList<>();
         typeServiceList.add(new TypeServiceItem("RTO", getResources().getString(R.string.rto_content)));

@@ -232,4 +232,22 @@
     <string name="tanggal_transaksi">Transaction Date</string>
     <string name="mata_uang_asing">Foreign Currency</string>
     <string name="nominal_transaksi">Transaction Amount</string>
+    <string name="data_diri">Personal Data</string>
+    <string name="gelar">Title</string>
+    <string name="kelurahan_desa">Village</string>
+    <string name="kabupaten_kota">City</string>
+    <string name="provinsi">Province</string>
+    <string name="kode_pos">Postal Code</string>
+    <string name="negara">Country</string>
+    <string name="jenis_identitas_lain">Other Types of Identity</string>
+    <string name="jumlah_tanggungan">The Number of Dependents</string>
+    <string name="nama_suami_istri_orang_tua">Name of Husband/Wife/Parents</string>
+    <string name="jenis_kelamin">Gender</string>
+    <string name="pendidikan">Educational</string>
+    <string name="jenis_bukti_identitas">Types of Proof of Identity</string>
+    <string name="tanggal_terbit_identitas">ID Issue Date</string>
+    <string name="tanggal_berakhir_identitas">Identity Expiration Date</string>
+    <string name="nama_ibu_kandung">Mother\'s Name</string>
+    <string name="no_handphone">Phone\'s Number</string>
+    <string name="status_rumah">House Status</string>
 </resources>
