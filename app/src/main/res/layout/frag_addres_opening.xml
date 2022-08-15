@@ -412,17 +412,37 @@
 
                 </com.google.android.material.textfield.TextInputLayout>
             </LinearLayout>
-                <Button
-                    android:id="@+id/btnProsesAddress"
+                <LinearLayout
+                    android:gravity="center_horizontal"
                     android:layout_width="match_parent"
-                    android:layout_height="35dp"
+                    android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
-                    android:background="@drawable/oval_background_10dp"
-                    android:backgroundTint="@color/Blue"
-                    android:text="@string/btn_continue"
-                    android:textColor="@color/white"
-                    android:textSize="14dp"
-                    android:textStyle="bold" />
+                    android:orientation="horizontal">
+                    <Button
+                        android:id="@+id/btnKembali"
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:layout_height="35dp"
+                        android:layout_marginEnd="10dp"
+                        android:background="@drawable/oval_background_10dp"
+                        android:backgroundTint="@color/bg_cif_success"
+                        android:text="@string/kembali"
+                        android:textColor="@color/white"
+                        android:textSize="14dp"
+                        android:textStyle="bold" />
+                    <Button
+                        android:id="@+id/btnProsesAddress"
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:layout_height="35dp"
+                        android:layout_marginStart="10dp"
+                        android:background="@drawable/oval_background_10dp"
+                        android:backgroundTint="@color/Blue"
+                        android:text="@string/btn_continue"
+                        android:textColor="@color/white"
+                        android:textSize="14dp"
+                        android:textStyle="bold" />
+                </LinearLayout>
             </LinearLayout>
         </androidx.cardview.widget.CardView>
     </androidx.core.widget.NestedScrollView>

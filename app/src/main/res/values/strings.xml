@@ -250,4 +250,9 @@
     <string name="no_handphone">No Handphone</string>
     <string name="status_rumah">Status Rumah</string>
     <string name="kecamatan">Kecamatan</string>
+    <string name="kembali">Kembali</string>
+    <string name="data_pekerjaan">Data Pekerjaan</string>
+    <string name="nama_perusahaan">Nama Perusahaan</string>
+    <string name="alamat_perusahaan">Alamat Perusahaan</string>
+    <string name="data_keuangan">Data Keuangan</string>
 </resources>
