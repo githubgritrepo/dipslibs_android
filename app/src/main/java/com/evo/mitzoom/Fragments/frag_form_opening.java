@@ -424,7 +424,6 @@ public class frag_form_opening extends Fragment {
             }
         });
     }
-
     private void Mirroring(Boolean bool, CharSequence nama, CharSequence nik, CharSequence email, CharSequence hp, CharSequence alamat, CharSequence agama, CharSequence status, CharSequence produk, boolean pernyataan){
         JSONObject jsons = new JSONObject();
         JSONArray jsonArray = new JSONArray();
@@ -460,7 +459,6 @@ public class frag_form_opening extends Fragment {
             }
         });
     }
-
     private void ByteArraytoimg(byte[] byteArray, ImageView gambar_profile){
         Bitmap decodedBitmap = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
         gambar_profile.setImageBitmap(decodedBitmap);

@@ -231,4 +231,22 @@
     <string name="tanggal_transaksi">Tanggal Transaksi</string>
     <string name="mata_uang_asing">Mata Uang Asing</string>
     <string name="nominal_transaksi">Nominal Transaksi</string>
+    <string name="data_diri">Data Diri</string>
+    <string name="gelar">Gelar</string>
+    <string name="kelurahan_desa">Kelurahan/Desa</string>
+    <string name="kabupaten_kota">Kabupaten/Kota</string>
+    <string name="provinsi">Provinsi</string>
+    <string name="kode_pos">Kode Pos</string>
+    <string name="negara">Negara</string>
+    <string name="jenis_identitas_lain">Jenis Identitas Lain</string>
+    <string name="jumlah_tanggungan">Jumlah Tanggungan</string>
+    <string name="nama_suami_istri_orang_tua">Nama Suami/Istri/Orang Tua</string>
+    <string name="jenis_kelamin">Jenis Kelamin</string>
+    <string name="pendidikan">Pendidikan</string>
+    <string name="jenis_bukti_identitas">Jenis Bukti Identitas</string>
+    <string name="tanggal_terbit_identitas">Tanggal Terbit Identitas</string>
+    <string name="tanggal_berakhir_identitas">Tanggal Berakhir Identitas</string>
+    <string name="nama_ibu_kandung">Nama Ibu Kandung</string>
+    <string name="no_handphone">No Handphone</string>
+    <string name="status_rumah">Status Rumah</string>
 </resources>
