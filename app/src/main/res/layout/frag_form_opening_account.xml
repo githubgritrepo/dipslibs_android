@@ -348,6 +348,35 @@
 
                 </com.google.android.material.textfield.TextInputLayout>
 
+                //Kecamatan
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/kecamatan"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+                    android:textSize="15dp" />
+                <com.google.android.material.textfield.TextInputLayout
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="10dp"
+                    app:boxCornerRadiusBottomEnd="10dp"
+                    app:boxCornerRadiusBottomStart="10dp"
+                    app:boxCornerRadiusTopEnd="10dp"
+                    app:boxCornerRadiusTopStart="10dp">
+
+                    <EditText
+                        android:id="@+id/et_Kecamatan"
+                        android:layout_width="match_parent"
+                        android:layout_height="35dp"
+                        android:gravity="center_vertical"
+                        android:includeFontPadding="false"
+                        android:inputType="text"
+                        android:paddingVertical="@dimen/dp_10"
+                        android:textSize="12dp" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
                 //Kabupaten atau Kota
                 <TextView
                     android:layout_width="wrap_content"
@@ -657,7 +686,6 @@
                         android:id="@+id/et_status"
                         android:layout_width="match_parent"
                         android:layout_height="35dp"
-                        android:background="@drawable/bg_textinput"
                         android:padding="9dp"
                         android:textSize="12dp" />
                 </com.google.android.material.textfield.TextInputLayout>
@@ -689,7 +717,6 @@
                         android:includeFontPadding="false"
                         android:gravity="center_vertical"
                         android:singleLine="true"/>
-
                 </com.google.android.material.textfield.TextInputLayout>
 
                 //NIK
@@ -1041,24 +1068,13 @@
                     android:layout_marginBottom="20dp"
                     android:src="@drawable/ttd" />
 
-                <CheckBox
-                    android:id="@+id/pernyataan"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="15dp"
-                    android:layout_marginBottom="10dp"
-                    android:focusable="false"
-                    android:text="@string/content_form_bottom"
-                    android:textAlignment="textStart"
-                    android:textColor="@color/black"
-                    android:textSize="13dp" />
                 <Button
                     android:id="@+id/btnProses"
                     android:layout_width="match_parent"
                     android:layout_height="35dp"
                     android:background="@drawable/oval_background_10dp"
                     android:backgroundTint="@color/Blue"
-                    android:text="@string/process"
+                    android:text="@string/btn_continue"
                     android:textColor="@color/white"
                     android:textSize="14dp"
                     android:textStyle="bold" />

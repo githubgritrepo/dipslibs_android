@@ -1,0 +1,429 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:theme="@style/Theme.MaterialComponents.DayNight.DarkActionBar">
+    <LinearLayout
+        android:id="@+id/TopBar"
+        android:background="@color/white"
+        android:gravity="center"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:orientation="horizontal">
+        <LinearLayout
+            android:orientation="horizontal"
+            android:id="@+id/icon_ktp"
+            android:layout_width="12dp"
+            android:layout_height="12dp"
+            android:layout_gravity="center_vertical"
+            android:layout_marginEnd="10dp"
+            android:background="@drawable/circle_icon"
+            android:backgroundTint="#C8CDD1" />
+
+        <TextView
+            android:textAlignment="textStart"
+            android:layout_gravity="start|center_vertical"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/Photo_nktp"
+            android:textColor="@color/black"
+            android:textSize="10dp" />
+
+        <ImageView
+            android:layout_width="12dp"
+            android:layout_height="12dp"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="10dp"
+            android:src="@drawable/ic_baseline_arrow_forward_24" />
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:id="@+id/icon_npwp"
+            android:layout_width="12dp"
+            android:layout_height="12dp"
+            android:layout_gravity="center_vertical"
+            android:layout_marginEnd="10dp"
+            android:background="@drawable/circle_icon"
+            android:backgroundTint="#C8CDD1" />
+
+        <TextView
+            android:textAlignment="textStart"
+            android:layout_gravity="start|center_vertical"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/photo_nnpwp"
+            android:textColor="@color/black"
+            android:textSize="10dp" />
+
+        <ImageView
+            android:layout_width="12dp"
+            android:layout_height="12dp"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="10dp"
+            android:src="@drawable/ic_baseline_arrow_forward_24" />
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:id="@+id/icon_signature"
+            android:layout_width="12dp"
+            android:layout_height="12dp"
+            android:layout_gravity="center_vertical"
+            android:layout_marginEnd="10dp"
+            android:background="@drawable/circle_icon"
+            android:backgroundTint="#C8CDD1" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAlignment="textStart"
+            android:layout_gravity="start|center_vertical"
+            android:text="@string/foto_ntanda_ntangan"
+            android:textColor="@color/black"
+            android:textSize="10dp" />
+
+        <ImageView
+            android:layout_width="12dp"
+            android:layout_height="12dp"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="10dp"
+            android:src="@drawable/ic_baseline_arrow_forward_24" />
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:id="@+id/icon_form"
+            android:layout_width="12dp"
+            android:layout_height="12dp"
+            android:layout_gravity="center_vertical"
+            android:layout_marginEnd="10dp"
+            android:background="@drawable/circle_icon"
+            android:backgroundTint="#C8CDD1" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAlignment="textStart"
+            android:layout_gravity="start|center_vertical"
+            android:text="@string/formulir_npembukaan_nrekening"
+            android:textColor="@color/black"
+            android:textSize="10dp" />
+    </LinearLayout>
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/TopBar"
+        android:scrollbars="vertical">
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="20dp"
+            app:cardCornerRadius="10dp"
+            app:cardElevation="0dp">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="20dp"
+                android:orientation="vertical">
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="10dp"
+                    android:text="@string/data_diri"
+                    android:textAlignment="center"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+                    android:textSize="20dp"
+                    android:textStyle="bold" />
+                <CheckBox
+                    android:id="@+id/alamat_berbeda"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:focusable="false"
+                    android:text="Alamat jika berbeda dengan identitas"
+                    android:textAlignment="textStart"
+                    android:textColor="@color/black"
+                    android:textSize="13dp" />
+                <LinearLayout
+                    android:layout_marginTop="10dp"
+                    android:id="@+id/isianForm"
+                    android:visibility="gone"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                //Alamat Sesuai Identitas
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/address"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+                    android:textSize="15dp" />
+                <com.google.android.material.textfield.TextInputLayout
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="10dp"
+                    app:boxCornerRadiusBottomEnd="10dp"
+                    app:boxCornerRadiusBottomStart="10dp"
+                    app:boxCornerRadiusTopEnd="10dp"
+                    app:boxCornerRadiusTopStart="10dp">
+
+                    <EditText
+                        android:id="@+id/et_alamatBerbeda"
+                        android:layout_width="match_parent"
+                        android:layout_height="70dp"
+                        android:gravity="top"
+                        android:includeFontPadding="false"
+                        android:inputType="textMultiLine"
+                        android:lines="8"
+                        android:maxLines="10"
+                        android:minLines="6"
+                        android:paddingVertical="@dimen/dp_10"
+                        android:scrollbars="vertical"
+                        android:textSize="12dp" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                //RT &amp; RW
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="10dp"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="RT"
+                            android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+                            android:textSize="15dp" />
+
+                        <com.google.android.material.textfield.TextInputLayout
+                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="10dp"
+                            app:boxCornerRadiusBottomEnd="10dp"
+                            app:boxCornerRadiusBottomStart="10dp"
+                            app:boxCornerRadiusTopEnd="10dp"
+                            app:boxCornerRadiusTopStart="10dp">
+
+                            <EditText
+                                android:id="@+id/et_rtBerbeda"
+                                android:layout_width="match_parent"
+                                android:layout_height="35dp"
+                                android:gravity="center_vertical"
+                                android:includeFontPadding="false"
+                                android:inputType="number"
+                                android:paddingVertical="@dimen/dp_10"
+                                android:textSize="12dp" />
+
+                        </com.google.android.material.textfield.TextInputLayout>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="10dp"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="RW"
+                            android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+                            android:textSize="15dp" />
+
+                        <com.google.android.material.textfield.TextInputLayout
+                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="10dp"
+                            app:boxCornerRadiusBottomEnd="10dp"
+                            app:boxCornerRadiusBottomStart="10dp"
+                            app:boxCornerRadiusTopEnd="10dp"
+                            app:boxCornerRadiusTopStart="10dp">
+
+                            <EditText
+                                android:id="@+id/et_rwBerbeda"
+                                android:layout_width="match_parent"
+                                android:layout_height="35dp"
+                                android:gravity="center_vertical"
+                                android:includeFontPadding="false"
+                                android:inputType="number"
+                                android:paddingVertical="@dimen/dp_10"
+                                android:textSize="12dp" />
+
+                        </com.google.android.material.textfield.TextInputLayout>
+                    </LinearLayout>
+                </LinearLayout>
+
+                //Provinsi
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/provinsi"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+                    android:textSize="15dp" />
+                <com.google.android.material.textfield.TextInputLayout
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="10dp"
+                    app:boxCornerRadiusBottomEnd="10dp"
+                    app:boxCornerRadiusBottomStart="10dp"
+                    app:boxCornerRadiusTopEnd="10dp"
+                    app:boxCornerRadiusTopStart="10dp">
+
+                    <EditText
+                        android:id="@+id/et_ProvinsiBerbeda"
+                        android:layout_width="match_parent"
+                        android:layout_height="35dp"
+                        android:gravity="center_vertical"
+                        android:includeFontPadding="false"
+                        android:inputType="text"
+                        android:paddingVertical="@dimen/dp_10"
+                        android:textSize="12dp" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+                //Kabupaten atau Kota
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/kabupaten_kota"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+                    android:textSize="15dp" />
+                <com.google.android.material.textfield.TextInputLayout
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="10dp"
+                    app:boxCornerRadiusBottomEnd="10dp"
+                    app:boxCornerRadiusBottomStart="10dp"
+                    app:boxCornerRadiusTopEnd="10dp"
+                    app:boxCornerRadiusTopStart="10dp">
+
+                    <EditText
+                        android:id="@+id/et_KabupatenKotaBerbeda"
+                        android:layout_width="match_parent"
+                        android:layout_height="35dp"
+                        android:gravity="center_vertical"
+                        android:includeFontPadding="false"
+                        android:inputType="text"
+                        android:paddingVertical="@dimen/dp_10"
+                        android:textSize="12dp" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+                //Kecamatan
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/kecamatan"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+                    android:textSize="15dp" />
+                <com.google.android.material.textfield.TextInputLayout
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="10dp"
+                    app:boxCornerRadiusBottomEnd="10dp"
+                    app:boxCornerRadiusBottomStart="10dp"
+                    app:boxCornerRadiusTopEnd="10dp"
+                    app:boxCornerRadiusTopStart="10dp">
+
+                    <EditText
+                        android:id="@+id/et_KecamatanBerbeda"
+                        android:layout_width="match_parent"
+                        android:layout_height="35dp"
+                        android:gravity="center_vertical"
+                        android:includeFontPadding="false"
+                        android:inputType="text"
+                        android:paddingVertical="@dimen/dp_10"
+                        android:textSize="12dp" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+                //Kelurahan atau Desa
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/kelurahan_desa"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+                    android:textSize="15dp" />
+                <com.google.android.material.textfield.TextInputLayout
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="10dp"
+                    app:boxCornerRadiusBottomEnd="10dp"
+                    app:boxCornerRadiusBottomStart="10dp"
+                    app:boxCornerRadiusTopEnd="10dp"
+                    app:boxCornerRadiusTopStart="10dp">
+
+                    <EditText
+                        android:id="@+id/et_kelurahanDesaBerbeda"
+                        android:layout_width="match_parent"
+                        android:layout_height="35dp"
+                        android:gravity="center_vertical"
+                        android:includeFontPadding="false"
+                        android:inputType="text"
+                        android:paddingVertical="@dimen/dp_10"
+                        android:textSize="12dp" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+                //Kode Pos
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/kode_pos"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+                    android:textSize="15dp" />
+                <com.google.android.material.textfield.TextInputLayout
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="10dp"
+                    app:boxCornerRadiusBottomEnd="10dp"
+                    app:boxCornerRadiusBottomStart="10dp"
+                    app:boxCornerRadiusTopEnd="10dp"
+                    app:boxCornerRadiusTopStart="10dp">
+
+                    <EditText
+                        android:id="@+id/et_kodeposBerbeda"
+                        android:layout_width="match_parent"
+                        android:layout_height="35dp"
+                        android:gravity="center_vertical"
+                        android:includeFontPadding="false"
+                        android:inputType="text"
+                        android:paddingVertical="@dimen/dp_10"
+                        android:textSize="12dp" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+            </LinearLayout>
+                <Button
+                    android:id="@+id/btnProses"
+                    android:layout_width="match_parent"
+                    android:layout_height="35dp"
+                    android:layout_marginTop="10dp"
+                    android:background="@drawable/oval_background_10dp"
+                    android:backgroundTint="@color/Blue"
+                    android:text="@string/btn_continue"
+                    android:textColor="@color/white"
+                    android:textSize="14dp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+    </androidx.core.widget.NestedScrollView>
+</RelativeLayout>
