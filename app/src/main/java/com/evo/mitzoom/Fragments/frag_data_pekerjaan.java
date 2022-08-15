@@ -60,7 +60,7 @@ public class frag_data_pekerjaan extends Fragment {
         TTD = arg.getByteArray("ttd");
         jumlahKaryawan_ = new String[]{"< 25 Orang", "25 - 50 Orang", "> 50 Orang"};
         pekerjaan_ = new String[]{"Pegawai Negeri","TNI/POLRI","Wiraswasta","Pegawai Swasta", "Profesional", "Pensiunan", "Ibu Rumah Tangga", "Pelajar/Mahasiswa", "Dosen/Guru"};
-        bidangUsaha_ = new String[]{"Kontruksi", "Real Estate/Property", "Kesehatan", "Perkebunan", "Keuangan/Bank/Non Bank", "Transportasi", "Industri", "Pertambangan", "Perdangan"};
+        bidangUsaha_ = new String[]{"Kontruksi", "Real Estate/Property", "Kesehatan", "Perkebunan", "Keuangan/Bank/Non Bank", "Transportasi", "Industri", "Pertambangan", "Perdagangan"};
         jabatan_ = new String[]{"Komisaris", "Direktur", "Manajer", "Kepala Divisi", "Kepala Bagian", "Kepala Seksi", "Staff"};
 
         btnProses.setOnClickListener(new View.OnClickListener() {
