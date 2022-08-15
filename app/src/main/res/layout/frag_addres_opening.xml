@@ -413,7 +413,7 @@
                 </com.google.android.material.textfield.TextInputLayout>
             </LinearLayout>
                 <Button
-                    android:id="@+id/btnProses"
+                    android:id="@+id/btnProsesAddress"
                     android:layout_width="match_parent"
                     android:layout_height="35dp"
                     android:layout_marginTop="10dp"
