@@ -443,25 +443,7 @@ public class frag_form_opening extends Fragment {
         Bitmap decodedBitmap = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
         gambar_profile.setImageBitmap(decodedBitmap);
     }
-    private void PopUpSuccesRegistration(){
-                    SweetAlertDialog sweetAlertDialog = new SweetAlertDialog(context, SweetAlertDialog.SUCCESS_TYPE);
-                    sweetAlertDialog.setTitleText(getResources().getString(R.string.reg_title));
-                    sweetAlertDialog.setContentText(getResources().getString(R.string.reg_content));
-                    sweetAlertDialog.setConfirmText(getResources().getString(R.string.activation));
-                    sweetAlertDialog.setCancelable(false);
-                    sweetAlertDialog.show();
-                    Button btnConfirm = (Button) sweetAlertDialog.findViewById(cn.pedant.SweetAlert.R.id.confirm_button);
-                    btnConfirm.setBackgroundTintList(context.getResources().getColorStateList(R.color.Blue));
-                    sweetAlertDialog.setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
-                        @Override
-                        public void onClick(SweetAlertDialog sweetAlertDialog) {
-                            Mirroring2(true);
-                            Fragment fragment = new frag_aktivasi_ibmb();
-                            getFragmentPage(fragment);
-                            sweetAlertDialog.dismiss();
-                        }
-                    });
-    }
+
     private void getFragmentPage(Fragment fragment){
         getActivity().getSupportFragmentManager()
                 .beginTransaction()
