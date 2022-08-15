@@ -392,6 +392,13 @@ public class frag_form_opening extends Fragment {
                     }
                     String dataS = obj.toString();
                     session.saveCIF(dataS);
+                    Fragment fragment = new frag_address_opening();
+                    Bundle bundle = new Bundle();
+                    bundle.putByteArray("alamat",KTP);
+                    bundle.putByteArray("npwp",NPWP);
+                    bundle.putByteArray("ttd",TTD);
+                    fragment.setArguments(bundle);
+                    getFragmentPage(fragment);
                     //PopUpSuccesRegistration();
                 }
             }

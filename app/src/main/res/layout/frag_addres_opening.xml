@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:theme="@style/Theme.MaterialComponents.DayNight.DarkActionBar">
     <LinearLayout
         android:id="@+id/TopBar"
@@ -127,7 +128,6 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="20dp"
                 android:orientation="vertical">
-
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -137,17 +137,22 @@
                     android:textAppearance="@style/TextAppearance.AppCompat.Body2"
                     android:textSize="20dp"
                     android:textStyle="bold" />
-
                 <CheckBox
-                    android:id="@+id/pernyataan_komplain"
+                    android:id="@+id/alamat_berbeda"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="10dp"
                     android:focusable="false"
                     android:text="Alamat jika berbeda dengan identitas"
                     android:textAlignment="textStart"
                     android:textColor="@color/black"
                     android:textSize="13dp" />
+                <LinearLayout
+                    android:layout_marginTop="10dp"
+                    android:id="@+id/isianForm"
+                    android:visibility="gone"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
 
                 //Alamat Sesuai Identitas
                 <TextView
@@ -167,7 +172,7 @@
                     app:boxCornerRadiusTopStart="10dp">
 
                     <EditText
-                        android:id="@+id/et_alamat"
+                        android:id="@+id/et_alamatBerbeda"
                         android:layout_width="match_parent"
                         android:layout_height="70dp"
                         android:gravity="top"
@@ -212,7 +217,7 @@
                             app:boxCornerRadiusTopStart="10dp">
 
                             <EditText
-                                android:id="@+id/et_rt"
+                                android:id="@+id/et_rtBerbeda"
                                 android:layout_width="match_parent"
                                 android:layout_height="35dp"
                                 android:gravity="center_vertical"
@@ -249,7 +254,7 @@
                             app:boxCornerRadiusTopStart="10dp">
 
                             <EditText
-                                android:id="@+id/et_rw"
+                                android:id="@+id/et_rwBerbeda"
                                 android:layout_width="match_parent"
                                 android:layout_height="35dp"
                                 android:gravity="center_vertical"
@@ -262,11 +267,11 @@
                     </LinearLayout>
                 </LinearLayout>
 
-                //Kelurahan atau Desa
+                //Provinsi
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/kelurahan_desa"
+                    android:text="@string/provinsi"
                     android:textAppearance="@style/TextAppearance.AppCompat.Body2"
                     android:textSize="15dp" />
                 <com.google.android.material.textfield.TextInputLayout
@@ -280,36 +285,7 @@
                     app:boxCornerRadiusTopStart="10dp">
 
                     <EditText
-                        android:id="@+id/et_kelurahanDesa"
-                        android:layout_width="match_parent"
-                        android:layout_height="35dp"
-                        android:gravity="center_vertical"
-                        android:includeFontPadding="false"
-                        android:inputType="text"
-                        android:paddingVertical="@dimen/dp_10"
-                        android:textSize="12dp" />
-
-                </com.google.android.material.textfield.TextInputLayout>
-
-                //Kecamatan
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/kecamatan"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-                    android:textSize="15dp" />
-                <com.google.android.material.textfield.TextInputLayout
-                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="10dp"
-                    app:boxCornerRadiusBottomEnd="10dp"
-                    app:boxCornerRadiusBottomStart="10dp"
-                    app:boxCornerRadiusTopEnd="10dp"
-                    app:boxCornerRadiusTopStart="10dp">
-
-                    <EditText
-                        android:id="@+id/et_Kecamatan"
+                        android:id="@+id/et_ProvinsiBerbeda"
                         android:layout_width="match_parent"
                         android:layout_height="35dp"
                         android:gravity="center_vertical"
@@ -338,7 +314,7 @@
                     app:boxCornerRadiusTopStart="10dp">
 
                     <EditText
-                        android:id="@+id/et_KabupatenKota"
+                        android:id="@+id/et_KabupatenKotaBerbeda"
                         android:layout_width="match_parent"
                         android:layout_height="35dp"
                         android:gravity="center_vertical"
@@ -349,11 +325,11 @@
 
                 </com.google.android.material.textfield.TextInputLayout>
 
-                //Provinsi
+                //Kecamatan
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/provinsi"
+                    android:text="@string/kecamatan"
                     android:textAppearance="@style/TextAppearance.AppCompat.Body2"
                     android:textSize="15dp" />
                 <com.google.android.material.textfield.TextInputLayout
@@ -367,7 +343,36 @@
                     app:boxCornerRadiusTopStart="10dp">
 
                     <EditText
-                        android:id="@+id/et_Provinsi"
+                        android:id="@+id/et_KecamatanBerbeda"
+                        android:layout_width="match_parent"
+                        android:layout_height="35dp"
+                        android:gravity="center_vertical"
+                        android:includeFontPadding="false"
+                        android:inputType="text"
+                        android:paddingVertical="@dimen/dp_10"
+                        android:textSize="12dp" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+                //Kelurahan atau Desa
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/kelurahan_desa"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+                    android:textSize="15dp" />
+                <com.google.android.material.textfield.TextInputLayout
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="10dp"
+                    app:boxCornerRadiusBottomEnd="10dp"
+                    app:boxCornerRadiusBottomStart="10dp"
+                    app:boxCornerRadiusTopEnd="10dp"
+                    app:boxCornerRadiusTopStart="10dp">
+
+                    <EditText
+                        android:id="@+id/et_kelurahanDesaBerbeda"
                         android:layout_width="match_parent"
                         android:layout_height="35dp"
                         android:gravity="center_vertical"
@@ -396,7 +401,7 @@
                     app:boxCornerRadiusTopStart="10dp">
 
                     <EditText
-                        android:id="@+id/et_kodepos"
+                        android:id="@+id/et_kodeposBerbeda"
                         android:layout_width="match_parent"
                         android:layout_height="35dp"
                         android:gravity="center_vertical"
@@ -406,7 +411,7 @@
                         android:textSize="12dp" />
 
                 </com.google.android.material.textfield.TextInputLayout>
-
+            </LinearLayout>
                 <Button
                     android:id="@+id/btnProses"
                     android:layout_width="match_parent"
