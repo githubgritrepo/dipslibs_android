@@ -12,6 +12,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -60,6 +61,7 @@ public class frag_form_opening extends Fragment {
     private RadioButton radioButton;
     private int selectedId;
     private int idRb;
+    private String[] jenisIdentitasLain, jumlahTanggungan, pendidikanTerakhir, statusRumah_;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -117,6 +119,10 @@ public class frag_form_opening extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        jenisIdentitasLain = new String[]{"KIMS/KITAS", "Lainnya"};
+        jumlahTanggungan = new String[]{"1 - 3", "4 - 6", ">7"};
+        pendidikanTerakhir = new String[]{"SMP","SMA","D1 - D3","S1","S2","S3"};
+        statusRumah_ = new String[]{"Milik Sendiri", "Milik Keluarga", "Kontrak"};
         idDips = session.getKEY_IdDips();
         iconKtp.setBackgroundTintList(context.getResources().getColorStateList(R.color.bg_cif_success));
         iconNpwp.setBackgroundTintList(context.getResources().getColorStateList(R.color.bg_cif_success));
@@ -127,11 +133,6 @@ public class frag_form_opening extends Fragment {
         KTP = arg.getByteArray("ktp");
         NPWP = arg.getByteArray("npwp");
         TTD = arg.getByteArray("ttd");
-        if (KTP == null && NPWP == null && TTD == null){
-            KTP = session.getKEY_KTP().getBytes();
-            NPWP = session.getKEY_NPWP().getBytes();
-            TTD = session.getKEY_TTD().getBytes();
-        }
         ByteArraytoimg(KTP,preview_ktp);
         ByteArraytoimg(NPWP,preview_npwp);
         ByteArraytoimg(TTD,preview_signature);
@@ -152,8 +153,21 @@ public class frag_form_opening extends Fragment {
         Agama.setText("Islam");
         Status.setText("Belum Kawin");
         NIK.setText("320124150585005");
+        NomorNPWP.setText("09.123.123.3-123.000");
         TanggalTerbitIdentitas.setText("15-09-2013");
         TanggalBerakhirIdentitas.setText("SEUMUR HIDUP");
+
+        ArrayAdapter<String> jenisIdentity = new ArrayAdapter<String>(context,R.layout.list_item, jenisIdentitasLain);
+        JenisIdentitasLain.setAdapter(jenisIdentity);
+
+        ArrayAdapter<String> jumlahtanggung = new ArrayAdapter<String>(context,R.layout.list_item, jumlahTanggungan);
+        JumlahTanggungan.setAdapter(jumlahtanggung);
+
+        ArrayAdapter<String> lastEducation = new ArrayAdapter<String>(context,R.layout.list_item, pendidikanTerakhir);
+        Pendidikan.setAdapter(lastEducation);
+
+        ArrayAdapter<String> statusRumahArray = new ArrayAdapter<String>(context,R.layout.list_item, statusRumah_);
+        statusRumah.setAdapter(statusRumahArray);
 
         Gelar.setEnabled(false);
         Nama.setEnabled(false);
@@ -170,6 +184,7 @@ public class frag_form_opening extends Fragment {
         Agama.setEnabled(false);
         Status.setEnabled(false);
         NIK.setEnabled(false);
+        NomorNPWP.setEnabled(false);
         TanggalTerbitIdentitas.setEnabled(false);
         TanggalBerakhirIdentitas.setEnabled(false);
 
@@ -394,7 +409,7 @@ public class frag_form_opening extends Fragment {
                     session.saveCIF(dataS);
                     Fragment fragment = new frag_address_opening();
                     Bundle bundle = new Bundle();
-                    bundle.putByteArray("alamat",KTP);
+                    bundle.putByteArray("ktp",KTP);
                     bundle.putByteArray("npwp",NPWP);
                     bundle.putByteArray("ttd",TTD);
                     fragment.setArguments(bundle);

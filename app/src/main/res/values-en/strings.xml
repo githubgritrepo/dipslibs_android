@@ -251,4 +251,9 @@
     <string name="no_handphone">Phone\'s Number</string>
     <string name="status_rumah">House Status</string>
     <string name="kecamatan">Districts</string>
+    <string name="kembali">Back</string>
+    <string name="data_pekerjaan">Employment Data</string>
+    <string name="nama_perusahaan">Company Name</string>
+    <string name="alamat_perusahaan">Company Address</string>
+    <string name="data_keuangan">Financial Data</string>
 </resources>
