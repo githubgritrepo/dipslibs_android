@@ -102,19 +102,15 @@ public class FormRtgs extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_form_rtgs, container, false);
-
         btnBack = (ImageView) view.findViewById(R.id.btn_back4);
         pager = (ViewPager) view.findViewById(R.id.pager);
         circleIndicator = (CircleIndicator) view.findViewById(R.id.indicator);
         btnProsesRTGS = (Button) view.findViewById(R.id.btnProsesRTGS);
         btnAdd = (Button) view.findViewById(R.id.btnAdd);
-
         btnProsesRTGS.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.bg_cif)));
         btnAdd.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.button_schedule)));
-
         return view;
     }
 
