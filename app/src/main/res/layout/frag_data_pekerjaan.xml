@@ -162,7 +162,6 @@
                         android:inputType="text"
                         android:paddingVertical="@dimen/dp_10"
                         android:textSize="12dp" />
-
                 </com.google.android.material.textfield.TextInputLayout>
 
                 //Alamat Perusahaan
