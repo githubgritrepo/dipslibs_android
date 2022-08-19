@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
@@ -14,22 +15,53 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.evo.mitzoom.API.Server;
 import com.evo.mitzoom.R;
+import com.evo.mitzoom.Session.SessionManager;
+import com.google.gson.JsonObject;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import cn.pedant.SweetAlert.SweetAlertDialog;
+import okhttp3.MediaType;
+import okhttp3.RequestBody;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class frag_data_keuangan extends Fragment {
+    private SessionManager session;
     private Context context;
+    private String idDips;
     private Button btnProses, btnKembali;
     private byte[] KTP, NPWP, TTD;
     private LinearLayout iconKtp, iconNpwp, iconSignature, iconForm;
     private AutoCompleteTextView jenisPekerjaan, penghasilanBulan, sumberDana, tujuanPenggunaan, penghasilanTambahan, jenisRekening, namaProduk, mataUang, perkiraan, frekuensi, perkiraan2, frekuensi2, perkiraan3, frekuensi3, perkiraan4, frekuensi4;
     private String [] jenisPekerjaan_, penghasilanBulan_, sumberDana_, tujuanPenggunaan_, penghasilanTambahan_, jenisRekening_, namaProduk_, mataUang_, perkiraan_, frekuensi_;
+    private String typeWork = "";
+    private String monthIncome = "";
+    private String sourceFund = "";
+    private String intendedUse = "";
+    private String extraIncome = "";
+    private String accountType = "";
+    private String productName  = "";
+    private String currency = "";
+    private String estimate = "";
+    private String estimate2 = "";
+    private String estimate3 = "";
+    private String estimate4 = "";
+    private String frequency = "";
+    private String frequency2 = "";
+    private String frequency3 = "";
+    private String frequency4 = "";
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         context = getContext();
+        session = new SessionManager(context);
     }
     @Nullable
     @Override
@@ -67,6 +99,8 @@ public class frag_data_keuangan extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        idDips = session.getKEY_IdDips();
 
         jenisPekerjaan_ = new String[]{"Karyawan","Wiraswasta"};
         penghasilanBulan_ = new String[]{"< 10jt","> 10 - 50jt","> 50 - 100jt","> 100 - 500jt", "> 500jt"};
@@ -123,7 +157,7 @@ public class frag_data_keuangan extends Fragment {
             @Override
             public void onClick(View view) {
                 iconForm.setBackgroundTintList(context.getResources().getColorStateList(R.color.bg_cif_success));
-                PopUpSuccesRegistration();
+                Mirroring(true);
             }
         });
         btnKembali.setOnClickListener(new View.OnClickListener() {
@@ -136,6 +170,134 @@ public class frag_data_keuangan extends Fragment {
                 bundle.putByteArray("ttd",TTD);
                 fragment.setArguments(bundle);
                 getFragmentPage(fragment);
+            }
+        });
+
+        jenisPekerjaan.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long rowId) {
+                typeWork = (String) parent.getItemAtPosition(position);
+                Mirroring(false);
+            }
+        });
+
+        penghasilanBulan.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long rowId) {
+                monthIncome = (String) parent.getItemAtPosition(position);
+                Mirroring(false);
+            }
+        });
+
+        sumberDana.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long rowId) {
+                sourceFund = (String) parent.getItemAtPosition(position);
+                Mirroring(false);
+            }
+        });
+
+        tujuanPenggunaan.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long rowId) {
+                intendedUse = (String) parent.getItemAtPosition(position);
+                Mirroring(false);
+            }
+        });
+
+        penghasilanTambahan.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long rowId) {
+                extraIncome = (String) parent.getItemAtPosition(position);
+                Mirroring(false);
+            }
+        });
+
+        jenisRekening.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long rowId) {
+                accountType = (String) parent.getItemAtPosition(position);
+                Mirroring(false);
+            }
+        });
+
+        namaProduk.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long rowId) {
+                productName = (String) parent.getItemAtPosition(position);
+                Mirroring(false);
+            }
+        });
+
+        mataUang.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long rowId) {
+                currency = (String) parent.getItemAtPosition(position);
+                Mirroring(false);
+            }
+        });
+
+        perkiraan.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long rowId) {
+                estimate = (String) parent.getItemAtPosition(position);
+                Mirroring(false);
+            }
+        });
+
+        perkiraan2.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long rowId) {
+                estimate2 = (String) parent.getItemAtPosition(position);
+                Mirroring(false);
+            }
+        });
+
+        perkiraan3.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long rowId) {
+                estimate3 = (String) parent.getItemAtPosition(position);
+                Mirroring(false);
+            }
+        });
+
+        perkiraan4.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long rowId) {
+                estimate4 = (String) parent.getItemAtPosition(position);
+                Mirroring(false);
+            }
+        });
+
+        frekuensi.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long rowId) {
+                frequency = (String) parent.getItemAtPosition(position);
+                Mirroring(false);
+            }
+        });
+
+        frekuensi2.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long rowId) {
+                frequency2 = (String) parent.getItemAtPosition(position);
+                Mirroring(false);
+            }
+        });
+
+        frekuensi3.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long rowId) {
+                frequency3 = (String) parent.getItemAtPosition(position);
+                Mirroring(false);
+            }
+        });
+
+        frekuensi4.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long rowId) {
+                frequency4 = (String) parent.getItemAtPosition(position);
+                Mirroring(false);
             }
         });
     }
@@ -162,5 +324,48 @@ public class frag_data_keuangan extends Fragment {
                 .replace(R.id.layout_frame2, fragment)
                 .addToBackStack(null)
                 .commit();
+    }
+
+    private void Mirroring(boolean bool) {
+        JSONObject jsons = new JSONObject();
+        JSONArray jsonArray = new JSONArray();
+        try {
+            jsonArray.put(typeWork);
+            jsonArray.put(monthIncome);
+            jsonArray.put(sourceFund);
+            jsonArray.put(intendedUse);
+            jsonArray.put(extraIncome);
+            jsonArray.put(accountType);
+            jsonArray.put(productName);
+            jsonArray.put(currency);
+            jsonArray.put(estimate);
+            jsonArray.put(estimate2);
+            jsonArray.put(estimate3);
+            jsonArray.put(estimate4);
+            jsonArray.put(frequency);
+            jsonArray.put(frequency2);
+            jsonArray.put(frequency3);
+            jsonArray.put(frequency4);
+            jsonArray.put(bool);
+            jsons.put("idDips",idDips);
+            jsons.put("code",32);
+            jsons.put("data",jsonArray);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), jsons.toString());
+        Server.getAPIService().Mirroring(requestBody).enqueue(new Callback<JsonObject>() {
+            @Override
+            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                if (bool) {
+                    PopUpSuccesRegistration();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<JsonObject> call, Throwable t) {
+
+            }
+        });
     }
 }
