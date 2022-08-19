@@ -9,9 +9,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.ImageView;
@@ -24,11 +21,9 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.chaos.view.PinView;
-import com.evo.mitzoom.Adapter.AdapterSourceAccount;
 import com.evo.mitzoom.R;
 import com.evo.mitzoom.Session.SessionManager;
 
-import java.math.BigDecimal;
 import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

@@ -25,11 +25,9 @@ import androidx.fragment.app.Fragment;
 import com.chaos.view.PinView;
 import com.evo.mitzoom.R;
 
-import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Locale;
-import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 

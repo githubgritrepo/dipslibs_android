@@ -93,7 +93,6 @@
     <string name="produk_layanan"><![CDATA[Layanan]]></string>
     <string name="verifikasi">Verifikasi</string>
     <string name="Formulir_Transfer">Formulir Transfer</string>
-    <string name="SKN">Transaksi SKN</string>
     <string name="FOREX">Transaksi Valas</string>
     <string name="ReceiverAccount2">Rekening Penerima</string>
     <string name="ReceiverName2">Nama Penerima</string>
@@ -104,8 +103,6 @@
     <string name="berita">Berita</string>
     <string name="successTransaction">Anda berhasil melakukan transaksi</string>
     <string name="aktivasi_m_banking">Aktivasi M-Banking</string>
-    <string name="BI_FAST">Transaksi BI Fast</string>
-    <string name="ONLINE_TRANSACTION">Transaksi Antar Bank</string>
     <string name="pilih_bahasa">Bahasa / Language</string>
     <string name="lan_id">Indonesia</string>
     <string name="lan_en">English</string>
@@ -150,9 +147,6 @@
     <string name="perorangan">Perorangan</string>
     <string name="perusahaan">Perusahaan</string>
     <string name="pemerintah">Pemerintah</string>
-    <string name="BLOCK_ATM_CARD">Blokir Kartu ATM</string>
-    <string name="REMITTANCE_TRANSACTION">Transaksi Remittance</string>
-    <string name="CREATE_ATM_CARD">Pembuatan Kartu ATM</string>
     <string name="INTERBANK_TRANSACTION">Transaksi Antar Bank</string>
     <string name="ATM_CARD">Kartu ATM</string>
     <string name="KYC_UPDATING">Perbarui Data</string>
@@ -209,7 +203,6 @@
     <string name="perihal">Perihal</string>
     <string name="tanggal">Tanggal</string>
     <string name="detail_komplain">Detail Komplain</string>
-    <string name="CARDLESS_TRANSACTION">Tarik Tunai Tanpa Kartu</string>
     <string name="POWER_OF_ATTORNEY">Surat Kuasa</string>
     <string name="IBMB_REGISTRATION">Aktivasi IBMB</string>
     <string name="CREDIT_FORM">Formulir Kredit</string>

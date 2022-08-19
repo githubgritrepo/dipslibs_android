@@ -21,12 +21,9 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.chaos.view.PinView;
-import com.evo.mitzoom.Adapter.ItemServiceAdapter;
 import com.evo.mitzoom.R;
-import com.evo.mitzoom.Session.SessionManager;
 
 import java.math.BigDecimal;
 import java.text.NumberFormat;
