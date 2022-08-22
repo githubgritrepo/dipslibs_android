@@ -40,9 +40,4 @@
         <item name="android:backgroundDimEnabled">true</item>
     </style>
 
-    <style name="RatingBar" parent="Theme.MITZoom">
-        <item name="colorControlNormal">@color/ratingOFF</item>
-        <item name="colorControlActivated">@color/ratingON</item>
-    </style>
-
 </resources>

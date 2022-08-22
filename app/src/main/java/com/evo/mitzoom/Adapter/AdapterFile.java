@@ -1,8 +1,6 @@
 package com.evo.mitzoom.Adapter;
 
 import android.content.Context;
-import android.content.res.ColorStateList;
-import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,10 +12,8 @@ import android.widget.Toast;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.evo.mitzoom.Model.FileModel;
-import com.evo.mitzoom.Model.PortfolioModel;
 import com.evo.mitzoom.R;
 
-import java.io.File;
 import java.util.ArrayList;
 
 public class AdapterFile extends RecyclerView.Adapter<AdapterFile.ItemHolder> {

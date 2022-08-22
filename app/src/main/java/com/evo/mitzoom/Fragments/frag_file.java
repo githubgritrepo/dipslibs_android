@@ -1,33 +1,22 @@
 package com.evo.mitzoom.Fragments;
 
-import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.ImageView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.viewpager.widget.ViewPager;
 
 import com.evo.mitzoom.Adapter.SectionsPagerAdapter;
 import com.evo.mitzoom.BaseMeetingActivity;
 import com.evo.mitzoom.R;
 import com.google.android.material.tabs.TabLayout;
-
-import java.math.BigDecimal;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
 
 public class frag_file extends Fragment {
     public static final String KEY_FRAGMENT = "fragment";

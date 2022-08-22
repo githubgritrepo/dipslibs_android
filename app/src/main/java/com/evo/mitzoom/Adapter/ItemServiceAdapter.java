@@ -11,7 +11,6 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
@@ -24,7 +23,6 @@ import com.evo.mitzoom.Fragments.frag_aktivasi_ibmb;
 import com.evo.mitzoom.Fragments.frag_form_credit;
 import com.evo.mitzoom.Fragments.frag_form_komplain;
 import com.evo.mitzoom.Fragments.frag_kartua_atm;
-import com.evo.mitzoom.Fragments.frag_new_account;
 import com.evo.mitzoom.Fragments.frag_new_account_cs;
 import com.evo.mitzoom.Fragments.frag_opening_account;
 import com.evo.mitzoom.Fragments.frag_rtgs;

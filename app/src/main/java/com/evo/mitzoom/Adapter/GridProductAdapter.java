@@ -10,7 +10,6 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.ImageView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -20,7 +19,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.evo.mitzoom.Fragments.FormRtgs;
 import com.evo.mitzoom.Fragments.frag_form_komplain;
 import com.evo.mitzoom.Fragments.frag_new_account;
-import com.evo.mitzoom.Fragments.frag_new_account2;
 import com.evo.mitzoom.R;
 import com.evo.mitzoom.Session.SessionManager;
 import com.github.javiersantos.materialstyleddialogs.MaterialStyledDialog;

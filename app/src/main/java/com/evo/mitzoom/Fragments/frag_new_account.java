@@ -1,6 +1,5 @@
 package com.evo.mitzoom.Fragments;
 
-import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.text.Editable;
@@ -13,7 +12,6 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
-import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -22,10 +20,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.viewpager.widget.ViewPager;
 
-import com.evo.mitzoom.Adapter.ItemServiceAdapter;
 import com.evo.mitzoom.R;
 
 import java.math.BigDecimal;
@@ -34,9 +29,6 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Locale;
 import java.util.Objects;
-
-import cn.pedant.SweetAlert.SweetAlertDialog;
-import me.relex.circleindicator.CircleIndicator;
 
 public class frag_new_account extends Fragment {
     private Context context;

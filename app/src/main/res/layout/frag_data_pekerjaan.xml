@@ -154,7 +154,6 @@
                     app:boxCornerRadiusTopEnd="10dp"
                     app:boxCornerRadiusTopStart="10dp">
                     <EditText
-                        android:id="@+id/et_namaPerusahaan"
                         android:layout_width="match_parent"
                         android:layout_height="35dp"
                         android:gravity="center_vertical"
@@ -181,7 +180,6 @@
                     app:boxCornerRadiusTopEnd="10dp"
                     app:boxCornerRadiusTopStart="10dp">
                     <EditText
-                        android:id="@+id/et_alamatPerusahaan"
                         android:layout_width="match_parent"
                         android:layout_height="70dp"
                         android:gravity="top"
@@ -491,7 +489,6 @@
                     app:boxCornerRadiusTopStart="10dp">
 
                     <EditText
-                        android:id="@+id/et_NoFax"
                         android:layout_width="match_parent"
                         android:layout_height="35dp"
                         android:gravity="center_vertical"
@@ -536,7 +533,6 @@
                             app:boxCornerRadiusTopStart="10dp">
 
                             <AutoCompleteTextView
-                                android:id="@+id/et_tahun"
                                 android:layout_width="match_parent"
                                 android:layout_height="35dp"
                                 android:drawableTint="@color/black"
@@ -571,7 +567,6 @@
                             app:boxCornerRadiusTopStart="10dp">
 
                             <AutoCompleteTextView
-                                android:id="@+id/et_bulan"
                                 android:layout_width="match_parent"
                                 android:layout_height="35dp"
                                 android:drawableTint="@color/black"
@@ -619,7 +614,6 @@
                             app:boxCornerRadiusTopStart="10dp">
 
                             <AutoCompleteTextView
-                                android:id="@+id/et_tahun2"
                                 android:layout_width="match_parent"
                                 android:layout_height="35dp"
                                 android:drawableTint="@color/black"
@@ -654,7 +648,6 @@
                             app:boxCornerRadiusTopStart="10dp">
 
                             <AutoCompleteTextView
-                                android:id="@+id/et_bulan2"
                                 android:layout_width="match_parent"
                                 android:layout_height="35dp"
                                 android:drawableTint="@color/black"
