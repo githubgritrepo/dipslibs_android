@@ -458,7 +458,7 @@
                         android:layout_height="35dp"
                         android:gravity="center_vertical"
                         android:includeFontPadding="false"
-                        android:inputType="text"
+                        android:inputType="number"
                         android:paddingVertical="@dimen/dp_10"
                         android:textSize="12dp" />
 
@@ -541,6 +541,8 @@
 
                     <AutoCompleteTextView
                         android:id="@+id/et_identityType"
+                        android:focusable="false"
+                        android:inputType="none"
                         android:layout_width="match_parent"
                         android:layout_height="35dp"
                         android:drawableTint="@color/black"
@@ -571,6 +573,8 @@
 
                     <AutoCompleteTextView
                         android:id="@+id/et_jumlahTanggungan"
+                        android:focusable="false"
+                        android:inputType="none"
                         android:layout_width="match_parent"
                         android:layout_height="35dp"
                         android:drawableTint="@color/black"
@@ -709,8 +713,11 @@
 
                     <AutoCompleteTextView
                         android:id="@+id/et_pendidikan"
+                        android:focusable="false"
+                        android:inputType="none"
                         android:layout_width="match_parent"
                         android:layout_height="35dp"
+                        android:dropDownHeight="100dp"
                         android:drawableTint="@color/black"
                         android:textSize="12dp"
                         android:paddingVertical="@dimen/dp_10"
@@ -755,7 +762,7 @@
                     android:textAppearance="@style/TextAppearance.AppCompat.Body2"
                     android:textSize="15dp" />
                 <com.google.android.material.textfield.TextInputLayout
-                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="10dp"
@@ -764,16 +771,15 @@
                     app:boxCornerRadiusTopEnd="10dp"
                     app:boxCornerRadiusTopStart="10dp">
 
-                    <AutoCompleteTextView
+                    <EditText
                         android:id="@+id/et_jenisBuktiIdentitas"
                         android:layout_width="match_parent"
                         android:layout_height="35dp"
-                        android:drawableTint="@color/black"
-                        android:textSize="12dp"
-                        android:paddingVertical="@dimen/dp_10"
-                        android:includeFontPadding="false"
                         android:gravity="center_vertical"
-                        android:singleLine="true"/>
+                        android:includeFontPadding="false"
+                        android:inputType="number"
+                        android:paddingVertical="@dimen/dp_10"
+                        android:textSize="12dp" />
 
                 </com.google.android.material.textfield.TextInputLayout>
 
@@ -992,6 +998,8 @@
 
                     <AutoCompleteTextView
                         android:id="@+id/et_statusRumah"
+                        android:focusable="false"
+                        android:inputType="none"
                         android:layout_width="match_parent"
                         android:layout_height="35dp"
                         android:drawableTint="@color/black"
@@ -1002,29 +1010,6 @@
                         android:singleLine="true"/>
 
                 </com.google.android.material.textfield.TextInputLayout>
-
-                //Pilih Jenis Tabungan
-                <RadioGroup
-                    android:id="@+id/groupradio2"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
-
-                    <RadioButton
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/tabungan_a"
-                        android:textSize="14dp"
-                        android:textStyle="bold" />
-
-                    <RadioButton
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/tabungan_b"
-                        android:textSize="14dp"
-                        android:textStyle="bold" />
-
-                </RadioGroup>
 
                 <TextView
                     android:layout_width="wrap_content"

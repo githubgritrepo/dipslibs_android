@@ -154,6 +154,7 @@
                     app:boxCornerRadiusTopEnd="10dp"
                     app:boxCornerRadiusTopStart="10dp">
                     <EditText
+                        android:id="@+id/namaPerusahaan"
                         android:layout_width="match_parent"
                         android:layout_height="35dp"
                         android:gravity="center_vertical"
@@ -180,6 +181,7 @@
                     app:boxCornerRadiusTopEnd="10dp"
                     app:boxCornerRadiusTopStart="10dp">
                     <EditText
+                        android:id="@+id/alamatPerusahaan"
                         android:layout_width="match_parent"
                         android:layout_height="70dp"
                         android:gravity="top"
@@ -221,7 +223,7 @@
                             app:boxCornerRadiusTopStart="10dp">
 
                             <EditText
-                                android:id="@+id/et_rt"
+                                android:id="@+id/rt_alamat_perusahaan"
                                 android:layout_width="match_parent"
                                 android:layout_height="35dp"
                                 android:gravity="center_vertical"
@@ -255,7 +257,7 @@
                             app:boxCornerRadiusTopStart="10dp">
 
                             <EditText
-                                android:id="@+id/et_rw"
+                                android:id="@+id/rw_alamat_perusahaan"
                                 android:layout_width="match_parent"
                                 android:layout_height="35dp"
                                 android:gravity="center_vertical"
@@ -268,15 +270,15 @@
                     </LinearLayout>
                 </LinearLayout>
 
-                //Kelurahan atau Desa
+                //Provinsi
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/kelurahan_desa"
+                    android:text="@string/provinsi"
                     android:textAppearance="@style/TextAppearance.AppCompat.Body2"
                     android:textSize="15dp" />
                 <com.google.android.material.textfield.TextInputLayout
-                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="10dp"
@@ -285,44 +287,19 @@
                     app:boxCornerRadiusTopEnd="10dp"
                     app:boxCornerRadiusTopStart="10dp">
 
-                    <EditText
-                        android:id="@+id/et_kelurahanDesa"
+                    <AutoCompleteTextView
+                        android:dropDownHeight="100dp"
+                        android:focusable="false"
+                        android:inputType="none"
+                        android:id="@+id/et_ProvinsiPekerjaan"
                         android:layout_width="match_parent"
                         android:layout_height="35dp"
-                        android:gravity="center_vertical"
-                        android:includeFontPadding="false"
-                        android:inputType="text"
+                        android:drawableTint="@color/black"
+                        android:textSize="12dp"
                         android:paddingVertical="@dimen/dp_10"
-                        android:textSize="12dp" />
-
-                </com.google.android.material.textfield.TextInputLayout>
-
-                //Kecamatan
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/kecamatan"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-                    android:textSize="15dp" />
-                <com.google.android.material.textfield.TextInputLayout
-                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="10dp"
-                    app:boxCornerRadiusBottomEnd="10dp"
-                    app:boxCornerRadiusBottomStart="10dp"
-                    app:boxCornerRadiusTopEnd="10dp"
-                    app:boxCornerRadiusTopStart="10dp">
-
-                    <EditText
-                        android:id="@+id/et_Kecamatan"
-                        android:layout_width="match_parent"
-                        android:layout_height="35dp"
-                        android:gravity="center_vertical"
                         android:includeFontPadding="false"
-                        android:inputType="text"
-                        android:paddingVertical="@dimen/dp_10"
-                        android:textSize="12dp" />
+                        android:gravity="center_vertical"
+                        android:singleLine="true"/>
 
                 </com.google.android.material.textfield.TextInputLayout>
 
@@ -334,7 +311,7 @@
                     android:textAppearance="@style/TextAppearance.AppCompat.Body2"
                     android:textSize="15dp" />
                 <com.google.android.material.textfield.TextInputLayout
-                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="10dp"
@@ -343,27 +320,31 @@
                     app:boxCornerRadiusTopEnd="10dp"
                     app:boxCornerRadiusTopStart="10dp">
 
-                    <EditText
-                        android:id="@+id/et_KabupatenKota"
+                    <AutoCompleteTextView
+                        android:dropDownHeight="100dp"
+                        android:focusable="false"
+                        android:inputType="none"
+                        android:id="@+id/et_KabupatenKotaPekerjaan"
                         android:layout_width="match_parent"
                         android:layout_height="35dp"
-                        android:gravity="center_vertical"
-                        android:includeFontPadding="false"
-                        android:inputType="text"
+                        android:drawableTint="@color/black"
+                        android:textSize="12dp"
                         android:paddingVertical="@dimen/dp_10"
-                        android:textSize="12dp" />
+                        android:includeFontPadding="false"
+                        android:gravity="center_vertical"
+                        android:singleLine="true"/>
 
                 </com.google.android.material.textfield.TextInputLayout>
 
-                //Provinsi
+                //Kecamatan
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/provinsi"
+                    android:text="@string/kecamatan"
                     android:textAppearance="@style/TextAppearance.AppCompat.Body2"
                     android:textSize="15dp" />
                 <com.google.android.material.textfield.TextInputLayout
-                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="10dp"
@@ -372,15 +353,52 @@
                     app:boxCornerRadiusTopEnd="10dp"
                     app:boxCornerRadiusTopStart="10dp">
 
-                    <EditText
-                        android:id="@+id/et_Provinsi"
+                    <AutoCompleteTextView
+                        android:dropDownHeight="100dp"
+                        android:focusable="false"
+                        android:inputType="none"
+                        android:id="@+id/et_Kecamatan_pekerjaan"
                         android:layout_width="match_parent"
                         android:layout_height="35dp"
-                        android:gravity="center_vertical"
-                        android:includeFontPadding="false"
-                        android:inputType="text"
+                        android:drawableTint="@color/black"
+                        android:textSize="12dp"
                         android:paddingVertical="@dimen/dp_10"
-                        android:textSize="12dp" />
+                        android:includeFontPadding="false"
+                        android:gravity="center_vertical"
+                        android:singleLine="true"/>
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+                //Kelurahan atau Desa
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/kelurahan_desa"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+                    android:textSize="15dp" />
+                <com.google.android.material.textfield.TextInputLayout
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="10dp"
+                    app:boxCornerRadiusBottomEnd="10dp"
+                    app:boxCornerRadiusBottomStart="10dp"
+                    app:boxCornerRadiusTopEnd="10dp"
+                    app:boxCornerRadiusTopStart="10dp">
+
+                    <AutoCompleteTextView
+                        android:dropDownHeight="100dp"
+                        android:focusable="false"
+                        android:inputType="none"
+                        android:id="@+id/et_kelurahanDesa_pekerjaan"
+                        android:layout_width="match_parent"
+                        android:layout_height="35dp"
+                        android:drawableTint="@color/black"
+                        android:textSize="12dp"
+                        android:paddingVertical="@dimen/dp_10"
+                        android:includeFontPadding="false"
+                        android:gravity="center_vertical"
+                        android:singleLine="true"/>
 
                 </com.google.android.material.textfield.TextInputLayout>
 
@@ -402,7 +420,7 @@
                     app:boxCornerRadiusTopStart="10dp">
 
                     <EditText
-                        android:id="@+id/et_kodepos"
+                        android:id="@+id/et_kodepos_pekerjaan"
                         android:layout_width="match_parent"
                         android:layout_height="35dp"
                         android:gravity="center_vertical"
@@ -421,7 +439,7 @@
                     android:textAppearance="@style/TextAppearance.AppCompat.Body2"
                     android:textSize="15dp" />
                 <com.google.android.material.textfield.TextInputLayout
-                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="10dp"
@@ -431,6 +449,9 @@
                     app:boxCornerRadiusTopStart="10dp">
 
                     <AutoCompleteTextView
+                        android:dropDownHeight="100dp"
+                        android:focusable="false"
+                        android:inputType="none"
                         android:id="@+id/act_JumlahKaryawan"
                         android:layout_width="match_parent"
                         android:layout_height="35dp"
@@ -461,7 +482,7 @@
                     app:boxCornerRadiusTopStart="10dp">
 
                     <EditText
-                        android:id="@+id/et_no_telephone"
+                        android:id="@+id/et_no_telephone_kantor"
                         android:layout_width="match_parent"
                         android:layout_height="35dp"
                         android:gravity="center_vertical"
@@ -489,6 +510,7 @@
                     app:boxCornerRadiusTopStart="10dp">
 
                     <EditText
+                        android:id="@+id/et_noFax_kantor"
                         android:layout_width="match_parent"
                         android:layout_height="35dp"
                         android:gravity="center_vertical"
@@ -523,7 +545,7 @@
                             android:textAppearance="@style/TextAppearance.AppCompat.Body2"
                             android:textSize="15dp" />
                         <com.google.android.material.textfield.TextInputLayout
-                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginBottom="10dp"
@@ -533,6 +555,7 @@
                             app:boxCornerRadiusTopStart="10dp">
 
                             <AutoCompleteTextView
+                                android:id="@+id/act_lama_bekerja_tahun"
                                 android:layout_width="match_parent"
                                 android:layout_height="35dp"
                                 android:drawableTint="@color/black"
@@ -557,7 +580,7 @@
                             android:textAppearance="@style/TextAppearance.AppCompat.Body2"
                             android:textSize="15dp" />
                         <com.google.android.material.textfield.TextInputLayout
-                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginBottom="10dp"
@@ -567,6 +590,7 @@
                             app:boxCornerRadiusTopStart="10dp">
 
                             <AutoCompleteTextView
+                                android:id="@+id/act_lama_bekerja_bulan"
                                 android:layout_width="match_parent"
                                 android:layout_height="35dp"
                                 android:drawableTint="@color/black"
@@ -604,7 +628,7 @@
                             android:textAppearance="@style/TextAppearance.AppCompat.Body2"
                             android:textSize="15dp" />
                         <com.google.android.material.textfield.TextInputLayout
-                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginBottom="10dp"
@@ -614,6 +638,7 @@
                             app:boxCornerRadiusTopStart="10dp">
 
                             <AutoCompleteTextView
+                                android:id="@+id/act_total_bekerja_tahun"
                                 android:layout_width="match_parent"
                                 android:layout_height="35dp"
                                 android:drawableTint="@color/black"
@@ -638,7 +663,7 @@
                             android:textAppearance="@style/TextAppearance.AppCompat.Body2"
                             android:textSize="15dp" />
                         <com.google.android.material.textfield.TextInputLayout
-                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginBottom="10dp"
@@ -648,6 +673,7 @@
                             app:boxCornerRadiusTopStart="10dp">
 
                             <AutoCompleteTextView
+                                android:id="@+id/act_total_bekerja_bulan"
                                 android:layout_width="match_parent"
                                 android:layout_height="35dp"
                                 android:drawableTint="@color/black"
@@ -768,6 +794,7 @@
                     app:boxCornerRadiusTopEnd="10dp"
                     app:boxCornerRadiusTopStart="10dp">
                     <EditText
+                        android:id="@+id/bagian_dept"
                         android:layout_width="match_parent"
                         android:layout_height="35dp"
                         android:gravity="center_vertical"

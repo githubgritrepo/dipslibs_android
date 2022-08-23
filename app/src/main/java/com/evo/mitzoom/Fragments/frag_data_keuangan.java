@@ -325,7 +325,6 @@ public class frag_data_keuangan extends Fragment {
                 .addToBackStack(null)
                 .commit();
     }
-
     private void Mirroring(boolean bool) {
         JSONObject jsons = new JSONObject();
         JSONArray jsonArray = new JSONArray();

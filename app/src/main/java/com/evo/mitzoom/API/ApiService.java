@@ -3,6 +3,7 @@ package com.evo.mitzoom.API;
 import com.evo.mitzoom.Constants.MyConstants;
 import com.evo.mitzoom.Model.Request.JsonCaptureIdentify;
 import com.evo.mitzoom.Model.Response.CaptureIdentify;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
 import okhttp3.RequestBody;
@@ -11,6 +12,7 @@ import retrofit2.http.Body;
 import retrofit2.http.GET;
 import retrofit2.http.Headers;
 import retrofit2.http.POST;
+import retrofit2.http.Path;
 import retrofit2.http.Url;
 
 public interface ApiService {
@@ -59,6 +61,27 @@ public interface ApiService {
     @GET
     Call<JsonObject> setBarcode(
             @Url String url
+    );
+
+
+    @Headers("Content-Type: "+ MyConstants.CONTENT_TYPE)
+    @GET("api/prov/test")
+    Call<JsonArray> getProv();
+
+    @Headers("Content-Type: "+ MyConstants.CONTENT_TYPE)
+    @GET("api/kab/test/{id}")
+    Call<JsonArray> ardGetKab(
+            @Path("id") String id
+    );
+    @Headers("Content-Type: "+ MyConstants.CONTENT_TYPE)
+    @GET("api/kec/test/{id}")
+    Call<JsonArray> ardGetKec(
+            @Path("id") String id
+    );
+    @Headers("Content-Type: "+ MyConstants.CONTENT_TYPE)
+    @GET("api/kel/test/{id}")
+    Call<JsonArray> ardGetKel(
+            @Path("id") String id
     );
 
 }

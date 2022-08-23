@@ -3,7 +3,6 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
-        <entry key="..\:/Kerjaan GRIT/Project Mobile/DiPS361/app/src/main/res/layout/activity_dips_capture.xml" value="0.18659420289855072" />
         <entry key="..\:/Project Mobile Apps/DiPS361/app/src/main/res/drawable-anydpi/ic_call.xml" value="0.1795" />
         <entry key="..\:/Project Mobile Apps/DiPS361/app/src/main/res/drawable/bg_textinput.xml" value="0.193" />
         <entry key="..\:/Project Mobile Apps/DiPS361/app/src/main/res/drawable/blue_radius_bg.xml" value="0.1715" />
@@ -267,13 +266,11 @@
         <entry key="..\:/Users/rafii/AndroidStudioProjects/DIPS 2/app/src/main/res/drawable/tab_background_unselected.xml" value="0.1235" />
         <entry key="..\:/Users/rafii/AndroidStudioProjects/DIPS 2/app/src/main/res/layout/activity_dips_camera.xml" value="0.16547066272688898" />
         <entry key="..\:/Users/rafii/AndroidStudioProjects/DIPS 2/app/src/main/res/layout/activity_dips_capture.xml" value="0.16547066272688898" />
-<<<<<<< HEAD
         <entry key="..\:/Users/rafii/AndroidStudioProjects/DIPS 2/app/src/main/res/layout/activity_dips_splash_screen.xml" value="0.15" />
         <entry key="..\:/Users/rafii/AndroidStudioProjects/DIPS 2/app/src/main/res/layout/activity_dips_video_confren.xml" value="0.20416666666666666" />
-=======
->>>>>>> 6a225b051bd68fc619fd6ffd0b12253bd5062eb6
         <entry key="..\:/Users/rafii/AndroidStudioProjects/DIPS 2/app/src/main/res/layout/activity_dips_waiting_room.xml" value="0.20416666666666666" />
         <entry key="..\:/Users/rafii/AndroidStudioProjects/DIPS 2/app/src/main/res/layout/aktivasi_berhasil.xml" value="0.25" />
+        <entry key="..\:/Users/rafii/AndroidStudioProjects/DIPS 2/app/src/main/res/layout/aktivasi_ibmb.xml" value="0.17657657657657658" />
         <entry key="..\:/Users/rafii/AndroidStudioProjects/DIPS 2/app/src/main/res/layout/content_form_rtgs.xml" value="0.2" />
         <entry key="..\:/Users/rafii/AndroidStudioProjects/DIPS 2/app/src/main/res/layout/content_frag_resi.xml" value="0.25" />
         <entry key="..\:/Users/rafii/AndroidStudioProjects/DIPS 2/app/src/main/res/layout/content_summary_rtgs.xml" value="0.2" />
@@ -284,20 +281,17 @@
         <entry key="..\:/Users/rafii/AndroidStudioProjects/DIPS 2/app/src/main/res/layout/frag_chat.xml" value="0.18796296296296297" />
         <entry key="..\:/Users/rafii/AndroidStudioProjects/DIPS 2/app/src/main/res/layout/frag_daftar_produk.xml" value="0.13243243243243244" />
         <entry key="..\:/Users/rafii/AndroidStudioProjects/DIPS 2/app/src/main/res/layout/frag_data_keuangan.xml" value="0.16" />
-        <entry key="..\:/Users/rafii/AndroidStudioProjects/DIPS 2/app/src/main/res/layout/frag_data_pekerjaan.xml" value="0.18" />
+        <entry key="..\:/Users/rafii/AndroidStudioProjects/DIPS 2/app/src/main/res/layout/frag_data_pekerjaan.xml" value="0.1" />
         <entry key="..\:/Users/rafii/AndroidStudioProjects/DIPS 2/app/src/main/res/layout/frag_dialog_rtgs.xml" value="0.20416666666666666" />
         <entry key="..\:/Users/rafii/AndroidStudioProjects/DIPS 2/app/src/main/res/layout/frag_file.xml" value="0.21" />
-<<<<<<< HEAD
-        <entry key="..\:/Users/rafii/AndroidStudioProjects/DIPS 2/app/src/main/res/layout/frag_form_komplain.xml" value="0.2" />
-        <entry key="..\:/Users/rafii/AndroidStudioProjects/DIPS 2/app/src/main/res/layout/frag_form_opening_account.xml" value="0.15" />
-        <entry key="..\:/Users/rafii/AndroidStudioProjects/DIPS 2/app/src/main/res/layout/frag_form_rtgs2.xml" value="0.25" />
-=======
         <entry key="..\:/Users/rafii/AndroidStudioProjects/DIPS 2/app/src/main/res/layout/frag_form_credit.xml" value="0.22" />
         <entry key="..\:/Users/rafii/AndroidStudioProjects/DIPS 2/app/src/main/res/layout/frag_form_komplain.xml" value="0.22" />
-        <entry key="..\:/Users/rafii/AndroidStudioProjects/DIPS 2/app/src/main/res/layout/frag_form_opening_account.xml" value="0.22" />
+        <entry key="..\:/Users/rafii/AndroidStudioProjects/DIPS 2/app/src/main/res/layout/frag_form_opening_account.xml" value="0.18" />
         <entry key="..\:/Users/rafii/AndroidStudioProjects/DIPS 2/app/src/main/res/layout/frag_form_rtgs2.xml" value="0.2" />
->>>>>>> 30beb42f994c854d17cad5cb153a8fbff893079c
         <entry key="..\:/Users/rafii/AndroidStudioProjects/DIPS 2/app/src/main/res/layout/frag_input_nik_nama.xml" value="0.1675929884566054" />
+        <entry key="..\:/Users/rafii/AndroidStudioProjects/DIPS 2/app/src/main/res/layout/frag_interbank.xml" value="0.22" />
+        <entry key="..\:/Users/rafii/AndroidStudioProjects/DIPS 2/app/src/main/res/layout/frag_kartu_atm.xml" value="0.22" />
+        <entry key="..\:/Users/rafii/AndroidStudioProjects/DIPS 2/app/src/main/res/layout/frag_kirim_file.xml" value="0.20416666666666666" />
         <entry key="..\:/Users/rafii/AndroidStudioProjects/DIPS 2/app/src/main/res/layout/frag_new_account.xml" value="0.22" />
         <entry key="..\:/Users/rafii/AndroidStudioProjects/DIPS 2/app/src/main/res/layout/frag_new_account2.xml" value="0.22" />
         <entry key="..\:/Users/rafii/AndroidStudioProjects/DIPS 2/app/src/main/res/layout/frag_new_account_cs.xml" value="0.22" />
@@ -306,15 +300,18 @@
         <entry key="..\:/Users/rafii/AndroidStudioProjects/DIPS 2/app/src/main/res/layout/frag_opening_account.xml" value="0.13243243243243244" />
         <entry key="..\:/Users/rafii/AndroidStudioProjects/DIPS 2/app/src/main/res/layout/frag_resi.xml" value="0.16" />
         <entry key="..\:/Users/rafii/AndroidStudioProjects/DIPS 2/app/src/main/res/layout/frag_services.xml" value="0.20416666666666666" />
+        <entry key="..\:/Users/rafii/AndroidStudioProjects/DIPS 2/app/src/main/res/layout/frag_transaksi_valas.xml" value="0.22" />
         <entry key="..\:/Users/rafii/AndroidStudioProjects/DIPS 2/app/src/main/res/layout/fragment_form_rtgs.xml" value="0.13243243243243244" />
-        <entry key="..\:/Users/rafii/AndroidStudioProjects/DIPS 2/app/src/main/res/layout/header_new_account.xml" value="0.12" />
+        <entry key="..\:/Users/rafii/AndroidStudioProjects/DIPS 2/app/src/main/res/layout/header_new_account.xml" value="0.22" />
         <entry key="..\:/Users/rafii/AndroidStudioProjects/DIPS 2/app/src/main/res/layout/header_opening_account.xml" value="0.13175675675675674" />
         <entry key="..\:/Users/rafii/AndroidStudioProjects/DIPS 2/app/src/main/res/layout/item_bank.xml" value="0.20416666666666666" />
         <entry key="..\:/Users/rafii/AndroidStudioProjects/DIPS 2/app/src/main/res/layout/item_cif.xml" value="0.2" />
         <entry key="..\:/Users/rafii/AndroidStudioProjects/DIPS 2/app/src/main/res/layout/item_file.xml" value="0.22" />
         <entry key="..\:/Users/rafii/AndroidStudioProjects/DIPS 2/app/src/main/res/layout/item_giro.xml" value="0.20416666666666666" />
         <entry key="..\:/Users/rafii/AndroidStudioProjects/DIPS 2/app/src/main/res/layout/item_insurance.xml" value="0.20416666666666666" />
+        <entry key="..\:/Users/rafii/AndroidStudioProjects/DIPS 2/app/src/main/res/layout/item_schedule.xml" value="0.15" />
         <entry key="..\:/Users/rafii/AndroidStudioProjects/DIPS 2/app/src/main/res/layout/item_tnc.xml" value="0.13243243243243244" />
+        <entry key="..\:/Users/rafii/AndroidStudioProjects/DIPS 2/app/src/main/res/layout/kirim_file.xml" value="0.2" />
         <entry key="..\:/Users/rafii/AndroidStudioProjects/DIPS 2/app/src/main/res/layout/layout_bottom_action_bar.xml" value="0.20102564102564102" />
         <entry key="..\:/Users/rafii/AndroidStudioProjects/DIPS 2/app/src/main/res/layout/portfolio.xml" value="0.1925925925925926" />
         <entry key="..\:/Users/rafii/AndroidStudioProjects/DIPS 2/app/src/main/res/layout/summary_rtgs.xml" value="0.13243243243243244" />
@@ -322,7 +319,7 @@
     </option>
   </component>
   <component name="ExternalStorageConfigurationManager" enabled="true" />
-  <component name="ProjectRootManager" version="2" languageLevel="JDK_11" default="true" project-jdk-name="11" project-jdk-type="JavaSDK">
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_11" project-jdk-name="1.8" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/build/classes" />
   </component>
   <component name="ProjectType">

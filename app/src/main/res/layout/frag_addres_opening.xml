@@ -275,7 +275,7 @@
                     android:textAppearance="@style/TextAppearance.AppCompat.Body2"
                     android:textSize="15dp" />
                 <com.google.android.material.textfield.TextInputLayout
-                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="10dp"
@@ -284,15 +284,19 @@
                     app:boxCornerRadiusTopEnd="10dp"
                     app:boxCornerRadiusTopStart="10dp">
 
-                    <EditText
+                    <AutoCompleteTextView
                         android:id="@+id/et_ProvinsiBerbeda"
+                        android:focusable="false"
+                        android:inputType="none"
+                        android:dropDownHeight="100dp"
                         android:layout_width="match_parent"
                         android:layout_height="35dp"
-                        android:gravity="center_vertical"
-                        android:includeFontPadding="false"
-                        android:inputType="text"
+                        android:drawableTint="@color/black"
+                        android:textSize="12dp"
                         android:paddingVertical="@dimen/dp_10"
-                        android:textSize="12dp" />
+                        android:includeFontPadding="false"
+                        android:gravity="center_vertical"
+                        android:singleLine="true"/>
 
                 </com.google.android.material.textfield.TextInputLayout>
 
@@ -304,7 +308,7 @@
                     android:textAppearance="@style/TextAppearance.AppCompat.Body2"
                     android:textSize="15dp" />
                 <com.google.android.material.textfield.TextInputLayout
-                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="10dp"
@@ -313,15 +317,19 @@
                     app:boxCornerRadiusTopEnd="10dp"
                     app:boxCornerRadiusTopStart="10dp">
 
-                    <EditText
+                    <AutoCompleteTextView
                         android:id="@+id/et_KabupatenKotaBerbeda"
+                        android:focusable="false"
+                        android:dropDownHeight="100dp"
+                        android:inputType="none"
                         android:layout_width="match_parent"
                         android:layout_height="35dp"
-                        android:gravity="center_vertical"
-                        android:includeFontPadding="false"
-                        android:inputType="text"
+                        android:drawableTint="@color/black"
+                        android:textSize="12dp"
                         android:paddingVertical="@dimen/dp_10"
-                        android:textSize="12dp" />
+                        android:includeFontPadding="false"
+                        android:gravity="center_vertical"
+                        android:singleLine="true"/>
 
                 </com.google.android.material.textfield.TextInputLayout>
 
@@ -333,7 +341,7 @@
                     android:textAppearance="@style/TextAppearance.AppCompat.Body2"
                     android:textSize="15dp" />
                 <com.google.android.material.textfield.TextInputLayout
-                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="10dp"
@@ -342,15 +350,19 @@
                     app:boxCornerRadiusTopEnd="10dp"
                     app:boxCornerRadiusTopStart="10dp">
 
-                    <EditText
+                    <AutoCompleteTextView
+                        android:focusable="false"
+                        android:inputType="none"
+                        android:dropDownHeight="100dp"
                         android:id="@+id/et_KecamatanBerbeda"
                         android:layout_width="match_parent"
                         android:layout_height="35dp"
-                        android:gravity="center_vertical"
-                        android:includeFontPadding="false"
-                        android:inputType="text"
+                        android:drawableTint="@color/black"
+                        android:textSize="12dp"
                         android:paddingVertical="@dimen/dp_10"
-                        android:textSize="12dp" />
+                        android:includeFontPadding="false"
+                        android:gravity="center_vertical"
+                        android:singleLine="true"/>
 
                 </com.google.android.material.textfield.TextInputLayout>
 
@@ -362,7 +374,7 @@
                     android:textAppearance="@style/TextAppearance.AppCompat.Body2"
                     android:textSize="15dp" />
                 <com.google.android.material.textfield.TextInputLayout
-                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="10dp"
@@ -371,15 +383,19 @@
                     app:boxCornerRadiusTopEnd="10dp"
                     app:boxCornerRadiusTopStart="10dp">
 
-                    <EditText
+                    <AutoCompleteTextView
                         android:id="@+id/et_kelurahanDesaBerbeda"
+                        android:dropDownHeight="100dp"
+                        android:focusable="false"
+                        android:inputType="none"
                         android:layout_width="match_parent"
                         android:layout_height="35dp"
-                        android:gravity="center_vertical"
-                        android:includeFontPadding="false"
-                        android:inputType="text"
+                        android:drawableTint="@color/black"
+                        android:textSize="12dp"
                         android:paddingVertical="@dimen/dp_10"
-                        android:textSize="12dp" />
+                        android:includeFontPadding="false"
+                        android:gravity="center_vertical"
+                        android:singleLine="true"/>
 
                 </com.google.android.material.textfield.TextInputLayout>
 
@@ -406,7 +422,7 @@
                         android:layout_height="35dp"
                         android:gravity="center_vertical"
                         android:includeFontPadding="false"
-                        android:inputType="text"
+                        android:inputType="number"
                         android:paddingVertical="@dimen/dp_10"
                         android:textSize="12dp" />
 
