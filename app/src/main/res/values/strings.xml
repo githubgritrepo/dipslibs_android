@@ -248,4 +248,9 @@
     <string name="nama_perusahaan">Nama Perusahaan</string>
     <string name="alamat_perusahaan">Alamat Perusahaan</string>
     <string name="data_keuangan">Data Keuangan</string>
+    <string name="cardless">Transaksi Tanpa Kartu</string>
+    <string name="keterangan">Keterangan</string>
+    <string name="body_resi_cardless">Gunakan kode dibawah ini untuk melakukan transaksi tanpa kartu pada ATM yang tersedia. Jangan bagikan nomor ini kepada orang lain.</string>
+    <string name="headline_cardless">Terima kasih telah mempercayakan transaksi perbankan Anda pada Bank XYZ. Gunakan Aplikasi XYZ Mobile Banking untuk pengalaman transaksi penuh keuntungan. <b>Resi Digital Form telah dikirimkan ke alamat email Anda.</b> Harap untuk periksa email Anda.</string>
+    <string name="unduh_resi">Unduh Resi</string>
 </resources>

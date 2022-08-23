@@ -34,11 +34,13 @@
             android:textSize="20dp"
             android:textStyle="bold" />
     </RelativeLayout>
+
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:scrollbars="vertical"
-        android:layout_below="@+id/TopBar">
+        android:layout_below="@+id/TopBar"
+        android:scrollbars="vertical">
+
         <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -51,12 +53,14 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="20dp"
                 android:orientation="vertical">
+
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/name"
                     android:textAppearance="@style/TextAppearance.AppCompat.Body2"
                     android:textSize="15dp" />
+
                 <com.google.android.material.textfield.TextInputLayout
                     style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                     android:layout_width="match_parent"
@@ -71,19 +75,21 @@
                         android:id="@+id/et_nama"
                         android:layout_width="match_parent"
                         android:layout_height="35dp"
+                        android:gravity="center_vertical"
+                        android:includeFontPadding="false"
                         android:inputType="text"
                         android:paddingVertical="@dimen/dp_10"
-                        android:textSize="12dp"
-                        android:includeFontPadding="false"
-                        android:gravity="center_vertical" />
+                        android:textSize="12dp" />
 
                 </com.google.android.material.textfield.TextInputLayout>
+
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="No Handphone"
                     android:textAppearance="@style/TextAppearance.AppCompat.Body2"
                     android:textSize="15dp" />
+
                 <com.google.android.material.textfield.TextInputLayout
                     style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                     android:layout_width="match_parent"
@@ -98,18 +104,20 @@
                         android:id="@+id/et_no_hp"
                         android:layout_width="match_parent"
                         android:layout_height="35dp"
+                        android:gravity="center_vertical"
+                        android:includeFontPadding="false"
                         android:inputType="number"
                         android:paddingVertical="@dimen/dp_10"
-                        android:textSize="12dp"
-                        android:includeFontPadding="false"
-                        android:gravity="center_vertical"/>
+                        android:textSize="12dp" />
                 </com.google.android.material.textfield.TextInputLayout>
+
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/email"
                     android:textAppearance="@style/TextAppearance.AppCompat.Body2"
                     android:textSize="15dp" />
+
                 <com.google.android.material.textfield.TextInputLayout
                     style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                     android:layout_width="match_parent"
@@ -124,18 +132,20 @@
                         android:id="@+id/et_email"
                         android:layout_width="match_parent"
                         android:layout_height="35dp"
+                        android:gravity="center_vertical"
+                        android:includeFontPadding="false"
                         android:inputType="textEmailAddress"
                         android:paddingVertical="@dimen/dp_10"
-                        android:textSize="12dp"
-                        android:includeFontPadding="false"
-                        android:gravity="center_vertical"/>
+                        android:textSize="12dp" />
                 </com.google.android.material.textfield.TextInputLayout>
+
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/address"
                     android:textAppearance="@style/TextAppearance.AppCompat.Body2"
                     android:textSize="15dp" />
+
                 <com.google.android.material.textfield.TextInputLayout
                     style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                     android:layout_width="match_parent"
@@ -147,25 +157,27 @@
                     app:boxCornerRadiusTopStart="10dp">
 
                     <EditText
-                        android:gravity="top"
                         android:id="@+id/et_alamat"
                         android:layout_width="match_parent"
                         android:layout_height="70dp"
+                        android:gravity="top"
+                        android:includeFontPadding="false"
                         android:inputType="textMultiLine"
                         android:lines="8"
                         android:maxLines="10"
                         android:minLines="6"
-                        android:scrollbars="vertical"
                         android:paddingVertical="@dimen/dp_10"
-                        android:textSize="12dp"
-                        android:includeFontPadding="false" />
+                        android:scrollbars="vertical"
+                        android:textSize="12dp" />
                 </com.google.android.material.textfield.TextInputLayout>
+
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/tanggal_transaksi"
                     android:textAppearance="@style/TextAppearance.AppCompat.Body2"
                     android:textSize="15dp" />
+
                 <com.google.android.material.textfield.TextInputLayout
                     style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                     android:layout_width="match_parent"
@@ -177,23 +189,25 @@
                     app:boxCornerRadiusTopStart="10dp">
 
                     <EditText
-                        android:clickable="false"
-                        android:focusable="false"
                         android:id="@+id/et_tgl_transaksi_atm"
                         android:layout_width="match_parent"
                         android:layout_height="35dp"
+                        android:clickable="false"
+                        android:focusable="false"
+                        android:gravity="center_vertical"
+                        android:includeFontPadding="false"
                         android:inputType="number"
                         android:paddingVertical="@dimen/dp_10"
-                        android:textSize="12dp"
-                        android:includeFontPadding="false"
-                        android:gravity="center_vertical"/>
+                        android:textSize="12dp" />
                 </com.google.android.material.textfield.TextInputLayout>
+
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/jenis_layanan"
                     android:textAppearance="@style/TextAppearance.AppCompat.Body2"
                     android:textSize="15dp" />
+
                 <com.google.android.material.textfield.TextInputLayout
                     style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
                     android:layout_width="match_parent"
@@ -209,27 +223,27 @@
                         android:layout_width="match_parent"
                         android:layout_height="35dp"
                         android:drawableTint="@color/black"
-                        android:textSize="12dp"
-                        android:paddingVertical="@dimen/dp_10"
-                        android:includeFontPadding="false"
                         android:gravity="center_vertical"
-                        android:singleLine="true"/>
+                        android:includeFontPadding="false"
+                        android:paddingVertical="@dimen/dp_10"
+                        android:singleLine="true"
+                        android:textSize="12dp" />
 
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <CheckBox
                     android:id="@+id/pernyataan_atm"
-                    android:layout_marginBottom="10dp"
-                    android:layout_marginEnd="15dp"
-                    android:focusable="false"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textAlignment="textStart"
+                    android:layout_marginEnd="15dp"
+                    android:layout_marginBottom="10dp"
+                    android:focusable="false"
                     android:text="@string/content_form_bottom"
-                    android:textSize="13dp"
-                    android:textColor="@color/black"/>
+                    android:textAlignment="textStart"
+                    android:textColor="@color/black"
+                    android:textSize="13dp" />
+
                 <Button
-                    android:textSize="14dp"
                     android:id="@+id/btnProses_atm"
                     android:layout_width="match_parent"
                     android:layout_height="35dp"
@@ -237,6 +251,7 @@
                     android:backgroundTint="@color/Blue"
                     android:text="@string/process"
                     android:textColor="@color/white"
+                    android:textSize="14dp"
                     android:textStyle="bold" />
             </LinearLayout>
         </androidx.cardview.widget.CardView>

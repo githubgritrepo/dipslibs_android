@@ -20,6 +20,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.evo.mitzoom.API.ApiService;
 import com.evo.mitzoom.API.Server;
 import com.evo.mitzoom.Fragments.frag_aktivasi_ibmb;
+import com.evo.mitzoom.Fragments.frag_cardless;
 import com.evo.mitzoom.Fragments.frag_form_credit;
 import com.evo.mitzoom.Fragments.frag_form_komplain;
 import com.evo.mitzoom.Fragments.frag_kartua_atm;
@@ -152,6 +153,9 @@ public class ItemServiceAdapter extends RecyclerView.Adapter<ItemServiceAdapter.
                     bundle.putInt("state",3);
                     fragment.setArguments(bundle);
                     getFragmentPage(fragment);
+                    return;
+                case "15" :
+                    getFragmentPage(new frag_cardless());
                     return;
             }
         });

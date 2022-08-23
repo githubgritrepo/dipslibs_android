@@ -90,6 +90,7 @@ public class frag_service extends Fragment {
         data.add(new ItemModel("12",getResources().getString(R.string.WEALTH_RISK_PROFILE),R.drawable.item1));
         data.add(new ItemModel("13",getResources().getString(R.string.FINANCIAL_PLANNING),R.drawable.item2)); //Sudah
         data.add(new ItemModel("14",getResources().getString(R.string.WEALTH),R.drawable.item1)); //Sudah
+        data.add(new ItemModel("15",getString(R.string.cardless),R.drawable.item2));
     }
     private void Mirroring(int nextCode, boolean bool){
         JSONObject jsons = new JSONObject();
