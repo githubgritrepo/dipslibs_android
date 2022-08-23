@@ -25,7 +25,10 @@ import com.chaos.view.PinView;
 import com.evo.mitzoom.Adapter.AdapterSourceAccount;
 import com.evo.mitzoom.R;
 
+import java.math.BigDecimal;
+import java.text.NumberFormat;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -45,6 +48,8 @@ public class frag_cardless extends Fragment {
     private Button btnProses;
     private EditText et_nominal;
     private EditText et_description;
+    private String newString;
+    public static final NumberFormat numberFormat = NumberFormat.getInstance(new Locale("id", "ID"));
 
     private void PopUp(){
         View dialogView = getLayoutInflater().inflate(R.layout.item_otp, null);
@@ -76,10 +81,10 @@ public class frag_cardless extends Fragment {
 
             @Override
             public void afterTextChanged(Editable s) {
-                String newString = myFilter(s.toString());
+                newString = myFilter(s.toString());
                 otp.removeTextChangedListener(this);
                 handler = new Handler();
-                Runnable myRunnable = new Runnable() {
+                myRunnable = new Runnable() {
                     @Override
                     public void run() {
                         otp.setText(newString);
@@ -170,6 +175,17 @@ public class frag_cardless extends Fragment {
         },5000);
     }
 
+    public static BigDecimal parseCurrencyValue(String value) {
+        try {
+            String replaceRegex = String.format("[%s,.\\s]", Objects.requireNonNull(numberFormat.getCurrency()).getDisplayName());
+            String currencyValue = value.replaceAll(replaceRegex, "");
+            return new BigDecimal(currencyValue);
+        } catch (Exception e) {
+            Log.e("MyApp", e.getMessage(), e);
+        }
+        return BigDecimal.ZERO;
+    }
+
     private void getFragmentPage(Fragment fragment){
         getActivity().getSupportFragmentManager()
                 .beginTransaction()
@@ -222,5 +238,28 @@ public class frag_cardless extends Fragment {
 
             }
         });
+
+        et_nominal.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                et_nominal.removeTextChangedListener(this);
+                BigDecimal parsed = parseCurrencyValue(et_nominal.getText().toString());
+                String formatted = numberFormat.format(parsed);
+                et_nominal.setText(formatted);
+                et_nominal.setSelection(formatted.length());
+                et_nominal.addTextChangedListener(this);
+            }
+        });
+
     }
 }

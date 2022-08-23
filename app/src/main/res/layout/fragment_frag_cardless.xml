@@ -37,7 +37,8 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/TopBar"
         android:scrollbars="vertical"
-        android:paddingBottom="50dp">
+        android:paddingBottom="50dp"
+        android:layout_margin="@dimen/dp_5">
 
         <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
@@ -50,7 +51,8 @@
                 android:id="@+id/llSourceAccount"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical">
+                android:orientation="vertical"
+                android:layout_margin="@dimen/dp_10">
 
                 <TextView
                     android:layout_width="wrap_content"
