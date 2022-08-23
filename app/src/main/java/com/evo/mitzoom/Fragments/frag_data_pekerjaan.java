@@ -2,6 +2,8 @@ package com.evo.mitzoom.Fragments;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,7 +23,10 @@ import androidx.fragment.app.Fragment;
 import com.evo.mitzoom.API.ApiService;
 import com.evo.mitzoom.API.Server;
 import com.evo.mitzoom.R;
+import com.evo.mitzoom.Session.SessionManager;
+import com.google.firebase.platforminfo.KotlinDetector;
 import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -30,6 +35,8 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
+import okhttp3.MediaType;
+import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -37,6 +44,7 @@ import retrofit2.Response;
 public class frag_data_pekerjaan extends Fragment {
 
     private Context context;
+    private SessionManager session;
     private byte[] KTP, NPWP, TTD;
     private Button btnProses, btnKembali;
     private List<String> listProv = new ArrayList<>();
@@ -47,6 +55,7 @@ public class frag_data_pekerjaan extends Fragment {
     private List<String> idKec = new ArrayList<>();
     private List<String> listKel = new ArrayList<>();
     private List<String> idKel = new ArrayList<>();
+    private String idDips;
     private LinearLayout iconKtp, iconNpwp, iconSignature, iconForm;
     private String[] jumlahKaryawan_, pekerjaan_, bidangUsaha_, jabatan_, tahun, bulan;
     private EditText namaPerusahaan, alamatPerusahaan, rt,rw, kodepos, noTelp, noFax, bagian_dept;
@@ -56,6 +65,7 @@ public class frag_data_pekerjaan extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         context = getContext();
+        session = new SessionManager(context);
     }
     @Nullable
     @Override
@@ -94,6 +104,7 @@ public class frag_data_pekerjaan extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        idDips = session.getKEY_IdDips();
         setActionBar();
         setDropdown();
         Bundle arg = getArguments();
@@ -103,6 +114,7 @@ public class frag_data_pekerjaan extends Fragment {
         btnProses.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                Mirroring(namaPerusahaan.getText().toString(),alamatPerusahaan.getText().toString(),rt.getText().toString(),rw.getText().toString(),Kelurahan.getText().toString(),Kecamatan.getText().toString(),KabupatenKota.getText().toString(),Provinsi.getText().toString(), kodepos.getText().toString(),jumlahKaryawan.getText().toString(),noTelp.getText().toString(),noFax.getText().toString(),lamakerja_tahun.getText().toString(),lamakerja_bulan.getText().toString(),totalkerja_tahun.getText().toString(),totalkerja_bulan.getText().toString(),pekerjaan.getText().toString(),bidangUsaha.getText().toString(),jabatan.getText(),bagian_dept.getText().toString(),true);
                 Fragment fragment = new frag_data_keuangan();
                 Bundle bundle = new Bundle();
                 bundle.putByteArray("ktp",KTP);
@@ -126,6 +138,70 @@ public class frag_data_pekerjaan extends Fragment {
         });
     }
     private void setTextWatcher(){
+        namaPerusahaan.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                Mirroring(charSequence,alamatPerusahaan.getText().toString(),rt.getText().toString(),rw.getText().toString(),Kelurahan.getText().toString(),Kecamatan.getText().toString(),KabupatenKota.getText().toString(),Provinsi.getText().toString(), kodepos.getText().toString(),jumlahKaryawan.getText().toString(),noTelp.getText().toString(),noFax.getText().toString(),lamakerja_tahun.getText().toString(),lamakerja_bulan.getText().toString(),totalkerja_tahun.getText().toString(),totalkerja_bulan.getText().toString(),pekerjaan.getText().toString(),bidangUsaha.getText().toString(),jabatan.getText(),bagian_dept.getText().toString(),false);
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+            }
+        });
+        alamatPerusahaan.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                Mirroring(namaPerusahaan.getText().toString(),charSequence,rt.getText().toString(),rw.getText().toString(),Kelurahan.getText().toString(),Kecamatan.getText().toString(),KabupatenKota.getText().toString(),Provinsi.getText().toString(), kodepos.getText().toString(),jumlahKaryawan.getText().toString(),noTelp.getText().toString(),noFax.getText().toString(),lamakerja_tahun.getText().toString(),lamakerja_bulan.getText().toString(),totalkerja_tahun.getText().toString(),totalkerja_bulan.getText().toString(),pekerjaan.getText().toString(),bidangUsaha.getText().toString(),jabatan.getText(),bagian_dept.getText().toString(),false);
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+            }
+        });
+        rt.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                Mirroring(namaPerusahaan.getText().toString(),alamatPerusahaan.getText().toString(),charSequence,rw.getText().toString(),Kelurahan.getText().toString(),Kecamatan.getText().toString(),KabupatenKota.getText().toString(),Provinsi.getText().toString(), kodepos.getText().toString(),jumlahKaryawan.getText().toString(),noTelp.getText().toString(),noFax.getText().toString(),lamakerja_tahun.getText().toString(),lamakerja_bulan.getText().toString(),totalkerja_tahun.getText().toString(),totalkerja_bulan.getText().toString(),pekerjaan.getText().toString(),bidangUsaha.getText().toString(),jabatan.getText(),bagian_dept.getText().toString(),false);
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+            }
+        });
+        rw.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                Mirroring(namaPerusahaan.getText().toString(),alamatPerusahaan.getText().toString(),rt.getText().toString(),charSequence,Kelurahan.getText().toString(),Kecamatan.getText().toString(),KabupatenKota.getText().toString(),Provinsi.getText().toString(), kodepos.getText().toString(),jumlahKaryawan.getText().toString(),noTelp.getText().toString(),noFax.getText().toString(),lamakerja_tahun.getText().toString(),lamakerja_bulan.getText().toString(),totalkerja_tahun.getText().toString(),totalkerja_bulan.getText().toString(),pekerjaan.getText().toString(),bidangUsaha.getText().toString(),jabatan.getText(),bagian_dept.getText().toString(),false);
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+            }
+        });
         Provinsi.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
@@ -136,6 +212,7 @@ public class frag_data_pekerjaan extends Fragment {
                 Kecamatan.setText("");
                 Kelurahan.setText("");
                 getKab(idProv.get(i));
+                Mirroring(namaPerusahaan.getText().toString(), alamatPerusahaan.getText().toString(),rt.getText().toString(),rw.getText().toString(),"","", "",prov_, kodepos.getText().toString(),jumlahKaryawan.getText().toString(),noTelp.getText().toString(),noFax.getText().toString(),lamakerja_tahun.getText().toString(),lamakerja_bulan.getText().toString(),totalkerja_tahun.getText().toString(),totalkerja_bulan.getText().toString(),pekerjaan.getText().toString(),bidangUsaha.getText().toString(),jabatan.getText(),bagian_dept.getText().toString(),false);
             }
         });
         KabupatenKota.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -147,6 +224,7 @@ public class frag_data_pekerjaan extends Fragment {
                 idKec = new ArrayList<>();
                 listKec = new ArrayList<>();
                 getKec(idKab.get(i));
+                Mirroring(namaPerusahaan.getText().toString(), alamatPerusahaan.getText().toString(),rt.getText().toString(),rw.getText().toString(),"","", kab_, Provinsi.getText().toString(), kodepos.getText().toString(),jumlahKaryawan.getText().toString(),noTelp.getText().toString(),noFax.getText().toString(),lamakerja_tahun.getText().toString(),lamakerja_bulan.getText().toString(),totalkerja_tahun.getText().toString(),totalkerja_bulan.getText().toString(),pekerjaan.getText().toString(),bidangUsaha.getText().toString(),jabatan.getText(),bagian_dept.getText().toString(),false);
             }
         });
         Kecamatan.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -157,12 +235,134 @@ public class frag_data_pekerjaan extends Fragment {
                 listKel = new ArrayList<>();
                 Kelurahan.setText("");
                 getKel(idKec.get(i));
+                Mirroring(namaPerusahaan.getText().toString(),alamatPerusahaan.getText().toString(),rt.getText().toString(),rw.getText().toString(),"",kec_,KabupatenKota.getText().toString(),Provinsi.getText().toString(), kodepos.getText().toString(),jumlahKaryawan.getText().toString(),noTelp.getText().toString(),noFax.getText().toString(),lamakerja_tahun.getText().toString(),lamakerja_bulan.getText().toString(),totalkerja_tahun.getText().toString(),totalkerja_bulan.getText().toString(),pekerjaan.getText().toString(),bidangUsaha.getText().toString(),jabatan.getText(),bagian_dept.getText().toString(),false);
             }
         });
         Kelurahan.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 String kel_ = (String) adapterView.getItemAtPosition(i);
+                Mirroring(namaPerusahaan.getText().toString(),alamatPerusahaan.getText().toString(),rt.getText().toString(),rw.getText().toString(),kel_,Kecamatan.getText().toString(),KabupatenKota.getText().toString(),Provinsi.getText().toString(), kodepos.getText().toString(),jumlahKaryawan.getText().toString(),noTelp.getText().toString(),noFax.getText().toString(),lamakerja_tahun.getText().toString(),lamakerja_bulan.getText().toString(),totalkerja_tahun.getText().toString(),totalkerja_bulan.getText().toString(),pekerjaan.getText().toString(),bidangUsaha.getText().toString(),jabatan.getText(),bagian_dept.getText().toString(),false);
+            }
+        });
+        kodepos.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                Mirroring(namaPerusahaan.getText().toString(),alamatPerusahaan.getText().toString(),rt.getText().toString(),rw.getText().toString(),Kelurahan.getText().toString(),Kecamatan.getText().toString(),KabupatenKota.getText().toString(),Provinsi.getText().toString(), charSequence,jumlahKaryawan.getText().toString(),noTelp.getText().toString(),noFax.getText().toString(),lamakerja_tahun.getText().toString(),lamakerja_bulan.getText().toString(),totalkerja_tahun.getText().toString(),totalkerja_bulan.getText().toString(),pekerjaan.getText().toString(),bidangUsaha.getText().toString(),jabatan.getText(),bagian_dept.getText().toString(),false);
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+            }
+        });
+        jumlahKaryawan.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                String jmlKrywn_ = (String) adapterView.getItemAtPosition(i);
+                Mirroring(namaPerusahaan.getText().toString(),alamatPerusahaan.getText().toString(),rt.getText().toString(),rw.getText().toString(),Kelurahan.getText().toString(),Kecamatan.getText().toString(),KabupatenKota.getText().toString(),Provinsi.getText().toString(), kodepos.getText().toString(),jmlKrywn_,noTelp.getText().toString(),noFax.getText().toString(),lamakerja_tahun.getText().toString(),lamakerja_bulan.getText().toString(),totalkerja_tahun.getText().toString(),totalkerja_bulan.getText().toString(),pekerjaan.getText().toString(),bidangUsaha.getText().toString(),jabatan.getText(),bagian_dept.getText().toString(),false);
+            }
+        });
+        noTelp.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                Mirroring(namaPerusahaan.getText().toString(),alamatPerusahaan.getText().toString(),rt.getText().toString(),rw.getText().toString(),Kelurahan.getText().toString(),Kecamatan.getText().toString(),KabupatenKota.getText().toString(),Provinsi.getText().toString(), kodepos.getText().toString(),jumlahKaryawan.getText().toString(),charSequence,noFax.getText().toString(),lamakerja_tahun.getText().toString(),lamakerja_bulan.getText().toString(),totalkerja_tahun.getText().toString(),totalkerja_bulan.getText().toString(),pekerjaan.getText().toString(),bidangUsaha.getText().toString(),jabatan.getText(),bagian_dept.getText().toString(),false);
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+            }
+        });
+        noFax.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                Mirroring(namaPerusahaan.getText().toString(),alamatPerusahaan.getText().toString(),rt.getText().toString(),rw.getText().toString(),Kelurahan.getText().toString(),Kecamatan.getText().toString(),KabupatenKota.getText().toString(),Provinsi.getText().toString(), kodepos.getText().toString(),jumlahKaryawan.getText().toString(),noTelp.getText().toString(),charSequence,lamakerja_tahun.getText().toString(),lamakerja_bulan.getText().toString(),totalkerja_tahun.getText().toString(),totalkerja_bulan.getText().toString(),pekerjaan.getText().toString(),bidangUsaha.getText().toString(),jabatan.getText(),bagian_dept.getText().toString(),false);
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+            }
+        });
+        lamakerja_tahun.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                String lama_kerja_tahun_ = (String) adapterView.getItemAtPosition(i);
+                Mirroring(namaPerusahaan.getText().toString(),alamatPerusahaan.getText().toString(),rt.getText().toString(),rw.getText().toString(),Kelurahan.getText().toString(),Kecamatan.getText().toString(),KabupatenKota.getText().toString(),Provinsi.getText().toString(), kodepos.getText().toString(),jumlahKaryawan.getText().toString(),noTelp.getText().toString(),noFax.getText().toString(),lama_kerja_tahun_,lamakerja_bulan.getText().toString(),totalkerja_tahun.getText().toString(),totalkerja_bulan.getText().toString(),pekerjaan.getText().toString(),bidangUsaha.getText().toString(),jabatan.getText(),bagian_dept.getText().toString(),false);
+            }
+        });
+        lamakerja_bulan.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                String lama_kerja_bulan_ = (String) adapterView.getItemAtPosition(i);
+                Mirroring(namaPerusahaan.getText().toString(),alamatPerusahaan.getText().toString(),rt.getText().toString(),rw.getText().toString(),Kelurahan.getText().toString(),Kecamatan.getText().toString(),KabupatenKota.getText().toString(),Provinsi.getText().toString(), kodepos.getText().toString(),jumlahKaryawan.getText().toString(),noTelp.getText().toString(),noFax.getText().toString(),lamakerja_tahun.getText().toString(), lama_kerja_bulan_,totalkerja_tahun.getText().toString(),totalkerja_bulan.getText().toString(),pekerjaan.getText().toString(),bidangUsaha.getText().toString(),jabatan.getText(),bagian_dept.getText().toString(),false);
+            }
+        });
+        totalkerja_tahun.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                String total_kerja_tahun_ = (String) adapterView.getItemAtPosition(i);
+                Mirroring(namaPerusahaan.getText().toString(),alamatPerusahaan.getText().toString(),rt.getText().toString(),rw.getText().toString(),Kelurahan.getText().toString(),Kecamatan.getText().toString(),KabupatenKota.getText().toString(),Provinsi.getText().toString(), kodepos.getText().toString(),jumlahKaryawan.getText().toString(),noTelp.getText().toString(),noFax.getText().toString(),lamakerja_tahun.getText().toString(),lamakerja_bulan.getText().toString(),total_kerja_tahun_,totalkerja_bulan.getText().toString(),pekerjaan.getText().toString(),bidangUsaha.getText().toString(),jabatan.getText(),bagian_dept.getText().toString(),false);
+            }
+        });
+        totalkerja_bulan.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                String total_kerja_bulan_ = (String) adapterView.getItemAtPosition(i);
+                Mirroring(namaPerusahaan.getText().toString(),alamatPerusahaan.getText().toString(),rt.getText().toString(),rw.getText().toString(),Kelurahan.getText().toString(),Kecamatan.getText().toString(),KabupatenKota.getText().toString(),Provinsi.getText().toString(), kodepos.getText().toString(),jumlahKaryawan.getText().toString(),noTelp.getText().toString(),noFax.getText().toString(),lamakerja_tahun.getText().toString(),lamakerja_bulan.getText().toString(),totalkerja_tahun.getText().toString(),total_kerja_bulan_,pekerjaan.getText().toString(),bidangUsaha.getText().toString(),jabatan.getText(),bagian_dept.getText().toString(),false);
+            }
+        });
+        pekerjaan.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                String pkrjn_ = (String) adapterView.getItemAtPosition(i);
+                Mirroring(namaPerusahaan.getText().toString(),alamatPerusahaan.getText().toString(),rt.getText().toString(),rw.getText().toString(),Kelurahan.getText().toString(),Kecamatan.getText().toString(),KabupatenKota.getText().toString(),Provinsi.getText().toString(), kodepos.getText().toString(),jumlahKaryawan.getText().toString(),noTelp.getText().toString(),noFax.getText().toString(),lamakerja_tahun.getText().toString(),lamakerja_bulan.getText().toString(),totalkerja_tahun.getText().toString(),totalkerja_bulan.getText().toString(),pkrjn_,bidangUsaha.getText().toString(),jabatan.getText(),bagian_dept.getText().toString(),false);
+            }
+        });
+        bidangUsaha.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                String bdgush_ = (String) adapterView.getItemAtPosition(i);
+                Mirroring(namaPerusahaan.getText().toString(),alamatPerusahaan.getText().toString(),rt.getText().toString(),rw.getText().toString(),Kelurahan.getText().toString(),Kecamatan.getText().toString(),KabupatenKota.getText().toString(),Provinsi.getText().toString(), kodepos.getText().toString(),jumlahKaryawan.getText().toString(),noTelp.getText().toString(),noFax.getText().toString(),lamakerja_tahun.getText().toString(),lamakerja_bulan.getText().toString(),totalkerja_tahun.getText().toString(),totalkerja_bulan.getText().toString(),pekerjaan.getText().toString(),bdgush_,jabatan.getText(),bagian_dept.getText().toString(),false);
+            }
+        });
+        jabatan.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                String jbtn_ = (String) adapterView.getItemAtPosition(i);
+                Mirroring(namaPerusahaan.getText().toString(),alamatPerusahaan.getText().toString(),rt.getText().toString(),rw.getText().toString(),Kelurahan.getText().toString(),Kecamatan.getText().toString(),KabupatenKota.getText().toString(),Provinsi.getText().toString(), kodepos.getText().toString(),jumlahKaryawan.getText().toString(),noTelp.getText().toString(),noFax.getText().toString(),lamakerja_tahun.getText().toString(),lamakerja_bulan.getText().toString(),totalkerja_tahun.getText().toString(),totalkerja_bulan.getText().toString(),pekerjaan.getText().toString(),bidangUsaha.getText().toString(),jbtn_,bagian_dept.getText().toString(),false);
+            }
+        });
+        bagian_dept.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                Mirroring(namaPerusahaan.getText().toString(),alamatPerusahaan.getText().toString(),rt.getText().toString(),rw.getText().toString(),Kelurahan.getText().toString(),Kecamatan.getText().toString(),KabupatenKota.getText().toString(),Provinsi.getText().toString(), kodepos.getText().toString(),jumlahKaryawan.getText().toString(),noTelp.getText().toString(),noFax.getText().toString(),lamakerja_tahun.getText().toString(),lamakerja_bulan.getText().toString(),totalkerja_tahun.getText().toString(),totalkerja_bulan.getText().toString(),pekerjaan.getText().toString(),bidangUsaha.getText().toString(),jabatan.getText(),charSequence,false);
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
             }
         });
     }
@@ -180,7 +380,7 @@ public class frag_data_pekerjaan extends Fragment {
 
         ArrayAdapter<String> bln = new ArrayAdapter<String>(context,R.layout.list_item, bulan);
         lamakerja_bulan.setAdapter(bln);
-        lamakerja_bulan.setAdapter(bln);
+        totalkerja_bulan.setAdapter(bln);
 
         ArrayAdapter<String> jk = new ArrayAdapter<String>(context,R.layout.list_item, jumlahKaryawan_);
         jumlahKaryawan.setAdapter(jk);
@@ -350,6 +550,52 @@ public class frag_data_pekerjaan extends Fragment {
             @Override
             public void onFailure(Call<JsonArray> call, Throwable t) {
                 Toast.makeText(context,t.getMessage(),Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+    private void Mirroring(CharSequence nama_per,CharSequence alamat,CharSequence rt,CharSequence rw,CharSequence kelurahan,CharSequence kecamatan,CharSequence kabupaten, CharSequence provinsi,CharSequence kodepos, CharSequence jml_karyawan, CharSequence no_telp,CharSequence no_fax,CharSequence lama_kerja_tahun, CharSequence lama_kerja_bulan, CharSequence total_kerja_tahun, CharSequence total_kerja_bulan,CharSequence pkrjn, CharSequence bdg_usaha, CharSequence jbtn, CharSequence bagian,boolean bool){
+        JSONObject jsons = new JSONObject();
+        JSONArray jsonArray = new JSONArray();
+        try {
+            jsonArray.put(nama_per);
+            jsonArray.put(alamat);
+            jsonArray.put(rt);
+            jsonArray.put(rw);
+            jsonArray.put(provinsi);
+            jsonArray.put(kabupaten);
+            jsonArray.put(kecamatan);
+            jsonArray.put(kelurahan);
+            jsonArray.put(kodepos);
+            jsonArray.put(jml_karyawan);
+            jsonArray.put(no_telp);
+            jsonArray.put(no_fax);
+            jsonArray.put(lama_kerja_tahun);
+            jsonArray.put(lama_kerja_bulan);
+            jsonArray.put(total_kerja_tahun);
+            jsonArray.put(total_kerja_bulan);
+            jsonArray.put(pkrjn);
+            jsonArray.put(bdg_usaha);
+            jsonArray.put(jbtn);
+            jsonArray.put(bagian);
+            jsonArray.put(bool);
+            jsons.put("idDips",idDips);
+            jsons.put("code",31);
+            jsons.put("data",jsonArray);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), jsons.toString());
+        ApiService API = Server.getAPIService();
+        Call<JsonObject> call = API.Mirroring(requestBody);
+        call.enqueue(new Callback<JsonObject>() {
+            @Override
+            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                Log.d("MIRROR","Mirroring Sukses");
+            }
+
+            @Override
+            public void onFailure(Call<JsonObject> call, Throwable t) {
+                Log.d("MIRROR","Mirroring Gagal");
             }
         });
     }

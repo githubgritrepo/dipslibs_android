@@ -48,6 +48,7 @@ public class frag_address_opening extends Fragment {
     private CheckBox alamatPernyataan;
     private byte[] KTP, NPWP, TTD;
     private SessionManager session;
+    private boolean cek = false;
     private String objectCIF, idDips, gelar, nama, alamat, rt, rw , kelurahan_desa, kecamatan, kabupaten_kota, provinsi, kodepos, kewarganegaraan, negara, jenis_identitas_lain, jumlah_tanggungan, nama_suami_istri_ortu, jenis_kelamin, agama, status, pendidikan, nik, jenis_bukti_identitas, tanggal_terbit_identitas, tanggal_berakhir_identitas, nama_ibu_kandung, email, no_hp, no_telp, no_npwp, status_rumah;
     private Button btnProses, btnKembali;
     private List<String> listProv = new ArrayList<>();
@@ -141,10 +142,12 @@ public class frag_address_opening extends Fragment {
             @Override
             public void onClick(View view) {
                 if (alamatPernyataan.isChecked()){
+                    cek = true;
                     isianForm.setVisibility(View.VISIBLE);
                     Mirroring(nama,gelar,alamat,rt,rw,kelurahan_desa,kecamatan,kabupaten_kota,provinsi,kodepos,kewarganegaraan,negara,jenis_identitas_lain,jumlah_tanggungan,nama_suami_istri_ortu,jenis_kelamin,agama,status,pendidikan,nik,jenis_bukti_identitas,tanggal_terbit_identitas,tanggal_berakhir_identitas,nama_ibu_kandung,email,no_hp,no_telp,no_npwp,status_rumah,true,"","","","","","","","",false);
                 }
                 else {
+                    cek = false;
                     Mirroring(nama,gelar,alamat,rt,rw,kelurahan_desa,kecamatan,kabupaten_kota,provinsi,kodepos,kewarganegaraan,negara,jenis_identitas_lain,jumlah_tanggungan,nama_suami_istri_ortu,jenis_kelamin,agama,status,pendidikan,nik,jenis_bukti_identitas,tanggal_terbit_identitas,tanggal_berakhir_identitas,nama_ibu_kandung,email,no_hp,no_telp,no_npwp,status_rumah,false,"","","","","","","","",false);
                     isianForm.setVisibility(View.GONE);
                 }
@@ -154,6 +157,7 @@ public class frag_address_opening extends Fragment {
         btnProses.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                Mirroring(nama,gelar,alamat,rt,rw,kelurahan_desa,kecamatan,kabupaten_kota,provinsi,kodepos,kewarganegaraan,negara,jenis_identitas_lain,jumlah_tanggungan,nama_suami_istri_ortu,jenis_kelamin,agama,status,pendidikan,nik,jenis_bukti_identitas,tanggal_terbit_identitas,tanggal_berakhir_identitas,nama_ibu_kandung,email,no_hp,no_telp,no_npwp,status_rumah,cek,alamatBerbeda.getText().toString(),RtBerbeda.getText().toString(),RwBerbeda.getText().toString(),ProvinsiBerbeda.getText().toString(),KabupatenKotaBerbeda.getText().toString(),KecamatanBerbeda.getText().toString(),KelurahanBerbeda.getText().toString(),Kodepos.getText().toString(),true);
                 Fragment fragment = new frag_data_pekerjaan();
                 Bundle bundle = new Bundle();
                 bundle.putByteArray("ktp",KTP);
@@ -175,6 +179,45 @@ public class frag_address_opening extends Fragment {
                 getFragmentPage(fragment);
             }
         });
+    }
+    private void convertToJson(){
+        JSONObject obj = new JSONObject();
+        try {
+            obj.put("gelar",gelar);
+            obj.put("nama",nama);
+            obj.put("alamat",alamat);
+            obj.put("rt",rt);
+            obj.put("rw",rw);
+            obj.put("kelurahan_desa",kelurahan_desa);
+            obj.put("kecamatan",kecamatan);
+            obj.put("kabupaten_kota",kabupaten_kota);
+            obj.put("provinsi",provinsi);
+            obj.put("kodepos",kodepos);
+            obj.put("kewarganegaraan",kewarganegaraan);
+            obj.put("negara",negara);
+            obj.put("jenis_identitas_lain",jenis_identitas_lain);
+            obj.put("jumlah_tanggungan",jumlah_tanggungan);
+            obj.put("nama_suami_istri_ortu",nama_suami_istri_ortu);
+            obj.put("jenis_kelamin",jenis_kelamin);
+            obj.put("agama",agama);
+            obj.put("status_perkawinan",status);
+            obj.put("pendidikan",pendidikan);
+            obj.put("nik",nik);
+            obj.put("jenis_bukti_identitas",jenis_bukti_identitas);
+            obj.put("tanggal_terbit_identitas",tanggal_terbit_identitas);
+            obj.put("tanggal_berakhir_identitas",tanggal_berakhir_identitas);
+            obj.put("nama_ibu_kandung",nama_ibu_kandung);
+            obj.put("email",email);
+            obj.put("no_handphone",no_hp);
+            obj.put("no_telepon",no_telp);
+            obj.put("no_npwp",no_npwp);
+            obj.put("status_rumah",status_rumah);
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        objectCIF = obj.toString();
+        session.saveCIF(objectCIF);
     }
     private void textWatcher(){
         alamatBerbeda.addTextChangedListener(new TextWatcher() {
