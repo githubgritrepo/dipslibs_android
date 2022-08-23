@@ -56,6 +56,7 @@ public class frag_data_keuangan extends Fragment {
     private String frequency2 = "";
     private String frequency3 = "";
     private String frequency4 = "";
+    private String objectCIF;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -156,6 +157,7 @@ public class frag_data_keuangan extends Fragment {
         btnProses.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                convertToJson();
                 iconForm.setBackgroundTintList(context.getResources().getColorStateList(R.color.bg_cif_success));
                 Mirroring(true);
             }
@@ -366,5 +368,16 @@ public class frag_data_keuangan extends Fragment {
 
             }
         });
+    }
+    private void convertToJson(){
+        JSONObject obj = new JSONObject();
+        try {
+            obj.put("produk",productName);
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        objectCIF = obj.toString();
+        session.saveCIF(objectCIF);
     }
 }
