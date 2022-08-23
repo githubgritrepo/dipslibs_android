@@ -426,7 +426,7 @@
                         android:layout_height="35dp"
                         android:gravity="center_vertical"
                         android:includeFontPadding="false"
-                        android:inputType="text"
+                        android:inputType="number"
                         android:paddingVertical="@dimen/dp_10"
                         android:textSize="12dp" />
 
