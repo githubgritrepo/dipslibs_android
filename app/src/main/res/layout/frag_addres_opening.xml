@@ -288,7 +288,7 @@
                         android:id="@+id/et_ProvinsiBerbeda"
                         android:focusable="false"
                         android:inputType="none"
-                        android:dropDownHeight="100dp"
+                        android:dropDownHeight="200dp"
                         android:layout_width="match_parent"
                         android:layout_height="35dp"
                         android:drawableTint="@color/black"
@@ -320,7 +320,7 @@
                     <AutoCompleteTextView
                         android:id="@+id/et_KabupatenKotaBerbeda"
                         android:focusable="false"
-                        android:dropDownHeight="100dp"
+                        android:dropDownHeight="200dp"
                         android:inputType="none"
                         android:layout_width="match_parent"
                         android:layout_height="35dp"
@@ -353,7 +353,7 @@
                     <AutoCompleteTextView
                         android:focusable="false"
                         android:inputType="none"
-                        android:dropDownHeight="100dp"
+                        android:dropDownHeight="200dp"
                         android:id="@+id/et_KecamatanBerbeda"
                         android:layout_width="match_parent"
                         android:layout_height="35dp"
@@ -385,7 +385,7 @@
 
                     <AutoCompleteTextView
                         android:id="@+id/et_kelurahanDesaBerbeda"
-                        android:dropDownHeight="100dp"
+                        android:dropDownHeight="200dp"
                         android:focusable="false"
                         android:inputType="none"
                         android:layout_width="match_parent"

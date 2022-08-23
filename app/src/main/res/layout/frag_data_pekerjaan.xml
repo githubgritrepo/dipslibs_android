@@ -288,7 +288,7 @@
                     app:boxCornerRadiusTopStart="10dp">
 
                     <AutoCompleteTextView
-                        android:dropDownHeight="100dp"
+                        android:dropDownHeight="200dp"
                         android:focusable="false"
                         android:inputType="none"
                         android:id="@+id/et_ProvinsiPekerjaan"
@@ -321,7 +321,8 @@
                     app:boxCornerRadiusTopStart="10dp">
 
                     <AutoCompleteTextView
-                        android:dropDownHeight="100dp"
+
+                        android:dropDownHeight="200dp"
                         android:focusable="false"
                         android:inputType="none"
                         android:id="@+id/et_KabupatenKotaPekerjaan"
@@ -354,7 +355,7 @@
                     app:boxCornerRadiusTopStart="10dp">
 
                     <AutoCompleteTextView
-                        android:dropDownHeight="100dp"
+                        android:dropDownHeight="200dp"
                         android:focusable="false"
                         android:inputType="none"
                         android:id="@+id/et_Kecamatan_pekerjaan"
@@ -387,7 +388,7 @@
                     app:boxCornerRadiusTopStart="10dp">
 
                     <AutoCompleteTextView
-                        android:dropDownHeight="100dp"
+                        android:dropDownHeight="200dp"
                         android:focusable="false"
                         android:inputType="none"
                         android:id="@+id/et_kelurahanDesa_pekerjaan"

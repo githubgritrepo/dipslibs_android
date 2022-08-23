@@ -240,7 +240,7 @@ public class frag_form_opening extends Fragment {
         try {
             obj.put("gelar",Gelar.getText().toString());
             obj.put("nama",Nama.getText().toString());
-            obj.put("alamat",Nama.getText().toString());
+            obj.put("alamat",Alamat.getText().toString());
             obj.put("rt",Rt.getText().toString());
             obj.put("rw",Rw.getText().toString());
             obj.put("kelurahan_desa",KelurahanDesa.getText().toString());
