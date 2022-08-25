@@ -10,6 +10,7 @@ import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
+import retrofit2.http.Header;
 import retrofit2.http.Headers;
 import retrofit2.http.POST;
 import retrofit2.http.Path;
@@ -18,7 +19,7 @@ import retrofit2.http.Url;
 public interface ApiService {
 
     @Headers("Content-Type: "+ MyConstants.CONTENT_TYPE)
-    @POST("api/ocr/ktp")
+    @POST("api/digitech/ocr-ktp")
     Call<JsonObject> ocrKtp(@Body RequestBody body);
 
     @Headers("Content-Type: "+ MyConstants.CONTENT_TYPE)

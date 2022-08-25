@@ -98,7 +98,7 @@ public class Client {
             interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
 
             OkHttpClient.Builder builder = new OkHttpClient.Builder();
-            builder.addInterceptor(interceptor);
+           // builder.addInterceptor(interceptor);
             builder.connectTimeout(3, TimeUnit.MINUTES);
             builder.readTimeout(3, TimeUnit.MINUTES);
             builder.writeTimeout(3, TimeUnit.MINUTES);
