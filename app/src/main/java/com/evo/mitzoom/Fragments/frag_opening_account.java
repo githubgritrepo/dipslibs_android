@@ -203,6 +203,8 @@ public class frag_opening_account extends Fragment {
                 byte[] resultCamera = data.getByteArrayExtra("result_camera");
                 byte[] resultRealCamera = data.getByteArrayExtra("real");
                 Bitmap bitmap = BitmapFactory.decodeByteArray(resultCamera, 0, resultCamera.length);
+                Bitmap bitmap_real = BitmapFactory.decodeByteArray(resultRealCamera, 0, resultRealCamera.length);
+                imgtoBase64OCR(bitmap_real);
                 LL.setBackgroundResource(0);
                 btnNext.setBackgroundTintList(context.getResources().getColorStateList(R.color.bg_cif));
                 btnNext.setClickable(true);
@@ -239,6 +241,7 @@ public class frag_opening_account extends Fragment {
     private void prosesOptimalImage(String picturePath) {
         File mediaFile = new File(picturePath);
         Bitmap thumbnail = (BitmapFactory.decodeFile(picturePath));
+        imgtoBase64OCR(thumbnail);
         int file_size = Integer.parseInt(String.valueOf(mediaFile.length()/1024));
         Log.d("CEK", "file_size : "+file_size);
 
@@ -412,6 +415,15 @@ public class frag_opening_account extends Fragment {
         imgtoBase64(resizedBitmap);
     }
     private void imgtoBase64(Bitmap bitmap) {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.JPEG,100, baos);
+        byte[] imageBytes = baos.toByteArray();
+        String encodedImage = Base64.encodeToString(imageBytes, Base64.NO_WRAP);
+        Mirroring(false,encodedImage);
+        KTP = imageBytes;
+        KTP_BASE64 = encodedImage;
+    }
+    private void imgtoBase64OCR(Bitmap bitmap) {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         bitmap.compress(Bitmap.CompressFormat.JPEG,100, baos);
         byte[] imageBytes = baos.toByteArray();
