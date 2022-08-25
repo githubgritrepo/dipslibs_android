@@ -34,6 +34,7 @@ import androidx.fragment.app.Fragment;
 
 import com.evo.mitzoom.API.ApiService;
 import com.evo.mitzoom.API.Server;
+import com.evo.mitzoom.Constants.MyConstants;
 import com.evo.mitzoom.R;
 import com.evo.mitzoom.Session.SessionManager;
 import com.evo.mitzoom.ui.DipsCameraActivity;
@@ -141,7 +142,7 @@ public class frag_opening_account extends Fragment {
                 else{
                     //Mirroring(true,"");
                     //Mirroring2(true,"320124150585005","Andi Wijaya Lesmana","Bogor","13-03-1985");
-                    ocrKTP();
+                    //ocrKTP();
                     saveImage();
                     PopUpOCR(KTP);
                 }
@@ -202,6 +203,8 @@ public class frag_opening_account extends Fragment {
                 byte[] resultCamera = data.getByteArrayExtra("result_camera");
                 byte[] resultRealCamera = data.getByteArrayExtra("real");
                 Bitmap bitmap = BitmapFactory.decodeByteArray(resultCamera, 0, resultCamera.length);
+                Bitmap bitmap_real = BitmapFactory.decodeByteArray(resultRealCamera, 0, resultRealCamera.length);
+                imgtoBase64OCR(bitmap_real);
                 LL.setBackgroundResource(0);
                 btnNext.setBackgroundTintList(context.getResources().getColorStateList(R.color.bg_cif));
                 btnNext.setClickable(true);
@@ -235,10 +238,10 @@ public class frag_opening_account extends Fragment {
             }
         }
     }
-
     private void prosesOptimalImage(String picturePath) {
         File mediaFile = new File(picturePath);
         Bitmap thumbnail = (BitmapFactory.decodeFile(picturePath));
+        imgtoBase64OCR(thumbnail);
         int file_size = Integer.parseInt(String.valueOf(mediaFile.length()/1024));
         Log.d("CEK", "file_size : "+file_size);
 
@@ -260,7 +263,6 @@ public class frag_opening_account extends Fragment {
             getResizedBitmap(thumbnail, (thumbnail.getWidth() / perDiff), (thumbnail.getHeight() / perDiff));
         }
     }
-
     private void processSendImage(Bitmap bitmap) {
         new Thread(new Runnable() {
             @Override
@@ -283,7 +285,6 @@ public class frag_opening_account extends Fragment {
             }
         }).start();
     }
-
     private void getFragmentPage(Fragment fragment){
         getActivity().getSupportFragmentManager()
                 .beginTransaction()
@@ -306,12 +307,9 @@ public class frag_opening_account extends Fragment {
         btnOCR1 = dialogView.findViewById(R.id.btncncl);
         btnOCR2 = dialogView.findViewById(R.id.btnlnjt);
         NIK.setText(nik);
-        Nama.setText(nama);
-        String [] ttl_cut = ttl.split(",");
-        String ttl_kota = ttl_cut[0];
-        String ttl_tanggalLahir = ttl_cut[1];
-        TTL.setText(ttl_kota);
-        TTL2.setText(ttl_tanggalLahir);
+        Nama.setText(nama);;
+        TTL.setText(ttl);
+        TTL2.setText(ttl);
 
         //TextWatcher
         NIK.addTextChangedListener(new TextWatcher() {
@@ -425,6 +423,16 @@ public class frag_opening_account extends Fragment {
         KTP = imageBytes;
         KTP_BASE64 = encodedImage;
     }
+    private void imgtoBase64OCR(Bitmap bitmap) {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.JPEG,100, baos);
+        byte[] imageBytes = baos.toByteArray();
+        String encodedImage = Base64.encodeToString(imageBytes, Base64.NO_WRAP);
+        Mirroring(false,encodedImage);
+        KTP = imageBytes;
+        KTP_BASE64 = encodedImage;
+        ocrKTP(KTP_BASE64);
+    }
     private void saveImage(){
         JSONObject jsons = new JSONObject();
         try {
@@ -462,21 +470,23 @@ public class frag_opening_account extends Fragment {
             }
         });
     }
-    private void ocrKTP(){
+    private void ocrKTP(String base){
+        Log.d("Masuk OCR","");
         JSONObject jsons = new JSONObject();
         try {
-            jsons.put("image",KTP_BASE64);
+            jsons.put("image",base);
         } catch (JSONException e) {
             e.printStackTrace();
         }
         RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), jsons.toString());
-        ApiService API = Server.getAPIServiceoCR();
-        Call<JsonObject> call = API.SaveImage(requestBody);
+        ApiService API = Server.getAPIService();
+        Call<JsonObject> call = API.ocrKtp(requestBody);
         call.enqueue(new Callback<JsonObject>() {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
-                if (response.isSuccessful() && response.body().size() > 0) {
+                if (response.isSuccessful()) {
                     String dataS = response.body().toString();
+                    Log.d("Response OCR",""+dataS);
                     try {
                         JSONObject jsObj = new JSONObject(dataS);
                         provinsi = jsObj.getString("provinsi");
@@ -494,6 +504,7 @@ public class frag_opening_account extends Fragment {
                         status_perkawinan = jsObj.getString("status_perkawinan");
                         kewarganegaraan = jsObj.getString("kewarganegaraan");
                         pekerjaan = jsObj.getString("pekerjaan");
+
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
@@ -502,7 +513,6 @@ public class frag_opening_account extends Fragment {
                     Log.d("CEK","MASUK ELSE");
                 }
             }
-
             @Override
             public void onFailure(Call<JsonObject> call, Throwable t) {
                 Toast.makeText(context,t.getMessage(),Toast.LENGTH_SHORT).show();

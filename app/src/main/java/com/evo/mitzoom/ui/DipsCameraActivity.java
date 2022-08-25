@@ -140,7 +140,7 @@ public class DipsCameraActivity extends AppCompatActivity {
                                         }
 
                                         String imgBase64 = imageRotateBase64(bitmapCrop, rotation);
-
+                                        //Image no compress
                                         String real_imgBase64 = imageRotateBase64(bitmap, rotation);
 
                                         byte[] bytePhoto = Base64.decode(imgBase64, Base64.NO_WRAP);
