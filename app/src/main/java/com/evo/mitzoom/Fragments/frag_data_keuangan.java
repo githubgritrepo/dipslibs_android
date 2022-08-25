@@ -56,7 +56,7 @@ public class frag_data_keuangan extends Fragment {
     private String frequency2 = "";
     private String frequency3 = "";
     private String frequency4 = "";
-    private String objectCIF;
+    private JSONObject objectCIF;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -100,6 +100,15 @@ public class frag_data_keuangan extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        String dataJsonS = session.getCIF();
+        if (dataJsonS != null) {
+            try {
+                objectCIF = new JSONObject(dataJsonS);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
 
         idDips = session.getKEY_IdDips();
 
@@ -157,7 +166,16 @@ public class frag_data_keuangan extends Fragment {
         btnProses.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                convertToJson();
+                try {
+                    JSONArray dataArrCIF = objectCIF.getJSONArray("data");
+                    dataArrCIF.put(39,productName);
+
+                    objectCIF.put("data",dataArrCIF);
+                    session.saveCIF(objectCIF.toString());
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
                 iconForm.setBackgroundTintList(context.getResources().getColorStateList(R.color.bg_cif_success));
                 Mirroring(true);
             }
@@ -359,6 +377,7 @@ public class frag_data_keuangan extends Fragment {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
                 if (bool) {
+                    APISaveForm(jsonArray);
                     PopUpSuccesRegistration();
                 }
             }
@@ -369,15 +388,32 @@ public class frag_data_keuangan extends Fragment {
             }
         });
     }
-    private void convertToJson(){
-        JSONObject obj = new JSONObject();
-        try {
-            obj.put("produk",productName);
 
+    private void APISaveForm(JSONArray jsonsMoney) {
+
+        JSONObject jsons = new JSONObject();
+        try {
+            JSONArray dataArrCIF = objectCIF.getJSONArray("data");
+            String no_handphone = dataArrCIF.get(25).toString();
+            jsons.put("formCode","CIF3");
+            jsons.put("idDips",idDips);
+            jsons.put("phone",no_handphone);
+            jsons.put("payload",jsonsMoney);
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        objectCIF = obj.toString();
-        session.saveCIF(objectCIF);
+
+        RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), jsons.toString());
+        Server.getAPIService().saveForm(requestBody).enqueue(new Callback<JsonObject>() {
+            @Override
+            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+
+            }
+
+            @Override
+            public void onFailure(Call<JsonObject> call, Throwable t) {
+
+            }
+        });
     }
 }

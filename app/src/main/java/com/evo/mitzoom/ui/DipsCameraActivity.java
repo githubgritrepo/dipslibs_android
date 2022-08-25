@@ -141,9 +141,13 @@ public class DipsCameraActivity extends AppCompatActivity {
 
                                         String imgBase64 = imageRotateBase64(bitmapCrop, rotation);
 
+                                        String real_imgBase64 = imageRotateBase64(bitmap, rotation);
+
                                         byte[] bytePhoto = Base64.decode(imgBase64, Base64.NO_WRAP);
+                                        byte[] real_bytePhoto = Base64.decode(real_imgBase64, Base64.NO_WRAP);
                                         Intent returnIntent = getIntent();
                                         returnIntent.putExtra("result_camera", bytePhoto);
+                                        returnIntent.putExtra("real",real_bytePhoto);
                                         setResult(Activity.RESULT_OK, returnIntent);
                                         finish();
 

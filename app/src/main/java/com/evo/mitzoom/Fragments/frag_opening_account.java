@@ -201,6 +201,7 @@ public class frag_opening_account extends Fragment {
             if (requestCode == 1){
                 session.saveFlagUpDoc(true);
                 byte[] resultCamera = data.getByteArrayExtra("result_camera");
+                byte[] resultRealCamera = data.getByteArrayExtra("real");
                 Bitmap bitmap = BitmapFactory.decodeByteArray(resultCamera, 0, resultCamera.length);
                 LL.setBackgroundResource(0);
                 btnNext.setBackgroundTintList(context.getResources().getColorStateList(R.color.bg_cif));
