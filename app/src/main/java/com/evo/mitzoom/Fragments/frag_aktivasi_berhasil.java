@@ -36,6 +36,7 @@ public class frag_aktivasi_berhasil extends Fragment {
     private SessionManager session;
     private TextView nama;
     private String dataCIF;
+    private JSONArray JsonCIF;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -43,6 +44,7 @@ public class frag_aktivasi_berhasil extends Fragment {
         context = getContext();
         session = new SessionManager(context);
         dataCIF = session.getCIF();
+        Log.e("CEK","dataCIF : "+dataCIF);
     }
 
     @Nullable
@@ -60,7 +62,8 @@ public class frag_aktivasi_berhasil extends Fragment {
         if (dataCIF != null) {
             try {
                 JSONObject obj = new JSONObject(dataCIF);
-                namaRek = obj.getString("nama");
+                JSONArray dataArrCIF = obj.getJSONArray("data");
+                namaRek = dataArrCIF.getString(0);
                 nama.setText(namaRek);
             } catch (JSONException e) {
                 e.printStackTrace();

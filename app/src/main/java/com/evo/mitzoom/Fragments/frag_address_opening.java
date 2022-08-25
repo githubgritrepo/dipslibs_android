@@ -97,10 +97,12 @@ public class frag_address_opening extends Fragment {
         ((Activity)context).getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
         setActionBar();
         String dataJsonS = session.getCIF();
-        try {
-            objectCIF = new JSONObject(dataJsonS);
-        } catch (JSONException e) {
-            e.printStackTrace();
+        if (dataJsonS != null) {
+            try {
+                objectCIF = new JSONObject(dataJsonS);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
         }
 
         getProv();
@@ -131,6 +133,7 @@ public class frag_address_opening extends Fragment {
             public void onClick(View view) {
                 dataCIFJson(cek,true);
                 Mirroring();
+                session.saveCIF(objectCIF.toString());
                 Fragment fragment = new frag_data_pekerjaan();
                 Bundle bundle = new Bundle();
                 bundle.putByteArray("ktp",KTP);
@@ -317,6 +320,15 @@ public class frag_address_opening extends Fragment {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
                 Log.d("MIRROR","Mirroring Sukses");
+                try {
+                    JSONArray dataArrCIF = objectCIF.getJSONArray("data");
+                    boolean boolAddr = dataArrCIF.getBoolean(38);
+                    if (boolAddr) {
+                        APISaveForm();
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
             }
 
             @Override
@@ -325,6 +337,35 @@ public class frag_address_opening extends Fragment {
             }
         });
     }
+
+    private void APISaveForm() {
+        JSONObject jsons = new JSONObject();
+        try {
+            String idDips = objectCIF.getString("idDips").toString();
+            JSONArray dataArrCIF = objectCIF.getJSONArray("data");
+            String no_handphone = dataArrCIF.get(25).toString();
+            jsons.put("formCode","CIF1");
+            jsons.put("idDips",idDips);
+            jsons.put("phone",no_handphone);
+            jsons.put("payload",dataArrCIF);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), jsons.toString());
+        Server.getAPIService().saveForm(requestBody).enqueue(new Callback<JsonObject>() {
+            @Override
+            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+
+            }
+
+            @Override
+            public void onFailure(Call<JsonObject> call, Throwable t) {
+
+            }
+        });
+    }
+    
     private void getFragmentPage(Fragment fragment){
         getActivity().getSupportFragmentManager()
                 .beginTransaction()

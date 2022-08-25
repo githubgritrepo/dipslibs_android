@@ -84,4 +84,8 @@ public interface ApiService {
             @Path("id") String id
     );
 
+    @Headers("Content-Type: "+ MyConstants.CONTENT_TYPE)
+    @POST("/api/form/save")
+    Call<JsonObject> saveForm(@Body RequestBody body);
+
 }

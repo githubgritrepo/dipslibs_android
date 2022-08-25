@@ -1,8 +1,14 @@
 package com.evo.mitzoom.Fragments;
 
+import android.Manifest;
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.telephony.SmsMessage;
 import android.text.Editable;
 import android.text.InputFilter;
 import android.text.Spanned;
@@ -18,7 +24,9 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.chaos.view.PinView;
 import com.evo.mitzoom.API.ApiService;
@@ -61,12 +69,17 @@ public class frag_aktivasi_ibmb extends Fragment {
     private SessionManager session;
     private Handler handler = null;
     private Runnable myRunnable = null;
+    private BroadcastReceiver smsReceiver = null;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         context = getContext();
         session = new SessionManager(context);
+
+        ActivityCompat.requestPermissions(getActivity(),
+                new String[]{Manifest.permission.RECEIVE_SMS},
+                1001);
     }
 
     @Nullable
@@ -85,6 +98,7 @@ public class frag_aktivasi_ibmb extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
         idDips = session.getKEY_IdDips();
         session.saveKTP(null);
         session.saveNPWP(null);
@@ -306,6 +320,40 @@ public class frag_aktivasi_ibmb extends Fragment {
             }
         });
     }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        smsReceiver = new BroadcastReceiver() {
+
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                String dataSMS = intent.getExtras().getString("smsMessage");
+                Log.e("CEK","MASUK dataSMS : "+dataSMS);
+                String[] sp = dataSMS.split(" ");
+                for (int i = 0; i < sp.length; i++) {
+                    String word = sp[i].toString();
+                    if(word.matches("\\d+(?:\\.\\d+)?")) {
+                        String numberOTP = word.replaceAll("[^0-9]", "");
+                        if (numberOTP.length() == 6) {
+                            otp.setText(numberOTP);
+                        }
+                    }
+                }
+            }
+        };
+        LocalBroadcastManager.getInstance(getActivity()).registerReceiver(smsReceiver,new IntentFilter("getotp"));
+
+    }
+
+    @Override
+    public void onPause() {
+        Log.e("CEK","MASUK onPause");
+        LocalBroadcastManager.getInstance(getActivity()).unregisterReceiver(smsReceiver);
+        super.onPause();
+    }
+
     private void PopUp(){
         inflater = getLayoutInflater();
         dialogView = inflater.inflate(R.layout.item_otp,null);
@@ -388,6 +436,7 @@ public class frag_aktivasi_ibmb extends Fragment {
         if (s.equals("")) return "";
         return digits;
     }
+
     private void PopUpSuccesOtp(){
         SweetAlertDialog sweetAlertDialog = new SweetAlertDialog(context, SweetAlertDialog.SUCCESS_TYPE);
         sweetAlertDialog.setTitleText(getResources().getString(R.string.otp_title));

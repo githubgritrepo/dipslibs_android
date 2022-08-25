@@ -56,6 +56,7 @@ public class frag_data_pekerjaan extends Fragment {
     private List<String> listKel = new ArrayList<>();
     private List<String> idKel = new ArrayList<>();
     private String idDips;
+    private JSONObject objectCIF = null;
     private LinearLayout iconKtp, iconNpwp, iconSignature, iconForm;
     private String[] jumlahKaryawan_, pekerjaan_, bidangUsaha_, jabatan_, tahun, bulan;
     private EditText namaPerusahaan, alamatPerusahaan, rt,rw, kodepos, noTelp, noFax, bagian_dept;
@@ -104,6 +105,16 @@ public class frag_data_pekerjaan extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        String dataJsonS = session.getCIF();
+        if (dataJsonS != null) {
+            try {
+                objectCIF = new JSONObject(dataJsonS);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+
         idDips = session.getKEY_IdDips();
         setActionBar();
         setDropdown();
@@ -591,11 +602,42 @@ public class frag_data_pekerjaan extends Fragment {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
                 Log.d("MIRROR","Mirroring Sukses");
+                if (bool) {
+                    APISaveForm(jsonArray);
+                }
             }
 
             @Override
             public void onFailure(Call<JsonObject> call, Throwable t) {
                 Log.d("MIRROR","Mirroring Gagal");
+            }
+        });
+    }
+
+    private void APISaveForm(JSONArray jsonsWork) {
+
+        JSONObject jsons = new JSONObject();
+        try {
+            JSONArray dataArrCIF = objectCIF.getJSONArray("data");
+            String no_handphone = dataArrCIF.get(25).toString();
+            jsons.put("formCode","CIF2");
+            jsons.put("idDips",idDips);
+            jsons.put("phone",no_handphone);
+            jsons.put("payload",jsonsWork);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), jsons.toString());
+        Server.getAPIService().saveForm(requestBody).enqueue(new Callback<JsonObject>() {
+            @Override
+            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+
+            }
+
+            @Override
+            public void onFailure(Call<JsonObject> call, Throwable t) {
+
             }
         });
     }

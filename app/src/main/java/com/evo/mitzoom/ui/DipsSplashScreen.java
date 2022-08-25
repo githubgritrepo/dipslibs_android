@@ -87,9 +87,10 @@ public class DipsSplashScreen extends AppCompatActivity {
         if (ActivityCompat.checkSelfPermission(DipsSplashScreen.this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED &&
                 ActivityCompat.checkSelfPermission(DipsSplashScreen.this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED &&
                 ActivityCompat.checkSelfPermission(DipsSplashScreen.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED &&
-                ActivityCompat.checkSelfPermission(DipsSplashScreen.this, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED){
+                ActivityCompat.checkSelfPermission(DipsSplashScreen.this, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission(DipsSplashScreen.this, Manifest.permission.RECEIVE_SMS) != PackageManager.PERMISSION_GRANTED){
 
-            requestPermissions(new String[]{Manifest.permission.READ_PHONE_STATE,Manifest.permission.CAMERA,Manifest.permission.WRITE_EXTERNAL_STORAGE,Manifest.permission.READ_EXTERNAL_STORAGE}, REQUEST_ALL);
+            requestPermissions(new String[]{Manifest.permission.READ_PHONE_STATE,Manifest.permission.CAMERA,Manifest.permission.WRITE_EXTERNAL_STORAGE,Manifest.permission.READ_EXTERNAL_STORAGE,Manifest.permission.RECEIVE_SMS}, REQUEST_ALL);
         }
         else{
             processNext();
