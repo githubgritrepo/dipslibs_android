@@ -49,7 +49,7 @@ public class frag_address_opening extends Fragment {
     private byte[] KTP, NPWP, TTD;
     private SessionManager session;
     private boolean cek = false;
-    private String objectCIF, idDips, gelar, nama, alamat, rt, rw , kelurahan_desa, kecamatan, kabupaten_kota, provinsi, kodepos, kewarganegaraan, negara, jenis_identitas_lain, jumlah_tanggungan, nama_suami_istri_ortu, jenis_kelamin, agama, status, pendidikan, nik, jenis_bukti_identitas, tanggal_terbit_identitas, tanggal_berakhir_identitas, nama_ibu_kandung, email, no_hp, no_telp, no_npwp, status_rumah;
+    private JSONObject objectCIF;
     private Button btnProses, btnKembali;
     private List<String> listProv = new ArrayList<>();
     private List<String> idProv = new ArrayList<>();
@@ -96,43 +96,13 @@ public class frag_address_opening extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         ((Activity)context).getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
         setActionBar();
-        idDips = session.getKEY_IdDips();
-        objectCIF = session.getCIF();
+        String dataJsonS = session.getCIF();
         try {
-            JSONObject object = new JSONObject(objectCIF);
-            gelar = object.getString("gelar");
-            nama = object.getString("nama");
-            alamat = object.getString("alamat");
-            rt = object.getString("rt");
-            rw = object.getString("rw");
-            kelurahan_desa = object.getString("kelurahan_desa");
-            kecamatan = object.getString("kecamatan");
-            kabupaten_kota = object.getString("kabupaten_kota");
-            provinsi = object.getString("provinsi");
-            kodepos = object.getString("kodepos");
-            kewarganegaraan = object.getString("kewarganegaraan");
-            negara = object.getString("negara");
-            jenis_identitas_lain = object.getString("jenis_identitas_lain");
-            jumlah_tanggungan = object.getString("jumlah_tanggungan");
-            nama_suami_istri_ortu = object.getString("nama_suami_istri_ortu");
-            jenis_kelamin = object.getString("jenis_kelamin");
-            agama = object.getString("agama");
-            status = object.getString("status_perkawinan");
-            pendidikan = object.getString("pendidikan");
-            nik = object.getString("nik");
-            jenis_bukti_identitas = object.getString("jenis_bukti_identitas");
-            tanggal_terbit_identitas = object.getString("tanggal_terbit_identitas");
-            tanggal_berakhir_identitas = object.getString("tanggal_berakhir_identitas");
-            nama_ibu_kandung = object.getString("nama_ibu_kandung");
-            email = object.getString("email");
-            no_hp = object.getString("no_handphone");
-            no_telp = object.getString("no_telepon");
-            no_npwp = object.getString("no_npwp");
-            status_rumah = object.getString("status_rumah");
-            Mirroring(nama,gelar,alamat,rt,rw,kelurahan_desa,kecamatan,kabupaten_kota,provinsi,kodepos,kewarganegaraan,negara,jenis_identitas_lain,jumlah_tanggungan,nama_suami_istri_ortu,jenis_kelamin,agama,status,pendidikan,nik,jenis_bukti_identitas,tanggal_terbit_identitas,tanggal_berakhir_identitas,nama_ibu_kandung,email,no_hp,no_telp,no_npwp,status_rumah,false,"","","","","","","","",false);
+            objectCIF = new JSONObject(dataJsonS);
         } catch (JSONException e) {
             e.printStackTrace();
         }
+
         getProv();
         Bundle arg = getArguments();
         KTP = arg.getByteArray("ktp");
@@ -144,11 +114,13 @@ public class frag_address_opening extends Fragment {
                 if (alamatPernyataan.isChecked()){
                     cek = true;
                     isianForm.setVisibility(View.VISIBLE);
-                    Mirroring(nama,gelar,alamat,rt,rw,kelurahan_desa,kecamatan,kabupaten_kota,provinsi,kodepos,kewarganegaraan,negara,jenis_identitas_lain,jumlah_tanggungan,nama_suami_istri_ortu,jenis_kelamin,agama,status,pendidikan,nik,jenis_bukti_identitas,tanggal_terbit_identitas,tanggal_berakhir_identitas,nama_ibu_kandung,email,no_hp,no_telp,no_npwp,status_rumah,true,"","","","","","","","",false);
+                    dataCIFJson(true,false);
+                    Mirroring();
                 }
                 else {
                     cek = false;
-                    Mirroring(nama,gelar,alamat,rt,rw,kelurahan_desa,kecamatan,kabupaten_kota,provinsi,kodepos,kewarganegaraan,negara,jenis_identitas_lain,jumlah_tanggungan,nama_suami_istri_ortu,jenis_kelamin,agama,status,pendidikan,nik,jenis_bukti_identitas,tanggal_terbit_identitas,tanggal_berakhir_identitas,nama_ibu_kandung,email,no_hp,no_telp,no_npwp,status_rumah,false,"","","","","","","","",false);
+                    dataCIFJson(false,false);
+                    Mirroring();
                     isianForm.setVisibility(View.GONE);
                 }
             }
@@ -157,7 +129,8 @@ public class frag_address_opening extends Fragment {
         btnProses.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Mirroring(nama,gelar,alamat,rt,rw,kelurahan_desa,kecamatan,kabupaten_kota,provinsi,kodepos,kewarganegaraan,negara,jenis_identitas_lain,jumlah_tanggungan,nama_suami_istri_ortu,jenis_kelamin,agama,status,pendidikan,nik,jenis_bukti_identitas,tanggal_terbit_identitas,tanggal_berakhir_identitas,nama_ibu_kandung,email,no_hp,no_telp,no_npwp,status_rumah,cek,alamatBerbeda.getText().toString(),RtBerbeda.getText().toString(),RwBerbeda.getText().toString(),ProvinsiBerbeda.getText().toString(),KabupatenKotaBerbeda.getText().toString(),KecamatanBerbeda.getText().toString(),KelurahanBerbeda.getText().toString(),Kodepos.getText().toString(),true);
+                dataCIFJson(cek,true);
+                Mirroring();
                 Fragment fragment = new frag_data_pekerjaan();
                 Bundle bundle = new Bundle();
                 bundle.putByteArray("ktp",KTP);
@@ -180,45 +153,7 @@ public class frag_address_opening extends Fragment {
             }
         });
     }
-    private void convertToJson(){
-        JSONObject obj = new JSONObject();
-        try {
-            obj.put("gelar",gelar);
-            obj.put("nama",nama);
-            obj.put("alamat",alamat);
-            obj.put("rt",rt);
-            obj.put("rw",rw);
-            obj.put("kelurahan_desa",kelurahan_desa);
-            obj.put("kecamatan",kecamatan);
-            obj.put("kabupaten_kota",kabupaten_kota);
-            obj.put("provinsi",provinsi);
-            obj.put("kodepos",kodepos);
-            obj.put("kewarganegaraan",kewarganegaraan);
-            obj.put("negara",negara);
-            obj.put("jenis_identitas_lain",jenis_identitas_lain);
-            obj.put("jumlah_tanggungan",jumlah_tanggungan);
-            obj.put("nama_suami_istri_ortu",nama_suami_istri_ortu);
-            obj.put("jenis_kelamin",jenis_kelamin);
-            obj.put("agama",agama);
-            obj.put("status_perkawinan",status);
-            obj.put("pendidikan",pendidikan);
-            obj.put("nik",nik);
-            obj.put("jenis_bukti_identitas",jenis_bukti_identitas);
-            obj.put("tanggal_terbit_identitas",tanggal_terbit_identitas);
-            obj.put("tanggal_berakhir_identitas",tanggal_berakhir_identitas);
-            obj.put("nama_ibu_kandung",nama_ibu_kandung);
-            obj.put("email",email);
-            obj.put("no_handphone",no_hp);
-            obj.put("no_telepon",no_telp);
-            obj.put("no_npwp",no_npwp);
-            obj.put("status_rumah",status_rumah);
 
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        objectCIF = obj.toString();
-        session.saveCIF(objectCIF);
-    }
     private void textWatcher(){
         alamatBerbeda.addTextChangedListener(new TextWatcher() {
             @Override
@@ -228,7 +163,8 @@ public class frag_address_opening extends Fragment {
 
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                Mirroring(nama,gelar,alamat,rt,rw,kelurahan_desa,kecamatan,kabupaten_kota,provinsi,kodepos,kewarganegaraan,negara,jenis_identitas_lain,jumlah_tanggungan,nama_suami_istri_ortu,jenis_kelamin,agama,status,pendidikan,nik,jenis_bukti_identitas,tanggal_terbit_identitas,tanggal_berakhir_identitas,nama_ibu_kandung,email,no_hp,no_telp,no_npwp,status_rumah,true,charSequence,"","","","","","","",false);
+                dataCIFJson(cek,false);
+                Mirroring();
             }
 
             @Override
@@ -244,7 +180,8 @@ public class frag_address_opening extends Fragment {
 
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                Mirroring(nama,gelar,alamat,rt,rw,kelurahan_desa,kecamatan,kabupaten_kota,provinsi,kodepos,kewarganegaraan,negara,jenis_identitas_lain,jumlah_tanggungan,nama_suami_istri_ortu,jenis_kelamin,agama,status,pendidikan,nik,jenis_bukti_identitas,tanggal_terbit_identitas,tanggal_berakhir_identitas,nama_ibu_kandung,email,no_hp,no_telp,no_npwp,status_rumah,true,alamatBerbeda.getText().toString(),charSequence,"","","","","","",false);
+                dataCIFJson(cek,false);
+                Mirroring();
             }
 
             @Override
@@ -260,7 +197,8 @@ public class frag_address_opening extends Fragment {
 
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                Mirroring(nama,gelar,alamat,rt,rw,kelurahan_desa,kecamatan,kabupaten_kota,provinsi,kodepos,kewarganegaraan,negara,jenis_identitas_lain,jumlah_tanggungan,nama_suami_istri_ortu,jenis_kelamin,agama,status,pendidikan,nik,jenis_bukti_identitas,tanggal_terbit_identitas,tanggal_berakhir_identitas,nama_ibu_kandung,email,no_hp,no_telp,no_npwp,status_rumah,true,alamatBerbeda.getText().toString(),RtBerbeda.getText().toString(),charSequence,"","","","","",false);
+                dataCIFJson(cek,false);
+                Mirroring();
             }
 
             @Override
@@ -278,7 +216,8 @@ public class frag_address_opening extends Fragment {
                 KecamatanBerbeda.setText("");
                 KelurahanBerbeda.setText("");
                 getKab(idProv.get(i));
-                Mirroring(nama,gelar,alamat,rt,rw,kelurahan_desa,kecamatan,kabupaten_kota,provinsi,kodepos,kewarganegaraan,negara,jenis_identitas_lain,jumlah_tanggungan,nama_suami_istri_ortu,jenis_kelamin,agama,status,pendidikan,nik,jenis_bukti_identitas,tanggal_terbit_identitas,tanggal_berakhir_identitas,nama_ibu_kandung,email,no_hp,no_telp,no_npwp,status_rumah,true,alamatBerbeda.getText().toString(),RtBerbeda.getText().toString(),RwBerbeda.getText().toString(),prov_,"","","","",false);
+                dataCIFJson(cek,false);
+                Mirroring();
             }
         });
         KabupatenKotaBerbeda.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -290,7 +229,8 @@ public class frag_address_opening extends Fragment {
                 idKec = new ArrayList<>();
                 listKec = new ArrayList<>();
                 getKec(idKab.get(i));
-                Mirroring(nama,gelar,alamat,rt,rw,kelurahan_desa,kecamatan,kabupaten_kota,provinsi,kodepos,kewarganegaraan,negara,jenis_identitas_lain,jumlah_tanggungan,nama_suami_istri_ortu,jenis_kelamin,agama,status,pendidikan,nik,jenis_bukti_identitas,tanggal_terbit_identitas,tanggal_berakhir_identitas,nama_ibu_kandung,email,no_hp,no_telp,no_npwp,status_rumah,true,alamatBerbeda.getText().toString(),RtBerbeda.getText().toString(),RwBerbeda.getText().toString(),ProvinsiBerbeda.getText().toString(),kab_,"","","",false);
+                dataCIFJson(cek,false);
+                Mirroring();
             }
         });
         KecamatanBerbeda.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -301,14 +241,16 @@ public class frag_address_opening extends Fragment {
                 listKel = new ArrayList<>();
                 KelurahanBerbeda.setText("");
                 getKel(idKec.get(i));
-                Mirroring(nama,gelar,alamat,rt,rw,kelurahan_desa,kecamatan,kabupaten_kota,provinsi,kodepos,kewarganegaraan,negara,jenis_identitas_lain,jumlah_tanggungan,nama_suami_istri_ortu,jenis_kelamin,agama,status,pendidikan,nik,jenis_bukti_identitas,tanggal_terbit_identitas,tanggal_berakhir_identitas,nama_ibu_kandung,email,no_hp,no_telp,no_npwp,status_rumah,true,alamatBerbeda.getText().toString(),RtBerbeda.getText().toString(),RwBerbeda.getText().toString(),ProvinsiBerbeda.getText().toString(),KabupatenKotaBerbeda.getText().toString(),kec_,"","",false);
+                dataCIFJson(cek,false);
+                Mirroring();
             }
         });
         KelurahanBerbeda.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 String kel_ = (String) adapterView.getItemAtPosition(i);
-                Mirroring(nama,gelar,alamat,rt,rw,kelurahan_desa,kecamatan,kabupaten_kota,provinsi,kodepos,kewarganegaraan,negara,jenis_identitas_lain,jumlah_tanggungan,nama_suami_istri_ortu,jenis_kelamin,agama,status,pendidikan,nik,jenis_bukti_identitas,tanggal_terbit_identitas,tanggal_berakhir_identitas,nama_ibu_kandung,email,no_hp,no_telp,no_npwp,status_rumah,true,alamatBerbeda.getText().toString(),RtBerbeda.getText().toString(),RwBerbeda.getText().toString(),ProvinsiBerbeda.getText().toString(),KabupatenKotaBerbeda.getText().toString(),KecamatanBerbeda.getText().toString(),kel_,"",false);
+                dataCIFJson(cek,false);
+                Mirroring();
             }
         });
         Kodepos.addTextChangedListener(new TextWatcher() {
@@ -319,7 +261,8 @@ public class frag_address_opening extends Fragment {
 
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                Mirroring(nama,gelar,alamat,rt,rw,kelurahan_desa,kecamatan,kabupaten_kota,provinsi,kodepos,kewarganegaraan,negara,jenis_identitas_lain,jumlah_tanggungan,nama_suami_istri_ortu,jenis_kelamin,agama,status,pendidikan,nik,jenis_bukti_identitas,tanggal_terbit_identitas,tanggal_berakhir_identitas,nama_ibu_kandung,email,no_hp,no_telp,no_npwp,status_rumah,true,alamatBerbeda.getText().toString(),RtBerbeda.getText().toString(),RwBerbeda.getText().toString(),ProvinsiBerbeda.getText().toString(),KabupatenKotaBerbeda.getText().toString(),KecamatanBerbeda.getText().toString(),KelurahanBerbeda.getText().toString(),charSequence,false);
+                dataCIFJson(cek,false);
+                Mirroring();
             }
 
             @Override
@@ -334,56 +277,40 @@ public class frag_address_opening extends Fragment {
         iconSignature.setBackgroundTintList(context.getResources().getColorStateList(R.color.bg_cif_success));
         iconForm.setBackgroundTintList(context.getResources().getColorStateList(R.color.bg_cif));
     }
-    private void Mirroring(CharSequence nama,CharSequence gelar,CharSequence alamat,CharSequence rt,CharSequence rw,CharSequence kelurahan,CharSequence kecamatan,CharSequence kabupaten, CharSequence provinsi,CharSequence kodepos,CharSequence kewarganegaraan,CharSequence negara,CharSequence jenis_identitas_lain,CharSequence jumlah_tanggungan,CharSequence nama_suami_istri_ortu,CharSequence jenis_kelamin,CharSequence agama,CharSequence status,CharSequence pendidikan,CharSequence nik,CharSequence jenis_bukti_identitas,CharSequence tanggal_terbit_identitas,CharSequence tanggal_berakhir_identitas,CharSequence nama_ibu_kandung,CharSequence email,CharSequence no_handphone,CharSequence no_telepon,CharSequence no_npwp,CharSequence status_rumah,boolean bool,CharSequence alamat2,CharSequence rt2,CharSequence rw2,CharSequence provinsi2,CharSequence kabupaten2,CharSequence kecamatan2,CharSequence kelurahan2,CharSequence kodepos2,boolean bool2){
-        JSONObject jsons = new JSONObject();
-        JSONArray jsonArray = new JSONArray();
+
+    private void dataCIFJson(boolean boolForm, boolean bool2Address) {
+        String alamat2 = alamatBerbeda.getText().toString();
+        String rt = RtBerbeda.getText().toString();
+        String rw = RwBerbeda.getText().toString();
+        String provinsi = ProvinsiBerbeda.getText().toString();
+        String kabkota = KabupatenKotaBerbeda.getText().toString();
+        String kecamatan = KecamatanBerbeda.getText().toString();
+        String kelurahan = KelurahanBerbeda.getText().toString();
+        String kodepos = Kodepos.getText().toString();
+
         try {
-            jsonArray.put(nama);
-            jsonArray.put(gelar);
-            jsonArray.put(alamat);
-            jsonArray.put(rt);
-            jsonArray.put(rw);
-            jsonArray.put(kelurahan);
-            jsonArray.put(kecamatan);
-            jsonArray.put(kabupaten);
-            jsonArray.put(provinsi);
-            jsonArray.put(kodepos);
-            jsonArray.put(kewarganegaraan);
-            jsonArray.put(negara);
-            jsonArray.put(jenis_identitas_lain);
-            jsonArray.put(jumlah_tanggungan);
-            jsonArray.put(nama_suami_istri_ortu);
-            jsonArray.put(jenis_kelamin);
-            jsonArray.put(agama);
-            jsonArray.put(status);
-            jsonArray.put(pendidikan);
-            jsonArray.put(nik);
-            jsonArray.put(jenis_bukti_identitas);
-            jsonArray.put(tanggal_terbit_identitas);
-            jsonArray.put(tanggal_berakhir_identitas);
-            jsonArray.put(nama_ibu_kandung);
-            jsonArray.put(email);
-            jsonArray.put(no_handphone);
-            jsonArray.put(no_telepon);
-            jsonArray.put(no_npwp);
-            jsonArray.put(status_rumah);
-            jsonArray.put(bool);
-            jsonArray.put(alamat2);
-            jsonArray.put(rt2);
-            jsonArray.put(rw2);
-            jsonArray.put(provinsi2);
-            jsonArray.put(kabupaten2);
-            jsonArray.put(kecamatan2);
-            jsonArray.put(kelurahan2);
-            jsonArray.put(kodepos2);
-            jsonArray.put(bool2);
-            jsons.put("idDips",idDips);
-            jsons.put("code",30);
-            jsons.put("data",jsonArray);
+            JSONArray dataArrCIF = objectCIF.getJSONArray("data");
+            dataArrCIF.put(29,boolForm);
+            dataArrCIF.put(30,alamat2);
+            dataArrCIF.put(31,rt);
+            dataArrCIF.put(32,rw);
+            dataArrCIF.put(33,provinsi);
+            dataArrCIF.put(34,kabkota);
+            dataArrCIF.put(35,kecamatan);
+            dataArrCIF.put(36,kelurahan);
+            dataArrCIF.put(37,kodepos);
+            dataArrCIF.put(38,bool2Address);
+
+            objectCIF.put("data",dataArrCIF);
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), jsons.toString());
+
+    }
+
+    private void Mirroring(){
+
+        RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), objectCIF.toString());
         ApiService API = Server.getAPIService();
         Call<JsonObject> call = API.Mirroring(requestBody);
         call.enqueue(new Callback<JsonObject>() {
