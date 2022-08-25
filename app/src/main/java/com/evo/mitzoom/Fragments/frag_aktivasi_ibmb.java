@@ -70,6 +70,7 @@ public class frag_aktivasi_ibmb extends Fragment {
     private Handler handler = null;
     private Runnable myRunnable = null;
     private BroadcastReceiver smsReceiver = null;
+    private JSONObject objectCIF = null;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -98,6 +99,15 @@ public class frag_aktivasi_ibmb extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        String dataJsonS = session.getCIF();
+        if (dataJsonS != null) {
+            try {
+                objectCIF = new JSONObject(dataJsonS);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
 
         idDips = session.getKEY_IdDips();
         session.saveKTP(null);
@@ -510,6 +520,9 @@ public class frag_aktivasi_ibmb extends Fragment {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
                 Log.d("MIRROR","Mirroring Sukses");
+                if (bool) {
+                    APISaveForm(jsonArray);
+                }
             }
 
             @Override
@@ -569,6 +582,34 @@ public class frag_aktivasi_ibmb extends Fragment {
             @Override
             public void onFailure(Call<JsonObject> call, Throwable t) {
                 Log.d("MIRROR","Mirroring Gagal");
+            }
+        });
+    }
+
+    private void APISaveForm(JSONArray jsonsIBMB) {
+
+        JSONObject jsons = new JSONObject();
+        try {
+            JSONArray dataArrCIF = objectCIF.getJSONArray("data");
+            String no_handphone = dataArrCIF.get(25).toString();
+            jsons.put("formCode","IBMB");
+            jsons.put("idDips",idDips);
+            jsons.put("phone",no_handphone);
+            jsons.put("payload",jsonsIBMB);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), jsons.toString());
+        Server.getAPIService().saveForm(requestBody).enqueue(new Callback<JsonObject>() {
+            @Override
+            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+
+            }
+
+            @Override
+            public void onFailure(Call<JsonObject> call, Throwable t) {
+
             }
         });
     }
