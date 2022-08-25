@@ -18,6 +18,10 @@ import retrofit2.http.Url;
 public interface ApiService {
 
     @Headers("Content-Type: "+ MyConstants.CONTENT_TYPE)
+    @POST("api/ocr/ktp")
+    Call<JsonObject> ocrKtp(@Body RequestBody body);
+
+    @Headers("Content-Type: "+ MyConstants.CONTENT_TYPE)
     @POST("api/capture/identify")
     Call<CaptureIdentify> CaptureIdentify(@Body JsonCaptureIdentify body);
 

@@ -65,7 +65,7 @@ public class frag_opening_account extends Fragment {
     private LayoutInflater inflater;
     private View dialogView;
     private LinearLayout LL;
-    private String idDips, KTP_BASE64;
+    private String idDips, KTP_BASE64, provinsi, kota_kabupaten, nik, nama, ttl, jeniskelamin, golongan_darah, alamat, rtrw, desa_kelurahan, kecamatan, agama, status_perkawinan, kewarganegaraan, pekerjaan;
     private SessionManager session;
     private TextView NIK, Nama, TTL, TTL2;
 
@@ -141,6 +141,7 @@ public class frag_opening_account extends Fragment {
                 else{
                     //Mirroring(true,"");
                     //Mirroring2(true,"320124150585005","Andi Wijaya Lesmana","Bogor","13-03-1985");
+                    ocrKTP();
                     saveImage();
                     PopUpOCR(KTP);
                 }
@@ -303,10 +304,13 @@ public class frag_opening_account extends Fragment {
         TTL2= dialogView.findViewById(R.id.et_ttl2_ocr);
         btnOCR1 = dialogView.findViewById(R.id.btncncl);
         btnOCR2 = dialogView.findViewById(R.id.btnlnjt);
-        NIK.setText("320124150585005");
-        Nama.setText("Andi Wijaya Lesmana");
-        TTL.setText("Bogor");
-        TTL2.setText("13-03-1985");
+        NIK.setText(nik);
+        Nama.setText(nama);
+        String [] ttl_cut = ttl.split(",");
+        String ttl_kota = ttl_cut[0];
+        String ttl_tanggalLahir = ttl_cut[1];
+        TTL.setText(ttl_kota);
+        TTL2.setText(ttl_tanggalLahir);
 
         //TextWatcher
         NIK.addTextChangedListener(new TextWatcher() {
@@ -411,12 +415,6 @@ public class frag_opening_account extends Fragment {
         //imgtoByteArray(resizedBitmap);
         imgtoBase64(resizedBitmap);
     }
-    private void imgtoByteArray(Bitmap bitmap) {
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.JPEG,100, baos);
-        byte[] imageBytes = baos.toByteArray();
-        KTP = imageBytes;
-    }
     private void imgtoBase64(Bitmap bitmap) {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         bitmap.compress(Bitmap.CompressFormat.JPEG,100, baos);
@@ -448,6 +446,53 @@ public class frag_opening_account extends Fragment {
                         JSONObject jsObj = new JSONObject(dataS);
                         String message = jsObj.getString("message");
                         Log.d("CEK","MESSAGE = "+message);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+                else {
+                    Log.d("CEK","MASUK ELSE");
+                }
+            }
+
+            @Override
+            public void onFailure(Call<JsonObject> call, Throwable t) {
+                Toast.makeText(context,t.getMessage(),Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+    private void ocrKTP(){
+        JSONObject jsons = new JSONObject();
+        try {
+            jsons.put("image",KTP_BASE64);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), jsons.toString());
+        ApiService API = Server.getAPIServiceoCR();
+        Call<JsonObject> call = API.SaveImage(requestBody);
+        call.enqueue(new Callback<JsonObject>() {
+            @Override
+            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                if (response.isSuccessful() && response.body().size() > 0) {
+                    String dataS = response.body().toString();
+                    try {
+                        JSONObject jsObj = new JSONObject(dataS);
+                        provinsi = jsObj.getString("provinsi");
+                        kota_kabupaten = jsObj.getString("kota_kabupaten");
+                        nik = jsObj.getString("nik");
+                        nama = jsObj.getString("nama");
+                        ttl = jsObj.getString("ttl");
+                        jeniskelamin = jsObj.getString("jeniskelamin");
+                        golongan_darah = jsObj.getString("golongan_darah");
+                        alamat = jsObj.getString("alamat");
+                        rtrw = jsObj.getString("rtrw");
+                        desa_kelurahan = jsObj.getString("desa_kelurahan");
+                        kecamatan = jsObj.getString("kecamatan");
+                        agama = jsObj.getString("agama");
+                        status_perkawinan = jsObj.getString("status_perkawinan");
+                        kewarganegaraan = jsObj.getString("kewarganegaraan");
+                        pekerjaan = jsObj.getString("pekerjaan");
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
