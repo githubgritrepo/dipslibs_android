@@ -32,7 +32,9 @@ import androidx.fragment.app.Fragment;
 import com.evo.mitzoom.API.ApiService;
 import com.evo.mitzoom.API.Server;
 import com.evo.mitzoom.Adapter.AdapterSourceAccount;
+import com.evo.mitzoom.Constants.MyConstants;
 import com.evo.mitzoom.R;
+import com.evo.mitzoom.Session.SessionManager;
 import com.google.gson.JsonObject;
 import com.google.zxing.BinaryBitmap;
 import com.google.zxing.MultiFormatReader;
@@ -41,6 +43,7 @@ import com.google.zxing.RGBLuminanceSource;
 import com.google.zxing.Result;
 import com.google.zxing.common.HybridBinarizer;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -54,6 +57,8 @@ import java.util.Locale;
 import java.util.Objects;
 
 import cn.pedant.SweetAlert.SweetAlertDialog;
+import okhttp3.MediaType;
+import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -62,14 +67,14 @@ public class frag_new_account_cs extends Fragment {
     private Context context;
     private ImageView btnBack;
     private LinearLayout icon_isi_form,choose_gallery;
-    private String filename = "";
+    private String idDips,filename = "";
     private String rekSumberdana, nama, tgl, produk, nominal;
     private EditText et_nama, et_tgl_daftar, et_nominal_daftar;
-    private AutoCompleteTextView et_productType;
+    private AutoCompleteTextView et_productType, et_source_accountpager;
     String[] rektype;
+    private SessionManager session;
     private int typeSend = 0;
     private Button btnProses;
-    AutoCompleteTextView et_source_accountpager;
     String [] sourceAcc = {"Tabungan DiPS Rupiah\n011043021 - Andi\nRp. 18.231,00", "Giro DiPS Rupiah\n021008120 - Andi\nRp. 15.000.000,00"};
     public static final NumberFormat numberFormat = NumberFormat.getInstance(new Locale("id", "ID"));
 
@@ -77,6 +82,7 @@ public class frag_new_account_cs extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         context = getContext();
+        session = new SessionManager(context);
     }
     @Nullable
     @Override
@@ -96,14 +102,8 @@ public class frag_new_account_cs extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        rektype = new String[]{
-                getResources().getString(R.string.saving_new_acc),
-                getResources().getString(R.string.saving_new_acc2),
-                getResources().getString(R.string.giro_new_acc),
-                getResources().getString(R.string.deposito_new_acc),
-                getResources().getString(R.string.asuransi_new_acc),
-                getResources().getString(R.string.Reksadana_new_acc)
-        };
+        idDips = session.getKEY_IdDips();
+        rektype = new String[]{getResources().getString(R.string.saving_new_acc),getResources().getString(R.string.saving_new_acc2),getResources().getString(R.string.giro_new_acc),getResources().getString(R.string.deposito_new_acc),getResources().getString(R.string.asuransi_new_acc),getResources().getString(R.string.Reksadana_new_acc)};
         Bundle arg = getArguments();
         if (arg != null){
             rekSumberdana = arg.getString("rek_sumber_dana");
@@ -128,6 +128,7 @@ public class frag_new_account_cs extends Fragment {
         btnBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                Mirroring("","","","","","","", "",false,true);
                 getFragmentPage(new frag_service());
             }
         });
@@ -169,6 +170,7 @@ public class frag_new_account_cs extends Fragment {
         AdapterSourceAccount adapterSourceAcc = new AdapterSourceAccount(context,R.layout.list_item_souceacc,sourceAcc);
         et_source_accountpager.setAdapter(adapterSourceAcc);
         et_source_accountpager.setBackground(context.getResources().getDrawable(R.drawable.blue_button_background));
+        Mirroring("","","","",et_productType.getText().toString(),et_tgl_daftar.getText().toString(),et_nominal_daftar.getText().toString(), MyConstants.BASE64TTD,false,false);
         btnProses.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -187,6 +189,7 @@ public class frag_new_account_cs extends Fragment {
                     Toast.makeText(context, getResources().getString(R.string.error_field), Toast.LENGTH_SHORT).show();
                 }
                 else {
+                    Mirroring("","","","","","","", "",true,false);
                     Fragment fragment;
                     fragment = new frag_new_account_cs2();
                     Bundle bundle = new Bundle();
@@ -227,6 +230,15 @@ public class frag_new_account_cs extends Fragment {
                 barcodeDecoder(selectedImage);
             }
         }
+    }
+    private void textWatcher(){
+        et_source_accountpager.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                String sumber_dana = (String) adapterView.getItemAtPosition(i);
+                String[] sumber = sumber_dana.split("\n");
+            }
+        });
     }
     private void barcodeDecoder(Uri selectedImage) {
         try {
@@ -320,5 +332,40 @@ public class frag_new_account_cs extends Fragment {
                 .replace(R.id.layout_frame2, fragment)
                 .addToBackStack(null)
                 .commit();
+    }
+    private void Mirroring(String filename_, CharSequence rek_sumber_1, CharSequence rek_sumber_2, CharSequence rek_sumber_3, CharSequence produk_, CharSequence tgl_, CharSequence setoran_, String base, Boolean btnsubmit, Boolean btnback){
+        JSONObject jsons = new JSONObject();
+        JSONArray jsonArray = new JSONArray();
+        try {
+            jsonArray.put(filename_);
+            jsonArray.put(rek_sumber_1);
+            jsonArray.put(rek_sumber_2);
+            jsonArray.put(rek_sumber_3);
+            jsonArray.put(produk_);
+            jsonArray.put(tgl_);
+            jsonArray.put(setoran_);
+            jsonArray.put(base);
+            jsonArray.put(btnsubmit);
+            jsonArray.put(btnback);
+            jsons.put("idDips",idDips);
+            jsons.put("code",351);
+            jsons.put("data",jsonArray);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), jsons.toString());
+        ApiService API = Server.getAPIService();
+        Call<JsonObject> call = API.Mirroring(requestBody);
+        call.enqueue(new Callback<JsonObject>() {
+            @Override
+            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                Log.d("MIRROR","Mirroring Sukses");
+            }
+
+            @Override
+            public void onFailure(Call<JsonObject> call, Throwable t) {
+                Log.d("MIRROR","Mirroring Gagal");
+            }
+        });
     }
 }

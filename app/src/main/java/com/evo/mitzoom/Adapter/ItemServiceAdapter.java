@@ -73,20 +73,22 @@ public class ItemServiceAdapter extends RecyclerView.Adapter<ItemServiceAdapter.
         holder.GambarItem.setImageResource(dataList.get(position).getGambarItem());
         holder.parent_layout.setOnClickListener(v -> {
             switch (dataList.get(position).getId()){
-                case "0" :
+                case "0" :/* SUDAH MIRRORING */
+                    Mirroring(36,true);
                     PopUpTnc("0");
                     return;
-                case "1" :
+                case "1" : /* SUDAH MIRRORING */
                     Mirroring(16,true);
                     fragment = new frag_rtgs();
                     bundle = new Bundle();
-                    //STATE 1 UNTUK KE FORMULIR TRANSFER
+                    /**STATE 1 UNTUK KE FORMULIR TRANSFER**/
                     bundle.putInt("state",1);
                     fragment.setArguments(bundle);
                     getFragmentPage(fragment);
                     return;
-                case "2" :
-                    //STATE 2 UNTUK BACK KE FRAGMENT DENGAN CS
+                case "2" :/* SUDAH MIRRORING */
+                    Mirroring(35,true);
+                    /**STATE 2 UNTUK BACK KE FRAGMENT DENGAN CS**/
                     fragment = new frag_form_komplain();
                     bundle = new Bundle();
                     bundle.putInt("state",2);
@@ -94,7 +96,7 @@ public class ItemServiceAdapter extends RecyclerView.Adapter<ItemServiceAdapter.
                     getFragmentPage(fragment);
                     return;
                 case "3":
-                    //STATE 2 UNTUK KE FORMULIR TRANSFER
+                    /**STATE 2 UNTUK KE FORMULIR TRANSFER**/
                     fragment = new frag_rtgs();
                     bundle = new Bundle();
                     bundle.putInt("state",2);
@@ -147,7 +149,7 @@ public class ItemServiceAdapter extends RecyclerView.Adapter<ItemServiceAdapter.
                     getFragmentPage(fragment);
                     return;
                 case "14" :
-                    //STATE 3 UNTUK KE FORMULIR KEKAYAAN
+                    /**STATE 3 UNTUK KE FORMULIR KEKAYAAN**/
                     fragment = new frag_rtgs();
                     bundle = new Bundle();
                     bundle.putInt("state",3);
@@ -212,6 +214,7 @@ public class ItemServiceAdapter extends RecyclerView.Adapter<ItemServiceAdapter.
                 public void onClick(View v) {
                     if (checkBox.isChecked()){
                         if (statez.equals("0")){
+                            Mirroring(361,true);
                             getFragmentPage(new frag_new_account_cs());
                             sweetAlertDialogTNC.dismiss();
                         }
