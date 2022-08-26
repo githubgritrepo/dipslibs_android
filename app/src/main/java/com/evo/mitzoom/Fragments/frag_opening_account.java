@@ -380,6 +380,8 @@ public class frag_opening_account extends Fragment {
                 Mirroring(true,"");
                 Mirroring2(true,NIK.getText().toString(),Nama.getText().toString(),TTL.getText().toString(),TTL2.getText().toString());
                 sweetAlertDialog.dismiss();
+                JSONObject dataCIF = dataCIFJson();
+                session.saveCIF(dataCIF.toString());
                 sendDataFragment("ktp",DataKTP,new frag_opening_account2());
             }
         });
@@ -514,48 +516,55 @@ public class frag_opening_account extends Fragment {
         });
     }
 
-    /*private JSONObject dataCIFJson(boolean boolForm, boolean bool2Address) {
+    private JSONObject dataCIFJson() {
         String dataNik = NIK.getText().toString().trim();
         String dataNama = Nama.getText().toString().trim();
 
-        String dataGender = "";
-        if (!jeniskelamin.isEmpty() && jeniskelamin != null) {
+        String dataTitle = "";
+        if (!jeniskelamin.trim().isEmpty() && jeniskelamin.trim() != null) {
+            if (jeniskelamin.toUpperCase().equals("LAKI-LAKI")) {
+                dataTitle = "Tn";
+            } else if (jeniskelamin.toUpperCase().equals("PEREMPUAN")) {
+                dataTitle = "Ny";
+            }
+        }
 
+        String dataRt = "";
+        String dataRw = "";
+        if (!jeniskelamin.trim().isEmpty() && jeniskelamin.trim() != null) {
+            if (rtrw.indexOf("/") > 0) {
+                String[] sp = rtrw.split("/");
+                dataRt = sp[0];
+                dataRw = sp[1];
+            } else {
+                dataRt = rtrw;
+                dataRw = rtrw;
+            }
         }
 
         JSONObject jsons = new JSONObject();
         JSONArray jsonArray = new JSONArray();
         try {
             jsonArray.put(dataNama);
-            jsonArray.put(gelar);
+            jsonArray.put(dataTitle);
             jsonArray.put(alamat);
-            jsonArray.put(rt);
-            jsonArray.put(rw);
-            jsonArray.put(kelurahan);
+            jsonArray.put(dataRt);
+            jsonArray.put(dataRw);
+            jsonArray.put(desa_kelurahan);
             jsonArray.put(kecamatan);
-            jsonArray.put(kabupaten);
+            jsonArray.put(kota_kabupaten);
             jsonArray.put(provinsi);
-            jsonArray.put(kodepos);
+            jsonArray.put("");
             jsonArray.put(kewarganegaraan);
-            jsonArray.put(negara);
-            jsonArray.put(jenis_identitas_lain);
-            jsonArray.put(jumlah_tanggungan);
-            jsonArray.put(nama_suami_istri_ortu);
-            jsonArray.put(jenis_kelamin);
+            jsonArray.put("");
+            jsonArray.put("");
+            jsonArray.put("");
+            jsonArray.put("");
+            jsonArray.put(jeniskelamin);
             jsonArray.put(agama);
-            jsonArray.put(status);
-            jsonArray.put(pendidikan);
+            jsonArray.put(status_perkawinan);
+            jsonArray.put("");
             jsonArray.put(dataNik);
-            jsonArray.put(jenis_bukti_identitas);
-            jsonArray.put(tanggal_terbit_identitas);
-            jsonArray.put(tanggal_berakhir_identitas);
-            jsonArray.put(nama_ibu_kandung);
-            jsonArray.put(email);
-            jsonArray.put(no_handphone);
-            jsonArray.put(no_telepon);
-            jsonArray.put(no_npwp);
-            jsonArray.put(status_rumah);
-            jsonArray.put(boolForm);
             jsonArray.put("");
             jsonArray.put("");
             jsonArray.put("");
@@ -564,7 +573,17 @@ public class frag_opening_account extends Fragment {
             jsonArray.put("");
             jsonArray.put("");
             jsonArray.put("");
-            jsonArray.put(bool2Address);
+            jsonArray.put("");
+            jsonArray.put(false);
+            jsonArray.put("");
+            jsonArray.put("");
+            jsonArray.put("");
+            jsonArray.put("");
+            jsonArray.put("");
+            jsonArray.put("");
+            jsonArray.put("");
+            jsonArray.put("");
+            jsonArray.put(false);
             jsons.put("idDips",idDips);
             jsons.put("data",jsonArray);
         } catch (JSONException e) {
@@ -572,7 +591,7 @@ public class frag_opening_account extends Fragment {
         }
 
         return jsons;
-    }*/
+    }
 
     private void Mirroring(Boolean bool, String base64){
         JSONObject jsons = new JSONObject();

@@ -50,7 +50,8 @@ public class frag_form_opening extends Fragment {
     private AutoCompleteTextView JenisIdentitasLain, JumlahTanggungan, Pendidikan, statusRumah;
     private LinearLayout iconKtp, iconNpwp, iconSignature, iconForm;
     private Button btnProcess;
-    private String idDips, objectCIF;
+    private String idDips;
+    private JSONObject objectCIF = null;
     private SessionManager session;
     private byte[] KTP, NPWP, TTD;
     private String[] jenisIdentitasLain, jumlahTanggungan, pendidikanTerakhir, statusRumah_;
@@ -110,6 +111,15 @@ public class frag_form_opening extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        String dataJsonS = session.getCIF();
+        if (dataJsonS != null) {
+            try {
+                objectCIF = new JSONObject(dataJsonS);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+
         ((Activity)context).getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
         idDips = session.getKEY_IdDips();
         //Get Data Image
@@ -398,46 +408,54 @@ public class frag_form_opening extends Fragment {
     }
     private void setOCR(){
         //setEnabled False
-        Gelar.setEnabled(false);
+//        Gelar.setEnabled(false);
         Nama.setEnabled(false);
-        Alamat.setEnabled(false);
-        Rt.setEnabled(false);
-        Rw.setEnabled(false);
-        KelurahanDesa.setEnabled(false);
-        Kecamatan.setEnabled(false);
-        KabupatenKota.setEnabled(false);
-        Provinsi.setEnabled(false);
-        Kewarganegaraan.setEnabled(false);
-        Negara.setEnabled(false);
-        JenisKelamin.setEnabled(false);
-        jenisBuktiIdentitas.setEnabled(false);
-        Agama.setEnabled(false);
-        Status.setEnabled(false);
+//        Alamat.setEnabled(false);
+//        Rt.setEnabled(false);
+//        Rw.setEnabled(false);
+//        KelurahanDesa.setEnabled(false);
+//        Kecamatan.setEnabled(false);
+//        KabupatenKota.setEnabled(false);
+//        Provinsi.setEnabled(false);
+//        Kewarganegaraan.setEnabled(false);
+//        Negara.setEnabled(false);
+//        JenisKelamin.setEnabled(false);
+//        jenisBuktiIdentitas.setEnabled(false);
+//        Agama.setEnabled(false);
+//        Status.setEnabled(false);
         NIK.setEnabled(false);
-        NomorNPWP.setEnabled(false);
-        TanggalTerbitIdentitas.setEnabled(false);
-        TanggalBerakhirIdentitas.setEnabled(false);
+//        NomorNPWP.setEnabled(false);
+//        TanggalTerbitIdentitas.setEnabled(false);
+//        TanggalBerakhirIdentitas.setEnabled(false);
 
         //setOCR
-        Gelar.setText("Tn");
-        Nama.setText("Andi Wijaya Lesmana");
-        Alamat.setText("JL RAYA CISEENG NO.15 BLOK G, RT 12, RW 16, Kel CIBENTANG, Kec CISEENG");
-        Rt.setText("012");
-        Rw.setText("016");
-        KelurahanDesa.setText("CIBENTANG");
-        Kecamatan.setText("CISEENG");
-        KabupatenKota.setText("BOGOR");
-        Provinsi.setText("JAWA BARAT");
-        Kewarganegaraan.setText("WNI");
-        Negara.setText("INDONESIA");
-        JenisKelamin.setText("LAKI-LAKI");
-        Agama.setText("Islam");
-        Status.setText("Belum Kawin");
-        NIK.setText("320124150585005");
-        NomorNPWP.setText("09.123.123.3-123.000");
-        TanggalTerbitIdentitas.setText("15-09-2013");
-        TanggalBerakhirIdentitas.setText("SEUMUR HIDUP");
-        jenisBuktiIdentitas.setText("KTP");
+
+        try {
+            JSONArray dataArrCIF = objectCIF.getJSONArray("data");
+
+            Gelar.setText(dataArrCIF.get(1).toString());
+            Nama.setText(dataArrCIF.get(0).toString());
+            Alamat.setText(dataArrCIF.get(2).toString());
+            Rt.setText(dataArrCIF.get(3).toString());
+            Rw.setText(dataArrCIF.get(4).toString());
+            KelurahanDesa.setText(dataArrCIF.get(5).toString());
+            Kecamatan.setText(dataArrCIF.get(6).toString());
+            KabupatenKota.setText(dataArrCIF.get(7).toString());
+            Provinsi.setText(dataArrCIF.get(8).toString());
+            Kewarganegaraan.setText(dataArrCIF.get(10).toString());
+            Negara.setText(dataArrCIF.get(11).toString());
+            JenisKelamin.setText(dataArrCIF.get(15).toString());
+            Agama.setText(dataArrCIF.get(16).toString());
+            Status.setText(dataArrCIF.get(17).toString());
+            NIK.setText(dataArrCIF.get(19).toString());
+            NomorNPWP.setText("");
+            TanggalTerbitIdentitas.setText("");
+            TanggalBerakhirIdentitas.setText("SEUMUR HIDUP");
+            jenisBuktiIdentitas.setText("KTP");
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
         JSONObject jsonCIF = dataCIFJson(false, false);
         Mirroring(jsonCIF);
     }
@@ -487,7 +505,8 @@ public class frag_form_opening extends Fragment {
         String no_telepon = NomorTelephone.getText().toString();
         String no_npwp = NomorNPWP.getText().toString();
         String status_rumah = statusRumah.getText().toString();
-        JSONObject jsons = new JSONObject();
+
+        JSONObject jsons = objectCIF;
         JSONArray jsonArray = new JSONArray();
         try {
             jsonArray.put(nama);
