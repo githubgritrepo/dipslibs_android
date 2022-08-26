@@ -10,6 +10,7 @@ import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -378,7 +379,6 @@ public class frag_data_keuangan extends Fragment {
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
                 if (bool) {
                     APISaveForm(jsonArray);
-                    PopUpSuccesRegistration();
                 }
             }
 
@@ -390,7 +390,12 @@ public class frag_data_keuangan extends Fragment {
     }
 
     private void APISaveForm(JSONArray jsonsMoney) {
-
+        JSONObject dataObj = new JSONObject();
+        try {
+            dataObj.put("data",jsonsMoney);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
         JSONObject jsons = new JSONObject();
         try {
             JSONArray dataArrCIF = objectCIF.getJSONArray("data");
@@ -398,7 +403,7 @@ public class frag_data_keuangan extends Fragment {
             jsons.put("formCode","CIF3");
             jsons.put("idDips",idDips);
             jsons.put("phone",no_handphone);
-            jsons.put("payload",jsonsMoney);
+            jsons.put("payload",dataObj);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -407,7 +412,21 @@ public class frag_data_keuangan extends Fragment {
         Server.getAPIService().saveForm(requestBody).enqueue(new Callback<JsonObject>() {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                if (response.isSuccessful()) {
+                    String dataS = response.body().toString();
+                    try {
+                        JSONObject jsObj = new JSONObject(dataS);
+                        int errCode = jsObj.getInt("err_code");
+                        if (errCode == 0) {
+                            PopUpSuccesRegistration();
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
 
+                } else {
+                    Toast.makeText(context,"Gagal Save Form",Toast.LENGTH_SHORT).show();
+                }
             }
 
             @Override

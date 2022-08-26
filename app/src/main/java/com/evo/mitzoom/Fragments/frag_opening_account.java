@@ -199,12 +199,12 @@ public class frag_opening_account extends Fragment {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == RESULT_OK && data != null) {
             if (requestCode == 1){
+                Log.e("CEK","RETURN CAMERA");
                 session.saveFlagUpDoc(true);
                 byte[] resultCamera = data.getByteArrayExtra("result_camera");
                 byte[] resultRealCamera = data.getByteArrayExtra("real");
                 Bitmap bitmap = BitmapFactory.decodeByteArray(resultCamera, 0, resultCamera.length);
                 Bitmap bitmap_real = BitmapFactory.decodeByteArray(resultRealCamera, 0, resultRealCamera.length);
-                imgtoBase64OCR(bitmap_real);
                 LL.setBackgroundResource(0);
                 btnNext.setBackgroundTintList(context.getResources().getColorStateList(R.color.bg_cif));
                 btnNext.setClickable(true);
@@ -216,6 +216,7 @@ public class frag_opening_account extends Fragment {
                 Log.d("CEK","bitmapByteCount : "+bitmapByteCount);
                 viewImage.setImageBitmap(bitmap);
                 processSendImage(bitmap);
+                imgtoBase64OCR(bitmap_real);
             }
             else if (requestCode == 2){
                 session.saveFlagUpDoc(true);
@@ -241,7 +242,6 @@ public class frag_opening_account extends Fragment {
     private void prosesOptimalImage(String picturePath) {
         File mediaFile = new File(picturePath);
         Bitmap thumbnail = (BitmapFactory.decodeFile(picturePath));
-        imgtoBase64OCR(thumbnail);
         int file_size = Integer.parseInt(String.valueOf(mediaFile.length()/1024));
         Log.d("CEK", "file_size : "+file_size);
 
@@ -262,6 +262,7 @@ public class frag_opening_account extends Fragment {
         } else {
             getResizedBitmap(thumbnail, (thumbnail.getWidth() / perDiff), (thumbnail.getHeight() / perDiff));
         }
+        imgtoBase64OCR(thumbnail);
     }
     private void processSendImage(Bitmap bitmap) {
         new Thread(new Runnable() {
@@ -428,10 +429,7 @@ public class frag_opening_account extends Fragment {
         bitmap.compress(Bitmap.CompressFormat.JPEG,100, baos);
         byte[] imageBytes = baos.toByteArray();
         String encodedImage = Base64.encodeToString(imageBytes, Base64.NO_WRAP);
-        Mirroring(false,encodedImage);
-        KTP = imageBytes;
-        KTP_BASE64 = encodedImage;
-        ocrKTP(KTP_BASE64);
+        ocrKTP(encodedImage);
     }
     private void saveImage(){
         JSONObject jsons = new JSONObject();
@@ -519,6 +517,67 @@ public class frag_opening_account extends Fragment {
             }
         });
     }
+
+    /*private JSONObject dataCIFJson(boolean boolForm, boolean bool2Address) {
+        String dataNik = NIK.getText().toString().trim();
+        String dataNama = Nama.getText().toString().trim();
+
+        String dataGender = "";
+        if (!jeniskelamin.isEmpty() && jeniskelamin != null) {
+
+        }
+
+        JSONObject jsons = new JSONObject();
+        JSONArray jsonArray = new JSONArray();
+        try {
+            jsonArray.put(dataNama);
+            jsonArray.put(gelar);
+            jsonArray.put(alamat);
+            jsonArray.put(rt);
+            jsonArray.put(rw);
+            jsonArray.put(kelurahan);
+            jsonArray.put(kecamatan);
+            jsonArray.put(kabupaten);
+            jsonArray.put(provinsi);
+            jsonArray.put(kodepos);
+            jsonArray.put(kewarganegaraan);
+            jsonArray.put(negara);
+            jsonArray.put(jenis_identitas_lain);
+            jsonArray.put(jumlah_tanggungan);
+            jsonArray.put(nama_suami_istri_ortu);
+            jsonArray.put(jenis_kelamin);
+            jsonArray.put(agama);
+            jsonArray.put(status);
+            jsonArray.put(pendidikan);
+            jsonArray.put(dataNik);
+            jsonArray.put(jenis_bukti_identitas);
+            jsonArray.put(tanggal_terbit_identitas);
+            jsonArray.put(tanggal_berakhir_identitas);
+            jsonArray.put(nama_ibu_kandung);
+            jsonArray.put(email);
+            jsonArray.put(no_handphone);
+            jsonArray.put(no_telepon);
+            jsonArray.put(no_npwp);
+            jsonArray.put(status_rumah);
+            jsonArray.put(boolForm);
+            jsonArray.put("");
+            jsonArray.put("");
+            jsonArray.put("");
+            jsonArray.put("");
+            jsonArray.put("");
+            jsonArray.put("");
+            jsonArray.put("");
+            jsonArray.put("");
+            jsonArray.put(bool2Address);
+            jsons.put("idDips",idDips);
+            jsons.put("data",jsonArray);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        return jsons;
+    }*/
+
     private void Mirroring(Boolean bool, String base64){
         JSONObject jsons = new JSONObject();
         JSONArray jsonArray = new JSONArray();

@@ -21,6 +21,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -162,7 +163,7 @@ public class frag_form_opening extends Fragment {
                 else if (Email.getText().toString().isEmpty()){
                     Email.setError(getResources().getString(R.string.error_field));
                 }
-                else if (NoHp.getText().toString().isEmpty()){
+                else if (NoHp.getText().toString().trim().isEmpty()){
                     NoHp.setError(getResources().getString(R.string.error_field));
                 }
                 else if (NomorTelephone.getText().toString().isEmpty()){
@@ -172,6 +173,11 @@ public class frag_form_opening extends Fragment {
                     statusRumah.setError(getResources().getString(R.string.error_field));
                 }
                 else {
+                    String no_handphone = NoHp.getText().toString().trim();
+                    if (!no_handphone.substring(0,2).equals("08")) {
+                        Toast.makeText(context,"Harus Nomor Handphone",Toast.LENGTH_SHORT).show();
+                        return;
+                    }
                     JSONObject jsonCIF = dataCIFJson(false, false);
                     session.saveCIF(jsonCIF.toString());
 
@@ -474,6 +480,10 @@ public class frag_form_opening extends Fragment {
         String nama_ibu_kandung = NamaIbuKandung.getText().toString();
         String email = Email.getText().toString();
         String no_handphone = NoHp.getText().toString();
+        if (!no_handphone.isEmpty()) {
+            String sub_no_handphone = no_handphone.substring(1);
+            no_handphone = "62" + sub_no_handphone;
+        }
         String no_telepon = NomorTelephone.getText().toString();
         String no_npwp = NomorNPWP.getText().toString();
         String status_rumah = statusRumah.getText().toString();

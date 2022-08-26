@@ -325,7 +325,6 @@ public class frag_aktivasi_ibmb extends Fragment {
                 else
                 {
                     Mirroring(true,UserId2,Password2,Konfirmasi_password2,Mpin2,Konfirmasi_mpin2);
-                    PopUp();
                 }
             }
         });
@@ -365,6 +364,17 @@ public class frag_aktivasi_ibmb extends Fragment {
     }
 
     private void PopUp(){
+        JSONArray dataArrCIF = null;
+        String no_handphone = null;
+        try {
+            dataArrCIF = objectCIF.getJSONArray("data");
+            no_handphone = dataArrCIF.get(25).toString();
+            String sub_no_handphone = no_handphone.substring(no_handphone.length() - 3);
+            no_handphone.replace(sub_no_handphone,"XXX");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
         inflater = getLayoutInflater();
         dialogView = inflater.inflate(R.layout.item_otp,null);
         SweetAlertDialog sweetAlertDialog = new SweetAlertDialog(context, SweetAlertDialog.NORMAL_TYPE);
@@ -372,6 +382,9 @@ public class frag_aktivasi_ibmb extends Fragment {
         sweetAlertDialog.hideConfirmButton();
         sweetAlertDialog.setCancelable(false);
         sweetAlertDialog.show();
+        TextView textIBMB = (TextView) dialogView.findViewById(R.id.textIBMB);
+        String contentText = textIBMB.getText().toString();
+        contentText.replace("+62812 3456 7XXX",no_handphone);
         btnVerifikasi = dialogView.findViewById(R.id.btnVerifikasi);
         Timer = dialogView.findViewById(R.id.timer_otp);
         Resend_Otp = dialogView.findViewById(R.id.btn_resend_otp);
@@ -422,11 +435,11 @@ public class frag_aktivasi_ibmb extends Fragment {
                     Toast.makeText(context, "Kode Otp masih kosong", Toast.LENGTH_SHORT).show();
                 }
                 else {
+                    sweetAlertDialog.dismiss();
                     handler.removeMessages(0);
                     handler.removeCallbacks(myRunnable);
                     Mirroring2(true, otp.getText().toString());
-                    sweetAlertDialog.dismiss();
-                    PopUpSuccesOtp();
+                    verifyOTP();
                 }
             }
         });
@@ -435,7 +448,7 @@ public class frag_aktivasi_ibmb extends Fragment {
             @Override
             public void onClick(View v) {
                 if (seconds==0){
-                    Toast.makeText(context, "Kode Terkirim", Toast.LENGTH_SHORT).show();
+                    resendOTP();
                 }
             }
         });
@@ -445,6 +458,81 @@ public class frag_aktivasi_ibmb extends Fragment {
         digits = s.replaceAll("[0-9]", "*");
         if (s.equals("")) return "";
         return digits;
+    }
+
+    private void verifyOTP() {
+        JSONObject jsons = new JSONObject();
+        try {
+            String idForm = objectCIF.getString("idForm");
+            String otpCode = otp.getText().toString();
+            jsons.put("idForm",idForm);
+            jsons.put("otpCode",otpCode);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), jsons.toString());
+
+        Server.getAPIService().VerifyOTP(requestBody).enqueue(new Callback<JsonObject>() {
+            @Override
+            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                if (response.isSuccessful()) {
+                    String dataS = response.body().toString();
+                    try {
+                        JSONObject jsObj = new JSONObject(dataS);
+                        int errCode = jsObj.getInt("err_code");
+                        if (errCode == 0 ){
+                            PopUpSuccesOtp();
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
+                }
+            }
+
+            @Override
+            public void onFailure(Call<JsonObject> call, Throwable t) {
+
+            }
+        });
+    }
+
+    private void resendOTP() {
+        JSONObject jsons = new JSONObject();
+        try {
+            String idForm = objectCIF.getString("idForm");
+            JSONArray dataArrCIF = objectCIF.getJSONArray("data");
+            String no_handphone = dataArrCIF.get(25).toString();
+            jsons.put("idForm",idForm);
+            jsons.put("phone",no_handphone);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), jsons.toString());
+
+        Server.getAPIService().ResendOTP(requestBody).enqueue(new Callback<JsonObject>() {
+            @Override
+            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                if (response.isSuccessful()) {
+                    String dataS = response.body().toString();
+                    try {
+                        JSONObject jsObj = new JSONObject(dataS);
+                        int errCode = jsObj.getInt("err_code");
+                        if (errCode == 0 ){
+                            Toast.makeText(context, "Kode Terkirim ke nomor Hanphone Anda", Toast.LENGTH_SHORT).show();
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
+                }
+            }
+
+            @Override
+            public void onFailure(Call<JsonObject> call, Throwable t) {
+
+            }
+        });
     }
 
     private void PopUpSuccesOtp(){
@@ -587,15 +675,22 @@ public class frag_aktivasi_ibmb extends Fragment {
     }
 
     private void APISaveForm(JSONArray jsonsIBMB) {
+        JSONObject dataObj = new JSONObject();
+        try {
+            dataObj.put("data",jsonsIBMB);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
 
         JSONObject jsons = new JSONObject();
+        JSONArray dataArrCIF = null;
         try {
-            JSONArray dataArrCIF = objectCIF.getJSONArray("data");
+            dataArrCIF = objectCIF.getJSONArray("data");
             String no_handphone = dataArrCIF.get(25).toString();
             jsons.put("formCode","IBMB");
             jsons.put("idDips",idDips);
             jsons.put("phone",no_handphone);
-            jsons.put("payload",jsonsIBMB);
+            jsons.put("payload",dataObj);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -604,7 +699,27 @@ public class frag_aktivasi_ibmb extends Fragment {
         Server.getAPIService().saveForm(requestBody).enqueue(new Callback<JsonObject>() {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                if (response.isSuccessful()) {
+                    String dataS = response.body().toString();
+                    try {
+                        JSONObject jsObj = new JSONObject(dataS);
+                        int errCode = jsObj.getInt("err_code");
+                        if (errCode == 0) {
+                            JSONObject dataJs = jsObj.getJSONObject("data");
+                            String idForm = dataJs.getString("idForm");
 
+                            objectCIF.put("idForm",idForm);
+                            session.saveCIF(objectCIF.toString());
+
+                            PopUp();
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
+                } else {
+                    Toast.makeText(context,"Gagal Save Form",Toast.LENGTH_SHORT).show();
+                }
             }
 
             @Override

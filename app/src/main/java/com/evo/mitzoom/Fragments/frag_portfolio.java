@@ -67,6 +67,7 @@ public class frag_portfolio extends Fragment {
     private boolean cekCust;
     ImageView btnToogleShow, btnToogleHide;
     private String dataCIF;
+    private JSONObject objectCIF = null;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -101,6 +102,16 @@ public class frag_portfolio extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        String dataJsonS = sessionManager.getCIF();
+        if (dataJsonS != null) {
+            try {
+                objectCIF = new JSONObject(dataJsonS);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+
         idDips = sessionManager.getKEY_IdDips();
         Calendar c = Calendar.getInstance();
         System.out.println("Current Time =>"+c.getTime());
@@ -259,10 +270,12 @@ public class frag_portfolio extends Fragment {
         pieChart.getDescription().setEnabled(false);
         if (pieEntryList.size() < 1){
             String produk = "";
-            if (dataCIF != null) {
+            if (objectCIF != null) {
                 try {
-                    JSONObject obj = new JSONObject(dataCIF);
-                    produk = obj.getString("produk");
+                    JSONArray dataArrCIF = objectCIF.getJSONArray("data");
+                    produk = dataArrCIF.get(39).toString();
+                    /*JSONObject obj = new JSONObject(dataCIF);
+                    produk = obj.getString("produk");*/
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -323,10 +336,13 @@ public class frag_portfolio extends Fragment {
     private void addDataDanaPihakKetigaNewMasking(){
         data = new ArrayList<>();
         String portfolio = "";
-        if (dataCIF != null) {
+        if (objectCIF != null) {
             try {
-                JSONObject obj = new JSONObject(dataCIF);
-                String produk = obj.getString("produk");
+                JSONArray dataArrCIF = objectCIF.getJSONArray("data");
+                String produk = dataArrCIF.get(39).toString();
+
+                /*JSONObject obj = new JSONObject(dataCIF);
+                String produk = obj.getString("produk");*/
                 portfolio = produk+" - 123456789";
             } catch (JSONException e) {
                 e.printStackTrace();

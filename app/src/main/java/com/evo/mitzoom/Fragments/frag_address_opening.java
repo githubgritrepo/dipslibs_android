@@ -134,13 +134,6 @@ public class frag_address_opening extends Fragment {
                 dataCIFJson(cek,true);
                 Mirroring();
                 session.saveCIF(objectCIF.toString());
-                Fragment fragment = new frag_data_pekerjaan();
-                Bundle bundle = new Bundle();
-                bundle.putByteArray("ktp",KTP);
-                bundle.putByteArray("npwp",NPWP);
-                bundle.putByteArray("ttd",TTD);
-                fragment.setArguments(bundle);
-                getFragmentPage(fragment);
             }
         });
         btnKembali.setOnClickListener(new View.OnClickListener() {
@@ -343,11 +336,14 @@ public class frag_address_opening extends Fragment {
         try {
             String idDips = objectCIF.getString("idDips").toString();
             JSONArray dataArrCIF = objectCIF.getJSONArray("data");
+            JSONObject dataObj = new JSONObject();
+            dataObj.put("data",dataArrCIF);
             String no_handphone = dataArrCIF.get(25).toString();
+
             jsons.put("formCode","CIF1");
             jsons.put("idDips",idDips);
             jsons.put("phone",no_handphone);
-            jsons.put("payload",dataArrCIF);
+            jsons.put("payload",dataObj);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -356,7 +352,29 @@ public class frag_address_opening extends Fragment {
         Server.getAPIService().saveForm(requestBody).enqueue(new Callback<JsonObject>() {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                Log.e("CEK","response Code APISaveForm : "+response.code());
+                Log.e("CEK","response body APISaveForm : "+response.body().toString());
+                if (response.isSuccessful()) {
+                    String dataS = response.body().toString();
+                    try {
+                        JSONObject jsObj = new JSONObject(dataS);
+                        int errCode = jsObj.getInt("err_code");
+                        if (errCode == 0) {
+                            Fragment fragment = new frag_data_pekerjaan();
+                            Bundle bundle = new Bundle();
+                            bundle.putByteArray("ktp", KTP);
+                            bundle.putByteArray("npwp", NPWP);
+                            bundle.putByteArray("ttd", TTD);
+                            fragment.setArguments(bundle);
+                            getFragmentPage(fragment);
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
 
+                } else {
+                    Toast.makeText(context,"Gagal Save Form",Toast.LENGTH_SHORT).show();
+                }
             }
 
             @Override

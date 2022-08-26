@@ -114,16 +114,21 @@ public class DipsCameraActivity extends AppCompatActivity {
                             if (data.length > 0) {
                                 dataImage = data;
 
-                                Bitmap bitmap = BitmapFactory.decodeByteArray(dataImage, 0, dataImage.length);
+                                Bitmap realBitmap = BitmapFactory.decodeByteArray(dataImage, 0, dataImage.length);
                                 //Bitmap bitmapCrop = resizeAndCropCenter2(bitmap, 640, false);
-                                //Bitmap bitmapCrop = getResizedBitmap(bitmap, (bitmap.getWidth() / 4), (bitmap.getHeight() / 4));
+                                int widthReal = realBitmap.getWidth();
+                                int heightReal = realBitmap.getHeight();
+                                Bitmap bitmapRes = getResizedBitmap(realBitmap, (widthReal / 2), (heightReal / 2));
 
                                 int rotation = 0;
                                 try {
                                     File mediaFile = createTemporaryFile(dataImage);
                                     try {
+                                        //Image no compress
+                                        //String real_imgBase64 = imageRotateBase64(realBitmap, rotation);
+
                                         String pathFile = mediaFile.getAbsolutePath();
-                                        Bitmap bitmapCrop = prosesOptimalImage(bitmap, mediaFile);
+                                        Bitmap bitmapCrop = prosesOptimalImage(realBitmap, mediaFile);
                                         ExifInterface exif = new ExifInterface(pathFile);
                                         rotation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL);
                                         Log.d("CEK", "rotation : " + rotation);
@@ -140,8 +145,7 @@ public class DipsCameraActivity extends AppCompatActivity {
                                         }
 
                                         String imgBase64 = imageRotateBase64(bitmapCrop, rotation);
-                                        //Image no compress
-                                        String real_imgBase64 = imageRotateBase64(bitmap, rotation);
+                                        String real_imgBase64 = imageRotateBase64(bitmapRes, rotation);
 
                                         byte[] bytePhoto = Base64.decode(imgBase64, Base64.NO_WRAP);
                                         byte[] real_bytePhoto = Base64.decode(real_imgBase64, Base64.NO_WRAP);
@@ -607,7 +611,7 @@ public class DipsCameraActivity extends AppCompatActivity {
         // "RECREATE" THE NEW BITMAP
         Bitmap resizedBitmap = Bitmap.createBitmap(
                 bm, cx, cy, (int) (width * 0.3), (height-diffH), matrix, false);
-        bm.recycle();
+        //bm.recycle();
 
         return resizedBitmap;
     }
