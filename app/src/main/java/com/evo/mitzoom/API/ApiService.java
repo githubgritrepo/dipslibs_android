@@ -93,4 +93,12 @@ public interface ApiService {
     @POST("/api/form/save")
     Call<JsonObject> saveForm(@Body RequestBody body);
 
+    @Headers("Content-Type: "+ MyConstants.CONTENT_TYPE)
+    @POST("api/form/verifyOtp")
+    Call<JsonObject> VerifyOTP(@Body RequestBody body);
+
+    @Headers("Content-Type: "+ MyConstants.CONTENT_TYPE)
+    @POST("api/form/resendOtp")
+    Call<JsonObject> ResendOTP(@Body RequestBody body);
+
 }

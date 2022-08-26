@@ -126,13 +126,6 @@ public class frag_data_pekerjaan extends Fragment {
             @Override
             public void onClick(View view) {
                 Mirroring(namaPerusahaan.getText().toString(),alamatPerusahaan.getText().toString(),rt.getText().toString(),rw.getText().toString(),Kelurahan.getText().toString(),Kecamatan.getText().toString(),KabupatenKota.getText().toString(),Provinsi.getText().toString(), kodepos.getText().toString(),jumlahKaryawan.getText().toString(),noTelp.getText().toString(),noFax.getText().toString(),lamakerja_tahun.getText().toString(),lamakerja_bulan.getText().toString(),totalkerja_tahun.getText().toString(),totalkerja_bulan.getText().toString(),pekerjaan.getText().toString(),bidangUsaha.getText().toString(),jabatan.getText(),bagian_dept.getText().toString(),true);
-                Fragment fragment = new frag_data_keuangan();
-                Bundle bundle = new Bundle();
-                bundle.putByteArray("ktp",KTP);
-                bundle.putByteArray("npwp",NPWP);
-                bundle.putByteArray("ttd",TTD);
-                fragment.setArguments(bundle);
-                getFragmentPage(fragment);
             }
         });
         btnKembali.setOnClickListener(new View.OnClickListener() {
@@ -615,6 +608,12 @@ public class frag_data_pekerjaan extends Fragment {
     }
 
     private void APISaveForm(JSONArray jsonsWork) {
+        JSONObject dataObj = new JSONObject();
+        try {
+            dataObj.put("data",jsonsWork);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
 
         JSONObject jsons = new JSONObject();
         try {
@@ -623,7 +622,7 @@ public class frag_data_pekerjaan extends Fragment {
             jsons.put("formCode","CIF2");
             jsons.put("idDips",idDips);
             jsons.put("phone",no_handphone);
-            jsons.put("payload",jsonsWork);
+            jsons.put("payload",dataObj);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -632,7 +631,27 @@ public class frag_data_pekerjaan extends Fragment {
         Server.getAPIService().saveForm(requestBody).enqueue(new Callback<JsonObject>() {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                if (response.isSuccessful()) {
+                    String dataS = response.body().toString();
+                    try {
+                        JSONObject jsObj = new JSONObject(dataS);
+                        int errCode = jsObj.getInt("err_code");
+                        if (errCode == 0) {
+                            Fragment fragment = new frag_data_keuangan();
+                            Bundle bundle = new Bundle();
+                            bundle.putByteArray("ktp", KTP);
+                            bundle.putByteArray("npwp", NPWP);
+                            bundle.putByteArray("ttd", TTD);
+                            fragment.setArguments(bundle);
+                            getFragmentPage(fragment);
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
 
+                } else {
+                    Toast.makeText(context,"Gagal Save Form",Toast.LENGTH_SHORT).show();
+                }
             }
 
             @Override
