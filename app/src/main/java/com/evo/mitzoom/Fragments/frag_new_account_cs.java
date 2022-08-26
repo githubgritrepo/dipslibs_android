@@ -170,7 +170,7 @@ public class frag_new_account_cs extends Fragment {
         AdapterSourceAccount adapterSourceAcc = new AdapterSourceAccount(context,R.layout.list_item_souceacc,sourceAcc);
         et_source_accountpager.setAdapter(adapterSourceAcc);
         et_source_accountpager.setBackground(context.getResources().getDrawable(R.drawable.blue_button_background));
-        Mirroring("","","","",et_productType.getText().toString(),et_tgl_daftar.getText().toString(),et_nominal_daftar.getText().toString(), MyConstants.BASE64TTD,false,false);
+        Mirroring("","","","",et_productType.getText().toString(),et_tgl_daftar.getText().toString(),et_nominal_daftar.getText().toString(), "",false,false);
         btnProses.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
