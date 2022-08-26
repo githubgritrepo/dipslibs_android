@@ -127,7 +127,6 @@ public class DipsCameraActivity extends AppCompatActivity {
                                         ExifInterface exif = new ExifInterface(pathFile);
                                         rotation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL);
                                         Log.d("CEK", "rotation : " + rotation);
-
                                         if (mediaFile.exists()) {
                                             try {
                                                 mediaFile.getCanonicalFile().delete();
@@ -138,11 +137,9 @@ public class DipsCameraActivity extends AppCompatActivity {
                                                 e.printStackTrace();
                                             }
                                         }
-
                                         String imgBase64 = imageRotateBase64(bitmapCrop, rotation);
                                         //Image no compress
                                         String real_imgBase64 = imageRotateBase64(bitmap, rotation);
-
                                         byte[] bytePhoto = Base64.decode(imgBase64, Base64.NO_WRAP);
                                         byte[] real_bytePhoto = Base64.decode(real_imgBase64, Base64.NO_WRAP);
                                         Intent returnIntent = getIntent();
@@ -164,10 +161,8 @@ public class DipsCameraActivity extends AppCompatActivity {
                     onPause();
                     onResume();
                 }
-
             }
         });
-
         imgSwitch.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -204,18 +199,13 @@ public class DipsCameraActivity extends AppCompatActivity {
                 }
             }
         });
-
         btn_back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 onBackPressed();
             }
         });
-
-
-
     }
-
     private Bitmap prosesOptimalImage(Bitmap bitmap, File mediaFile) {
         int file_size = Integer.parseInt(String.valueOf(mediaFile.length()/1024));
         Log.d("CEK", "file_size : "+file_size);
@@ -235,7 +225,6 @@ public class DipsCameraActivity extends AppCompatActivity {
 
         return bitmapCrop;
     }
-
     private void initialElements() {
         imgSwitch = findViewById(R.id.imgSwitch);
         preview = findViewById(R.id.mySurface);
@@ -243,7 +232,6 @@ public class DipsCameraActivity extends AppCompatActivity {
         btnTake = findViewById(R.id.takePicture);
         btn_back = findViewById(R.id.btn_back);
     }
-
     @Override
     protected void onResume() {
         super.onResume();
@@ -268,13 +256,11 @@ public class DipsCameraActivity extends AppCompatActivity {
         cameraConfigured = false;
         previewHolder();
     }
-
     private void previewHolder(){
         previewHolder = preview.getHolder();
         previewHolder.addCallback(surfaceCallback);
         previewHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
     }
-
     @Override
     protected void onPause() {
         if (inPreview) {
@@ -289,13 +275,11 @@ public class DipsCameraActivity extends AppCompatActivity {
 
         super.onPause();
     }
-
     @Override
     public void onBackPressed() {
         super.onBackPressed();
         sessions.saveMedia(0);
     }
-
     public void hideStatusBar() {
         getWindow().getDecorView()
                 .setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE
@@ -306,7 +290,6 @@ public class DipsCameraActivity extends AppCompatActivity {
                         | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
                 );
     }
-
     private Camera.Size getOptimalPreviewSize(List<Camera.Size> sizes, int w, int h) {
         final double ASPECT_TOLERANCE = 0.1;
         double targetRatio=(double)h / w;
@@ -338,7 +321,6 @@ public class DipsCameraActivity extends AppCompatActivity {
 
         return optimalSize;
     }
-
     private void initPreview(int width, int height) {
         if (camera != null && previewHolder.getSurface() != null) {
             CameraManager manager = (CameraManager) getSystemService(Context.CAMERA_SERVICE);
@@ -374,7 +356,6 @@ public class DipsCameraActivity extends AppCompatActivity {
             }
         }
     }
-
     private void startPreview() {
         if (cameraConfigured && camera != null) {
             camera.startPreview();
@@ -387,7 +368,6 @@ public class DipsCameraActivity extends AppCompatActivity {
             inPreview = true;
         }
     }
-
     SurfaceHolder.Callback surfaceCallback = new SurfaceHolder.Callback() {
         @Override
         public void surfaceCreated(@NonNull SurfaceHolder holder) {
@@ -403,7 +383,6 @@ public class DipsCameraActivity extends AppCompatActivity {
         public void surfaceDestroyed(@NonNull SurfaceHolder holder) {
         }
     };
-
     SurfaceHolder.Callback surfaceCallbackTrans = new SurfaceHolder.Callback() {
         @Override
         public void surfaceCreated(@NonNull SurfaceHolder holder) {
@@ -441,11 +420,9 @@ public class DipsCameraActivity extends AppCompatActivity {
 
         }
     };
-
     private String imageRotateBase64(Bitmap bitmap, int rotation) {
         int w = bitmap.getWidth();
         int h = bitmap.getHeight();
-
         Matrix matrix = new Matrix();
         if (useFacing == Camera.CameraInfo.CAMERA_FACING_FRONT) {
             rotationInDegree = exifToDegrees(rotation);
@@ -454,13 +431,10 @@ public class DipsCameraActivity extends AppCompatActivity {
         } else {
             matrix.setRotate(90);
         }
-
         Bitmap rotBitmap = Bitmap.createBitmap(bitmap, 0, 0 , w, h, matrix, true);
         String imgBase64 = imgtoBase64(rotBitmap);
-
         return imgBase64;
     }
-
     private String imgtoBase64(Bitmap bitmap) {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         bitmap.compress(Bitmap.CompressFormat.JPEG,100, baos);
@@ -468,7 +442,6 @@ public class DipsCameraActivity extends AppCompatActivity {
         String encodedImage = Base64.encodeToString(imageBytes, Base64.NO_WRAP);
         return encodedImage;
     }
-
     private File createTemporaryFile(byte[] byteImage) throws Exception {
         String appName = getString(R.string.app_name_dips);
         String IMAGE_DIRECTORY_NAME = appName;
@@ -491,7 +464,6 @@ public class DipsCameraActivity extends AppCompatActivity {
 
         return mediaFile;
     }
-
     private static int exifToDegrees(int exifOrientation) {
         if (exifOrientation == ExifInterface.ORIENTATION_ROTATE_90) { return 90; }
         else if (exifOrientation == ExifInterface.ORIENTATION_ROTATE_180) {  return 180; }
@@ -507,7 +479,6 @@ public class DipsCameraActivity extends AppCompatActivity {
         }
         return 0;
     }
-
     private void requestPermission() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
@@ -526,7 +497,6 @@ public class DipsCameraActivity extends AppCompatActivity {
             }
         }
     }
-
     public void setCameraDisplayOrientation()
     {
         if (camera == null)
@@ -563,7 +533,6 @@ public class DipsCameraActivity extends AppCompatActivity {
         }
         camera.setDisplayOrientation(result);
     }
-
     public static Bitmap resizeAndCropCenter(Bitmap bitmap, int size, boolean recycle) {
         int w = bitmap.getWidth();
         int h = bitmap.getHeight();
@@ -582,7 +551,6 @@ public class DipsCameraActivity extends AppCompatActivity {
         if (recycle) bitmap.recycle();
         return target;
     }
-
     private Bitmap getResizedBitmap(Bitmap bm, int newWidth, int newHeight) {
         int width = bm.getWidth();
         int height = bm.getHeight();
@@ -611,7 +579,6 @@ public class DipsCameraActivity extends AppCompatActivity {
 
         return resizedBitmap;
     }
-
     private static Bitmap.Config getConfig(Bitmap bitmap) {
         Bitmap.Config config = bitmap.getConfig();
         if (config == null) {
