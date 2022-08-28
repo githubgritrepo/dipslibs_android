@@ -204,6 +204,7 @@ public class frag_new_account_cs extends Fragment {
                 }
             }
         });
+        textWatcher();
 
     }
     public static BigDecimal parseCurrencyValue(String value) {
@@ -237,6 +238,10 @@ public class frag_new_account_cs extends Fragment {
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 String sumber_dana = (String) adapterView.getItemAtPosition(i);
                 String[] sumber = sumber_dana.split("\n");
+                String rsd_1 = sumber[0];
+                String rsd_2 = sumber[1];
+                String rsd_3 = sumber[3];
+                Mirroring(filename,rsd_1,rsd_2,rsd_3,et_productType.getText().toString(),et_tgl_daftar.getText().toString(),et_nominal_daftar.getText(),"",false,false);
             }
         });
     }
