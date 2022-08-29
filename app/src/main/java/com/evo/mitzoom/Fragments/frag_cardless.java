@@ -14,6 +14,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
@@ -22,8 +23,16 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.chaos.view.PinView;
+import com.evo.mitzoom.API.ApiService;
+import com.evo.mitzoom.API.Server;
 import com.evo.mitzoom.Adapter.AdapterSourceAccount;
 import com.evo.mitzoom.R;
+import com.evo.mitzoom.Session.SessionManager;
+import com.google.gson.JsonObject;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.math.BigDecimal;
 import java.text.NumberFormat;
@@ -33,6 +42,11 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import cn.pedant.SweetAlert.SweetAlertDialog;
+import okhttp3.MediaType;
+import okhttp3.RequestBody;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class frag_cardless extends Fragment {
 
@@ -48,9 +62,104 @@ public class frag_cardless extends Fragment {
     private Button btnProses;
     private EditText et_nominal;
     private EditText et_description;
-    private String newString;
+    private String newString, idDips, rsd_1 = "", rsd_2 = "", rsd_3 = "";
+    private SessionManager session;
     public static final NumberFormat numberFormat = NumberFormat.getInstance(new Locale("id", "ID"));
 
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        mContext = getContext();
+        session = new SessionManager(mContext);
+    }
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_frag_cardless, container, false);
+        btnBack = (ImageView) view.findViewById(R.id.btn_back);
+        et_source_accountpager = (AutoCompleteTextView) view.findViewById(R.id.et_source_account);
+        et_nominal = (EditText) view.findViewById(R.id.et_nominal);
+        et_description = (EditText) view.findViewById(R.id.et_description);
+        btnProses= (Button) view.findViewById(R.id.btnProses);
+
+        return view;
+    }
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        idDips = session.getKEY_IdDips();
+        AdapterSourceAccount adapterSourceAcc = new AdapterSourceAccount(mContext,R.layout.list_item_souceacc,sourceAcc);
+        et_source_accountpager.setAdapter(adapterSourceAcc);
+        et_source_accountpager.setBackground(mContext.getResources().getDrawable(R.drawable.blue_button_background));
+        textWatcher();
+        btnProses.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String rekSumberdana = et_source_accountpager.getText().toString();
+                String nominal = et_nominal.getText().toString();
+                String descrip = et_description.getText().toString();
+
+                if (rekSumberdana.trim().isEmpty() || nominal.trim().isEmpty() || descrip.trim().isEmpty()) {
+                    Toast.makeText(mContext, getResources().getString(R.string.error_field), Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                Mirroring(rsd_1,rsd_2,rsd_3,et_nominal.getText().toString(),et_description.getText().toString(),true,false);
+                PopUp();
+
+            }
+        });
+    }
+
+    private void textWatcher(){
+        et_source_accountpager.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                String sumber_dana = (String) adapterView.getItemAtPosition(i);
+                String[] sumber = sumber_dana.split("\n");
+                rsd_1 = sumber[0];
+                rsd_2 = sumber[1];
+                rsd_3 = sumber[3];
+                Mirroring(rsd_1,rsd_2,rsd_3,et_nominal.getText().toString(),et_description.getText().toString(),false,false);
+            }
+        });
+        et_nominal.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                et_nominal.removeTextChangedListener(this);
+                BigDecimal parsed = parseCurrencyValue(et_nominal.getText().toString());
+                String formatted = numberFormat.format(parsed);
+                et_nominal.setText(formatted);
+                Mirroring(rsd_1,rsd_2,rsd_3,formatted,et_description.getText().toString(),false,false);
+                et_nominal.setSelection(formatted.length());
+                et_nominal.addTextChangedListener(this);
+            }
+        });
+        et_description.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                Mirroring(rsd_1,rsd_2,rsd_3,et_nominal.getText().toString(),charSequence,false,false);
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+            }
+        });
+    }
     private void PopUp(){
         View dialogView = getLayoutInflater().inflate(R.layout.item_otp, null);
         SweetAlertDialog sweetAlertDialog = new SweetAlertDialog(mContext, SweetAlertDialog.NORMAL_TYPE);
@@ -76,6 +185,7 @@ public class frag_cardless extends Fragment {
                 Pattern pattern = Pattern.compile(patternStr);
                 Matcher matcher = pattern.matcher(s);
                 if (matcher.find()) {
+                    MirroringOTP(s,false);
                 }
             }
 
@@ -109,6 +219,7 @@ public class frag_cardless extends Fragment {
                 else {
                     handler.removeMessages(0);
                     handler.removeCallbacks(myRunnable);
+                    MirroringOTP(otp.getText().toString(),true);
                     sweetAlertDialog.dismiss();
                     PopUpSuccesOtp();
                 }
@@ -124,14 +235,12 @@ public class frag_cardless extends Fragment {
             }
         });
     }
-
     public String myFilter(String s) {
         String digits;
         digits = s.replaceAll("[0-9]", "*");
         if (s.equals("")) return "";
         return digits;
     }
-
     public void runTimer(TextView timer_run, TextView resend) {
         Handler handlerTimer = new Handler();
         handlerTimer.post(new Runnable() {
@@ -157,7 +266,6 @@ public class frag_cardless extends Fragment {
             }
         });
     }
-
     private void PopUpSuccesOtp(){
         SweetAlertDialog sweetAlertDialog = new SweetAlertDialog(mContext, SweetAlertDialog.SUCCESS_TYPE);
         sweetAlertDialog.setTitleText(getResources().getString(R.string.otp_title));
@@ -174,7 +282,6 @@ public class frag_cardless extends Fragment {
             }
         },5000);
     }
-
     public static BigDecimal parseCurrencyValue(String value) {
         try {
             String replaceRegex = String.format("[%s,.\\s]", Objects.requireNonNull(numberFormat.getCurrency()).getDisplayName());
@@ -185,7 +292,6 @@ public class frag_cardless extends Fragment {
         }
         return BigDecimal.ZERO;
     }
-
     private void getFragmentPage(Fragment fragment){
         getActivity().getSupportFragmentManager()
                 .beginTransaction()
@@ -193,73 +299,64 @@ public class frag_cardless extends Fragment {
                 .addToBackStack(null)
                 .commit();
     }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        mContext = getContext();
-    }
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_frag_cardless, container, false);
-
-        btnBack = (ImageView) view.findViewById(R.id.btn_back);
-        et_source_accountpager = (AutoCompleteTextView) view.findViewById(R.id.et_source_account);
-        et_nominal = (EditText) view.findViewById(R.id.et_nominal);
-        et_description = (EditText) view.findViewById(R.id.et_description);
-        btnProses= (Button) view.findViewById(R.id.btnProses);
-
-        return view;
-    }
-
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-
-        AdapterSourceAccount adapterSourceAcc = new AdapterSourceAccount(mContext,R.layout.list_item_souceacc,sourceAcc);
-        et_source_accountpager.setAdapter(adapterSourceAcc);
-        et_source_accountpager.setBackground(mContext.getResources().getDrawable(R.drawable.blue_button_background));
-        btnProses.setOnClickListener(new View.OnClickListener() {
+    private void Mirroring(CharSequence rek_sumber_1, CharSequence rek_sumber_2, CharSequence rek_sumber_3, CharSequence nominal_, CharSequence ket, Boolean btnsubmit, Boolean btnback){
+        JSONObject jsons = new JSONObject();
+        JSONArray jsonArray = new JSONArray();
+        try {
+            jsonArray.put(rek_sumber_1);
+            jsonArray.put(rek_sumber_2);
+            jsonArray.put(rek_sumber_3);
+            jsonArray.put(nominal_);
+            jsonArray.put(ket);
+            jsonArray.put(btnsubmit);
+            jsonArray.put(btnback);
+            jsons.put("idDips",idDips);
+            jsons.put("code",362);
+            jsons.put("data",jsonArray);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), jsons.toString());
+        ApiService API = Server.getAPIService();
+        Call<JsonObject> call = API.Mirroring(requestBody);
+        call.enqueue(new Callback<JsonObject>() {
             @Override
-            public void onClick(View view) {
-                String rekSumberdana = et_source_accountpager.getText().toString();
-                String nominal = et_nominal.getText().toString();
-                String descrip = et_description.getText().toString();
+            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                Log.d("MIRROR","Mirroring Sukses");
+            }
 
-                if (rekSumberdana.trim().isEmpty() || nominal.trim().isEmpty() || descrip.trim().isEmpty()) {
-                    Toast.makeText(mContext, getResources().getString(R.string.error_field), Toast.LENGTH_SHORT).show();
-                    return;
-                }
-
-                PopUp();
-
+            @Override
+            public void onFailure(Call<JsonObject> call, Throwable t) {
+                Log.d("MIRROR","Mirroring Gagal");
             }
         });
-
-        et_nominal.addTextChangedListener(new TextWatcher() {
+    }
+    private void MirroringOTP(CharSequence s, boolean bool){
+        Log.d("OTP","ini hit OTP");
+        JSONObject jsons = new JSONObject();
+        JSONArray jsonArray = new JSONArray();
+        try {
+            jsonArray.put(s);
+            jsonArray.put(bool);
+            jsons.put("idDips",idDips);
+            jsons.put("code",492);
+            jsons.put("data",jsonArray);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), jsons.toString());
+        ApiService API = Server.getAPIService();
+        Call<JsonObject> call = API.Mirroring(requestBody);
+        call.enqueue(new Callback<JsonObject>() {
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
+            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                Log.d("MIRROR","Mirroring Sukses");
             }
 
             @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                et_nominal.removeTextChangedListener(this);
-                BigDecimal parsed = parseCurrencyValue(et_nominal.getText().toString());
-                String formatted = numberFormat.format(parsed);
-                et_nominal.setText(formatted);
-                et_nominal.setSelection(formatted.length());
-                et_nominal.addTextChangedListener(this);
+            public void onFailure(Call<JsonObject> call, Throwable t) {
+                Log.d("MIRROR","Mirroring Gagal");
             }
         });
-
     }
 }

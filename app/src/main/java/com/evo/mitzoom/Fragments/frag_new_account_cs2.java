@@ -21,14 +21,26 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.chaos.view.PinView;
+import com.evo.mitzoom.API.ApiService;
+import com.evo.mitzoom.API.Server;
 import com.evo.mitzoom.R;
 import com.evo.mitzoom.Session.SessionManager;
+import com.google.gson.JsonObject;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import cn.pedant.SweetAlert.SweetAlertDialog;
+import okhttp3.MediaType;
+import okhttp3.RequestBody;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class frag_new_account_cs2 extends Fragment {
     private Context context;
@@ -53,6 +65,7 @@ public class frag_new_account_cs2 extends Fragment {
     private int selPos;
     private String oldString, newString;
     public boolean running = true;
+    private boolean pernyataan_ = false;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -96,12 +109,16 @@ public class frag_new_account_cs2 extends Fragment {
             @Override
             public void onClick(View view) {
                 if (pernyataan.isChecked()){
+                    pernyataan_ = true;
+                    Mirroring(pernyataan_, false,false);
                     Log.d("CHECK","TRUE");
                     btnProses.setBackgroundTintList(context.getResources().getColorStateList(R.color.Blue));
                     btnProses.setEnabled(true);
                 }
                 else {
+                    pernyataan_ = false;
                     Log.d("CHECK","FALSE");
+                    Mirroring(pernyataan_, false,false);
                     btnProses.setBackgroundTintList(context.getResources().getColorStateList(R.color.btnFalse));
                     btnProses.setEnabled(false);
                 }
@@ -115,6 +132,7 @@ public class frag_new_account_cs2 extends Fragment {
         btnBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                Mirroring(pernyataan_, false,true);
                 Fragment fragment;
                 fragment = new frag_new_account_cs();
                 Bundle bundle = new Bundle();
@@ -130,6 +148,7 @@ public class frag_new_account_cs2 extends Fragment {
         btnProses.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                Mirroring(pernyataan_, true,false);
                 icon_konfirmasi_data.setBackgroundTintList(context.getResources().getColorStateList(R.color.bg_cif_success));
                 PopUpOTP();
             }
@@ -162,7 +181,7 @@ public class frag_new_account_cs2 extends Fragment {
                 Pattern pattern = Pattern.compile(patternStr);
                 Matcher matcher = pattern.matcher(s);
                 if (matcher.find()) {
-
+                    Mirroring2(s, false);
                 }
             }
 
@@ -195,6 +214,7 @@ public class frag_new_account_cs2 extends Fragment {
                 else {
                     handler.removeMessages(0);
                     handler.removeCallbacks(myRunnable);
+                    Mirroring2(otp.getText().toString(),true);
                     sweetAlertDialog.dismiss();
                     PopUpSuccesOtp();
 
@@ -270,5 +290,61 @@ public class frag_new_account_cs2 extends Fragment {
                 .replace(R.id.layout_frame2, fragment)
                 .addToBackStack(null)
                 .commit();
+    }
+    private void Mirroring2(CharSequence s, Boolean bool){
+        Log.d("OTP","ini hit OTP");
+        JSONObject jsons = new JSONObject();
+        JSONArray jsonArray = new JSONArray();
+        try {
+            jsonArray.put(s);
+            jsonArray.put(bool);
+            jsons.put("idDips",idDips);
+            jsons.put("code",364);
+            jsons.put("data",jsonArray);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), jsons.toString());
+        ApiService API = Server.getAPIService();
+        Call<JsonObject> call = API.Mirroring(requestBody);
+        call.enqueue(new Callback<JsonObject>() {
+            @Override
+            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                Log.d("MIRROR","Mirroring Sukses");
+            }
+
+            @Override
+            public void onFailure(Call<JsonObject> call, Throwable t) {
+                Log.d("MIRROR","Mirroring Gagal");
+            }
+        });
+    }
+    private void Mirroring(Boolean bool_pernyataan, Boolean bool_submit, Boolean bool_back){
+        JSONObject jsons = new JSONObject();
+        JSONArray jsonArray = new JSONArray();
+        try {
+            jsonArray.put(bool_pernyataan);
+            jsonArray.put(bool_submit);
+            jsonArray.put(bool_back);
+            jsons.put("idDips",idDips);
+            jsons.put("code",363);
+            jsons.put("data",jsonArray);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), jsons.toString());
+        ApiService API = Server.getAPIService();
+        Call<JsonObject> call = API.Mirroring(requestBody);
+        call.enqueue(new Callback<JsonObject>() {
+            @Override
+            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                Log.d("MIRROR","Mirroring Sukses");
+            }
+
+            @Override
+            public void onFailure(Call<JsonObject> call, Throwable t) {
+                Log.d("MIRROR","Mirroring Gagal");
+            }
+        });
     }
 }

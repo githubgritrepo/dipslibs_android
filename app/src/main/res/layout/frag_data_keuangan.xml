@@ -155,6 +155,9 @@
                     app:boxCornerRadiusTopStart="10dp">
 
                     <AutoCompleteTextView
+                        android:dropDownHeight="200dp"
+                        android:focusable="false"
+                        android:inputType="none"
                         android:id="@+id/act_jenisPekerjaan"
                         android:layout_width="match_parent"
                         android:layout_height="35dp"
@@ -185,6 +188,9 @@
                     app:boxCornerRadiusTopStart="10dp">
 
                     <AutoCompleteTextView
+                        android:dropDownHeight="200dp"
+                        android:focusable="false"
+                        android:inputType="none"
                         android:id="@+id/act_penghasilanBulan"
                         android:layout_width="match_parent"
                         android:layout_height="35dp"
@@ -215,6 +221,9 @@
                     app:boxCornerRadiusTopStart="10dp">
 
                     <AutoCompleteTextView
+                        android:dropDownHeight="200dp"
+                        android:focusable="false"
+                        android:inputType="none"
                         android:id="@+id/act_sumberDana"
                         android:layout_width="match_parent"
                         android:layout_height="35dp"
@@ -245,6 +254,9 @@
                     app:boxCornerRadiusTopStart="10dp">
 
                     <AutoCompleteTextView
+                        android:dropDownHeight="200dp"
+                        android:focusable="false"
+                        android:inputType="none"
                         android:id="@+id/act_tujuanPenggunaan"
                         android:layout_width="match_parent"
                         android:layout_height="35dp"
@@ -275,6 +287,9 @@
                     app:boxCornerRadiusTopStart="10dp">
 
                     <AutoCompleteTextView
+                        android:dropDownHeight="200dp"
+                        android:focusable="false"
+                        android:inputType="none"
                         android:id="@+id/act_penghasilanTambahan"
                         android:layout_width="match_parent"
                         android:layout_height="35dp"
@@ -305,6 +320,9 @@
                     app:boxCornerRadiusTopStart="10dp">
 
                     <AutoCompleteTextView
+                        android:dropDownHeight="200dp"
+                        android:focusable="false"
+                        android:inputType="none"
                         android:id="@+id/act_jenisRekening"
                         android:layout_width="match_parent"
                         android:layout_height="35dp"
@@ -335,6 +353,9 @@
                     app:boxCornerRadiusTopStart="10dp">
 
                     <AutoCompleteTextView
+                        android:dropDownHeight="200dp"
+                        android:focusable="false"
+                        android:inputType="none"
                         android:id="@+id/act_namaProduk"
                         android:layout_width="match_parent"
                         android:layout_height="35dp"
@@ -365,6 +386,9 @@
                     app:boxCornerRadiusTopStart="10dp">
 
                     <AutoCompleteTextView
+                        android:dropDownHeight="200dp"
+                        android:focusable="false"
+                        android:inputType="none"
                         android:id="@+id/act_mataUang"
                         android:layout_width="match_parent"
                         android:layout_height="35dp"
@@ -411,6 +435,9 @@
                             app:boxCornerRadiusTopStart="10dp">
 
                             <AutoCompleteTextView
+                                android:dropDownHeight="200dp"
+                                android:focusable="false"
+                                android:inputType="none"
                                 android:id="@+id/act_perkiraan"
                                 android:layout_width="match_parent"
                                 android:layout_height="35dp"
@@ -446,6 +473,9 @@
                             app:boxCornerRadiusTopStart="10dp">
 
                             <AutoCompleteTextView
+                                android:dropDownHeight="200dp"
+                                android:focusable="false"
+                                android:inputType="none"
                                 android:id="@+id/act_frekuensi"
                                 android:layout_width="match_parent"
                                 android:layout_height="35dp"
@@ -494,6 +524,9 @@
                             app:boxCornerRadiusTopStart="10dp">
 
                             <AutoCompleteTextView
+                                android:dropDownHeight="200dp"
+                                android:focusable="false"
+                                android:inputType="none"
                                 android:id="@+id/act_perkiraan2"
                                 android:layout_width="match_parent"
                                 android:layout_height="35dp"
@@ -529,6 +562,9 @@
                             app:boxCornerRadiusTopStart="10dp">
 
                             <AutoCompleteTextView
+                                android:dropDownHeight="200dp"
+                                android:focusable="false"
+                                android:inputType="none"
                                 android:id="@+id/act_frekuensi2"
                                 android:layout_width="match_parent"
                                 android:layout_height="35dp"
@@ -577,6 +613,9 @@
                             app:boxCornerRadiusTopStart="10dp">
 
                             <AutoCompleteTextView
+                                android:dropDownHeight="200dp"
+                                android:focusable="false"
+                                android:inputType="none"
                                 android:id="@+id/act_perkiraan3"
                                 android:layout_width="match_parent"
                                 android:layout_height="35dp"
@@ -612,6 +651,9 @@
                             app:boxCornerRadiusTopStart="10dp">
 
                             <AutoCompleteTextView
+                                android:dropDownHeight="200dp"
+                                android:focusable="false"
+                                android:inputType="none"
                                 android:id="@+id/act_frekuensi3"
                                 android:layout_width="match_parent"
                                 android:layout_height="35dp"
@@ -660,6 +702,9 @@
                             app:boxCornerRadiusTopStart="10dp">
 
                             <AutoCompleteTextView
+                                android:dropDownHeight="200dp"
+                                android:focusable="false"
+                                android:inputType="none"
                                 android:id="@+id/act_perkiraan4"
                                 android:layout_width="match_parent"
                                 android:layout_height="35dp"
@@ -695,6 +740,9 @@
                             app:boxCornerRadiusTopStart="10dp">
 
                             <AutoCompleteTextView
+                                android:dropDownHeight="200dp"
+                                android:focusable="false"
+                                android:inputType="none"
                                 android:id="@+id/act_frekuensi4"
                                 android:layout_width="match_parent"
                                 android:layout_height="35dp"

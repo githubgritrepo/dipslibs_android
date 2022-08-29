@@ -95,7 +95,8 @@ public class ItemServiceAdapter extends RecyclerView.Adapter<ItemServiceAdapter.
                     fragment.setArguments(bundle);
                     getFragmentPage(fragment);
                     return;
-                case "3":
+                case "3":/* SUDAH MIRRORING */
+                    Mirroring(37,true);
                     /**STATE 2 UNTUK KE FORMULIR TRANSFER**/
                     fragment = new frag_rtgs();
                     bundle = new Bundle();
@@ -103,23 +104,31 @@ public class ItemServiceAdapter extends RecyclerView.Adapter<ItemServiceAdapter.
                     fragment.setArguments(bundle);
                     getFragmentPage(fragment);
                     return;
-                case "4" :
+                case "4" :/* SUDAH MIRRORING */
+                    Mirroring(38,true);
                     fragment = new frag_form_credit();
                     bundle = new Bundle();
                     bundle.putInt("state",2);
                     fragment.setArguments(bundle);
                     getFragmentPage(fragment);
                     return;
-                case "5" :
+                case "5" :/* SUDAH MIRRORING */
+                    Mirroring(39,true);
                     PopUpTnc("5");
                     return;
                 case "6" :
+                    /* SUDAH MIRRORING */
+                    Mirroring(40,true);
                     PopUpTnc("6");
                     return;
                 case "7" :
+                    /* SUDAH MIRRORING */
+                    Mirroring(41,true);
                     getFragmentPage(new frag_kartua_atm());
                     return;
                 case "8" :
+                    /* SUDAH MIRRORING */
+                    Mirroring(42,true);
                     fragment = new frag_form_credit();
                     bundle = new Bundle();
                     bundle.putInt("state",4);
@@ -127,9 +136,13 @@ public class ItemServiceAdapter extends RecyclerView.Adapter<ItemServiceAdapter.
                     getFragmentPage(fragment);
                     return;
                 case "9" :
+                    /* SUDAH MIRRORING */
+                    Mirroring(43,true);
                     getFragmentPage(new frag_aktivasi_ibmb());
                     return;
                 case "10" :
+                    /* SUDAH MIRRORING */
+                    Mirroring(44,true);
                     fragment = new frag_form_credit();
                     bundle = new Bundle();
                     bundle.putInt("state",1);
@@ -137,11 +150,15 @@ public class ItemServiceAdapter extends RecyclerView.Adapter<ItemServiceAdapter.
                     getFragmentPage(fragment);
                     return;
                 case "11" :
+                    /* SUDAH MIRRORING */
+                    Mirroring(45,true);
                     PopUpTnc("11");
                     return;
                 case "12" :
                     return;
                 case "13" :
+                    /* SUDAH MIRRORING */
+                    Mirroring(47,true);
                     fragment = new frag_form_credit();
                     bundle = new Bundle();
                     bundle.putInt("state",3);
@@ -149,6 +166,8 @@ public class ItemServiceAdapter extends RecyclerView.Adapter<ItemServiceAdapter.
                     getFragmentPage(fragment);
                     return;
                 case "14" :
+                    /* SUDAH MIRRORING */
+                    Mirroring(48,true);
                     /**STATE 3 UNTUK KE FORMULIR KEKAYAAN**/
                     fragment = new frag_rtgs();
                     bundle = new Bundle();
@@ -157,6 +176,8 @@ public class ItemServiceAdapter extends RecyclerView.Adapter<ItemServiceAdapter.
                     getFragmentPage(fragment);
                     return;
                 case "15" :
+                    /* SUDAH MIRRORING */
+                    Mirroring(49,true);
                     getFragmentPage(new frag_cardless());
                     return;
             }
@@ -219,10 +240,12 @@ public class ItemServiceAdapter extends RecyclerView.Adapter<ItemServiceAdapter.
                             sweetAlertDialogTNC.dismiss();
                         }
                         else if (statez.equals("6")){
+                            Mirroring(401,true);
                             getFragmentPage(new frag_transaksi_valas());
                             sweetAlertDialogTNC.dismiss();
                         }
                         else {
+                            Mirroring(391,true);
                             getFragmentPage(new frag_opening_account());
                             sweetAlertDialogTNC.dismiss();
                         }

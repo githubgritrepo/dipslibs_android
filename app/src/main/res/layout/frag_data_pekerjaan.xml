@@ -321,7 +321,6 @@
                     app:boxCornerRadiusTopStart="10dp">
 
                     <AutoCompleteTextView
-
                         android:dropDownHeight="200dp"
                         android:focusable="false"
                         android:inputType="none"
@@ -450,7 +449,7 @@
                     app:boxCornerRadiusTopStart="10dp">
 
                     <AutoCompleteTextView
-                        android:dropDownHeight="100dp"
+                        android:dropDownHeight="200dp"
                         android:focusable="false"
                         android:inputType="none"
                         android:id="@+id/act_JumlahKaryawan"
@@ -556,6 +555,7 @@
                             app:boxCornerRadiusTopStart="10dp">
 
                             <AutoCompleteTextView
+                                android:inputType="none"
                                 android:id="@+id/act_lama_bekerja_tahun"
                                 android:layout_width="match_parent"
                                 android:layout_height="35dp"
@@ -591,6 +591,8 @@
                             app:boxCornerRadiusTopStart="10dp">
 
                             <AutoCompleteTextView
+                                android:inputType="none"
+                                android:dropDownHeight="200dp"
                                 android:id="@+id/act_lama_bekerja_bulan"
                                 android:layout_width="match_parent"
                                 android:layout_height="35dp"
@@ -639,6 +641,7 @@
                             app:boxCornerRadiusTopStart="10dp">
 
                             <AutoCompleteTextView
+                                android:inputType="none"
                                 android:id="@+id/act_total_bekerja_tahun"
                                 android:layout_width="match_parent"
                                 android:layout_height="35dp"
@@ -666,6 +669,7 @@
                         <com.google.android.material.textfield.TextInputLayout
                             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
                             android:layout_width="match_parent"
+                            android:dropDownHeight="200dp"
                             android:layout_height="wrap_content"
                             android:layout_marginBottom="10dp"
                             app:boxCornerRadiusBottomEnd="10dp"
@@ -674,6 +678,7 @@
                             app:boxCornerRadiusTopStart="10dp">
 
                             <AutoCompleteTextView
+                                android:inputType="none"
                                 android:id="@+id/act_total_bekerja_bulan"
                                 android:layout_width="match_parent"
                                 android:layout_height="35dp"
@@ -706,7 +711,9 @@
                     app:boxCornerRadiusTopStart="10dp">
 
                     <AutoCompleteTextView
+                        android:inputType="none"
                         android:id="@+id/act_pekerjaan"
+                        android:dropDownHeight="200dp"
                         android:layout_width="match_parent"
                         android:layout_height="35dp"
                         android:drawableTint="@color/black"
@@ -722,7 +729,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/jenis_identitas_lain"
+                    android:text="Bidang Usaha"
                     android:textAppearance="@style/TextAppearance.AppCompat.Body2"
                     android:textSize="15dp" />
                 <com.google.android.material.textfield.TextInputLayout
@@ -736,6 +743,8 @@
                     app:boxCornerRadiusTopStart="10dp">
 
                     <AutoCompleteTextView
+                        android:inputType="none"
+                        android:dropDownHeight="200dp"
                         android:id="@+id/act_bidangUsaha"
                         android:layout_width="match_parent"
                         android:layout_height="35dp"
@@ -766,6 +775,8 @@
                     app:boxCornerRadiusTopStart="10dp">
 
                     <AutoCompleteTextView
+                        android:inputType="none"
+                        android:dropDownHeight="200dp"
                         android:id="@+id/act_jabatan"
                         android:layout_width="match_parent"
                         android:layout_height="35dp"

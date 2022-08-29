@@ -440,7 +440,6 @@ public class frag_aktivasi_ibmb extends Fragment {
                 }
             }
         });
-
         btnVerifikasi.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
