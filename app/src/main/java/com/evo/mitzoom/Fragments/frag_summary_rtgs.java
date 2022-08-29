@@ -1,6 +1,10 @@
 package com.evo.mitzoom.Fragments;
 
+import android.Manifest;
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.Editable;
@@ -16,7 +20,9 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.viewpager.widget.PagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
@@ -78,6 +84,157 @@ public class frag_summary_rtgs extends Fragment {
     private ArrayList<String> dataBenefit = new ArrayList<>();
     private ArrayList<String> dataPopulation = new ArrayList<>();
     private ArrayList<String> dataNews = new ArrayList<>();
+    private BroadcastReceiver smsReceiver = null;
+    private JSONObject objectCIF = null;
+    private String numberOTP = "";
+    private boolean flagTransfer = false;
+
+    private void APISaveForm(JSONArray jsonsIBMB) {
+        JSONObject dataObj = new JSONObject();
+        try {
+            dataObj.put("data",jsonsIBMB);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        JSONObject jsons = new JSONObject();
+        JSONArray dataArrCIF = null;
+        try {
+            String no_handphone = "62895401303096";
+            if (objectCIF == null) {
+                objectCIF = new JSONObject();
+                JSONArray jsArr = new JSONArray();
+                jsArr.put(no_handphone);
+                objectCIF.put("data",jsArr);
+            } else {
+                dataArrCIF = objectCIF.getJSONArray("data");
+                no_handphone = dataArrCIF.get(25).toString();
+            }
+            jsons.put("formCode","RTGS");
+            jsons.put("idDips",idDips);
+            jsons.put("phone",no_handphone);
+            jsons.put("payload",dataObj);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), jsons.toString());
+        Server.getAPIService().saveForm(requestBody).enqueue(new Callback<JsonObject>() {
+            @Override
+            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                if (response.isSuccessful()) {
+                    String dataS = response.body().toString();
+                    try {
+                        JSONObject jsObj = new JSONObject(dataS);
+                        int errCode = jsObj.getInt("err_code");
+                        if (errCode == 0) {
+                            JSONObject dataJs = jsObj.getJSONObject("data");
+                            String idForm = dataJs.getString("idForm");
+                            objectCIF.put("idFormRTGS",idForm);
+                            session.saveCIF(objectCIF.toString());
+
+                            PopUp();
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
+                } else {
+                    Toast.makeText(context,"Gagal Save Form",Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<JsonObject> call, Throwable t) {
+
+            }
+        });
+    }
+
+    private void verifyOTP() {
+        JSONObject jsons = new JSONObject();
+        try {
+            String idForm = objectCIF.getString("idFormRTGS");
+            jsons.put("idForm",idForm);
+            jsons.put("otpCode",numberOTP);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        Log.e("CEK","PARAMS verifyOTP : "+jsons.toString());
+        RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), jsons.toString());
+
+        Server.getAPIService().VerifyOTP(requestBody).enqueue(new Callback<JsonObject>() {
+            @Override
+            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                Log.e("CEK","response verifyOTP : "+response.code());
+                if (response.body() != null) {
+                    Log.e("CEK","response body verifyOTP : "+response.body().toString());
+                }
+                if (response.isSuccessful()) {
+                    String dataS = response.body().toString();
+                    try {
+                        JSONObject jsObj = new JSONObject(dataS);
+                        int errCode = jsObj.getInt("err_code");
+                        if (errCode == 0 ){
+                            PopUpSuccesOtp();
+                        } else {
+                            String msg = jsObj.getString("message");
+                            Toast.makeText(context,msg,Toast.LENGTH_SHORT).show();
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
+                }
+            }
+
+            @Override
+            public void onFailure(Call<JsonObject> call, Throwable t) {
+
+            }
+        });
+    }
+
+    private void resendOTP() {
+        JSONObject jsons = new JSONObject();
+        try {
+            String idForm = objectCIF.getString("idFormRTGS");
+            JSONArray dataArrCIF = objectCIF.getJSONArray("data");
+            String no_handphone = dataArrCIF.get(0).toString();
+            jsons.put("idForm",idForm);
+            jsons.put("phone",no_handphone);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), jsons.toString());
+
+        Server.getAPIService().ResendOTP(requestBody).enqueue(new Callback<JsonObject>() {
+            @Override
+            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                if (response.isSuccessful()) {
+                    String dataS = response.body().toString();
+                    try {
+                        JSONObject jsObj = new JSONObject(dataS);
+                        int errCode = jsObj.getInt("err_code");
+                        if (errCode == 0 ){
+                            Toast.makeText(context, "Kode Terkirim ke nomor Hanphone Anda", Toast.LENGTH_SHORT).show();
+                        } else {
+                            Toast.makeText(context, "Kode Gagal Terkirim ke nomor Hanphone Anda", Toast.LENGTH_SHORT).show();
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
+                }
+            }
+
+            @Override
+            public void onFailure(Call<JsonObject> call, Throwable t) {
+
+            }
+        });
+    }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -86,6 +243,9 @@ public class frag_summary_rtgs extends Fragment {
         session = new SessionManager(context);
         dataRTGS = session.getRTGS();
         Log.d("CEK","dataRTGS : "+dataRTGS);
+        ActivityCompat.requestPermissions(getActivity(),
+                new String[]{Manifest.permission.RECEIVE_SMS},
+                1001);
     }
 
     @Nullable
@@ -103,6 +263,15 @@ public class frag_summary_rtgs extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         idDips = session.getKEY_IdDips();
+
+        String dataJsonS = session.getCIF();
+        if (dataJsonS != null) {
+            try {
+                objectCIF = new JSONObject(dataJsonS);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
 
         if (dataRTGS != null) {
             savedRTGS();
@@ -122,11 +291,47 @@ public class frag_summary_rtgs extends Fragment {
         btnTransfer.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                flagTransfer = true;
                 Mirroring(true,false,1,1);
-                PopUp();
             }
         });
 
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        smsReceiver = new BroadcastReceiver() {
+
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                numberOTP = "";
+                String dataSMS = intent.getExtras().getString("smsMessage");
+                Log.e("CEK","MASUK dataSMS : "+dataSMS);
+                String[] sp = dataSMS.split(" ");
+                for (int i = 0; i < sp.length; i++) {
+                    String word = sp[i].toString();
+                    if(word.matches("\\d+(?:\\.\\d+)?")) {
+                        numberOTP = word.replaceAll("[^0-9]", "");
+                        if (numberOTP.length() == 6) {
+                            otp.setText(numberOTP);
+                            newString = myFilter(numberOTP);
+                            otp.setText(newString);
+                        }
+                    }
+                }
+            }
+        };
+        LocalBroadcastManager.getInstance(getActivity()).registerReceiver(smsReceiver,new IntentFilter("getotp"));
+
+    }
+
+    @Override
+    public void onPause() {
+        Log.e("CEK","MASUK onPause");
+        LocalBroadcastManager.getInstance(getActivity()).unregisterReceiver(smsReceiver);
+        super.onPause();
     }
 
     private void initPager() {
@@ -275,16 +480,20 @@ public class frag_summary_rtgs extends Fragment {
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
                 /*selPos = otp.getSelectionStart();
                 oldString = myFilter(s.toString());*/
-
             }
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
+                String wordOTP = s.toString();
                 String patternStr = "[0-9]";
                 Pattern pattern = Pattern.compile(patternStr);
-                Matcher matcher = pattern.matcher(s);
+                Matcher matcher = pattern.matcher(wordOTP);
                 if (matcher.find()) {
-                    Mirroring2(false, s);
+                    String getNumberOTP=wordOTP.replaceAll("[^0-9]", "");
+                    if (numberOTP.length() < 6) {
+                        numberOTP += getNumberOTP;
+                    }
+                    Mirroring2(false, numberOTP);
                 }
             }
 
@@ -311,7 +520,8 @@ public class frag_summary_rtgs extends Fragment {
         btnVerifikasi.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (otp.getText().toString().equalsIgnoreCase("")){
+//                if (otp.getText().toString().equalsIgnoreCase("")){
+                if (numberOTP.isEmpty()) {
                     Toast.makeText(context, "Kode Otp masih kosong", Toast.LENGTH_SHORT).show();
                 }
                 else {
@@ -319,8 +529,7 @@ public class frag_summary_rtgs extends Fragment {
                     handler.removeCallbacks(myRunnable);
                     Mirroring2(true, otp.getText().toString());
                     sweetAlertDialog.dismiss();
-                    PopUpSuccesOtp();
-
+                    verifyOTP();
                 }
             }
         });
@@ -329,7 +538,7 @@ public class frag_summary_rtgs extends Fragment {
             @Override
             public void onClick(View v) {
                 if (seconds==0){
-                    Toast.makeText(context, "Kode Terkirim", Toast.LENGTH_SHORT).show();
+                    resendOTP();
                 }
             }
         });
@@ -423,6 +632,9 @@ public class frag_summary_rtgs extends Fragment {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
                 Log.d("MIRROR","Mirroring Sukses");
+                if (flagTransfer) {
+                    APISaveForm(jsonArray);
+                }
             }
 
             @Override

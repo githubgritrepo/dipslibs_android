@@ -541,6 +541,8 @@ public class frag_aktivasi_ibmb extends Fragment {
                         int errCode = jsObj.getInt("err_code");
                         if (errCode == 0 ){
                             Toast.makeText(context, "Kode Terkirim ke nomor Hanphone Anda", Toast.LENGTH_SHORT).show();
+                        } else {
+                            Toast.makeText(context, "Kode Gagal Terkirim ke nomor Hanphone Anda", Toast.LENGTH_SHORT).show();
                         }
                     } catch (JSONException e) {
                         e.printStackTrace();
