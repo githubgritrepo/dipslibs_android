@@ -214,13 +214,11 @@ public class frag_form_credit extends Fragment {
 
             }
         });
-
         btnProses.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 switch (state){
                     case 1:
-
                         break;
                     case 2:
                         PopUp(2);
