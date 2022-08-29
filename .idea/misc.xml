@@ -5,14 +5,9 @@
       <map>
         <entry key="..\:/Kerjaan GRIT/Project Mobile/DiPS361/app/src/main/res/layout/activity_dips_video_confren.xml" value="0.23324275362318841" />
         <entry key="..\:/Kerjaan GRIT/Project Mobile/DiPS361/app/src/main/res/layout/aktivasi_berhasil.xml" value="0.18659420289855072" />
-        <entry key="..\:/Kerjaan GRIT/Project Mobile/DiPS361/app/src/main/res/layout/content_form_rtgs.xml" value="0.23324275362318841" />
         <entry key="..\:/Kerjaan GRIT/Project Mobile/DiPS361/app/src/main/res/layout/frag_addres_opening.xml" value="0.23324275362318841" />
-        <entry key="..\:/Kerjaan GRIT/Project Mobile/DiPS361/app/src/main/res/layout/frag_daftar_produk.xml" value="0.23324275362318841" />
-        <entry key="..\:/Kerjaan GRIT/Project Mobile/DiPS361/app/src/main/res/layout/frag_dialog_rtgs.xml" value="0.23324275362318841" />
         <entry key="..\:/Kerjaan GRIT/Project Mobile/DiPS361/app/src/main/res/layout/frag_form_opening_account.xml" value="0.18659420289855072" />
-        <entry key="..\:/Kerjaan GRIT/Project Mobile/DiPS361/app/src/main/res/layout/frag_form_rtgs2.xml" value="0.23324275362318841" />
         <entry key="..\:/Kerjaan GRIT/Project Mobile/DiPS361/app/src/main/res/layout/frag_new_account.xml" value="0.23324275362318841" />
-        <entry key="..\:/Kerjaan GRIT/Project Mobile/DiPS361/app/src/main/res/layout/frag_services.xml" value="0.23324275362318841" />
         <entry key="..\:/Kerjaan GRIT/Project Mobile/DiPS361/app/src/main/res/layout/fragment_frag_resi_cardless.xml" value="0.1" />
         <entry key="..\:/Kerjaan GRIT/Project Mobile/DiPS361/app/src/main/res/layout/item_ocr.xml" value="0.23324275362318841" />
         <entry key="..\:/Kerjaan GRIT/Project Mobile/DiPS361/app/src/main/res/layout/item_otp.xml" value="0.4" />
@@ -284,7 +279,7 @@
         <entry key="..\:/Users/rafii/AndroidStudioProjects/DIPS 2/app/src/main/res/layout/activity_dips_waiting_room.xml" value="0.20416666666666666" />
         <entry key="..\:/Users/rafii/AndroidStudioProjects/DIPS 2/app/src/main/res/layout/aktivasi_berhasil.xml" value="0.25" />
         <entry key="..\:/Users/rafii/AndroidStudioProjects/DIPS 2/app/src/main/res/layout/aktivasi_ibmb.xml" value="0.17657657657657658" />
-        <entry key="..\:/Users/rafii/AndroidStudioProjects/DIPS 2/app/src/main/res/layout/content_form_rtgs.xml" value="0.2" />
+        <entry key="..\:/Users/rafii/AndroidStudioProjects/DIPS 2/app/src/main/res/layout/content_form_rtgs.xml" value="0.17" />
         <entry key="..\:/Users/rafii/AndroidStudioProjects/DIPS 2/app/src/main/res/layout/content_frag_resi.xml" value="0.25" />
         <entry key="..\:/Users/rafii/AndroidStudioProjects/DIPS 2/app/src/main/res/layout/content_summary_rtgs.xml" value="0.2" />
         <entry key="..\:/Users/rafii/AndroidStudioProjects/DIPS 2/app/src/main/res/layout/daftar_file.xml" value="0.22" />
@@ -314,7 +309,7 @@
         <entry key="..\:/Users/rafii/AndroidStudioProjects/DIPS 2/app/src/main/res/layout/frag_resi.xml" value="0.16" />
         <entry key="..\:/Users/rafii/AndroidStudioProjects/DIPS 2/app/src/main/res/layout/frag_services.xml" value="0.20416666666666666" />
         <entry key="..\:/Users/rafii/AndroidStudioProjects/DIPS 2/app/src/main/res/layout/frag_transaksi_valas.xml" value="0.25" />
-        <entry key="..\:/Users/rafii/AndroidStudioProjects/DIPS 2/app/src/main/res/layout/fragment_form_rtgs.xml" value="0.13243243243243244" />
+        <entry key="..\:/Users/rafii/AndroidStudioProjects/DIPS 2/app/src/main/res/layout/fragment_form_rtgs.xml" value="0.16" />
         <entry key="..\:/Users/rafii/AndroidStudioProjects/DIPS 2/app/src/main/res/layout/fragment_frag_cardless.xml" value="0.15173745173745173" />
         <entry key="..\:/Users/rafii/AndroidStudioProjects/DIPS 2/app/src/main/res/layout/header_new_account.xml" value="0.22" />
         <entry key="..\:/Users/rafii/AndroidStudioProjects/DIPS 2/app/src/main/res/layout/header_opening_account.xml" value="0.13175675675675674" />

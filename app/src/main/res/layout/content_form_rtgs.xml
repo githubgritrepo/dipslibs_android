@@ -101,6 +101,7 @@
                     <AutoCompleteTextView
                         android:id="@+id/et_nama_bank"
                         android:layout_width="match_parent"
+                        android:dropDownHeight="200dp"
                         android:layout_height="35dp"
                         android:drawableEnd="@android:drawable/ic_menu_search"
                         android:drawableRight="@android:drawable/ic_menu_search"
@@ -275,6 +276,7 @@
                     app:boxCornerRadiusTopStart="10dp">
 
                     <AutoCompleteTextView
+                        android:dropDownHeight="200dp"
                         android:id="@+id/et_serviceType"
                         android:layout_width="match_parent"
                         android:layout_height="35dp"
@@ -307,6 +309,7 @@
 
                     <AutoCompleteTextView
                         android:id="@+id/et_benefitRec"
+                        android:dropDownHeight="200dp"
                         android:layout_width="match_parent"
                         android:layout_height="35dp"
                         android:drawablePadding="@dimen/dp_5"
@@ -338,6 +341,7 @@
                     app:boxCornerRadiusTopStart="10dp">
 
                     <AutoCompleteTextView
+                        android:dropDownHeight="200dp"
                         android:id="@+id/et_typePopulation"
                         android:layout_width="match_parent"
                         android:layout_height="35dp"

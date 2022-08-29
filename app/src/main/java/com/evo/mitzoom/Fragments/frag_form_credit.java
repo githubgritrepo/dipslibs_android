@@ -104,6 +104,7 @@ public class frag_form_credit extends Fragment {
         idDips = session.getKEY_IdDips();
         Bundle arg = getArguments();
         state = arg.getInt("state");
+        Log.d("STATE",""+state);
         btnProses.setEnabled(false);
         btnProses.setBackgroundTintList(context.getResources().getColorStateList(R.color.btnFalse));
         switch (state){
@@ -197,6 +198,7 @@ public class frag_form_credit extends Fragment {
                         getFragmentPage(new frag_service());
                         break;
                     case 2:
+                        Log.d("CASE 2","");
                         MirroringKYCUpdating("","","","","","","",pernyataan__,false,true);
                         getFragmentPage(new frag_service());
                         break;
@@ -212,13 +214,11 @@ public class frag_form_credit extends Fragment {
 
             }
         });
-
         btnProses.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 switch (state){
                     case 1:
-
                         break;
                     case 2:
                         PopUp(2);
