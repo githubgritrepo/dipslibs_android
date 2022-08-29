@@ -695,7 +695,6 @@ public class frag_rtgs extends Fragment {
         JSONObject jsons = new JSONObject();
         JSONArray jsonArray = new JSONArray();
         try {
-            jsonArray.put(nextCode);
             jsonArray.put(bool);
             jsons.put("idDips",idDips);
             jsons.put("code",nextCode);

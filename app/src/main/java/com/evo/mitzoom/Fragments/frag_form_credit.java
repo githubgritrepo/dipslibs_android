@@ -104,6 +104,7 @@ public class frag_form_credit extends Fragment {
         idDips = session.getKEY_IdDips();
         Bundle arg = getArguments();
         state = arg.getInt("state");
+        Log.d("STATE",""+state);
         btnProses.setEnabled(false);
         btnProses.setBackgroundTintList(context.getResources().getColorStateList(R.color.btnFalse));
         switch (state){
@@ -194,15 +195,16 @@ public class frag_form_credit extends Fragment {
                 switch (state){
                     case 1:
                         getFragmentPage(new frag_service());
-                        return;
+                        break;
                     case 2:
+                        Log.d("CASE 2","");
                         MirroringKYCUpdating("","","","","","","",pernyataan__,false,true);
                         getFragmentPage(new frag_service());
-                        return;
+                        break;
                     case 3:
                         MirroringKYCUpdating("","","","","","","",pernyataan__,false,true);
                         getFragmentPage(new frag_service());
-                        return;
+                        break;
                     case 4:
                         MirroringKYCUpdating("","","","","","","",pernyataan__,false,true);
                         getFragmentPage(new frag_service());
