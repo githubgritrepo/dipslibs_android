@@ -113,27 +113,28 @@ public class frag_form_credit extends Fragment {
                 radioTenor.setVisibility(View.VISIBLE);
                 nominalPengajuan.setVisibility(View.VISIBLE);
                 LLNominal.setVisibility(View.VISIBLE);
-                return;
+                break;
             case 2:
                 judul.setText(getString(R.string.KYC_UPDATING));
                 tenor.setVisibility(View.GONE);
                 radioTenor.setVisibility(View.GONE);
                 nominalPengajuan.setVisibility(View.GONE);
                 LLNominal.setVisibility(View.GONE);
-                return;
+                break;
             case 3:
                 judul.setText(getString(R.string.FINANCIAL_PLANNING));
                 tenor.setVisibility(View.GONE);
                 radioTenor.setVisibility(View.GONE);
                 nominalPengajuan.setVisibility(View.GONE);
                 LLNominal.setVisibility(View.GONE);
-                return;
+                break;
             case 4:
                 judul.setText(getString(R.string.POWER_OF_ATTORNEY));
                 tenor.setVisibility(View.GONE);
                 radioTenor.setVisibility(View.GONE);
                 nominalPengajuan.setVisibility(View.GONE);
                 LLNominal.setVisibility(View.GONE);
+                break;
         }
         textWatcher();
         pernyataan.setOnClickListener(new View.OnClickListener() {
@@ -145,19 +146,19 @@ public class frag_form_credit extends Fragment {
                         case 1:
                             MirroringCREDIT(et_nama.getText().toString(),et_nik.getText().toString(),et_nohp.getText().toString(),et_email.getText().toString(),et_alamat.getText().toString(),et_agama.getText().toString(),et_status.getText().toString(),tenor_,et_nominal.getText().toString(),pernyataan__,false,true);
                             getFragmentPage(new frag_service());
-                            return;
+                            break;
                         case 2:
                             MirroringKYCUpdating(et_nama.getText().toString(),et_nik.getText().toString(),et_nohp.getText().toString(),et_email.getText().toString(),et_alamat.getText().toString(),et_agama.getText().toString(),et_status.getText().toString(),pernyataan__,false,true);
                             getFragmentPage(new frag_service());
-                            return;
+                            break;
                         case 3:
                             MirroringKYCUpdating(et_nama.getText().toString(),et_nik.getText().toString(),et_nohp.getText().toString(),et_email.getText().toString(),et_alamat.getText().toString(),et_agama.getText().toString(),et_status.getText().toString(),pernyataan__,false,true);
                             getFragmentPage(new frag_service());
-                            return;
+                            break;
                         case 4:
                             MirroringKYCUpdating(et_nama.getText().toString(),et_nik.getText().toString(),et_nohp.getText().toString(),et_email.getText().toString(),et_alamat.getText().toString(),et_agama.getText().toString(),et_status.getText().toString(),pernyataan__,false,true);
                             getFragmentPage(new frag_service());
-                            return;
+                            break;
                     }
                     Log.d("CHECK","TRUE");
                     btnProses.setBackgroundTintList(context.getResources().getColorStateList(R.color.Blue));
@@ -168,19 +169,19 @@ public class frag_form_credit extends Fragment {
                     switch (state){
                         case 1:
                             getFragmentPage(new frag_service());
-                            return;
+                            break;
                         case 2:
                             MirroringKYCUpdating(et_nama.getText().toString(),et_nik.getText().toString(),et_nohp.getText().toString(),et_email.getText().toString(),et_alamat.getText().toString(),et_agama.getText().toString(),et_status.getText().toString(),pernyataan__,false,true);
                             getFragmentPage(new frag_service());
-                            return;
+                            break;
                         case 3:
                             MirroringKYCUpdating(et_nama.getText().toString(),et_nik.getText().toString(),et_nohp.getText().toString(),et_email.getText().toString(),et_alamat.getText().toString(),et_agama.getText().toString(),et_status.getText().toString(),pernyataan__,false,true);
                             getFragmentPage(new frag_service());
-                            return;
+                            break;
                         case 4:
                             MirroringKYCUpdating(et_nama.getText().toString(),et_nik.getText().toString(),et_nohp.getText().toString(),et_email.getText().toString(),et_alamat.getText().toString(),et_agama.getText().toString(),et_status.getText().toString(),pernyataan__,false,true);
                             getFragmentPage(new frag_service());
-                            return;
+                            break;
                     }
                     Log.d("CHECK","FALSE");
                     btnProses.setBackgroundTintList(context.getResources().getColorStateList(R.color.btnFalse));
@@ -194,19 +195,19 @@ public class frag_form_credit extends Fragment {
                 switch (state){
                     case 1:
                         getFragmentPage(new frag_service());
-                        return;
+                        break;
                     case 2:
                         MirroringKYCUpdating("","","","","","","",pernyataan__,false,true);
                         getFragmentPage(new frag_service());
-                        return;
+                        break;
                     case 3:
                         MirroringKYCUpdating("","","","","","","",pernyataan__,false,true);
                         getFragmentPage(new frag_service());
-                        return;
+                        break;
                     case 4:
                         MirroringKYCUpdating("","","","","","","",pernyataan__,false,true);
                         getFragmentPage(new frag_service());
-                        return;
+                        break;
                 }
 
             }
@@ -218,16 +219,16 @@ public class frag_form_credit extends Fragment {
                 switch (state){
                     case 1:
 
-                        return;
+                        break;
                     case 2:
                         PopUp(2);
-                        return;
+                        break;
                     case 3:
                         PopUp(3);
-                        return;
+                        break;
                     case 4:
                         PopUp(4);
-                        return;
+                        break;
                 }
             }
         });
@@ -387,7 +388,7 @@ public class frag_form_credit extends Fragment {
                         et_nominal.addTextChangedListener(this);
                     }
                 });
-                return;
+                break;
             case 2:
                //KYC UPDATING
                 et_nama.addTextChangedListener(new TextWatcher() {
@@ -502,7 +503,7 @@ public class frag_form_credit extends Fragment {
 
                     }
                 });
-                return;
+                break;
             case 3:
                 //RENCANA KEUANGAN
                 et_nama.addTextChangedListener(new TextWatcher() {
@@ -617,7 +618,7 @@ public class frag_form_credit extends Fragment {
 
                     }
                 });
-                return;
+                break;
             case 4:
                //SURAT KUASA
                 et_nama.addTextChangedListener(new TextWatcher() {
@@ -732,7 +733,7 @@ public class frag_form_credit extends Fragment {
 
                     }
                 });
-                return;
+                break;
         }
     }
     private void PopUp(int cek_state){
@@ -763,14 +764,14 @@ public class frag_form_credit extends Fragment {
                 if (matcher.find()) {
                     switch (cek_state){
                         case 1:
-                            return;
+                            break;
                         case 2:
                             MirroringOTPKYC(s,false);
-                            return;
+                            break;
                         case 3:
-                            return;
+                            break;
                         case 4:
-                            return;
+                            break;
                     }
                 }
             }
@@ -807,13 +808,13 @@ public class frag_form_credit extends Fragment {
                     switch (cek_state){
                         case 2:
                             MirroringOTPKYC(otp.getText().toString(),true);
-                            return;
+                            break;
                         case 3:
                             MirroringOTPKYC(otp.getText().toString(),true);
-                            return;
+                            break;
                         case 4:
                             MirroringOTPKYC(otp.getText().toString(),true);
-                            return;
+                            break;
                     }
                     sweetAlertDialog.dismiss();
                     PopUpSuccesOtp();
