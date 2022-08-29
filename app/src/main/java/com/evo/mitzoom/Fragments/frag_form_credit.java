@@ -14,6 +14,7 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -23,7 +24,15 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.chaos.view.PinView;
+import com.evo.mitzoom.API.ApiService;
+import com.evo.mitzoom.API.Server;
 import com.evo.mitzoom.R;
+import com.evo.mitzoom.Session.SessionManager;
+import com.google.gson.JsonObject;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.math.BigDecimal;
 import java.text.NumberFormat;
@@ -33,35 +42,39 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import cn.pedant.SweetAlert.SweetAlertDialog;
+import okhttp3.MediaType;
+import okhttp3.RequestBody;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class frag_form_credit extends Fragment {
     private Context context;
     private Button btnProses;
     private CheckBox pernyataan;
-    private EditText et_nominal;
+    private EditText et_nominal,et_nama, et_nik, et_nohp, et_email, et_alamat, et_agama, et_status;
     private ImageView  btnBack;
     private LayoutInflater inflater;
     private View dialogView;
     private Button btnVerifikasi;
     private PinView otp;
-    private TextView Timer, Resend_Otp;
-    private String newString;
-    public int getMinutes = 2;
-    public int seconds = 60;
-    public boolean running = true;
+    private String newString, idDips, tenor_ = "";
+    public int getMinutes = 2, state, seconds = 60;
+    public boolean running = true, pernyataan__ = false;
     private Handler handler = null;
     private Runnable myRunnable = null;
     private Handler handlerSuccess;
-    private int state;
-    private TextView judul, tenor, nominalPengajuan;
+    private TextView judul, tenor, nominalPengajuan, Timer, Resend_Otp;
     private RadioGroup radioTenor;
     private LinearLayout LLNominal;
+    private SessionManager session;
     public static final NumberFormat numberFormat = NumberFormat.getInstance(new Locale("id", "ID"));
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         context = getContext();
+        session = new SessionManager(context);
     }
     @Nullable
     @Override
@@ -70,6 +83,13 @@ public class frag_form_credit extends Fragment {
         btnProses = view.findViewById(R.id.btnProses_formKredit);
         btnBack = view.findViewById(R.id.btn_back_formCredit);
         pernyataan = view.findViewById(R.id.pernyataan_formKredit);
+        et_nama = view.findViewById(R.id.et_nama_form);
+        et_nik = view.findViewById(R.id.et_nik_form);
+        et_nohp = view.findViewById(R.id.et_no_hp_form);
+        et_email = view.findViewById(R.id.et_email_form);
+        et_alamat = view.findViewById(R.id.et_alamat_form);
+        et_agama = view.findViewById(R.id.et_agama_form);
+        et_status = view.findViewById(R.id.et_status_form);
         et_nominal = view.findViewById(R.id.et_nominalPengajuan);
         tenor = view.findViewById(R.id.tenor);
         radioTenor = view.findViewById(R.id.group_tenor);
@@ -81,58 +101,11 @@ public class frag_form_credit extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        idDips = session.getKEY_IdDips();
         Bundle arg = getArguments();
         state = arg.getInt("state");
         btnProses.setEnabled(false);
         btnProses.setBackgroundTintList(context.getResources().getColorStateList(R.color.btnFalse));
-        pernyataan.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (pernyataan.isChecked()){
-                    Log.d("CHECK","TRUE");
-                    btnProses.setBackgroundTintList(context.getResources().getColorStateList(R.color.Blue));
-                    btnProses.setEnabled(true);
-                }
-                else {
-                    Log.d("CHECK","FALSE");
-                    btnProses.setBackgroundTintList(context.getResources().getColorStateList(R.color.btnFalse));
-                    btnProses.setEnabled(false);
-                }
-            }
-        });
-        btnBack.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                getFragmentPage(new frag_service());
-            }
-        });
-        et_nominal.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                et_nominal.removeTextChangedListener(this);
-                BigDecimal parsed = parseCurrencyValue(et_nominal.getText().toString());
-                String formatted = numberFormat.format(parsed);
-                et_nominal.setText(formatted);
-                et_nominal.setSelection(formatted.length());
-                et_nominal.addTextChangedListener(this);
-            }
-        });
-        btnProses.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                PopUp();
-            }
-        });
         switch (state){
             case 1:
                 judul.setText(getString(R.string.CREDIT_FORM));
@@ -162,8 +135,607 @@ public class frag_form_credit extends Fragment {
                 nominalPengajuan.setVisibility(View.GONE);
                 LLNominal.setVisibility(View.GONE);
         }
+        textWatcher();
+        pernyataan.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (pernyataan.isChecked()){
+                    pernyataan__ = true;
+                    switch (state){
+                        case 1:
+                            MirroringCREDIT(et_nama.getText().toString(),et_nik.getText().toString(),et_nohp.getText().toString(),et_email.getText().toString(),et_alamat.getText().toString(),et_agama.getText().toString(),et_status.getText().toString(),tenor_,et_nominal.getText().toString(),pernyataan__,false,true);
+                            getFragmentPage(new frag_service());
+                            return;
+                        case 2:
+                            MirroringKYCUpdating(et_nama.getText().toString(),et_nik.getText().toString(),et_nohp.getText().toString(),et_email.getText().toString(),et_alamat.getText().toString(),et_agama.getText().toString(),et_status.getText().toString(),pernyataan__,false,true);
+                            getFragmentPage(new frag_service());
+                            return;
+                        case 3:
+                            MirroringKYCUpdating(et_nama.getText().toString(),et_nik.getText().toString(),et_nohp.getText().toString(),et_email.getText().toString(),et_alamat.getText().toString(),et_agama.getText().toString(),et_status.getText().toString(),pernyataan__,false,true);
+                            getFragmentPage(new frag_service());
+                            return;
+                        case 4:
+                            MirroringKYCUpdating(et_nama.getText().toString(),et_nik.getText().toString(),et_nohp.getText().toString(),et_email.getText().toString(),et_alamat.getText().toString(),et_agama.getText().toString(),et_status.getText().toString(),pernyataan__,false,true);
+                            getFragmentPage(new frag_service());
+                            return;
+                    }
+                    Log.d("CHECK","TRUE");
+                    btnProses.setBackgroundTintList(context.getResources().getColorStateList(R.color.Blue));
+                    btnProses.setEnabled(true);
+                }
+                else {
+                    pernyataan__ = false;
+                    switch (state){
+                        case 1:
+                            getFragmentPage(new frag_service());
+                            return;
+                        case 2:
+                            MirroringKYCUpdating(et_nama.getText().toString(),et_nik.getText().toString(),et_nohp.getText().toString(),et_email.getText().toString(),et_alamat.getText().toString(),et_agama.getText().toString(),et_status.getText().toString(),pernyataan__,false,true);
+                            getFragmentPage(new frag_service());
+                            return;
+                        case 3:
+                            MirroringKYCUpdating(et_nama.getText().toString(),et_nik.getText().toString(),et_nohp.getText().toString(),et_email.getText().toString(),et_alamat.getText().toString(),et_agama.getText().toString(),et_status.getText().toString(),pernyataan__,false,true);
+                            getFragmentPage(new frag_service());
+                            return;
+                        case 4:
+                            MirroringKYCUpdating(et_nama.getText().toString(),et_nik.getText().toString(),et_nohp.getText().toString(),et_email.getText().toString(),et_alamat.getText().toString(),et_agama.getText().toString(),et_status.getText().toString(),pernyataan__,false,true);
+                            getFragmentPage(new frag_service());
+                            return;
+                    }
+                    Log.d("CHECK","FALSE");
+                    btnProses.setBackgroundTintList(context.getResources().getColorStateList(R.color.btnFalse));
+                    btnProses.setEnabled(false);
+                }
+            }
+        });
+        btnBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                switch (state){
+                    case 1:
+                        getFragmentPage(new frag_service());
+                        return;
+                    case 2:
+                        MirroringKYCUpdating("","","","","","","",pernyataan__,false,true);
+                        getFragmentPage(new frag_service());
+                        return;
+                    case 3:
+                        MirroringKYCUpdating("","","","","","","",pernyataan__,false,true);
+                        getFragmentPage(new frag_service());
+                        return;
+                    case 4:
+                        MirroringKYCUpdating("","","","","","","",pernyataan__,false,true);
+                        getFragmentPage(new frag_service());
+                        return;
+                }
+
+            }
+        });
+
+        btnProses.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                switch (state){
+                    case 1:
+
+                        return;
+                    case 2:
+                        PopUp(2);
+                        return;
+                    case 3:
+                        PopUp(3);
+                        return;
+                    case 4:
+                        PopUp(4);
+                        return;
+                }
+            }
+        });
     }
-    private void PopUp(){
+    private void textWatcher(){
+        switch (state){
+            case 1:
+               //FORM CREDIT
+                et_nama.addTextChangedListener(new TextWatcher() {
+                    @Override
+                    public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+                    }
+
+                    @Override
+                    public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                        MirroringKYCUpdating(charSequence, et_nik.getText().toString(),et_nohp.getText().toString(),et_email.getText().toString(),et_alamat.getText().toString(),et_agama.getText().toString(),et_status.getText().toString(), pernyataan__,false,false );
+                    }
+
+                    @Override
+                    public void afterTextChanged(Editable editable) {
+
+                    }
+                });
+                et_nik.addTextChangedListener(new TextWatcher() {
+                    @Override
+                    public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+                    }
+
+                    @Override
+                    public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                        MirroringKYCUpdating(et_nama.getText().toString(), charSequence,et_nohp.getText().toString(),et_email.getText().toString(),et_alamat.getText().toString(),et_agama.getText().toString(),et_status.getText().toString(), pernyataan__,false,false );
+                    }
+
+                    @Override
+                    public void afterTextChanged(Editable editable) {
+
+                    }
+                });
+                et_nohp.addTextChangedListener(new TextWatcher() {
+                    @Override
+                    public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+                    }
+
+                    @Override
+                    public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                        MirroringKYCUpdating(et_nama.getText().toString(), et_nik.getText().toString(),charSequence,et_email.getText().toString(),et_alamat.getText().toString(),et_agama.getText().toString(),et_status.getText().toString(), pernyataan__,false,false );
+                    }
+
+                    @Override
+                    public void afterTextChanged(Editable editable) {
+
+                    }
+                });
+                et_email.addTextChangedListener(new TextWatcher() {
+                    @Override
+                    public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+                    }
+
+                    @Override
+                    public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                        MirroringKYCUpdating(et_nama.getText().toString(), et_nik.getText().toString(),et_nohp.getText().toString(),charSequence,et_alamat.getText().toString(),et_agama.getText().toString(),et_status.getText().toString(), pernyataan__,false,false );
+                    }
+
+                    @Override
+                    public void afterTextChanged(Editable editable) {
+
+                    }
+                });
+                et_alamat.addTextChangedListener(new TextWatcher() {
+                    @Override
+                    public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+                    }
+
+                    @Override
+                    public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                        MirroringKYCUpdating(et_nama.getText().toString(), et_nik.getText().toString(),et_nohp.getText().toString(),et_email.getText().toString(),charSequence,et_agama.getText().toString(),et_status.getText().toString(), pernyataan__,false,false );
+                    }
+
+                    @Override
+                    public void afterTextChanged(Editable editable) {
+
+                    }
+                });
+                et_agama.addTextChangedListener(new TextWatcher() {
+                    @Override
+                    public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+                    }
+
+                    @Override
+                    public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                        MirroringKYCUpdating(et_nama.getText().toString(), et_nik.getText().toString(),et_nohp.getText().toString(),et_email.getText().toString(),et_alamat.getText().toString(),charSequence,et_status.getText().toString(), pernyataan__,false,false );
+                    }
+
+                    @Override
+                    public void afterTextChanged(Editable editable) {
+
+                    }
+                });
+                et_status.addTextChangedListener(new TextWatcher() {
+                    @Override
+                    public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+                    }
+
+                    @Override
+                    public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                        MirroringKYCUpdating(et_nama.getText().toString(), et_nik.getText().toString(),et_nohp.getText().toString(),et_email.getText().toString(),et_alamat.getText().toString(),et_agama.getText().toString(),charSequence, pernyataan__,false,false );
+                    }
+
+                    @Override
+                    public void afterTextChanged(Editable editable) {
+
+                    }
+                });
+                int selectedId = radioTenor.getCheckedRadioButtonId();
+                RadioButton radioButton = (RadioButton) radioTenor.findViewById(selectedId);
+                int idRb = radioButton.getId();
+                switch(idRb) {
+                    case R.id.duabelas_Bulan:
+                        tenor_ = "12 Bulan";
+                        MirroringCREDIT(et_nama.getText().toString(),et_nik.getText().toString(),et_nohp.getText().toString(),et_email.getText().toString(),et_alamat.getText().toString(),et_agama.getText().toString(),et_status.getText().toString(),tenor_,et_nominal.getText().toString(),pernyataan__,false,true);
+                        break;
+                    case R.id.duaempat_Bulan:
+                        tenor_ = "24 Bulan";
+                        MirroringCREDIT(et_nama.getText().toString(),et_nik.getText().toString(),et_nohp.getText().toString(),et_email.getText().toString(),et_alamat.getText().toString(),et_agama.getText().toString(),et_status.getText().toString(),tenor_,et_nominal.getText().toString(),pernyataan__,false,true);
+                        break;
+                    case R.id.tigalima_Bulan:
+                        tenor_ = "35 Bulan";
+                        MirroringCREDIT(et_nama.getText().toString(),et_nik.getText().toString(),et_nohp.getText().toString(),et_email.getText().toString(),et_alamat.getText().toString(),et_agama.getText().toString(),et_status.getText().toString(),tenor_,et_nominal.getText().toString(),pernyataan__,false,true);
+                        break;
+                }
+                et_nominal.addTextChangedListener(new TextWatcher() {
+                    @Override
+                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+                    }
+
+                    @Override
+                    public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+                    }
+
+                    @Override
+                    public void afterTextChanged(Editable s) {
+                        et_nominal.removeTextChangedListener(this);
+                        BigDecimal parsed = parseCurrencyValue(et_nominal.getText().toString());
+                        String formatted = numberFormat.format(parsed);
+                        et_nominal.setText(formatted);
+                        MirroringCREDIT(et_nama.getText().toString(),et_nik.getText().toString(),et_nohp.getText().toString(),et_email.getText().toString(),et_alamat.getText().toString(),et_agama.getText().toString(),et_status.getText().toString(),tenor_,formatted,pernyataan__,false,true);
+                        et_nominal.setSelection(formatted.length());
+                        et_nominal.addTextChangedListener(this);
+                    }
+                });
+                return;
+            case 2:
+               //KYC UPDATING
+                et_nama.addTextChangedListener(new TextWatcher() {
+                    @Override
+                    public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+                    }
+
+                    @Override
+                    public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                        MirroringKYCUpdating(charSequence, et_nik.getText().toString(),et_nohp.getText().toString(),et_email.getText().toString(),et_alamat.getText().toString(),et_agama.getText().toString(),et_status.getText().toString(), pernyataan__,false,false );
+                    }
+
+                    @Override
+                    public void afterTextChanged(Editable editable) {
+
+                    }
+                });
+                et_nik.addTextChangedListener(new TextWatcher() {
+                    @Override
+                    public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+                    }
+
+                    @Override
+                    public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                        MirroringKYCUpdating(et_nama.getText().toString(), charSequence,et_nohp.getText().toString(),et_email.getText().toString(),et_alamat.getText().toString(),et_agama.getText().toString(),et_status.getText().toString(), pernyataan__,false,false );
+                    }
+
+                    @Override
+                    public void afterTextChanged(Editable editable) {
+
+                    }
+                });
+                et_nohp.addTextChangedListener(new TextWatcher() {
+                    @Override
+                    public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+                    }
+
+                    @Override
+                    public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                        MirroringKYCUpdating(et_nama.getText().toString(), et_nik.getText().toString(),charSequence,et_email.getText().toString(),et_alamat.getText().toString(),et_agama.getText().toString(),et_status.getText().toString(), pernyataan__,false,false );
+                    }
+
+                    @Override
+                    public void afterTextChanged(Editable editable) {
+
+                    }
+                });
+                et_email.addTextChangedListener(new TextWatcher() {
+                    @Override
+                    public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+                    }
+
+                    @Override
+                    public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                        MirroringKYCUpdating(et_nama.getText().toString(), et_nik.getText().toString(),et_nohp.getText().toString(),charSequence,et_alamat.getText().toString(),et_agama.getText().toString(),et_status.getText().toString(), pernyataan__,false,false );
+                    }
+
+                    @Override
+                    public void afterTextChanged(Editable editable) {
+
+                    }
+                });
+                et_alamat.addTextChangedListener(new TextWatcher() {
+                    @Override
+                    public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+                    }
+
+                    @Override
+                    public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                        MirroringKYCUpdating(et_nama.getText().toString(), et_nik.getText().toString(),et_nohp.getText().toString(),et_email.getText().toString(),charSequence,et_agama.getText().toString(),et_status.getText().toString(), pernyataan__,false,false );
+                    }
+
+                    @Override
+                    public void afterTextChanged(Editable editable) {
+
+                    }
+                });
+                et_agama.addTextChangedListener(new TextWatcher() {
+                    @Override
+                    public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+                    }
+
+                    @Override
+                    public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                        MirroringKYCUpdating(et_nama.getText().toString(), et_nik.getText().toString(),et_nohp.getText().toString(),et_email.getText().toString(),et_alamat.getText().toString(),charSequence,et_status.getText().toString(), pernyataan__,false,false );
+                    }
+
+                    @Override
+                    public void afterTextChanged(Editable editable) {
+
+                    }
+                });
+                et_status.addTextChangedListener(new TextWatcher() {
+                    @Override
+                    public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+                    }
+
+                    @Override
+                    public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                        MirroringKYCUpdating(et_nama.getText().toString(), et_nik.getText().toString(),et_nohp.getText().toString(),et_email.getText().toString(),et_alamat.getText().toString(),et_agama.getText().toString(),charSequence, pernyataan__,false,false );
+                    }
+
+                    @Override
+                    public void afterTextChanged(Editable editable) {
+
+                    }
+                });
+                return;
+            case 3:
+                //RENCANA KEUANGAN
+                et_nama.addTextChangedListener(new TextWatcher() {
+                    @Override
+                    public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+                    }
+
+                    @Override
+                    public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                        MirroringKYCUpdating(charSequence, et_nik.getText().toString(),et_nohp.getText().toString(),et_email.getText().toString(),et_alamat.getText().toString(),et_agama.getText().toString(),et_status.getText().toString(), pernyataan__,false,false );
+                    }
+
+                    @Override
+                    public void afterTextChanged(Editable editable) {
+
+                    }
+                });
+                et_nik.addTextChangedListener(new TextWatcher() {
+                    @Override
+                    public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+                    }
+
+                    @Override
+                    public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                        MirroringKYCUpdating(et_nama.getText().toString(), charSequence,et_nohp.getText().toString(),et_email.getText().toString(),et_alamat.getText().toString(),et_agama.getText().toString(),et_status.getText().toString(), pernyataan__,false,false );
+                    }
+
+                    @Override
+                    public void afterTextChanged(Editable editable) {
+
+                    }
+                });
+                et_nohp.addTextChangedListener(new TextWatcher() {
+                    @Override
+                    public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+                    }
+
+                    @Override
+                    public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                        MirroringKYCUpdating(et_nama.getText().toString(), et_nik.getText().toString(),charSequence,et_email.getText().toString(),et_alamat.getText().toString(),et_agama.getText().toString(),et_status.getText().toString(), pernyataan__,false,false );
+                    }
+
+                    @Override
+                    public void afterTextChanged(Editable editable) {
+
+                    }
+                });
+                et_email.addTextChangedListener(new TextWatcher() {
+                    @Override
+                    public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+                    }
+
+                    @Override
+                    public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                        MirroringKYCUpdating(et_nama.getText().toString(), et_nik.getText().toString(),et_nohp.getText().toString(),charSequence,et_alamat.getText().toString(),et_agama.getText().toString(),et_status.getText().toString(), pernyataan__,false,false );
+                    }
+
+                    @Override
+                    public void afterTextChanged(Editable editable) {
+
+                    }
+                });
+                et_alamat.addTextChangedListener(new TextWatcher() {
+                    @Override
+                    public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+                    }
+
+                    @Override
+                    public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                        MirroringKYCUpdating(et_nama.getText().toString(), et_nik.getText().toString(),et_nohp.getText().toString(),et_email.getText().toString(),charSequence,et_agama.getText().toString(),et_status.getText().toString(), pernyataan__,false,false );
+                    }
+
+                    @Override
+                    public void afterTextChanged(Editable editable) {
+
+                    }
+                });
+                et_agama.addTextChangedListener(new TextWatcher() {
+                    @Override
+                    public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+                    }
+
+                    @Override
+                    public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                        MirroringKYCUpdating(et_nama.getText().toString(), et_nik.getText().toString(),et_nohp.getText().toString(),et_email.getText().toString(),et_alamat.getText().toString(),charSequence,et_status.getText().toString(), pernyataan__,false,false );
+                    }
+
+                    @Override
+                    public void afterTextChanged(Editable editable) {
+
+                    }
+                });
+                et_status.addTextChangedListener(new TextWatcher() {
+                    @Override
+                    public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+                    }
+
+                    @Override
+                    public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                        MirroringKYCUpdating(et_nama.getText().toString(), et_nik.getText().toString(),et_nohp.getText().toString(),et_email.getText().toString(),et_alamat.getText().toString(),et_agama.getText().toString(),charSequence, pernyataan__,false,false );
+                    }
+
+                    @Override
+                    public void afterTextChanged(Editable editable) {
+
+                    }
+                });
+                return;
+            case 4:
+               //SURAT KUASA
+                et_nama.addTextChangedListener(new TextWatcher() {
+                    @Override
+                    public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+                    }
+
+                    @Override
+                    public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                        MirroringKYCUpdating(charSequence, et_nik.getText().toString(),et_nohp.getText().toString(),et_email.getText().toString(),et_alamat.getText().toString(),et_agama.getText().toString(),et_status.getText().toString(), pernyataan__,false,false );
+                    }
+
+                    @Override
+                    public void afterTextChanged(Editable editable) {
+
+                    }
+                });
+                et_nik.addTextChangedListener(new TextWatcher() {
+                    @Override
+                    public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+                    }
+
+                    @Override
+                    public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                        MirroringKYCUpdating(et_nama.getText().toString(), charSequence,et_nohp.getText().toString(),et_email.getText().toString(),et_alamat.getText().toString(),et_agama.getText().toString(),et_status.getText().toString(), pernyataan__,false,false );
+                    }
+
+                    @Override
+                    public void afterTextChanged(Editable editable) {
+
+                    }
+                });
+                et_nohp.addTextChangedListener(new TextWatcher() {
+                    @Override
+                    public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+                    }
+
+                    @Override
+                    public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                        MirroringKYCUpdating(et_nama.getText().toString(), et_nik.getText().toString(),charSequence,et_email.getText().toString(),et_alamat.getText().toString(),et_agama.getText().toString(),et_status.getText().toString(), pernyataan__,false,false );
+                    }
+
+                    @Override
+                    public void afterTextChanged(Editable editable) {
+
+                    }
+                });
+                et_email.addTextChangedListener(new TextWatcher() {
+                    @Override
+                    public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+                    }
+
+                    @Override
+                    public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                        MirroringKYCUpdating(et_nama.getText().toString(), et_nik.getText().toString(),et_nohp.getText().toString(),charSequence,et_alamat.getText().toString(),et_agama.getText().toString(),et_status.getText().toString(), pernyataan__,false,false );
+                    }
+
+                    @Override
+                    public void afterTextChanged(Editable editable) {
+
+                    }
+                });
+                et_alamat.addTextChangedListener(new TextWatcher() {
+                    @Override
+                    public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+                    }
+
+                    @Override
+                    public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                        MirroringKYCUpdating(et_nama.getText().toString(), et_nik.getText().toString(),et_nohp.getText().toString(),et_email.getText().toString(),charSequence,et_agama.getText().toString(),et_status.getText().toString(), pernyataan__,false,false );
+                    }
+
+                    @Override
+                    public void afterTextChanged(Editable editable) {
+
+                    }
+                });
+                et_agama.addTextChangedListener(new TextWatcher() {
+                    @Override
+                    public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+                    }
+
+                    @Override
+                    public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                        MirroringKYCUpdating(et_nama.getText().toString(), et_nik.getText().toString(),et_nohp.getText().toString(),et_email.getText().toString(),et_alamat.getText().toString(),charSequence,et_status.getText().toString(), pernyataan__,false,false );
+                    }
+
+                    @Override
+                    public void afterTextChanged(Editable editable) {
+
+                    }
+                });
+                et_status.addTextChangedListener(new TextWatcher() {
+                    @Override
+                    public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+                    }
+
+                    @Override
+                    public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                        MirroringKYCUpdating(et_nama.getText().toString(), et_nik.getText().toString(),et_nohp.getText().toString(),et_email.getText().toString(),et_alamat.getText().toString(),et_agama.getText().toString(),charSequence, pernyataan__,false,false );
+                    }
+
+                    @Override
+                    public void afterTextChanged(Editable editable) {
+
+                    }
+                });
+                return;
+        }
+    }
+    private void PopUp(int cek_state){
         inflater = getLayoutInflater();
         dialogView = inflater.inflate(R.layout.item_otp,null);
         SweetAlertDialog sweetAlertDialog = new SweetAlertDialog(context, SweetAlertDialog.NORMAL_TYPE);
@@ -189,6 +761,17 @@ public class frag_form_credit extends Fragment {
                 Pattern pattern = Pattern.compile(patternStr);
                 Matcher matcher = pattern.matcher(s);
                 if (matcher.find()) {
+                    switch (cek_state){
+                        case 1:
+                            return;
+                        case 2:
+                            MirroringOTPKYC(s,false);
+                            return;
+                        case 3:
+                            return;
+                        case 4:
+                            return;
+                    }
                 }
             }
 
@@ -212,7 +795,6 @@ public class frag_form_credit extends Fragment {
                 }
             }
         });
-
         btnVerifikasi.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -222,6 +804,17 @@ public class frag_form_credit extends Fragment {
                 else {
                     handler.removeMessages(0);
                     handler.removeCallbacks(myRunnable);
+                    switch (cek_state){
+                        case 2:
+                            MirroringOTPKYC(otp.getText().toString(),true);
+                            return;
+                        case 3:
+                            MirroringOTPKYC(otp.getText().toString(),true);
+                            return;
+                        case 4:
+                            MirroringOTPKYC(otp.getText().toString(),true);
+                            return;
+                    }
                     sweetAlertDialog.dismiss();
                     PopUpSuccesOtp();
                 }
@@ -295,11 +888,111 @@ public class frag_form_credit extends Fragment {
         }
         return BigDecimal.ZERO;
     }
+    private void MirroringKYCUpdating(CharSequence nama, CharSequence nik, CharSequence nohp, CharSequence email, CharSequence alamat, CharSequence agama, CharSequence status, Boolean bool_pernyataan, Boolean bool_submit, Boolean bool_back){
+        JSONObject jsons = new JSONObject();
+        JSONArray jsonArray = new JSONArray();
+        try {
+            jsonArray.put(nama);
+            jsonArray.put(nik);
+            jsonArray.put(nohp);
+            jsonArray.put(email);
+            jsonArray.put(alamat);
+            jsonArray.put(agama);
+            jsonArray.put(status);
+            jsonArray.put(bool_pernyataan);
+            jsonArray.put(bool_submit);
+            jsonArray.put(bool_back);
+            jsons.put("idDips",idDips);
+            jsons.put("code",381);
+            jsons.put("data",jsonArray);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), jsons.toString());
+        ApiService API = Server.getAPIService();
+        Call<JsonObject> call = API.Mirroring(requestBody);
+        call.enqueue(new Callback<JsonObject>() {
+            @Override
+            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                Log.d("MIRROR","Mirroring Sukses");
+            }
+
+            @Override
+            public void onFailure(Call<JsonObject> call, Throwable t) {
+                Log.d("MIRROR","Mirroring Gagal");
+            }
+        });
+    }
+    private void MirroringOTPKYC(CharSequence s, boolean bool){
+        Log.d("OTP","ini hit OTP");
+        JSONObject jsons = new JSONObject();
+        JSONArray jsonArray = new JSONArray();
+        try {
+            jsonArray.put(s);
+            jsonArray.put(bool);
+            jsons.put("idDips",idDips);
+            jsons.put("code",382);
+            jsons.put("data",jsonArray);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), jsons.toString());
+        ApiService API = Server.getAPIService();
+        Call<JsonObject> call = API.Mirroring(requestBody);
+        call.enqueue(new Callback<JsonObject>() {
+            @Override
+            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                Log.d("MIRROR","Mirroring Sukses");
+            }
+
+            @Override
+            public void onFailure(Call<JsonObject> call, Throwable t) {
+                Log.d("MIRROR","Mirroring Gagal");
+            }
+        });
+    }
     private void getFragmentPage(Fragment fragment){
         getActivity().getSupportFragmentManager()
                 .beginTransaction()
                 .replace(R.id.layout_frame2, fragment)
                 .addToBackStack(null)
                 .commit();
+    }
+    private void MirroringCREDIT(CharSequence nama, CharSequence nik, CharSequence nohp, CharSequence email, CharSequence alamat, CharSequence agama, CharSequence status, CharSequence tenor, CharSequence nominal,Boolean bool_pernyataan, Boolean bool_submit, Boolean bool_back){
+        JSONObject jsons = new JSONObject();
+        JSONArray jsonArray = new JSONArray();
+        try {
+            jsonArray.put(nama);
+            jsonArray.put(nik);
+            jsonArray.put(nohp);
+            jsonArray.put(email);
+            jsonArray.put(alamat);
+            jsonArray.put(agama);
+            jsonArray.put(status);
+            jsonArray.put(tenor);
+            jsonArray.put(nominal);
+            jsonArray.put(bool_pernyataan);
+            jsonArray.put(bool_submit);
+            jsonArray.put(bool_back);
+            jsons.put("idDips",idDips);
+            jsons.put("code",441);
+            jsons.put("data",jsonArray);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), jsons.toString());
+        ApiService API = Server.getAPIService();
+        Call<JsonObject> call = API.Mirroring(requestBody);
+        call.enqueue(new Callback<JsonObject>() {
+            @Override
+            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                Log.d("MIRROR","Mirroring Sukses");
+            }
+
+            @Override
+            public void onFailure(Call<JsonObject> call, Throwable t) {
+                Log.d("MIRROR","Mirroring Gagal");
+            }
+        });
     }
 }

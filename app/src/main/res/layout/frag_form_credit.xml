@@ -65,7 +65,7 @@
                     app:boxCornerRadiusTopStart="10dp">
 
                     <EditText
-                        android:id="@+id/et_nama"
+                        android:id="@+id/et_nama_form"
                         android:layout_width="match_parent"
                         android:layout_height="35dp"
                         android:inputType="text"
@@ -92,7 +92,7 @@
                     app:boxCornerRadiusTopStart="10dp">
 
                     <EditText
-                        android:id="@+id/et_nik"
+                        android:id="@+id/et_nik_form"
                         android:layout_width="match_parent"
                         android:layout_height="35dp"
                         android:inputType="number"
@@ -118,7 +118,7 @@
                     app:boxCornerRadiusTopStart="10dp">
 
                     <EditText
-                        android:id="@+id/et_no_hp"
+                        android:id="@+id/et_no_hp_form"
                         android:layout_width="match_parent"
                         android:layout_height="35dp"
                         android:inputType="number"
@@ -144,7 +144,7 @@
                     app:boxCornerRadiusTopStart="10dp">
 
                     <EditText
-                        android:id="@+id/et_email"
+                        android:id="@+id/et_email_form"
                         android:layout_width="match_parent"
                         android:layout_height="35dp"
                         android:inputType="textEmailAddress"
@@ -171,7 +171,7 @@
 
                     <EditText
                         android:gravity="top"
-                        android:id="@+id/et_alamat"
+                        android:id="@+id/et_alamat_form"
                         android:layout_width="match_parent"
                         android:layout_height="70dp"
                         android:inputType="textMultiLine"
@@ -200,7 +200,7 @@
                     app:boxCornerRadiusTopStart="10dp">
 
                     <EditText
-                        android:id="@+id/et_agama"
+                        android:id="@+id/et_agama_form"
                         android:layout_width="match_parent"
                         android:layout_height="35dp"
                         android:paddingVertical="@dimen/dp_10"
@@ -226,7 +226,7 @@
 
                     <EditText
                         android:padding="9dp"
-                        android:id="@+id/et_status"
+                        android:id="@+id/et_status_form"
                         android:layout_width="match_parent"
                         android:layout_height="35dp"
                         android:background="@drawable/bg_textinput"
@@ -248,6 +248,7 @@
                     android:layout_height="wrap_content"
                     android:orientation="horizontal">
                     <RadioButton
+                        android:id="@+id/duabelas_Bulan"
                         android:textSize="14dp"
                         android:layout_marginEnd="10dp"
                         android:layout_width="wrap_content"
@@ -256,6 +257,7 @@
                         android:textStyle="bold"/>
 
                     <RadioButton
+                        android:id="@+id/duaempat_Bulan"
                         android:layout_marginEnd="10dp"
                         android:textSize="14dp"
                         android:layout_width="wrap_content"
@@ -264,6 +266,7 @@
                         android:textStyle="bold"/>
 
                     <RadioButton
+                        android:id="@+id/tigalima_Bulan"
                         android:textSize="14dp"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"

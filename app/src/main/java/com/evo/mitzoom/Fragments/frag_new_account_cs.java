@@ -68,7 +68,7 @@ public class frag_new_account_cs extends Fragment {
     private ImageView btnBack;
     private LinearLayout icon_isi_form,choose_gallery;
     private String idDips,filename = "";
-    private String rekSumberdana, nama, tgl, produk, nominal;
+    private String rekSumberdana, nama, tgl, produk, nominal, rsd_1 = "", rsd_2 = "", rsd_3 = "", tipe_produk = "";
     private EditText et_nama, et_tgl_daftar, et_nominal_daftar;
     private AutoCompleteTextView et_productType, et_source_accountpager;
     String[] rektype;
@@ -128,7 +128,7 @@ public class frag_new_account_cs extends Fragment {
         btnBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Mirroring("","","","","","","", "",false,true);
+                Mirroring("","","","","","","","", "",false,true);
                 getFragmentPage(new frag_service());
             }
         });
@@ -140,37 +140,11 @@ public class frag_new_account_cs extends Fragment {
         });
         ArrayAdapter<String> adapterTypeProduct = new ArrayAdapter<String>(context,R.layout.list_item, rektype);
         et_productType.setAdapter(adapterTypeProduct);
-        et_productType.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                String data = et_productType.getText().toString();
-            }
-        });
-        et_nominal_daftar.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                et_nominal_daftar.removeTextChangedListener(this);
-                BigDecimal parsed = parseCurrencyValue(et_nominal_daftar.getText().toString());
-                String formatted = numberFormat.format(parsed);
-                et_nominal_daftar.setText(formatted);
-                et_nominal_daftar.setSelection(formatted.length());
-                et_nominal_daftar.addTextChangedListener(this);
-            }
-        });
         AdapterSourceAccount adapterSourceAcc = new AdapterSourceAccount(context,R.layout.list_item_souceacc,sourceAcc);
         et_source_accountpager.setAdapter(adapterSourceAcc);
         et_source_accountpager.setBackground(context.getResources().getDrawable(R.drawable.blue_button_background));
-        Mirroring("","","","",et_productType.getText().toString(),et_tgl_daftar.getText().toString(),et_nominal_daftar.getText().toString(), "",false,false);
+        Mirroring("","","","", et_nama.getText().toString(),et_productType.getText().toString(),et_tgl_daftar.getText().toString(),et_nominal_daftar.getText().toString(), "",false,false);
+        textWatcher();
         btnProses.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -189,7 +163,7 @@ public class frag_new_account_cs extends Fragment {
                     Toast.makeText(context, getResources().getString(R.string.error_field), Toast.LENGTH_SHORT).show();
                 }
                 else {
-                    Mirroring("","","","","","","", "",true,false);
+                    Mirroring("","","","","", "","","", "",true,false);
                     Fragment fragment;
                     fragment = new frag_new_account_cs2();
                     Bundle bundle = new Bundle();
@@ -204,8 +178,6 @@ public class frag_new_account_cs extends Fragment {
                 }
             }
         });
-        textWatcher();
-
     }
     public static BigDecimal parseCurrencyValue(String value) {
         try {
@@ -238,10 +210,49 @@ public class frag_new_account_cs extends Fragment {
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 String sumber_dana = (String) adapterView.getItemAtPosition(i);
                 String[] sumber = sumber_dana.split("\n");
-                String rsd_1 = sumber[0];
-                String rsd_2 = sumber[1];
-                String rsd_3 = sumber[3];
-                Mirroring(filename,rsd_1,rsd_2,rsd_3,et_productType.getText().toString(),et_tgl_daftar.getText().toString(),et_nominal_daftar.getText(),"",false,false);
+                rsd_1 = sumber[0];
+                rsd_2 = sumber[1];
+                rsd_3 = sumber[3];
+                Mirroring(filename,rsd_1,rsd_2,rsd_3, et_nama.getText().toString(),et_productType.getText().toString(),et_tgl_daftar.getText().toString(),et_nominal_daftar.getText(),"",false,false);
+            }
+        });
+        et_nama.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                Mirroring(filename,rsd_1,rsd_2,rsd_3, charSequence,et_productType.getText().toString(),et_tgl_daftar.getText().toString(),et_nominal_daftar.getText(),"",false,false);
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+            }
+        });
+        et_productType.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                tipe_produk = (String) adapterView.getItemAtPosition(i);
+                Mirroring(filename,rsd_1,rsd_2,rsd_3, et_nama.getText().toString(), tipe_produk,et_tgl_daftar.getText().toString(),et_nominal_daftar.getText(),"",false,false);
+            }
+        });
+        et_nominal_daftar.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                Mirroring(filename,rsd_1,rsd_2,rsd_3, et_nama.getText().toString(), et_productType.getText().toString(),et_tgl_daftar.getText().toString(),charSequence,"",false,false);
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
             }
         });
     }
@@ -338,7 +349,7 @@ public class frag_new_account_cs extends Fragment {
                 .addToBackStack(null)
                 .commit();
     }
-    private void Mirroring(String filename_, CharSequence rek_sumber_1, CharSequence rek_sumber_2, CharSequence rek_sumber_3, CharSequence produk_, CharSequence tgl_, CharSequence setoran_, String base, Boolean btnsubmit, Boolean btnback){
+    private void Mirroring(String filename_, CharSequence rek_sumber_1, CharSequence rek_sumber_2, CharSequence rek_sumber_3, CharSequence nama_lengkap,CharSequence produk_, CharSequence tgl_, CharSequence setoran_, String base, Boolean btnsubmit, Boolean btnback){
         JSONObject jsons = new JSONObject();
         JSONArray jsonArray = new JSONArray();
         try {
@@ -346,6 +357,7 @@ public class frag_new_account_cs extends Fragment {
             jsonArray.put(rek_sumber_1);
             jsonArray.put(rek_sumber_2);
             jsonArray.put(rek_sumber_3);
+            jsonArray.put(nama_lengkap);
             jsonArray.put(produk_);
             jsonArray.put(tgl_);
             jsonArray.put(setoran_);
@@ -353,7 +365,7 @@ public class frag_new_account_cs extends Fragment {
             jsonArray.put(btnsubmit);
             jsonArray.put(btnback);
             jsons.put("idDips",idDips);
-            jsons.put("code",351);
+            jsons.put("code",362);
             jsons.put("data",jsonArray);
         } catch (JSONException e) {
             e.printStackTrace();
