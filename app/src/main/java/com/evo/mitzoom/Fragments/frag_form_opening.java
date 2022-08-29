@@ -55,6 +55,8 @@ public class frag_form_opening extends Fragment {
     private SessionManager session;
     private byte[] KTP, NPWP, TTD;
     private String[] jenisIdentitasLain, jumlahTanggungan, pendidikanTerakhir, statusRumah_;
+    private int lasLenOTP;
+    private boolean backSpaceOTP;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -381,6 +383,38 @@ public class frag_form_opening extends Fragment {
                 Mirroring(jsonCIF);
             }
         });
+        NomorNPWP.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                lasLenOTP = charSequence.length();
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                NomorNPWP.removeTextChangedListener(this);
+                backSpaceOTP = lasLenOTP > s.length();
+                Log.e("CEK", "backSpaceOTP : " + backSpaceOTP);
+                if (!backSpaceOTP) {
+                    String dataNPWP = s.toString();
+                    Log.e("CEK", "dataNPWP : " + dataNPWP);
+                    String formatNPWP = "";
+                    if (dataNPWP.length() == 2 || dataNPWP.length() == 6 || dataNPWP.length() == 10 || dataNPWP.length() == 16) {
+                        formatNPWP = ".";
+                    } else if (dataNPWP.length() == 12) {
+                        formatNPWP = "-";
+                    }
+                    String cekBuilder = new StringBuilder(dataNPWP).insert(dataNPWP.length(), formatNPWP).toString();
+                    NomorNPWP.setText(cekBuilder);
+                    NomorNPWP.setSelection(cekBuilder.length());
+                }
+                NomorNPWP.addTextChangedListener(this);
+            }
+        });
     }
     private void setActionBar(){
         iconKtp.setBackgroundTintList(context.getResources().getColorStateList(R.color.bg_cif_success));
@@ -559,7 +593,7 @@ public class frag_form_opening extends Fragment {
     }
 
     private void Mirroring(JSONObject jsons){
-
+        Log.e("CEK","Param Mirroring : "+jsons.toString());
         RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), jsons.toString());
         ApiService API = Server.getAPIService();
         Call<JsonObject> call = API.Mirroring(requestBody);

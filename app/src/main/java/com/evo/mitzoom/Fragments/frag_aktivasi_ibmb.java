@@ -71,6 +71,7 @@ public class frag_aktivasi_ibmb extends Fragment {
     private Runnable myRunnable = null;
     private BroadcastReceiver smsReceiver = null;
     private JSONObject objectCIF = null;
+    private String numberOTP = "";
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -338,15 +339,18 @@ public class frag_aktivasi_ibmb extends Fragment {
 
             @Override
             public void onReceive(Context context, Intent intent) {
+                numberOTP = "";
                 String dataSMS = intent.getExtras().getString("smsMessage");
                 Log.e("CEK","MASUK dataSMS : "+dataSMS);
                 String[] sp = dataSMS.split(" ");
                 for (int i = 0; i < sp.length; i++) {
                     String word = sp[i].toString();
                     if(word.matches("\\d+(?:\\.\\d+)?")) {
-                        String numberOTP = word.replaceAll("[^0-9]", "");
+                        numberOTP = word.replaceAll("[^0-9]", "");
                         if (numberOTP.length() == 6) {
                             otp.setText(numberOTP);
+                            newString = myFilter(numberOTP);
+                            otp.setText(newString);
                         }
                     }
                 }
@@ -377,14 +381,18 @@ public class frag_aktivasi_ibmb extends Fragment {
 
         inflater = getLayoutInflater();
         dialogView = inflater.inflate(R.layout.item_otp,null);
+        TextView textIBMB = (TextView) dialogView.findViewById(R.id.textIBMB);
+        String contentText = textIBMB.getText().toString();
+        Log.e("CEK","contentText : "+contentText+" | no_handphone : "+no_handphone);
+        contentText.replace("+62812 3456 7XXX",no_handphone);
+        Log.e("CEK","contentText new : "+contentText);
+        textIBMB.setText(contentText);
+
         SweetAlertDialog sweetAlertDialog = new SweetAlertDialog(context, SweetAlertDialog.NORMAL_TYPE);
         sweetAlertDialog.setCustomView(dialogView);
         sweetAlertDialog.hideConfirmButton();
         sweetAlertDialog.setCancelable(false);
         sweetAlertDialog.show();
-        TextView textIBMB = (TextView) dialogView.findViewById(R.id.textIBMB);
-        String contentText = textIBMB.getText().toString();
-        contentText.replace("+62812 3456 7XXX",no_handphone);
         btnVerifikasi = dialogView.findViewById(R.id.btnVerifikasi);
         Timer = dialogView.findViewById(R.id.timer_otp);
         Resend_Otp = dialogView.findViewById(R.id.btn_resend_otp);
@@ -399,11 +407,16 @@ public class frag_aktivasi_ibmb extends Fragment {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
+                String wordOTP = s.toString();
                 String patternStr = "[0-9]";
                 Pattern pattern = Pattern.compile(patternStr);
-                Matcher matcher = pattern.matcher(s);
+                Matcher matcher = pattern.matcher(wordOTP);
                 if (matcher.find()) {
-                    Mirroring2(false, s);
+                    String getNumberOTP=wordOTP.replaceAll("[^0-9]", "");
+                    if (numberOTP.length() < 6) {
+                        numberOTP += getNumberOTP;
+                    }
+                    Mirroring2(false, numberOTP);
                 }
             }
 
@@ -431,7 +444,8 @@ public class frag_aktivasi_ibmb extends Fragment {
         btnVerifikasi.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (otp.getText().toString().equalsIgnoreCase("")){
+//                if (otp.getText().toString().equalsIgnoreCase("")){
+                if (numberOTP.isEmpty()) {
                     Toast.makeText(context, "Kode Otp masih kosong", Toast.LENGTH_SHORT).show();
                 }
                 else {
@@ -464,17 +478,22 @@ public class frag_aktivasi_ibmb extends Fragment {
         JSONObject jsons = new JSONObject();
         try {
             String idForm = objectCIF.getString("idForm");
-            String otpCode = otp.getText().toString();
             jsons.put("idForm",idForm);
-            jsons.put("otpCode",otpCode);
+            jsons.put("otpCode",numberOTP);
         } catch (JSONException e) {
             e.printStackTrace();
         }
+
+        Log.e("CEK","PARAMS verifyOTP : "+jsons.toString());
         RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), jsons.toString());
 
         Server.getAPIService().VerifyOTP(requestBody).enqueue(new Callback<JsonObject>() {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                Log.e("CEK","response verifyOTP : "+response.code());
+                if (response.body() != null) {
+                    Log.e("CEK","response body verifyOTP : "+response.body().toString());
+                }
                 if (response.isSuccessful()) {
                     String dataS = response.body().toString();
                     try {
@@ -482,6 +501,9 @@ public class frag_aktivasi_ibmb extends Fragment {
                         int errCode = jsObj.getInt("err_code");
                         if (errCode == 0 ){
                             PopUpSuccesOtp();
+                        } else {
+                            String msg = jsObj.getString("message");
+                            Toast.makeText(context,msg,Toast.LENGTH_SHORT).show();
                         }
                     } catch (JSONException e) {
                         e.printStackTrace();

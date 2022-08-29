@@ -100,6 +100,7 @@ public class frag_rtgs extends Fragment {
     private ArrayList<String> dataBankName = new ArrayList<String>();
     private ArrayList<String> dataAccountReceive = new ArrayList<>();
     private ArrayList<String> dataNameReceive = new ArrayList<>();
+    private ArrayList<String> dataAddrReceive = new ArrayList<>();
     private ArrayList<String> dataNominal = new ArrayList<>();
     private ArrayList<String> dataService = new ArrayList<>();
     private ArrayList<String> dataBenefit = new ArrayList<>();
@@ -252,6 +253,9 @@ public class frag_rtgs extends Fragment {
             if (dataNameReceive.size() == 0 || (dataNameReceive.size() == position) || (dataNameReceive.size() > 0 && dataNameReceive.get(position).isEmpty())) {
                 dataNameReceive.add("");
             }
+            if (dataAddrReceive.size() == 0 || (dataAddrReceive.size() == position) || (dataAddrReceive.size() > 0 && dataAddrReceive.get(position).isEmpty())) {
+                dataAddrReceive.add("");
+            }
             if (dataNominal.size() == 0 || (dataNominal.size() == position) || (dataNominal.size() > 0 && dataNominal.get(position).isEmpty())) {
                 dataNominal.add("0");
             }
@@ -272,6 +276,7 @@ public class frag_rtgs extends Fragment {
             String posSourcePopulation = dataPopulation.get(position);
             String rek_penerima = dataAccountReceive.get(position);
             String nama_penerima = dataNameReceive.get(position);
+            String alamat_penerima = dataAddrReceive.get(position);
             String nominal = dataNominal.get(position);
             String berita = "";
 
@@ -293,7 +298,7 @@ public class frag_rtgs extends Fragment {
             }
 
             Mirroring(false, SourceAccount, SumberBank, rek_penerima, nama_penerima, nominal,
-                    JenisLayanan, posSourceBenefit, posSourcePopulation, berita, idx, lenL);
+                    JenisLayanan, posSourceBenefit, posSourcePopulation, berita, idx, lenL,alamat_penerima);
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -316,6 +321,7 @@ public class frag_rtgs extends Fragment {
                 String sourcePopulation = dataJs.getString("sourcePopulation");
                 String rek_penerima = dataJs.getString("rek_penerima");
                 String nama_penerima = dataJs.getString("nama_penerima");
+                String alamat_penerima = dataJs.getString("alamat_penerima");
                 String nominal = dataJs.getString("nominal");
                 String berita = dataJs.getString("berita");
 
@@ -340,6 +346,7 @@ public class frag_rtgs extends Fragment {
                 dataBankName.add(sourceBank);
                 dataAccountReceive.add(rek_penerima);
                 dataNameReceive.add(nama_penerima);
+                dataAddrReceive.add(alamat_penerima);
                 dataNominal.add(nominal);
                 dataService.add(sourceTypeService);
                 dataBenefit.add(sourceBenefit);
@@ -347,11 +354,6 @@ public class frag_rtgs extends Fragment {
                 dataNews.add(berita);
 
                 initPager();
-
-                /*if (i == 0) {
-                    Mirroring(false, "", sourceBank, rek_penerima, nama_penerima, nominal,
-                            sourceTypeService, sourceBenefit, sourcePopulation, berita, idx, len);
-                }*/
 
                 idx++;
             }
@@ -403,6 +405,11 @@ public class frag_rtgs extends Fragment {
                             getResources().getString(R.string.alertRTGS)+" "+dataArrF(i),Toast.LENGTH_SHORT).show();
                     return false;
                 }
+                if (dataAddrReceive.size() == 0 || (dataAddrReceive.size() == i) || (dataAddrReceive.size() > 0 && dataAddrReceive.get(i).isEmpty())) {
+                    Toast.makeText(context,"Data "+getResources().getString(R.string.alamat_penerima)+" "+
+                            getResources().getString(R.string.alertRTGS)+" "+dataArrF(i),Toast.LENGTH_SHORT).show();
+                    return false;
+                }
                 if (dataNominal.size() == 0 || (dataNominal.size() == i) || (dataNominal.size() > 0 && dataNominal.get(i).isEmpty())) {
                     Toast.makeText(context,"Data "+getResources().getString(R.string.Amount)+" "+
                             getResources().getString(R.string.alertRTGS)+" "+dataArrF(i),Toast.LENGTH_SHORT).show();
@@ -431,6 +438,7 @@ public class frag_rtgs extends Fragment {
                 String posSourcePopulation = dataPopulation.get(i);
                 String rek_penerima = dataAccountReceive.get(i);
                 String nama_penerima = dataNameReceive.get(i);
+                String alamat_penerima = dataAddrReceive.get(i);
                 String nominal = dataNominal.get(i);
                 String berita = "";
                 if (dataNews.size() == 0) {
@@ -457,11 +465,12 @@ public class frag_rtgs extends Fragment {
                 jsons.put("sourcePopulation",posSourcePopulation);
                 jsons.put("rek_penerima",rek_penerima);
                 jsons.put("nama_penerima",nama_penerima);
+                jsons.put("alamat_penerima",alamat_penerima);
                 jsons.put("nominal",nominal);
                 jsons.put("berita",berita);
 
                 Mirroring(true,SourceAccount,SumberBank,rek_penerima,nama_penerima,nominal,
-                        JenisLayanan,posSourceBenefit,posSourcePopulation,berita,idx,lenL);
+                        JenisLayanan,posSourceBenefit,posSourcePopulation,berita,idx,lenL,alamat_penerima);
 
                 idx++;
 
@@ -554,6 +563,7 @@ public class frag_rtgs extends Fragment {
                     dataBankName = new ArrayList<String>();
                     dataAccountReceive = new ArrayList<>();
                     dataNameReceive = new ArrayList<>();
+                    dataAddrReceive = new ArrayList<>();
                     dataNominal = new ArrayList<>();
                     dataService = new ArrayList<>();
                     dataBenefit = new ArrayList<>();
@@ -629,7 +639,8 @@ public class frag_rtgs extends Fragment {
         }
 
     }
-    private void Mirroring(boolean bool, CharSequence sumberRekening, CharSequence bank, CharSequence rekening, CharSequence nama, CharSequence nominal, CharSequence layanan, CharSequence manfaat, CharSequence penduduk, CharSequence berita, int page, int allpage ){
+    private void Mirroring(boolean bool, CharSequence sumberRekening, CharSequence bank, CharSequence rekening, CharSequence nama, CharSequence nominal, CharSequence layanan, CharSequence manfaat, CharSequence penduduk, CharSequence berita, int page, int allpage, String alamat_penerima ){
+        getBerita = berita.toString();
         JSONObject jsons = new JSONObject();
         JSONArray jsonArray = new JSONArray();
         try {
@@ -658,6 +669,7 @@ public class frag_rtgs extends Fragment {
             jsonArray.put(page);
             jsonArray.put(allpage);
             jsonArray.put(bool);
+            jsonArray.put(alamat_penerima);
             jsons.put("idDips",idDips);
             jsons.put("code",16);
             jsons.put("data",jsonArray);
@@ -713,7 +725,6 @@ public class frag_rtgs extends Fragment {
         @NonNull
         @Override
         public Object instantiateItem(@NonNull ViewGroup container, int position) {
-            Log.d("CEK","MyViewPagerAdapter layouts : "+layouts.size()+" | position : "+position);
             layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
             View view = layoutInflater.inflate(layouts.get(position), container, false);
@@ -737,6 +748,7 @@ public class frag_rtgs extends Fragment {
             AutoCompleteTextView et_typePopulation = (AutoCompleteTextView) view.findViewById(R.id.et_typePopulation);
             EditText et_rek_penerima = (EditText) view.findViewById(R.id.et_rek_penerima);
             EditText et_nama_penerima = (EditText) view.findViewById(R.id.et_nama_penerima);
+            EditText et_alamat_penerima = (EditText) view.findViewById(R.id.et_alamat_penerima);
             EditText et_nominal = (EditText) view.findViewById(R.id.et_nominal);
             EditText et_berita = (EditText) view.findViewById(R.id.et_berita);
 
@@ -780,7 +792,7 @@ public class frag_rtgs extends Fragment {
                     s.setSpan(new StyleSpan(android.graphics.Typeface.BOLD), 0, titleAcc.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
                     Mirroring(false,s,et_nama_bank.getText().toString(),et_rek_penerima.getText().toString(),et_nama_penerima.getText().toString(),
                             et_nominal.getText().toString(),et_serviceType.getText().toString(),et_benefitRec.getText().toString(),
-                            et_typePopulation.getText().toString(),et_berita.getText().toString(),indexMirror,layouts.size());
+                            et_typePopulation.getText().toString(),et_berita.getText().toString(),indexMirror,layouts.size(),et_alamat_penerima.getText().toString());
                 }
 
 
@@ -810,7 +822,8 @@ public class frag_rtgs extends Fragment {
                             }
                             Mirroring(false,et_source_accountpager.getText().toString(),et_nama_bank.getText().toString(),et_rek_penerima.getText().toString(),et_nama_penerima.getText().toString(),
                                     et_nominal.getText().toString(),et_serviceType.getText().toString(),et_benefitRec.getText().toString(),
-                                    et_typePopulation.getText().toString(),et_berita.getText().toString(),indexMirror,layouts.size());
+                                    et_typePopulation.getText().toString(),et_berita.getText().toString(),indexMirror,layouts.size(),
+                                    et_alamat_penerima.getText().toString());
                         }
                     }
                 }
@@ -830,7 +843,8 @@ public class frag_rtgs extends Fragment {
                 public void afterTextChanged(Editable s) {
                     Mirroring(false,et_source_accountpager.getText().toString(),et_nama_bank.getText().toString(),et_rek_penerima.getText().toString(),et_nama_penerima.getText().toString(),
                             et_nominal.getText().toString(),et_serviceType.getText().toString(),et_benefitRec.getText().toString(),
-                            et_typePopulation.getText().toString(),et_berita.getText().toString(),indexMirror,layouts.size());
+                            et_typePopulation.getText().toString(),et_berita.getText().toString(),indexMirror,layouts.size(),
+                            et_alamat_penerima.getText().toString());
                 }
             });
             et_nama_bank.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -848,7 +862,8 @@ public class frag_rtgs extends Fragment {
                     }
                     Mirroring(false,et_source_accountpager.getText().toString(),et_nama_bank.getText().toString(),et_rek_penerima.getText().toString(),et_nama_penerima.getText().toString(),
                             et_nominal.getText().toString(),et_serviceType.getText().toString(),et_benefitRec.getText().toString(),
-                            et_typePopulation.getText().toString(),et_berita.getText().toString(),indexMirror,layouts.size());
+                            et_typePopulation.getText().toString(),et_berita.getText().toString(),indexMirror,layouts.size(),
+                            et_alamat_penerima.getText().toString());
                 }
             });
 
@@ -870,7 +885,8 @@ public class frag_rtgs extends Fragment {
                             }
                             Mirroring(false,et_source_accountpager.getText().toString(),et_nama_bank.getText().toString(),et_rek_penerima.getText().toString(),et_nama_penerima.getText().toString(),
                                     et_nominal.getText().toString(),et_serviceType.getText().toString(),et_benefitRec.getText().toString(),
-                                    et_typePopulation.getText().toString(),et_berita.getText().toString(),indexMirror,layouts.size());
+                                    et_typePopulation.getText().toString(),et_berita.getText().toString(),indexMirror,layouts.size(),
+                                    et_alamat_penerima.getText().toString());
                         }
                     }
                 }
@@ -890,7 +906,8 @@ public class frag_rtgs extends Fragment {
                     }
                     Mirroring(false,et_source_accountpager.getText().toString(),et_nama_bank.getText().toString(),et_rek_penerima.getText().toString(),et_nama_penerima.getText().toString(),
                             et_nominal.getText().toString(),et_serviceType.getText().toString(),et_benefitRec.getText().toString(),
-                            et_typePopulation.getText().toString(),et_berita.getText().toString(),indexMirror,layouts.size());
+                            et_typePopulation.getText().toString(),et_berita.getText().toString(),indexMirror,layouts.size(),
+                            et_alamat_penerima.getText().toString());
                 }
             });
 
@@ -911,7 +928,8 @@ public class frag_rtgs extends Fragment {
                     }
                     Mirroring(false,et_source_accountpager.getText().toString(),et_nama_bank.getText().toString(),et_rek_penerima.getText().toString(),et_nama_penerima.getText().toString(),
                             et_nominal.getText().toString(),et_serviceType.getText().toString(),et_benefitRec.getText().toString(),
-                            et_typePopulation.getText().toString(),et_berita.getText().toString(),indexMirror,layouts.size());
+                            et_typePopulation.getText().toString(),et_berita.getText().toString(),indexMirror,layouts.size(),
+                            et_alamat_penerima.getText().toString());
                 }
             });
 
@@ -932,7 +950,8 @@ public class frag_rtgs extends Fragment {
                     }
                     Mirroring(false,et_source_accountpager.getText().toString(),et_nama_bank.getText().toString(),et_rek_penerima.getText().toString(),et_nama_penerima.getText().toString(),
                             et_nominal.getText().toString(),et_serviceType.getText().toString(),et_benefitRec.getText().toString(),
-                            et_typePopulation.getText().toString(),et_berita.getText().toString(),indexMirror,layouts.size());
+                            et_typePopulation.getText().toString(),et_berita.getText().toString(),indexMirror,layouts.size(),
+                            et_alamat_penerima.getText().toString());
                 }
             });
 
@@ -952,7 +971,8 @@ public class frag_rtgs extends Fragment {
                         }
                         Mirroring(false,et_source_accountpager.getText().toString(),et_nama_bank.getText().toString(),et_rek_penerima.getText().toString(),et_nama_penerima.getText().toString(),
                                 et_nominal.getText().toString(),et_serviceType.getText().toString(),et_benefitRec.getText().toString(),
-                                et_typePopulation.getText().toString(),et_berita.getText().toString(),indexMirror,layouts.size());
+                                et_typePopulation.getText().toString(),et_berita.getText().toString(),indexMirror,layouts.size(),
+                                et_alamat_penerima.getText().toString());
 
                     }
                 }
@@ -972,7 +992,8 @@ public class frag_rtgs extends Fragment {
                 public void afterTextChanged(Editable s) {
                     Mirroring(false,et_source_accountpager.getText().toString(),et_nama_bank.getText().toString(),et_rek_penerima.getText().toString(),et_nama_penerima.getText().toString(),
                             et_nominal.getText().toString(),et_serviceType.getText().toString(),et_benefitRec.getText().toString(),
-                            et_typePopulation.getText().toString(),et_berita.getText().toString(),indexMirror,layouts.size());
+                            et_typePopulation.getText().toString(),et_berita.getText().toString(),indexMirror,layouts.size(),
+                            et_alamat_penerima.getText().toString());
                 }
             });
 
@@ -992,7 +1013,8 @@ public class frag_rtgs extends Fragment {
                         }
                         Mirroring(false,et_source_accountpager.getText().toString(),et_nama_bank.getText().toString(),et_rek_penerima.getText().toString(),et_nama_penerima.getText().toString(),
                                 et_nominal.getText().toString(),et_serviceType.getText().toString(),et_benefitRec.getText().toString(),
-                                et_typePopulation.getText().toString(),et_berita.getText().toString(),indexMirror,layouts.size());
+                                et_typePopulation.getText().toString(),et_berita.getText().toString(),indexMirror,layouts.size(),
+                                et_alamat_penerima.getText().toString());
                     }
                 }
             });
@@ -1011,7 +1033,49 @@ public class frag_rtgs extends Fragment {
                 public void afterTextChanged(Editable s) {
                     Mirroring(false,et_source_accountpager.getText().toString(),et_nama_bank.getText().toString(),et_rek_penerima.getText().toString(),et_nama_penerima.getText().toString(),
                             et_nominal.getText().toString(),et_serviceType.getText().toString(),et_benefitRec.getText().toString(),
-                            et_typePopulation.getText().toString(),et_berita.getText().toString(),indexMirror,layouts.size());
+                            et_typePopulation.getText().toString(),et_berita.getText().toString(),indexMirror,layouts.size(),
+                            et_alamat_penerima.getText().toString());
+                }
+            });
+
+            et_alamat_penerima.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+                @Override
+                public void onFocusChange(View v, boolean hasFocus) {
+                    if (!hasFocus) {
+                        String dataB = et_alamat_penerima.getText().toString();
+                        if (dataAddrReceive.size() == 0) {
+                            dataAddrReceive.add(positionE, dataB);
+                        } else {
+                            if (dataAddrReceive.size() == positionE) {
+                                dataAddrReceive.add(positionE, dataB);
+                            } else {
+                                dataAddrReceive.set(positionE, dataB);
+                            }
+                        }
+                        Mirroring(false,et_source_accountpager.getText().toString(),et_nama_bank.getText().toString(),et_rek_penerima.getText().toString(),et_nama_penerima.getText().toString(),
+                                et_nominal.getText().toString(),et_serviceType.getText().toString(),et_benefitRec.getText().toString(),
+                                et_typePopulation.getText().toString(),et_berita.getText().toString(),indexMirror,layouts.size(),
+                                et_alamat_penerima.getText().toString());
+                    }
+                }
+            });
+            et_alamat_penerima.addTextChangedListener(new TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+                }
+
+                @Override
+                public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+                }
+
+                @Override
+                public void afterTextChanged(Editable s) {
+                    Mirroring(false,et_source_accountpager.getText().toString(),et_nama_bank.getText().toString(),et_rek_penerima.getText().toString(),et_nama_penerima.getText().toString(),
+                            et_nominal.getText().toString(),et_serviceType.getText().toString(),et_benefitRec.getText().toString(),
+                            et_typePopulation.getText().toString(),et_berita.getText().toString(),indexMirror,layouts.size(),
+                            et_alamat_penerima.getText().toString());
                 }
             });
 
@@ -1031,7 +1095,8 @@ public class frag_rtgs extends Fragment {
                         }
                         Mirroring(false,et_source_accountpager.getText().toString(),et_nama_bank.getText().toString(),et_rek_penerima.getText().toString(),et_nama_penerima.getText().toString(),
                                 et_nominal.getText().toString(),et_serviceType.getText().toString(),et_benefitRec.getText().toString(),
-                                et_typePopulation.getText().toString(),et_berita.getText().toString(),indexMirror,layouts.size());
+                                et_typePopulation.getText().toString(),et_berita.getText().toString(),indexMirror,layouts.size(),
+                                et_alamat_penerima.getText().toString());
                     }
                 }
             });
@@ -1056,7 +1121,8 @@ public class frag_rtgs extends Fragment {
                     et_nominal.addTextChangedListener(this);
                     Mirroring(false,et_source_accountpager.getText().toString(),et_nama_bank.getText().toString(),et_rek_penerima.getText().toString(),et_nama_penerima.getText().toString(),
                             et_nominal.getText().toString(),et_serviceType.getText().toString(),et_benefitRec.getText().toString(),
-                            et_typePopulation.getText().toString(),et_berita.getText().toString(),indexMirror,layouts.size());
+                            et_typePopulation.getText().toString(),et_berita.getText().toString(),indexMirror,layouts.size(),
+                            et_alamat_penerima.getText().toString());
                 }
             });
 
@@ -1082,7 +1148,8 @@ public class frag_rtgs extends Fragment {
                         }
                         Mirroring(false,et_source_accountpager.getText().toString(),et_nama_bank.getText().toString(),et_rek_penerima.getText().toString(),et_nama_penerima.getText().toString(),
                                 et_nominal.getText().toString(),et_serviceType.getText().toString(),et_benefitRec.getText().toString(),
-                                et_typePopulation.getText().toString(),et_berita.getText().toString(),indexMirror,layouts.size());
+                                et_typePopulation.getText().toString(),et_berita.getText().toString(),indexMirror,layouts.size(),
+                                et_alamat_penerima.getText().toString());
                     }
                 }
             });
@@ -1100,15 +1167,16 @@ public class frag_rtgs extends Fragment {
 
                 @Override
                 public void afterTextChanged(Editable s) {
-                    et_berita.removeTextChangedListener(this);
+                    /*et_berita.removeTextChangedListener(this);
                     String valB = et_berita.getText().toString();
                     et_berita.setText(valB);
                     getBerita = valB;
                     et_berita.setSelection(valB.length());
-                    et_berita.addTextChangedListener(this);
+                    et_berita.addTextChangedListener(this);*/
                     Mirroring(false,et_source_accountpager.getText().toString(),et_nama_bank.getText().toString(),et_rek_penerima.getText().toString(),et_nama_penerima.getText().toString(),
                             et_nominal.getText().toString(),et_serviceType.getText().toString(),et_benefitRec.getText().toString(),
-                            et_typePopulation.getText().toString(),et_berita.getText().toString(),indexMirror,layouts.size());
+                            et_typePopulation.getText().toString(),et_berita.getText().toString(),indexMirror,layouts.size(),
+                            et_alamat_penerima.getText().toString());
                 }
             });
 
@@ -1121,7 +1189,8 @@ public class frag_rtgs extends Fragment {
                     et_nama_bank.setText(dataBankName.get(positionE));
                     Mirroring(false,et_source_accountpager.getText().toString(),et_nama_bank.getText().toString(),et_rek_penerima.getText().toString(),et_nama_penerima.getText().toString(),
                             et_nominal.getText().toString(),et_serviceType.getText().toString(),et_benefitRec.getText().toString(),
-                            et_typePopulation.getText().toString(),et_berita.getText().toString(),indexMirror,layouts.size());
+                            et_typePopulation.getText().toString(),et_berita.getText().toString(),indexMirror,layouts.size(),
+                            et_alamat_penerima.getText().toString());
                 }
             }
 
@@ -1130,7 +1199,8 @@ public class frag_rtgs extends Fragment {
                     et_rek_penerima.setText(dataAccountReceive.get(positionE));
                     Mirroring(false,et_source_accountpager.getText().toString(),et_nama_bank.getText().toString(),et_rek_penerima.getText().toString(),et_nama_penerima.getText().toString(),
                             et_nominal.getText().toString(),et_serviceType.getText().toString(),et_benefitRec.getText().toString(),
-                            et_typePopulation.getText().toString(),et_berita.getText().toString(),indexMirror,layouts.size());
+                            et_typePopulation.getText().toString(),et_berita.getText().toString(),indexMirror,layouts.size(),
+                            et_alamat_penerima.getText().toString());
                 }
             }
 
@@ -1139,7 +1209,18 @@ public class frag_rtgs extends Fragment {
                     et_nama_penerima.setText(dataNameReceive.get(positionE));
                     Mirroring(false,et_source_accountpager.getText().toString(),et_nama_bank.getText().toString(),et_rek_penerima.getText().toString(),et_nama_penerima.getText().toString(),
                             et_nominal.getText().toString(),et_serviceType.getText().toString(),et_benefitRec.getText().toString(),
-                            et_typePopulation.getText().toString(),et_berita.getText().toString(),indexMirror,layouts.size());
+                            et_typePopulation.getText().toString(),et_berita.getText().toString(),indexMirror,layouts.size(),
+                            et_alamat_penerima.getText().toString());
+                }
+            }
+
+            if (dataAddrReceive.size() > 0) {
+                if (positionE < dataAddrReceive.size()) {
+                    et_alamat_penerima.setText(dataAddrReceive.get(positionE));
+                    Mirroring(false,et_source_accountpager.getText().toString(),et_nama_bank.getText().toString(),et_rek_penerima.getText().toString(),et_nama_penerima.getText().toString(),
+                            et_nominal.getText().toString(),et_serviceType.getText().toString(),et_benefitRec.getText().toString(),
+                            et_typePopulation.getText().toString(),et_berita.getText().toString(),indexMirror,layouts.size(),
+                            et_alamat_penerima.getText().toString());
                 }
             }
 
@@ -1148,7 +1229,8 @@ public class frag_rtgs extends Fragment {
                     et_nominal.setText(dataNominal.get(positionE));
                     Mirroring(false,et_source_accountpager.getText().toString(),et_nama_bank.getText().toString(),et_rek_penerima.getText().toString(),et_nama_penerima.getText().toString(),
                             et_nominal.getText().toString(),et_serviceType.getText().toString(),et_benefitRec.getText().toString(),
-                            et_typePopulation.getText().toString(),et_berita.getText().toString(),indexMirror,layouts.size());
+                            et_typePopulation.getText().toString(),et_berita.getText().toString(),indexMirror,layouts.size(),
+                            et_alamat_penerima.getText().toString());
                 }
             }
 
@@ -1157,7 +1239,8 @@ public class frag_rtgs extends Fragment {
                     et_serviceType.setText(dataService.get(positionE));
                     Mirroring(false,et_source_accountpager.getText().toString(),et_nama_bank.getText().toString(),et_rek_penerima.getText().toString(),et_nama_penerima.getText().toString(),
                             et_nominal.getText().toString(),et_serviceType.getText().toString(),et_benefitRec.getText().toString(),
-                            et_typePopulation.getText().toString(),et_berita.getText().toString(),indexMirror,layouts.size());
+                            et_typePopulation.getText().toString(),et_berita.getText().toString(),indexMirror,layouts.size(),
+                            et_alamat_penerima.getText().toString());
                 }
             }
 
@@ -1166,7 +1249,8 @@ public class frag_rtgs extends Fragment {
                     et_benefitRec.setText(dataBenefit.get(positionE));
                     Mirroring(false,et_source_accountpager.getText().toString(),et_nama_bank.getText().toString(),et_rek_penerima.getText().toString(),et_nama_penerima.getText().toString(),
                             et_nominal.getText().toString(),et_serviceType.getText().toString(),et_benefitRec.getText().toString(),
-                            et_typePopulation.getText().toString(),et_berita.getText().toString(),indexMirror,layouts.size());
+                            et_typePopulation.getText().toString(),et_berita.getText().toString(),indexMirror,layouts.size(),
+                            et_alamat_penerima.getText().toString());
                 }
             }
 
@@ -1175,7 +1259,8 @@ public class frag_rtgs extends Fragment {
                     et_typePopulation.setText(dataPopulation.get(positionE));
                     Mirroring(false,et_source_accountpager.getText().toString(),et_nama_bank.getText().toString(),et_rek_penerima.getText().toString(),et_nama_penerima.getText().toString(),
                             et_nominal.getText().toString(),et_serviceType.getText().toString(),et_benefitRec.getText().toString(),
-                            et_typePopulation.getText().toString(),et_berita.getText().toString(),indexMirror,layouts.size());
+                            et_typePopulation.getText().toString(),et_berita.getText().toString(),indexMirror,layouts.size(),
+                            et_alamat_penerima.getText().toString());
                 }
             }
 
@@ -1184,7 +1269,8 @@ public class frag_rtgs extends Fragment {
                     et_berita.setText(dataNews.get(positionE));
                     Mirroring(false,et_source_accountpager.getText().toString(),et_nama_bank.getText().toString(),et_rek_penerima.getText().toString(),et_nama_penerima.getText().toString(),
                             et_nominal.getText().toString(),et_serviceType.getText().toString(),et_benefitRec.getText().toString(),
-                            et_typePopulation.getText().toString(),et_berita.getText().toString(),indexMirror,layouts.size());
+                            et_typePopulation.getText().toString(),et_berita.getText().toString(),indexMirror,layouts.size(),
+                            et_alamat_penerima.getText().toString());
                 }
             }
         }

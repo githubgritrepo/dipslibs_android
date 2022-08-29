@@ -254,4 +254,5 @@
     <string name="body_resi_cardless">Use the code below to make cardless transactions at available ATMs. Do not share this number with others.</string>
     <string name="headline_cardless">Thank you for entrusting your banking transactions to XYZ Bank. Use the XYZ Mobile Banking App for a profitable transaction experience. <b>Resi Digital Form has been sent to your email address</b> Please check your email.</string>
     <string name="unduh_resi">Download Receipt</string>
+    <string name="alamat_penerima">Recipient Address</string>
 </resources>
