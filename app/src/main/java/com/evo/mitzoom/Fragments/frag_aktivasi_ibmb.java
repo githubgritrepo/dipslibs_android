@@ -72,6 +72,8 @@ public class frag_aktivasi_ibmb extends Fragment {
     private BroadcastReceiver smsReceiver = null;
     private JSONObject objectCIF = null;
     private String numberOTP = "";
+    private int lasLenOTP;
+    private boolean backSpaceOTP;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -381,18 +383,18 @@ public class frag_aktivasi_ibmb extends Fragment {
 
         inflater = getLayoutInflater();
         dialogView = inflater.inflate(R.layout.item_otp,null);
+        SweetAlertDialog sweetAlertDialog = new SweetAlertDialog(context, SweetAlertDialog.NORMAL_TYPE);
+        sweetAlertDialog.setCustomView(dialogView);
+        sweetAlertDialog.hideConfirmButton();
+        sweetAlertDialog.setCancelable(false);
+        sweetAlertDialog.show();
+
         TextView textIBMB = (TextView) dialogView.findViewById(R.id.textIBMB);
         String contentText = textIBMB.getText().toString();
         Log.e("CEK","contentText : "+contentText+" | no_handphone : "+no_handphone);
         contentText.replace("+62812 3456 7XXX",no_handphone);
         Log.e("CEK","contentText new : "+contentText);
         textIBMB.setText(contentText);
-
-        SweetAlertDialog sweetAlertDialog = new SweetAlertDialog(context, SweetAlertDialog.NORMAL_TYPE);
-        sweetAlertDialog.setCustomView(dialogView);
-        sweetAlertDialog.hideConfirmButton();
-        sweetAlertDialog.setCancelable(false);
-        sweetAlertDialog.show();
         btnVerifikasi = dialogView.findViewById(R.id.btnVerifikasi);
         Timer = dialogView.findViewById(R.id.timer_otp);
         Resend_Otp = dialogView.findViewById(R.id.btn_resend_otp);
@@ -401,8 +403,7 @@ public class frag_aktivasi_ibmb extends Fragment {
         otp.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                /*selPos = otp.getSelectionStart();
-                oldString = myFilter(s.toString());*/
+                lasLenOTP = s.length();
             }
 
             @Override
@@ -422,6 +423,14 @@ public class frag_aktivasi_ibmb extends Fragment {
 
             @Override
             public void afterTextChanged(Editable s) {
+                backSpaceOTP = lasLenOTP > s.length();
+                Log.e("CEK", "backSpaceOTP : " + backSpaceOTP);
+                if (backSpaceOTP) {
+                    int lenOTP = numberOTP.length();
+                    if (lenOTP > 0) {
+                        numberOTP = numberOTP.substring(0, lenOTP - 1);
+                    }
+                }
                 newString = myFilter(s.toString());
                 otp.removeTextChangedListener(this);
                 handler = new Handler();
@@ -632,7 +641,13 @@ public class frag_aktivasi_ibmb extends Fragment {
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
                 Log.d("MIRROR","Mirroring Sukses");
                 if (bool) {
-                    APISaveForm(jsonArray);
+                    PopUp();
+                    try {
+                        Thread.sleep(1500);
+                        APISaveForm(jsonArray);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
 
@@ -733,8 +748,6 @@ public class frag_aktivasi_ibmb extends Fragment {
 
                             objectCIF.put("idForm",idForm);
                             session.saveCIF(objectCIF.toString());
-
-                            PopUp();
                         }
                     } catch (JSONException e) {
                         e.printStackTrace();

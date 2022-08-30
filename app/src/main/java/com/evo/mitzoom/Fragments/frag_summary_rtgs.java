@@ -88,6 +88,9 @@ public class frag_summary_rtgs extends Fragment {
     private JSONObject objectCIF = null;
     private String numberOTP = "";
     private boolean flagTransfer = false;
+    private int lasLenOTP;
+    private boolean backSpaceOTP;
+    private String no_handphone;
 
     private void APISaveForm(JSONArray jsonsIBMB) {
         JSONObject dataObj = new JSONObject();
@@ -98,18 +101,7 @@ public class frag_summary_rtgs extends Fragment {
         }
 
         JSONObject jsons = new JSONObject();
-        JSONArray dataArrCIF = null;
         try {
-            String no_handphone = "62895401303096";
-            if (objectCIF == null) {
-                objectCIF = new JSONObject();
-                JSONArray jsArr = new JSONArray();
-                jsArr.put(no_handphone);
-                objectCIF.put("data",jsArr);
-            } else {
-                dataArrCIF = objectCIF.getJSONArray("data");
-                no_handphone = dataArrCIF.get(25).toString();
-            }
             jsons.put("formCode","RTGS");
             jsons.put("idDips",idDips);
             jsons.put("phone",no_handphone);
@@ -132,8 +124,6 @@ public class frag_summary_rtgs extends Fragment {
                             String idForm = dataJs.getString("idForm");
                             objectCIF.put("idFormRTGS",idForm);
                             session.saveCIF(objectCIF.toString());
-
-                            PopUp();
                         }
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -200,8 +190,6 @@ public class frag_summary_rtgs extends Fragment {
         JSONObject jsons = new JSONObject();
         try {
             String idForm = objectCIF.getString("idFormRTGS");
-            JSONArray dataArrCIF = objectCIF.getJSONArray("data");
-            String no_handphone = dataArrCIF.get(0).toString();
             jsons.put("idForm",idForm);
             jsons.put("phone",no_handphone);
         } catch (JSONException e) {
@@ -271,6 +259,24 @@ public class frag_summary_rtgs extends Fragment {
             } catch (JSONException e) {
                 e.printStackTrace();
             }
+        }
+
+        JSONArray dataArrCIF = null;
+        try {
+            no_handphone = "62895401303096";
+            if (objectCIF == null) {
+                objectCIF = new JSONObject();
+                JSONArray jsArr = new JSONArray();
+                jsArr.put(no_handphone);
+                objectCIF.put("data",jsArr);
+            } else {
+                dataArrCIF = objectCIF.getJSONArray("data");
+                if (dataArrCIF.length() > 24) {
+                    no_handphone = dataArrCIF.get(25).toString();
+                }
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
         }
 
         if (dataRTGS != null) {
@@ -465,11 +471,19 @@ public class frag_summary_rtgs extends Fragment {
     private void PopUp(){
         inflater = getLayoutInflater();
         dialogView = inflater.inflate(R.layout.item_otp,null);
+
         SweetAlertDialog sweetAlertDialog = new SweetAlertDialog(context, SweetAlertDialog.NORMAL_TYPE);
         sweetAlertDialog.setCustomView(dialogView);
         sweetAlertDialog.hideConfirmButton();
         sweetAlertDialog.setCancelable(false);
         sweetAlertDialog.show();
+
+        TextView textIBMB = (TextView) dialogView.findViewById(R.id.textIBMB);
+        String contentText = textIBMB.getText().toString();
+        Log.e("CEK","contentText : "+contentText+" | no_handphone : "+no_handphone);
+        contentText.replace("+62812 3456 7XXX",no_handphone);
+        Log.e("CEK","contentText new : "+contentText);
+        textIBMB.setText(contentText);
         btnVerifikasi = dialogView.findViewById(R.id.btnVerifikasi);
         Timer = dialogView.findViewById(R.id.timer_otp);
         Resend_Otp = dialogView.findViewById(R.id.btn_resend_otp);
@@ -478,8 +492,7 @@ public class frag_summary_rtgs extends Fragment {
         otp.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                /*selPos = otp.getSelectionStart();
-                oldString = myFilter(s.toString());*/
+                lasLenOTP = s.length();
             }
 
             @Override
@@ -499,6 +512,14 @@ public class frag_summary_rtgs extends Fragment {
 
             @Override
             public void afterTextChanged(Editable s) {
+                backSpaceOTP = lasLenOTP > s.length();
+                Log.e("CEK", "backSpaceOTP : " + backSpaceOTP);
+                if (backSpaceOTP) {
+                    int lenOTP = numberOTP.length();
+                    if (lenOTP > 0) {
+                        numberOTP = numberOTP.substring(0, lenOTP - 1);
+                    }
+                }
                 newString = myFilter(s.toString());
                 otp.removeTextChangedListener(this);
                 handler = new Handler();
@@ -633,7 +654,14 @@ public class frag_summary_rtgs extends Fragment {
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
                 Log.d("MIRROR","Mirroring Sukses");
                 if (flagTransfer) {
-                    APISaveForm(jsonArray);
+                    PopUp();
+                    try {
+                        Thread.sleep(1500);
+                        APISaveForm(jsonArray);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+
                 }
             }
 

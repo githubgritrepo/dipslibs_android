@@ -144,7 +144,7 @@ public class DipsCameraActivity extends AppCompatActivity {
                                         }
                                         String imgBase64 = imageRotateBase64(bitmapCrop, rotation);
                                         //Image no compress
-                                        String real_imgBase64 = imageRotateBase64(bitmapRes, rotation);
+                                        String real_imgBase64 = imageRotateBase64(bitmapCrop, rotation);
 
                                         byte[] bytePhoto = Base64.decode(imgBase64, Base64.NO_WRAP);
                                         byte[] real_bytePhoto = Base64.decode(real_imgBase64, Base64.NO_WRAP);
@@ -218,14 +218,14 @@ public class DipsCameraActivity extends AppCompatActivity {
 
         int perDiff = 1;
         if (file_size > 3072) {
-            perDiff = 8;
-        } else if (file_size > 2048) {
             perDiff = 6;
-        } else if (file_size > 1024) {
+        } else if (file_size > 2048) {
             perDiff = 4;
-        } else if (file_size > 550) {
+        } else if (file_size > 1024) {
             perDiff = 2;
-        }
+        }/* else if (file_size > 550) {
+            perDiff = 2;
+        }*/
 
         Bitmap bitmapCrop = getResizedBitmap(bitmap, (bitmap.getWidth() / perDiff), (bitmap.getHeight() / perDiff));
 

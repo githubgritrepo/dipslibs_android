@@ -798,7 +798,8 @@
                     app:boxCornerRadiusBottomEnd="10dp"
                     app:boxCornerRadiusBottomStart="10dp"
                     app:boxCornerRadiusTopEnd="10dp"
-                    app:boxCornerRadiusTopStart="10dp">
+                    app:boxCornerRadiusTopStart="10dp"
+                    app:hintEnabled="false">
 
                     <EditText
                         android:id="@+id/et_tglTerbitIdentitas"
@@ -808,7 +809,12 @@
                         android:includeFontPadding="false"
                         android:inputType="date"
                         android:paddingVertical="@dimen/dp_10"
-                        android:textSize="12dp" />
+                        android:textSize="12dp"
+                        android:focusable="false"
+                        android:focusableInTouchMode="false"
+                        android:clickable="false"
+                        android:cursorVisible="false"
+                        android:hint="19 Juli 2021"/>
                 </com.google.android.material.textfield.TextInputLayout>
 
                 //Tanggal Berakhir Identitas

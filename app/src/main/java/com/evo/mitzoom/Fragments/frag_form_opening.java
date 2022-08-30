@@ -1,6 +1,7 @@
 package com.evo.mitzoom.Fragments;
 
 import android.app.Activity;
+import android.app.DatePickerDialog;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -18,6 +19,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -36,6 +38,10 @@ import com.google.gson.JsonObject;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.List;
 
 import okhttp3.MediaType;
 import okhttp3.RequestBody;
@@ -203,6 +209,60 @@ public class frag_form_opening extends Fragment {
                 }
             }
         });
+
+        Calendar currentTime = Calendar.getInstance();
+
+        DatePickerDialog.OnDateSetListener dateDialog = new DatePickerDialog.OnDateSetListener() {
+            @Override
+            public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+                currentTime.set(Calendar.YEAR, year);
+                currentTime.set(Calendar.MONTH, month);
+                currentTime.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+                updateDates(currentTime);
+            }
+        };
+
+        TanggalTerbitIdentitas.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                new DatePickerDialog(getActivity(), dateDialog, currentTime
+                        .get(Calendar.YEAR), currentTime.get(Calendar.MONTH),
+                        currentTime.get(Calendar.DAY_OF_MONTH)).show();
+            }
+        });
+    }
+
+    private void updateDates(Calendar currentTime) {
+        int days = currentTime.get(Calendar.DAY_OF_WEEK);
+        int tgl = currentTime.get(Calendar.DAY_OF_MONTH);
+        int bln = currentTime.get(Calendar.MONTH);
+        int thn = currentTime.get(Calendar.YEAR);
+
+        String blnLabel = blnIndo(bln);
+
+        String Tgl = String.format("%02d", tgl);
+
+        String currentDate = Tgl + " " + blnLabel + " " + thn;
+
+        TanggalTerbitIdentitas.setText(currentDate);
+    }
+
+    private String blnIndo(int bln) {
+        List<String> monthIn = new ArrayList<>();
+        monthIn.add("Januari");
+        monthIn.add("Februari");
+        monthIn.add("Maret");
+        monthIn.add("April");
+        monthIn.add("Mei");
+        monthIn.add("Juni");
+        monthIn.add("Juli");
+        monthIn.add("Agustus");
+        monthIn.add("September");
+        monthIn.add("Oktober");
+        monthIn.add("November");
+        monthIn.add("Desember");
+        return monthIn.get(bln);
+
     }
     /*private void getSessionData(){
         if (!session.getCIF().isEmpty()){

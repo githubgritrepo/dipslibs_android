@@ -44,6 +44,7 @@ public class DipsSplashScreen extends AppCompatActivity {
     private ImageView imgSplash;
     private TextView tvVersion;
     private SessionManager sessions;
+    private SweetAlertDialog sweetAlertDialog = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -88,9 +89,12 @@ public class DipsSplashScreen extends AppCompatActivity {
                 ActivityCompat.checkSelfPermission(DipsSplashScreen.this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED &&
                 ActivityCompat.checkSelfPermission(DipsSplashScreen.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED &&
                 ActivityCompat.checkSelfPermission(DipsSplashScreen.this, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED &&
-                ActivityCompat.checkSelfPermission(DipsSplashScreen.this, Manifest.permission.RECEIVE_SMS) != PackageManager.PERMISSION_GRANTED){
+                ActivityCompat.checkSelfPermission(DipsSplashScreen.this, Manifest.permission.RECEIVE_SMS) != PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission(DipsSplashScreen.this, Manifest.permission.READ_SMS) != PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission(DipsSplashScreen.this, Manifest.permission.READ_PHONE_NUMBERS) != PackageManager.PERMISSION_GRANTED){
 
-            requestPermissions(new String[]{Manifest.permission.READ_PHONE_STATE,Manifest.permission.CAMERA,Manifest.permission.WRITE_EXTERNAL_STORAGE,Manifest.permission.READ_EXTERNAL_STORAGE,Manifest.permission.RECEIVE_SMS}, REQUEST_ALL);
+            requestPermissions(new String[]{Manifest.permission.READ_PHONE_STATE,Manifest.permission.CAMERA,Manifest.permission.WRITE_EXTERNAL_STORAGE,Manifest.permission.READ_EXTERNAL_STORAGE,Manifest.permission.RECEIVE_SMS,
+                    Manifest.permission.READ_SMS,Manifest.permission.READ_PHONE_NUMBERS}, REQUEST_ALL);
         }
         else{
             processNext();
@@ -114,10 +118,13 @@ public class DipsSplashScreen extends AppCompatActivity {
         imgSplash.setVisibility(View.INVISIBLE);
         LayoutInflater inflater = getLayoutInflater();
         View dialogView = inflater.inflate(R.layout.choose_language, null);
-        SweetAlertDialog sweetAlertDialog = new SweetAlertDialog(DipsSplashScreen.this, SweetAlertDialog.NORMAL_TYPE);
+        if (sweetAlertDialog == null) {
+            sweetAlertDialog = new SweetAlertDialog(DipsSplashScreen.this, SweetAlertDialog.NORMAL_TYPE);
+        }
         sweetAlertDialog.setCustomView(dialogView);
         sweetAlertDialog.hideConfirmButton();
         sweetAlertDialog.setCancelable(false);
+        sweetAlertDialog.show();
 
         RadioGroup radioGroup = (RadioGroup) dialogView.findViewById(R.id.groupradio);
         Button btnNext = (Button) dialogView.findViewById(R.id.btnNext);
@@ -156,12 +163,10 @@ public class DipsSplashScreen extends AppCompatActivity {
                 }
             }
         });
-
-        sweetAlertDialog.show();
     }
     private void startApp() {
         startActivity(new Intent(DipsSplashScreen.this, DipsCapture.class));
-        finish();
+        finishAffinity();
     }
     private void doWork() {
         for (int progress=0; progress<=100; progress+=20) {

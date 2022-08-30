@@ -20,6 +20,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
+import android.telephony.TelephonyManager;
 import android.util.Base64;
 import android.util.Log;
 import android.view.SurfaceHolder;
@@ -66,13 +67,14 @@ public class DipsCapture extends AppCompatActivity implements CameraSource.Pictu
 
     private Context mContext;
     private static final String KEY_USE_FACING = "use_facing";
+    private static final int REQUEST_ALL = 888;
     private boolean doubleBackToExitPressedOnce = false;
     public static Integer useFacing = null;
     private static int degreeFront = 0;
     public static int CAM_ID = 0;
     private CameraSource cameraSource;
-    private boolean inPreview=false;
-    private boolean cameraConfigured=false;
+    private boolean inPreview = false;
+    private boolean cameraConfigured = false;
     private SurfaceView preview = null;
     private SurfaceView transPreview = null;
     private SurfaceHolder previewHolder = null;
@@ -87,7 +89,7 @@ public class DipsCapture extends AppCompatActivity implements CameraSource.Pictu
         mContext = this;
         sessions = new SessionManager(mContext);
         String lang = sessions.getLANG();
-        setLocale(this,lang);
+        setLocale(this, lang);
 
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
@@ -102,6 +104,27 @@ public class DipsCapture extends AppCompatActivity implements CameraSource.Pictu
         LinearLayout llMsg = (LinearLayout) findViewById(R.id.llMsg);
         llMsg.getBackground().setAlpha(150);
 
+        TelephonyManager tMgr = (TelephonyManager) mContext.getSystemService(Context.TELEPHONY_SERVICE);
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_SMS) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_NUMBERS) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
+            Log.d("CEK","MASUK IF PERMISSION");
+            return;
+            //requestPermissions(new String[]{Manifest.permission.READ_PHONE_STATE,Manifest.permission.READ_SMS,Manifest.permission.READ_PHONE_NUMBERS}, REQUEST_ALL);
+        }
+        String mPhoneNumber = tMgr.getLine1Number();
+        Log.e("CEK","mPhoneNumber : "+mPhoneNumber);
+
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == REQUEST_ALL) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            } else {
+                Toast.makeText(DipsCapture.this,"Permission Denied", Toast.LENGTH_LONG).show();
+                return;
+            }
+        }
     }
 
     @Override
@@ -110,9 +133,10 @@ public class DipsCapture extends AppCompatActivity implements CameraSource.Pictu
 
         detector = new FaceDetector.Builder(this)
                 .setProminentFaceOnly(true) // optimize for single, relatively large face
-                .setTrackingEnabled(true) // enable face tracking
+                .setTrackingEnabled(true) // enable face tracking\
                 .setClassificationType(/* eyes open and smile */ FaceDetector.ALL_CLASSIFICATIONS)
                 .setMode(FaceDetector.FAST_MODE) // for one face this is OK
+                .setLandmarkType(FaceDetector.ALL_LANDMARKS)
                 .build();
 
         if (!detector.isOperational()) {
@@ -196,7 +220,7 @@ public class DipsCapture extends AppCompatActivity implements CameraSource.Pictu
             }
             cameraSource.start(previewHolder);
             detector.setProcessor(new LargestFaceFocusingProcessor(detector,
-                    new GraphicFaceTracker(this)));
+                    new GraphicFaceTracker(this,mContext)));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -287,6 +311,12 @@ public class DipsCapture extends AppCompatActivity implements CameraSource.Pictu
             p.setStrokeWidth(10);
 
             //canvas.drawCircle((float) cx,(float) cy,(float) rad,p);
+
+            double lefts = leftright;
+            double tops = marginTop;
+            double rights = (width - leftright);
+            double bottoms = (height-margins);
+            Log.e("CEK","lefts : "+lefts+" | lefts : "+tops+" | rights : "+rights+" | bottoms : "+bottoms);
 
             RectF rect = new RectF((float) leftright,(float) marginTop,(float) (width-leftright),(float) (height-margins));
             canvas.drawOval(rect,p);
