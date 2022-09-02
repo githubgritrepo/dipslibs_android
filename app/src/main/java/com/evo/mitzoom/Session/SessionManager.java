@@ -32,6 +32,7 @@ public class SessionManager {
     public static final String KEY_CAMERA = "CAMERA";
     public static final String KEY_CIF = "CIF";
     public static final String KEY_CONF_AGREE = "CONF_AGREE";
+    public static final String KEY_NASABAH = "NASABAH";
 
     // Constructor
     public SessionManager(Context context){
@@ -94,6 +95,11 @@ public class SessionManager {
         editor.commit();
     }
 
+    public void saveNasabah(String data) {
+        editor.putString(KEY_NASABAH,data);
+        editor.commit();
+    }
+
     public void clearPartData(){
         editor.putString(KEY_RTGS,null);
         editor.putString(KEY_CIF,null);
@@ -102,6 +108,11 @@ public class SessionManager {
         editor.putString(KEY_NPWP,null);
         editor.putString(KEY_TTD,null);
         editor.putBoolean(KEY_iSCust,false);
+        editor.commit();
+    }
+
+    public void clearCIF() {
+        editor.putString(KEY_CIF,null);
         editor.commit();
     }
 
@@ -118,6 +129,9 @@ public class SessionManager {
     }
     public String getCIF() {
         return pref.getString(KEY_CIF,null);
+    }
+    public String getNasabah() {
+        return pref.getString(KEY_NASABAH,null);
     }
     public String getKEY_IdDips (){
         return pref.getString(KEY_IdDips,null);

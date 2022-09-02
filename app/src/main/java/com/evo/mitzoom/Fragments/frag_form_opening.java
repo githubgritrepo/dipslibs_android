@@ -216,6 +216,8 @@ public class frag_form_opening extends Fragment {
                 currentTime.set(Calendar.MONTH, month);
                 currentTime.set(Calendar.DAY_OF_MONTH, dayOfMonth);
                 updateDates(currentTime);
+                JSONObject jsonCIF = dataCIFJson(false, false);
+                Mirroring(jsonCIF);
             }
         };
 
@@ -261,39 +263,179 @@ public class frag_form_opening extends Fragment {
         return monthIn.get(bln);
 
     }
-    /*private void getSessionData(){
-        if (!session.getCIF().isEmpty()){
-            objectCIF = session.getCIF();
-            try {
-                JSONObject object = new JSONObject(objectCIF);
-                kodepos = object.getString("kodepos");
-                jenis_identitas_lain = object.getString("jenis_identitas_lain");
-                jumlah_tanggungan = object.getString("jumlah_tanggungan");
-                nama_suami_istri_ortu = object.getString("nama_suami_istri_ortu");
-                pendidikan = object.getString("pendidikan");
-                nama_ibu_kandung = object.getString("nama_ibu_kandung");
-                email = object.getString("email");
-                no_hp = object.getString("no_handphone");
-                no_telp = object.getString("no_telepon");
-                status_rumah = object.getString("status_rumah");
 
-                KodePos.setText(kodepos);
-                JenisIdentitasLain.setText(jenis_identitas_lain);
-                JumlahTanggungan.setText(jumlah_tanggungan);
-                namaSuami_Istri_OrangTua.setText(nama_suami_istri_ortu);
-                Pendidikan.setText(pendidikan);
-                NamaIbuKandung.setText(nama_ibu_kandung);
-                Email.setText(email);
-                NoHp.setText(no_hp);
-                NomorTelephone.setText(no_telp);
-                statusRumah.setText(status_rumah);
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
-    }*/
     private void textWatcher(){
+        Gelar.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                JSONObject jsonCIF = dataCIFJson(false, false);
+                Mirroring(jsonCIF);
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+            }
+        });
+        Alamat.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                JSONObject jsonCIF = dataCIFJson(false, false);
+                Mirroring(jsonCIF);
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+            }
+        });
+        Rt.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                JSONObject jsonCIF = dataCIFJson(false, false);
+                Mirroring(jsonCIF);
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+            }
+        });
+        Rw.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                JSONObject jsonCIF = dataCIFJson(false, false);
+                Mirroring(jsonCIF);
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+            }
+        });
+        KelurahanDesa.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                JSONObject jsonCIF = dataCIFJson(false, false);
+                Mirroring(jsonCIF);
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+            }
+        });
+        Kecamatan.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                JSONObject jsonCIF = dataCIFJson(false, false);
+                Mirroring(jsonCIF);
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+            }
+        });
+        KabupatenKota.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                JSONObject jsonCIF = dataCIFJson(false, false);
+                Mirroring(jsonCIF);
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+            }
+        });
+        Provinsi.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                JSONObject jsonCIF = dataCIFJson(false, false);
+                Mirroring(jsonCIF);
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+            }
+        });
         KodePos.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                JSONObject jsonCIF = dataCIFJson(false, false);
+                Mirroring(jsonCIF);
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+            }
+        });
+        Kewarganegaraan.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                JSONObject jsonCIF = dataCIFJson(false, false);
+                Mirroring(jsonCIF);
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+            }
+        });
+        Negara.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 
@@ -341,6 +483,57 @@ public class frag_form_opening extends Fragment {
 
             }
         });
+        JenisKelamin.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                JSONObject jsonCIF = dataCIFJson(false, false);
+                Mirroring(jsonCIF);
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+            }
+        });
+        Agama.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                JSONObject jsonCIF = dataCIFJson(false, false);
+                Mirroring(jsonCIF);
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+            }
+        });
+        Status.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                JSONObject jsonCIF = dataCIFJson(false, false);
+                Mirroring(jsonCIF);
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+            }
+        });
         Pendidikan.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
@@ -349,6 +542,23 @@ public class frag_form_opening extends Fragment {
             }
         });
         jenisBuktiIdentitas.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                JSONObject jsonCIF = dataCIFJson(false, false);
+                Mirroring(jsonCIF);
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+            }
+        });
+        TanggalBerakhirIdentitas.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 
@@ -448,7 +658,8 @@ public class frag_form_opening extends Fragment {
 
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
+                JSONObject jsonCIF = dataCIFJson(false, false);
+                Mirroring(jsonCIF);
             }
 
             @Override
@@ -650,7 +861,6 @@ public class frag_form_opening extends Fragment {
     }
 
     private void Mirroring(JSONObject jsons){
-        Log.e("CEK","Param Mirroring : "+jsons.toString());
         RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), jsons.toString());
         ApiService API = Server.getAPIService();
         Call<JsonObject> call = API.Mirroring(requestBody);

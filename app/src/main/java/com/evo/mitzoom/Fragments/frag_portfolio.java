@@ -67,7 +67,6 @@ public class frag_portfolio extends Fragment {
     private String bahasa;
     private boolean cekCust;
     ImageView btnToogleShow, btnToogleHide;
-    private String dataCIF;
     private JSONObject dataNasabah = null;
     private JSONArray produkListPorto = null;
     int[] imgDana = {R.drawable.porto1,R.drawable.porto2,R.drawable.porto3};
@@ -92,7 +91,6 @@ public class frag_portfolio extends Fragment {
         super.onCreate(savedInstanceState);
         context = getContext();
         sessionManager = new SessionManager(context);
-        dataCIF = sessionManager.getCIF();
     }
 
     @Nullable
@@ -199,7 +197,8 @@ public class frag_portfolio extends Fragment {
                         int errCode = dataObj.getInt("err_code");
                         if (errCode == 0) {
                             JSONObject datas = dataObj.getJSONObject("data");
-                            dataNasabah.put("data",datas);
+                            dataNasabah = datas;
+                            sessionManager.saveNasabah(dataNasabah.toString());
                             produkListPorto = datas.getJSONArray("produk");
                             setChartNasabah();
                             setLegendChart();
@@ -553,11 +552,11 @@ public class frag_portfolio extends Fragment {
                         namaProduk += " - "+noRekening;
                         String dataN = getResources().getString(R.string.mata_uang) + " " + formatted;
                         int getImg = 0;
-                        int lenImg = imgInves.length;
+                        int lenImg = imgKredit.length;
                         if (j < lenImg-1) {
-                            getImg = imgInves[j];
+                            getImg = imgKredit[j];
                         } else {
-                            getImg = imgInves[lenImg-1];
+                            getImg = imgKredit[lenImg-1];
                         }
 
                         data3.add(new PortfolioModel(String.valueOf(j),namaProduk,dataN,getImg));
@@ -591,11 +590,11 @@ public class frag_portfolio extends Fragment {
                         namaProduk += " - "+noRekening;
                         String dataN = getResources().getString(R.string.mata_uang) + " " + formatted;
                         int getImg = 0;
-                        int lenImg = imgInves.length;
+                        int lenImg = imgKredit.length;
                         if (j < lenImg-1) {
-                            getImg = imgInves[j];
+                            getImg = imgKredit[j];
                         } else {
-                            getImg = imgInves[lenImg-1];
+                            getImg = imgKredit[lenImg-1];
                         }
 
                         data3.add(new PortfolioModel(String.valueOf(j),namaProduk,dataN,getImg));

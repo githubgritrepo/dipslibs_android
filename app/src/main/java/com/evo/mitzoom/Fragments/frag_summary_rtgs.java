@@ -85,7 +85,7 @@ public class frag_summary_rtgs extends Fragment {
     private ArrayList<String> dataPopulation = new ArrayList<>();
     private ArrayList<String> dataNews = new ArrayList<>();
     private BroadcastReceiver smsReceiver = null;
-    private JSONObject objectCIF = null;
+    private JSONObject dataNasabah = null;
     private String numberOTP = "";
     private boolean flagTransfer = false;
     private int lasLenOTP;
@@ -122,8 +122,8 @@ public class frag_summary_rtgs extends Fragment {
                         if (errCode == 0) {
                             JSONObject dataJs = jsObj.getJSONObject("data");
                             String idForm = dataJs.getString("idForm");
-                            objectCIF.put("idFormRTGS",idForm);
-                            session.saveCIF(objectCIF.toString());
+                            dataNasabah.put("idFormRTGS",idForm);
+                            session.saveNasabah(dataNasabah.toString());
                         }
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -144,7 +144,7 @@ public class frag_summary_rtgs extends Fragment {
     private void verifyOTP() {
         JSONObject jsons = new JSONObject();
         try {
-            String idForm = objectCIF.getString("idFormRTGS");
+            String idForm = dataNasabah.getString("idFormRTGS");
             jsons.put("idForm",idForm);
             jsons.put("otpCode",numberOTP);
         } catch (JSONException e) {
@@ -189,7 +189,7 @@ public class frag_summary_rtgs extends Fragment {
     private void resendOTP() {
         JSONObject jsons = new JSONObject();
         try {
-            String idForm = objectCIF.getString("idFormRTGS");
+            String idForm = dataNasabah.getString("idFormRTGS");
             jsons.put("idForm",idForm);
             jsons.put("phone",no_handphone);
         } catch (JSONException e) {
@@ -252,13 +252,11 @@ public class frag_summary_rtgs extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         idDips = session.getKEY_IdDips();
 
-        String dataJsonS = session.getCIF();
-        JSONArray dataArrCIF = null;
+        String dataJsonS = session.getNasabah();
         if (dataJsonS != null) {
             try {
-                objectCIF = new JSONObject(dataJsonS);
-                dataArrCIF = objectCIF.getJSONArray("data");
-                no_handphone = dataArrCIF.get(25).toString();
+                dataNasabah = new JSONObject(dataJsonS);
+                no_handphone = dataNasabah.getString("noHP");
             } catch (JSONException e) {
                 e.printStackTrace();
             }

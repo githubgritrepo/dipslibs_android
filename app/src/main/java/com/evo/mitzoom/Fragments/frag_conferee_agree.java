@@ -186,6 +186,7 @@ public class frag_conferee_agree extends Fragment implements ZoomVideoSDKDelegat
     private void cekData(){
         if (isCust) {
             //Jika muka terdaftar maka langsung menuju ke portfolio
+            session.clearCIF();
             getFragmentPage(new frag_portfolio());
             Mirroring(0,14,true);
         }

@@ -79,6 +79,7 @@ public class frag_aktivasi_berhasil extends Fragment {
             @Override
             public void onClick(View v) {
                 Mirroring(true);
+                session.clearCIF();
                 getFragmentPage(new frag_portfolio());
             }
         });

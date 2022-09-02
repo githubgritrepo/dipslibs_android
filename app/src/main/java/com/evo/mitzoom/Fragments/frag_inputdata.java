@@ -163,7 +163,6 @@ public class frag_inputdata extends Fragment {
                 }
                 else {
                     CekData();
-                    //PopupChoose();
                 }
             }
         });
@@ -307,6 +306,7 @@ public class frag_inputdata extends Fragment {
                         }
                         else {
                             Mirroring4(false);
+                            session.clearCIF();
                             getFragmentPage(new frag_portfolio());
                         }
 
@@ -358,30 +358,7 @@ public class frag_inputdata extends Fragment {
             }
         });
     }
-    private void PopupChoose(){
-        SweetAlertDialog sweetAlertDialog = new SweetAlertDialog(context, SweetAlertDialog.WARNING_TYPE);
-        sweetAlertDialog.setContentText("Pilih Jenis Nasabah");
-        sweetAlertDialog.setConfirmText("Nasabah");
-        sweetAlertDialog.setCancelText("Non Nasabah");
-        sweetAlertDialog.show();
-        Button btnConfirm = (Button) sweetAlertDialog.findViewById(cn.pedant.SweetAlert.R.id.confirm_button);
-        Button btnCancel= (Button) sweetAlertDialog.findViewById(cn.pedant.SweetAlert.R.id.cancel_button);
-        btnConfirm.setBackgroundTintList(context.getResources().getColorStateList(R.color.Blue));
-        btnConfirm.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                sweetAlertDialog.dismiss();
-                getFragmentPage(new frag_portfolio());
-            }
-        });
-        btnCancel.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                sweetAlertDialog.dismiss();
-                PopUpTnc();
-            }
-        });
-    }
+
     private void getFragmentPage(Fragment fragment){
         getActivity().getSupportFragmentManager()
                 .beginTransaction()

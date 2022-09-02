@@ -16,6 +16,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.evo.mitzoom.R;
+import com.evo.mitzoom.Session.SessionManager;
 
 public class frag_new_account_cs_resi extends Fragment {
     private Context context;
@@ -24,12 +25,14 @@ public class frag_new_account_cs_resi extends Fragment {
     private TextView tvnama;
     private Button unduh, selesai;
     private String nama;
+    private SessionManager session;
 
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         context = getContext();
+        session = new SessionManager(context);
     }
     @Nullable
     @Override
@@ -63,6 +66,7 @@ public class frag_new_account_cs_resi extends Fragment {
         selesai.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                session.clearCIF();
                 getFragmentPage(new frag_portfolio());
             }
         });
