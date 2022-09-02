@@ -338,9 +338,24 @@ public class frag_portfolio extends Fragment {
                 String namaProduk = typeProdukListArr.getJSONObject(i).getString("typeProduct");
                 int valProduk = typeProdukListArr.getJSONObject(i).getInt("value");
 
-                double d = (double) valProduk / totalVal;
-                float valPercent = (float) d * 10;
-                String percent = String.format("%.1f", valPercent);
+                String percent = "";
+                if (dataNasabah.has("pai")) {
+                    if (!dataNasabah.isNull("pai")) {
+                        Log.e("CEK","MASUK PAI namaProduk : "+namaProduk);
+                        JSONObject paiProduk = dataNasabah.getJSONObject("pai").getJSONObject(namaProduk);
+                        Log.e("CEK","paiProduk : "+paiProduk.toString());
+                        int getPercent = paiProduk.getInt("persenan");
+                        double d = (double) getPercent / 10;
+                        percent = String.format("%.1f", d);
+                        Log.e("CEK","percent : "+percent);
+                    }
+                }
+
+                if (percent.isEmpty()) {
+                    double d = (double) valProduk / totalVal;
+                    float valPercent = (float) d * 10;
+                    percent = String.format("%.1f", valPercent);
+                }
                 percent = percent.replace(",",".");
                 pieEntryList.add(new PieEntry(Float.parseFloat(percent),namaProduk));
             } catch (JSONException e) {
@@ -390,12 +405,18 @@ public class frag_portfolio extends Fragment {
                         String namaProduk = listProduk.getJSONObject(j).getString("namaProduk").trim();
                         String noRekening = listProduk.getJSONObject(j).getString("noRekening").trim();
                         String jumlahDana = String.valueOf(listProduk.getJSONObject(j).getLong("jumlahDana"));
+                        String kurs = listProduk.getJSONObject(j).getString("kurs").trim();
+                        String icon = listProduk.getJSONObject(j).getString("icon").trim();
 
                         BigDecimal parsed = frag_dialog_rtgs.parseCurrencyValue(jumlahDana);
                         String formatted = frag_dialog_rtgs.numberFormat.format(parsed);
 
                         namaProduk += " - "+noRekening;
-                        String dataN = getResources().getString(R.string.mata_uang) + " " + formatted;
+                        String curs = getResources().getString(R.string.mata_uang);
+                        if (!kurs.equals(curs)) {
+                            curs = kurs;
+                        }
+                        String dataN = curs + " " + formatted;
                         int getImg = 0;
                         if (jenis.trim().toLowerCase().equals("giro")) {
                             getImg = imgDana[0];
@@ -407,7 +428,7 @@ public class frag_portfolio extends Fragment {
                             getImg = imgDana[2];
                         }
 
-                        data.add(new PortfolioModel(String.valueOf(j),namaProduk,dataN,getImg));
+                        data.add(new PortfolioModel(String.valueOf(j),namaProduk,dataN,getImg,icon));
                     }
                 }
             } catch (JSONException e) {
@@ -430,13 +451,19 @@ public class frag_portfolio extends Fragment {
                         String namaProduk = listProduk.getJSONObject(j).getString("namaProduk").trim();
                         String noRekening = listProduk.getJSONObject(j).getString("noRekening").trim();
                         String jumlahDana = String.valueOf(listProduk.getJSONObject(j).getLong("jumlahDana"));
+                        String kurs = listProduk.getJSONObject(j).getString("kurs").trim();
+                        String icon = listProduk.getJSONObject(j).getString("icon").trim();
 
                         BigDecimal parsed = frag_dialog_rtgs.parseCurrencyValue(jumlahDana);
                         String formatted = frag_dialog_rtgs.numberFormat.format(parsed);
                         formatted = formatted.replace(formatted,"XXXXXX");
 
                         namaProduk += " - "+noRekening;
-                        String dataN = getResources().getString(R.string.mata_uang) + " " + formatted;
+                        String curs = getResources().getString(R.string.mata_uang);
+                        if (!kurs.equals(curs)) {
+                            curs = kurs;
+                        }
+                        String dataN = curs + " " + formatted;
                         int getImg = 0;
                         if (jenis.trim().toLowerCase().equals("giro")) {
                             getImg = imgDana[0];
@@ -448,7 +475,7 @@ public class frag_portfolio extends Fragment {
                             getImg = imgDana[2];
                         }
 
-                        data.add(new PortfolioModel(String.valueOf(j),namaProduk,dataN,getImg));
+                        data.add(new PortfolioModel(String.valueOf(j),namaProduk,dataN,getImg,icon));
                     }
                 }
             } catch (JSONException e) {
@@ -471,12 +498,18 @@ public class frag_portfolio extends Fragment {
                         String namaProduk = listProduk.getJSONObject(j).getString("namaProduk").trim();
                         String noRekening = listProduk.getJSONObject(j).getString("noRekening").trim();
                         String jumlahDana = String.valueOf(listProduk.getJSONObject(j).getLong("jumlahDana"));
+                        String kurs = listProduk.getJSONObject(j).getString("kurs").trim();
+                        String icon = listProduk.getJSONObject(j).getString("icon").trim();
 
                         BigDecimal parsed = frag_dialog_rtgs.parseCurrencyValue(jumlahDana);
                         String formatted = frag_dialog_rtgs.numberFormat.format(parsed);
 
                         namaProduk += " - "+noRekening;
-                        String dataN = getResources().getString(R.string.mata_uang) + " " + formatted;
+                        String curs = getResources().getString(R.string.mata_uang);
+                        if (!kurs.equals(curs)) {
+                            curs = kurs;
+                        }
+                        String dataN = curs + " " + formatted;
                         int getImg = 0;
                         int lenImg = imgInves.length;
                         if (j < lenImg-1) {
@@ -485,7 +518,7 @@ public class frag_portfolio extends Fragment {
                             getImg = imgInves[lenImg-1];
                         }
 
-                        data2.add(new PortfolioModel(String.valueOf(j),namaProduk,dataN,getImg));
+                        data2.add(new PortfolioModel(String.valueOf(j),namaProduk,dataN,getImg,icon));
                     }
                 }
             } catch (JSONException e) {
@@ -507,13 +540,19 @@ public class frag_portfolio extends Fragment {
                         String namaProduk = listProduk.getJSONObject(j).getString("namaProduk").trim();
                         String noRekening = listProduk.getJSONObject(j).getString("noRekening").trim();
                         String jumlahDana = String.valueOf(listProduk.getJSONObject(j).getLong("jumlahDana"));
+                        String kurs = listProduk.getJSONObject(j).getString("kurs").trim();
+                        String icon = listProduk.getJSONObject(j).getString("icon").trim();
 
                         BigDecimal parsed = frag_dialog_rtgs.parseCurrencyValue(jumlahDana);
                         String formatted = frag_dialog_rtgs.numberFormat.format(parsed);
                         formatted = formatted.replace(formatted,"XXXXXX");
 
                         namaProduk += " - "+noRekening;
-                        String dataN = getResources().getString(R.string.mata_uang) + " " + formatted;
+                        String curs = getResources().getString(R.string.mata_uang);
+                        if (!kurs.equals(curs)) {
+                            curs = kurs;
+                        }
+                        String dataN = curs + " " + formatted;
                         int getImg = 0;
                         int lenImg = imgInves.length;
                         if (j < lenImg-1) {
@@ -522,7 +561,7 @@ public class frag_portfolio extends Fragment {
                             getImg = imgInves[lenImg-1];
                         }
 
-                        data2.add(new PortfolioModel(String.valueOf(j),namaProduk,dataN,getImg));
+                        data2.add(new PortfolioModel(String.valueOf(j),namaProduk,dataN,getImg,icon));
                     }
                 }
             } catch (JSONException e) {
@@ -545,12 +584,18 @@ public class frag_portfolio extends Fragment {
                         String namaProduk = listProduk.getJSONObject(j).getString("namaProduk").trim();
                         String noRekening = listProduk.getJSONObject(j).getString("noRekening").trim();
                         String jumlahDana = String.valueOf(listProduk.getJSONObject(j).getLong("jumlahDana"));
+                        String kurs = listProduk.getJSONObject(j).getString("kurs").trim();
+                        String icon = listProduk.getJSONObject(j).getString("icon").trim();
 
                         BigDecimal parsed = frag_dialog_rtgs.parseCurrencyValue(jumlahDana);
                         String formatted = frag_dialog_rtgs.numberFormat.format(parsed);
 
                         namaProduk += " - "+noRekening;
-                        String dataN = getResources().getString(R.string.mata_uang) + " " + formatted;
+                        String curs = getResources().getString(R.string.mata_uang);
+                        if (!kurs.equals(curs)) {
+                            curs = kurs;
+                        }
+                        String dataN = curs + " " + formatted;
                         int getImg = 0;
                         int lenImg = imgKredit.length;
                         if (j < lenImg-1) {
@@ -559,7 +604,7 @@ public class frag_portfolio extends Fragment {
                             getImg = imgKredit[lenImg-1];
                         }
 
-                        data3.add(new PortfolioModel(String.valueOf(j),namaProduk,dataN,getImg));
+                        data3.add(new PortfolioModel(String.valueOf(j),namaProduk,dataN,getImg,icon));
                     }
                 }
             } catch (JSONException e) {
@@ -582,13 +627,19 @@ public class frag_portfolio extends Fragment {
                         String namaProduk = listProduk.getJSONObject(j).getString("namaProduk").trim();
                         String noRekening = listProduk.getJSONObject(j).getString("noRekening").trim();
                         String jumlahDana = String.valueOf(listProduk.getJSONObject(j).getLong("jumlahDana"));
+                        String kurs = listProduk.getJSONObject(j).getString("kurs").trim();
+                        String icon = listProduk.getJSONObject(j).getString("icon").trim();
 
                         BigDecimal parsed = frag_dialog_rtgs.parseCurrencyValue(jumlahDana);
                         String formatted = frag_dialog_rtgs.numberFormat.format(parsed);
                         formatted = formatted.replace(formatted,"XXXXXX");
 
                         namaProduk += " - "+noRekening;
-                        String dataN = getResources().getString(R.string.mata_uang) + " " + formatted;
+                        String curs = getResources().getString(R.string.mata_uang);
+                        if (!kurs.equals(curs)) {
+                            curs = kurs;
+                        }
+                        String dataN = curs + " " + formatted;
                         int getImg = 0;
                         int lenImg = imgKredit.length;
                         if (j < lenImg-1) {
@@ -597,7 +648,7 @@ public class frag_portfolio extends Fragment {
                             getImg = imgKredit[lenImg-1];
                         }
 
-                        data3.add(new PortfolioModel(String.valueOf(j),namaProduk,dataN,getImg));
+                        data3.add(new PortfolioModel(String.valueOf(j),namaProduk,dataN,getImg,icon));
                     }
                 }
             } catch (JSONException e) {

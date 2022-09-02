@@ -9,6 +9,7 @@ import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.evo.mitzoom.GlideApp;
 import com.evo.mitzoom.Model.PortfolioModel;
 import com.evo.mitzoom.R;
 
@@ -33,7 +34,13 @@ public class AdapterPortofolio extends RecyclerView.Adapter<AdapterPortofolio.It
     public void onBindViewHolder(AdapterPortofolio.ItemHolder holder, int position) {
       holder.NamaPortfolio.setText(dataList.get(position).getNamaPortfolio());
       holder.NominalPortfolio.setText(dataList.get(position).getNominalPortfolio());
-      holder.GambarItem.setImageResource(dataList.get(position).getGambarPortfolio());
+      //holder.GambarItem.setImageResource(dataList.get(position).getGambarPortfolio());
+      String linkIcon = dataList.get(position).getLinkIcon();
+
+      GlideApp.with(ctx)
+            .load(linkIcon)
+            .placeholder(R.drawable.porto1)
+            .into(holder.GambarItem);
     }
 
     @Override
