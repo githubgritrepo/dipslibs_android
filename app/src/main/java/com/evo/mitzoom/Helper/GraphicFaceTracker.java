@@ -69,7 +69,7 @@ public class GraphicFaceTracker extends Tracker<Face> {
                 @Override
                 public void run() {
                     try {
-                        Toast.makeText(mContext,"Mohon tempatkan Wajah Anda sesuai Lingkaran atau Dekatkan Wajah Anda..!!!",Toast.LENGTH_SHORT).show();
+                        Toast.makeText(mContext.getApplicationContext(), "Mohon tempatkan Wajah Anda sesuai Lingkaran atau Dekatkan Wajah Anda..!!!",Toast.LENGTH_SHORT).show();
                         Thread.sleep(2000);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
@@ -84,7 +84,7 @@ public class GraphicFaceTracker extends Tracker<Face> {
                 @Override
                 public void run() {
                     try {
-                        Toast.makeText(mContext,"Wajah Anda Terlalu Dekat..!!!",Toast.LENGTH_SHORT).show();
+                        Toast.makeText(mContext.getApplicationContext(),"Wajah Anda Terlalu Dekat..!!!",Toast.LENGTH_SHORT).show();
                         Thread.sleep(2000);
                     } catch (InterruptedException e) {
                         e.printStackTrace();

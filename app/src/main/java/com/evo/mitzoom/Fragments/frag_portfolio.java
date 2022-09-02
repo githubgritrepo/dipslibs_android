@@ -1,6 +1,7 @@
 package com.evo.mitzoom.Fragments;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -36,6 +37,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -59,7 +61,6 @@ public class frag_portfolio extends Fragment {
     RecyclerView.Adapter recyclerViewAdapter, recyclerViewAdapter2, recyclerViewAdapter3;
     RecyclerView.LayoutManager recylerViewLayoutManager, recylerViewLayoutManager2, recylerViewLayoutManager3;
     ArrayList<PortfolioModel> data, data2, data3;
-    List<PieEntry> pieEntryList = new ArrayList<>();
     ExtendedFloatingActionButton extendedFloatingActionButton;
     private SessionManager sessionManager;
     private String idDips;
@@ -67,7 +68,24 @@ public class frag_portfolio extends Fragment {
     private boolean cekCust;
     ImageView btnToogleShow, btnToogleHide;
     private String dataCIF;
-    private JSONObject objectCIF = null;
+    private JSONObject dataNasabah = null;
+    private JSONArray produkListPorto = null;
+    int[] imgDana = {R.drawable.porto1,R.drawable.porto2,R.drawable.porto3};
+    int[] imgInves = {R.drawable.porto4,R.drawable.porto5,R.drawable.porto6,R.drawable.porto7};
+    int[] imgKredit = {R.drawable.porto8};
+
+    private static final int[] MATERIAL_COLORS = {
+            rgb("#2ecc71"), rgb("#f1c40f"), rgb("#e74c3c"), rgb("#3498db"), rgb("#ed0ff1"),
+            rgb("#90e610"), rgb("#f2ad0c"), rgb("#0af28a"), rgb("#f20a4c"), rgb("#f20a7a")
+    };
+
+    private static int rgb(String hex) {
+        int color = (int) Long.parseLong(hex.replace("#", ""), 16);
+        int r = (color >> 16) & 0xFF;
+        int g = (color >> 8) & 0xFF;
+        int b = (color >> 0) & 0xFF;
+        return Color.rgb(r, g, b);
+    }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -103,16 +121,12 @@ public class frag_portfolio extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        String dataJsonS = sessionManager.getCIF();
-        if (dataJsonS != null) {
-            try {
-                objectCIF = new JSONObject(dataJsonS);
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
-
         idDips = sessionManager.getKEY_IdDips();
+        dataNasabah = new JSONObject();
+        produkListPorto = new JSONArray();
+
+        getPortofolio();
+
         Calendar c = Calendar.getInstance();
         System.out.println("Current Time =>"+c.getTime());
         if (bahasa.equalsIgnoreCase("en")){
@@ -128,37 +142,14 @@ public class frag_portfolio extends Fragment {
         tvCurrency.setText(getResources().getString(R.string.currency));
         btnToogleHide.setVisibility(View.VISIBLE);
         btnToogleShow.setVisibility(View.GONE);
-        if (cekCust){
-            setChartNasabah();
-            setLegendChart();
-            addDataDanaPihakKetigaMasking();
-            addDataInvestasiMasking();
-            addDataKreditMasking();
-        }
-        else {
-            addDataDanaPihakKetigaNewMasking();
-            setChartNewNasabah();
-            setLegendChart();
-            recyclerView2.setVisibility(View.GONE);
-            recyclerView3.setVisibility(View.GONE);
-            DanaPihakKetiga.setVisibility(View.GONE);
-            Investasi.setVisibility(View.GONE);
-            Kredit.setVisibility(View.GONE);
-        }
-        setRecyler();
         btnToogleShow.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 btnToogleShow.setVisibility(View.GONE);
                 btnToogleHide.setVisibility(View.VISIBLE);
-                if (cekCust){
-                    addDataDanaPihakKetigaMasking();
-                    addDataInvestasiMasking();
-                    addDataKreditMasking();
-                }
-                else {
-                    addDataDanaPihakKetigaNewMasking();
-                }
+                addDataDanaPihakKetigaMasking();
+                addDataInvestasiMasking();
+                addDataKreditMasking();
                 setRecyler();
             }
         });
@@ -167,14 +158,9 @@ public class frag_portfolio extends Fragment {
             public void onClick(View v) {
                 btnToogleShow.setVisibility(View.VISIBLE);
                 btnToogleHide.setVisibility(View.GONE);
-                if (cekCust){
-                    addDataDanaPihakKetiga();
-                    addDataInvestasi();
-                    addDataKredit();
-                }
-                else {
-                    addDataDanaPihakKetigaEmpty();
-                }
+                addDataDanaPihakKetiga();
+                addDataInvestasi();
+                addDataKredit();
                 setRecyler();
             }
         });
@@ -199,6 +185,43 @@ public class frag_portfolio extends Fragment {
         });
 
     }
+
+    private void getPortofolio() {
+        Log.e("CEK","MASUK GET PORTOFOLIO idDips : "+idDips);
+        Server.getAPIService().GetPortofolio(idDips).enqueue(new Callback<JsonObject>() {
+            @Override
+            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                if (response.isSuccessful()) {
+                    String dataS = response.body().toString();
+                    Log.e("CEK","response body getPortofolio : "+dataS);
+                    try {
+                        JSONObject dataObj = new JSONObject(dataS);
+                        int errCode = dataObj.getInt("err_code");
+                        if (errCode == 0) {
+                            JSONObject datas = dataObj.getJSONObject("data");
+                            dataNasabah.put("data",datas);
+                            produkListPorto = datas.getJSONArray("produk");
+                            setChartNasabah();
+                            setLegendChart();
+                            addDataDanaPihakKetigaMasking();
+                            addDataInvestasiMasking();
+                            addDataKreditMasking();
+
+                            setRecyler();
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<JsonObject> call, Throwable t) {
+
+            }
+        });
+    }
+
     private void Mirroring(boolean bool){
         JSONObject jsons = new JSONObject();
         JSONArray jsonArray = new JSONArray();
@@ -225,6 +248,7 @@ public class frag_portfolio extends Fragment {
             }
         });
     }
+
     private void setRecyler(){
         recyclerViewAdapter = new AdapterPortofolio(context, data);
         recyclerViewAdapter2 = new AdapterPortofolio(context, data2);
@@ -244,46 +268,92 @@ public class frag_portfolio extends Fragment {
         recyclerView3.setAdapter(recyclerViewAdapter3);
     }
     private void setChartNasabah(){
+        List<PieEntry> pieEntryList = new ArrayList<>();
         pieChart.setUsePercentValues(true);
         pieChart.setDrawHoleEnabled(true);
         pieChart.setDrawEntryLabels(false);
         pieChart.getDescription().setEnabled(false);
-        if (pieEntryList.size() < 1){
-            pieEntryList.add(new PieEntry(3,"Giro"));
-            pieEntryList.add(new PieEntry(2,"Tabungan"));
-            pieEntryList.add(new PieEntry(1,"Deposito"));
-            pieEntryList.add(new PieEntry(4,"Reksa Dana"));
-        }
-        PieDataSet pieDataSet = new PieDataSet(pieEntryList,"");
-        pieDataSet.setColors(ColorTemplate.MATERIAL_COLORS);
-        pieData = new PieData(pieDataSet);
-        pieData.setValueFormatter(new PercentFormatter(pieChart));
-        pieChart.setEntryLabelTextSize(12f);
-        pieChart.setData(pieData);
-        pieChart.setEntryLabelColor(R.color.black);
-        pieChart.invalidate();
-    }
-    private void setChartNewNasabah(){
-        pieChart.setUsePercentValues(true);
-        pieChart.setDrawHoleEnabled(true);
-        pieChart.setDrawEntryLabels(false);
-        pieChart.getDescription().setEnabled(false);
-        if (pieEntryList.size() < 1){
-            String produk = "";
-            if (objectCIF != null) {
-                try {
-                    JSONArray dataArrCIF = objectCIF.getJSONArray("data");
-                    produk = dataArrCIF.get(39).toString();
-                    /*JSONObject obj = new JSONObject(dataCIF);
-                    produk = obj.getString("produk");*/
-                } catch (JSONException e) {
-                    e.printStackTrace();
+
+        int len = produkListPorto.length();
+        JSONArray typeProdukListArr = new JSONArray();
+        int loop = 0;
+        for (int i = 0; i < len; i++) {
+            try {
+                JSONArray listProduk = null;
+                JSONObject produkObj = produkListPorto.getJSONObject(i);
+
+                listProduk = produkObj.getJSONArray("list");
+                for (int j = 0; j < listProduk.length(); j++) {
+                    JSONObject dataValProduk = new JSONObject();
+
+                    String jenis = listProduk.getJSONObject(j).getString("jenis");
+                    String namaProduk = listProduk.getJSONObject(j).getString("namaProduk").trim();
+                    String typeProduk = jenis;
+                    if (typeProdukListArr.length() > 0) {
+                        boolean cekFlag = true;
+                        for (int k = 0; k < typeProdukListArr.length(); k++) {
+                            String cekTypeProduk = typeProdukListArr.getJSONObject(k).getString("typeProduct");
+                            if (typeProduk.toLowerCase().equals(cekTypeProduk.toLowerCase())) {
+                                cekFlag = false;
+
+                                int valProduk = typeProdukListArr.getJSONObject(k).getInt("value");
+                                int addVal = valProduk + 1;
+                                typeProdukListArr.getJSONObject(k).put("value",addVal);
+                                break;
+                            }
+                        }
+
+                        if (cekFlag) {
+                            dataValProduk.put("value",1);
+                            dataValProduk.put("typeProduct",typeProduk);
+                            dataValProduk.put("nameProduct",namaProduk);
+                            typeProdukListArr.put(loop,dataValProduk);
+                            loop++;
+                        }
+
+                    } else {
+                        dataValProduk.put("value",1);
+                        dataValProduk.put("typeProduct",typeProduk);
+                        dataValProduk.put("nameProduct",namaProduk);
+                        typeProdukListArr.put(loop,dataValProduk);
+                        loop++;
+                    }
                 }
+            } catch (JSONException e) {
+                e.printStackTrace();
             }
-            pieEntryList.add(new PieEntry(100,produk));
+        }
+
+        int totalVal = 0;
+        for (int i = 0; i < typeProdukListArr.length(); i++) {
+            try {
+                int valProduk = typeProdukListArr.getJSONObject(i).getInt("value");
+                totalVal += valProduk;
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+
+        for (int i = 0; i < typeProdukListArr.length(); i++) {
+            try {
+                String namaProduk = typeProdukListArr.getJSONObject(i).getString("typeProduct");
+                int valProduk = typeProdukListArr.getJSONObject(i).getInt("value");
+
+                double d = (double) valProduk / totalVal;
+                float valPercent = (float) d * 10;
+                String percent = String.format("%.1f", valPercent);
+                percent = percent.replace(",",".");
+                pieEntryList.add(new PieEntry(Float.parseFloat(percent),namaProduk));
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
         }
         PieDataSet pieDataSet = new PieDataSet(pieEntryList,"");
-        pieDataSet.setColors(ColorTemplate.MATERIAL_COLORS);
+        if (pieEntryList.size() > 5) {
+            pieDataSet.setColors(MATERIAL_COLORS);
+        } else {
+            pieDataSet.setColors(ColorTemplate.VORDIPLOM_COLORS);
+        }
         pieData = new PieData(pieDataSet);
         pieData.setValueFormatter(new PercentFormatter(pieChart));
         pieChart.setEntryLabelTextSize(12f);
@@ -293,7 +363,7 @@ public class frag_portfolio extends Fragment {
     }
     private void setLegendChart(){
         Legend l = pieChart.getLegend();
-        l.setVerticalAlignment(Legend.LegendVerticalAlignment.CENTER);
+        l.setVerticalAlignment(Legend.LegendVerticalAlignment.TOP);
         l.setHorizontalAlignment(Legend.LegendHorizontalAlignment.RIGHT);
         l.setOrientation(Legend.LegendOrientation.VERTICAL);
         l.setDrawInside(false);
@@ -309,88 +379,233 @@ public class frag_portfolio extends Fragment {
     ///Data Pihak Ketiga
     private void addDataDanaPihakKetiga(){
         data = new ArrayList<>();
-        data.add(new PortfolioModel("1",getResources().getString(R.string.GIRO_DIPS),getResources().getString(R.string.mata_uang)+" 15.000.000",R.drawable.porto1));
-        data.add(new PortfolioModel("3",getResources().getString(R.string.TABUNGAN_DIPS),getResources().getString(R.string.mata_uang)+" 12.000.000",R.drawable.porto2));
-        data.add(new PortfolioModel("4",getResources().getString(R.string.DEPOSITO_DIPS),getResources().getString(R.string.mata_uang)+" 100.000.000",R.drawable.porto3));
-    }
-    private void addDataDanaPihakKetigaEmpty(){
-        data = new ArrayList<>();
-        String portfolio = "";
-        if (dataCIF != null) {
+        int len = produkListPorto.length();
+        for (int i = 0; i < len; i++) {
             try {
-                JSONObject obj = new JSONObject(dataCIF);
-                String produk = obj.getString("produk");
-                portfolio = produk+" - 123456789";
+                JSONObject produkObj = produkListPorto.getJSONObject(i);
+                String catg = produkObj.getString("kategori");
+                if (catg.trim().toLowerCase().equals("dana pihak ketiga")) {
+                    JSONArray listProduk = produkObj.getJSONArray("list");
+                    for (int j = 0; j < listProduk.length(); j++) {
+                        String jenis = listProduk.getJSONObject(j).getString("jenis").trim();
+                        String namaProduk = listProduk.getJSONObject(j).getString("namaProduk").trim();
+                        String noRekening = listProduk.getJSONObject(j).getString("noRekening").trim();
+                        String jumlahDana = String.valueOf(listProduk.getJSONObject(j).getLong("jumlahDana"));
+
+                        BigDecimal parsed = frag_dialog_rtgs.parseCurrencyValue(jumlahDana);
+                        String formatted = frag_dialog_rtgs.numberFormat.format(parsed);
+
+                        namaProduk += " - "+noRekening;
+                        String dataN = getResources().getString(R.string.mata_uang) + " " + formatted;
+                        int getImg = 0;
+                        if (jenis.trim().toLowerCase().equals("giro")) {
+                            getImg = imgDana[0];
+                        } else if (jenis.trim().toLowerCase().equals("tabungan")) {
+                            getImg = imgDana[1];
+                        } else if (jenis.trim().toLowerCase().equals("deposito")) {
+                            getImg = imgDana[2];
+                        } else {
+                            getImg = imgDana[2];
+                        }
+
+                        data.add(new PortfolioModel(String.valueOf(j),namaProduk,dataN,getImg));
+                    }
+                }
             } catch (JSONException e) {
                 e.printStackTrace();
             }
         }
-        data.add(new PortfolioModel("3",portfolio,getResources().getString(R.string.mata_uang)+" 0",R.drawable.porto2));
     }
+
     private void addDataDanaPihakKetigaMasking(){
         data = new ArrayList<>();
-        data.add(new PortfolioModel("1",getResources().getString(R.string.GIRO_DIPS),getResources().getString(R.string.mata_uang)+" XXXXXX",R.drawable.porto1));
-        data.add(new PortfolioModel("3",getResources().getString(R.string.TABUNGAN_DIPS),getResources().getString(R.string.mata_uang)+" XXXXXX",R.drawable.porto2));
-        data.add(new PortfolioModel("4",getResources().getString(R.string.DEPOSITO_DIPS),getResources().getString(R.string.mata_uang)+" XXXXXX",R.drawable.porto3));
-    }
-    private void addDataDanaPihakKetigaNewMasking(){
-        data = new ArrayList<>();
-        String portfolio = "";
-        if (objectCIF != null) {
+        int len = produkListPorto.length();
+        for (int i = 0; i < len; i++) {
             try {
-                JSONArray dataArrCIF = objectCIF.getJSONArray("data");
-                String produk = dataArrCIF.get(39).toString();
+                JSONObject produkObj = produkListPorto.getJSONObject(i);
+                String catg = produkObj.getString("kategori");
+                if (catg.trim().toLowerCase().equals("dana pihak ketiga")) {
+                    JSONArray listProduk = produkObj.getJSONArray("list");
+                    for (int j = 0; j < listProduk.length(); j++) {
+                        String jenis = listProduk.getJSONObject(j).getString("jenis").trim();
+                        String namaProduk = listProduk.getJSONObject(j).getString("namaProduk").trim();
+                        String noRekening = listProduk.getJSONObject(j).getString("noRekening").trim();
+                        String jumlahDana = String.valueOf(listProduk.getJSONObject(j).getLong("jumlahDana"));
 
-                /*JSONObject obj = new JSONObject(dataCIF);
-                String produk = obj.getString("produk");*/
-                portfolio = produk+" - 123456789";
+                        BigDecimal parsed = frag_dialog_rtgs.parseCurrencyValue(jumlahDana);
+                        String formatted = frag_dialog_rtgs.numberFormat.format(parsed);
+                        formatted = formatted.replace(formatted,"XXXXXX");
+
+                        namaProduk += " - "+noRekening;
+                        String dataN = getResources().getString(R.string.mata_uang) + " " + formatted;
+                        int getImg = 0;
+                        if (jenis.trim().toLowerCase().equals("giro")) {
+                            getImg = imgDana[0];
+                        } else if (jenis.trim().toLowerCase().equals("tabungan")) {
+                            getImg = imgDana[1];
+                        } else if (jenis.trim().toLowerCase().equals("deposito")) {
+                            getImg = imgDana[2];
+                        } else {
+                            getImg = imgDana[2];
+                        }
+
+                        data.add(new PortfolioModel(String.valueOf(j),namaProduk,dataN,getImg));
+                    }
+                }
             } catch (JSONException e) {
                 e.printStackTrace();
             }
         }
-        data.add(new PortfolioModel("1",portfolio,getResources().getString(R.string.mata_uang)+" XXXXXX",R.drawable.porto2));
     }
 
     /// Data Investasi
     private void addDataInvestasi(){
         data2 = new ArrayList<>();
-        data2.add(new PortfolioModel("1","DiPS Wealthlink",getResources().getString(R.string.mata_uang)+" 15.000.000",R.drawable.porto4));
-        data2.add(new PortfolioModel("2","DiPS Protect Life",getResources().getString(R.string.mata_uang)+" 12.000.000,00",R.drawable.porto5));
-        data2.add(new PortfolioModel("3","DiPS Money Market Fund",getResources().getString(R.string.mata_uang)+" 12.000.000,00",R.drawable.porto6));
-        data2.add(new PortfolioModel("4","ORI 022",getResources().getString(R.string.mata_uang)+" 100.000.000,00",R.drawable.porto7));
-        data2.add(new PortfolioModel("5","SR 014",getResources().getString(R.string.mata_uang)+" 80.000,00",R.drawable.porto7));
+        int len = produkListPorto.length();
+        for (int i = 0; i < len; i++) {
+            try {
+                JSONObject produkObj = produkListPorto.getJSONObject(i);
+                String catg = produkObj.getString("kategori");
+                if (catg.trim().toLowerCase().equals("investasi")) {
+                    JSONArray listProduk = produkObj.getJSONArray("list");
+                    for (int j = 0; j < listProduk.length(); j++) {
+                        String namaProduk = listProduk.getJSONObject(j).getString("namaProduk").trim();
+                        String noRekening = listProduk.getJSONObject(j).getString("noRekening").trim();
+                        String jumlahDana = String.valueOf(listProduk.getJSONObject(j).getLong("jumlahDana"));
+
+                        BigDecimal parsed = frag_dialog_rtgs.parseCurrencyValue(jumlahDana);
+                        String formatted = frag_dialog_rtgs.numberFormat.format(parsed);
+
+                        namaProduk += " - "+noRekening;
+                        String dataN = getResources().getString(R.string.mata_uang) + " " + formatted;
+                        int getImg = 0;
+                        int lenImg = imgInves.length;
+                        if (j < lenImg-1) {
+                            getImg = imgInves[j];
+                        } else {
+                            getImg = imgInves[lenImg-1];
+                        }
+
+                        data2.add(new PortfolioModel(String.valueOf(j),namaProduk,dataN,getImg));
+                    }
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
     }
-    private void addDataInvestasiEmpty(){
-        data2 = new ArrayList<>();
-        data2.add(new PortfolioModel("1","DiPS Wealthlink",getResources().getString(R.string.mata_uang)+" 0",R.drawable.porto4));
-        data2.add(new PortfolioModel("2","DiPS Protect Life",getResources().getString(R.string.mata_uang)+" 0",R.drawable.porto5));
-        data2.add(new PortfolioModel("3","DiPS Money Market Fund",getResources().getString(R.string.mata_uang)+" 0",R.drawable.porto6));
-        data2.add(new PortfolioModel("4","ORI 022",getResources().getString(R.string.mata_uang)+" 0",R.drawable.porto7));
-        data2.add(new PortfolioModel("5","SR 014",getResources().getString(R.string.mata_uang)+" 0",R.drawable.porto7));
-    }
+
     private void addDataInvestasiMasking(){
         data2 = new ArrayList<>();
-        data2.add(new PortfolioModel("1","DiPS Wealthlink",getResources().getString(R.string.mata_uang)+" XXXXXX",R.drawable.porto4));
-        data2.add(new PortfolioModel("2","DiPS Protect Life",getResources().getString(R.string.mata_uang)+" XXXXXX",R.drawable.porto5));
-        data2.add(new PortfolioModel("3","DiPS Money Market Fund",getResources().getString(R.string.mata_uang)+" XXXXXX",R.drawable.porto6));
-        data2.add(new PortfolioModel("4","ORI 022",getResources().getString(R.string.mata_uang)+" XXXXXX",R.drawable.porto7));
-        data2.add(new PortfolioModel("5","SR 014",getResources().getString(R.string.mata_uang)+" XXXXXX",R.drawable.porto7));
+        int len = produkListPorto.length();
+        for (int i = 0; i < len; i++) {
+            try {
+                JSONObject produkObj = produkListPorto.getJSONObject(i);
+                String catg = produkObj.getString("kategori");
+                if (catg.trim().toLowerCase().equals("investasi")) {
+                    JSONArray listProduk = produkObj.getJSONArray("list");
+                    for (int j = 0; j < listProduk.length(); j++) {
+                        String namaProduk = listProduk.getJSONObject(j).getString("namaProduk").trim();
+                        String noRekening = listProduk.getJSONObject(j).getString("noRekening").trim();
+                        String jumlahDana = String.valueOf(listProduk.getJSONObject(j).getLong("jumlahDana"));
+
+                        BigDecimal parsed = frag_dialog_rtgs.parseCurrencyValue(jumlahDana);
+                        String formatted = frag_dialog_rtgs.numberFormat.format(parsed);
+                        formatted = formatted.replace(formatted,"XXXXXX");
+
+                        namaProduk += " - "+noRekening;
+                        String dataN = getResources().getString(R.string.mata_uang) + " " + formatted;
+                        int getImg = 0;
+                        int lenImg = imgInves.length;
+                        if (j < lenImg-1) {
+                            getImg = imgInves[j];
+                        } else {
+                            getImg = imgInves[lenImg-1];
+                        }
+
+                        data2.add(new PortfolioModel(String.valueOf(j),namaProduk,dataN,getImg));
+                    }
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     /// Data Kredit
     private void addDataKredit(){
         data3 = new ArrayList<>();
-        data3.add(new PortfolioModel("1",getResources().getString(R.string.DIPS_MODAL_KERJA),getResources().getString(R.string.mata_uang)+" 15.000.000,00",R.drawable.porto8));
-        data3.add(new PortfolioModel("2",getResources().getString(R.string.DIPS_INVESTMENT),getResources().getString(R.string.mata_uang)+" 12.000.000,00",R.drawable.porto8));
-    }
-    private void addDataKreditEmpty(){
-        data3 = new ArrayList<>();
-        data3.add(new PortfolioModel("1",getResources().getString(R.string.DIPS_MODAL_KERJA),getResources().getString(R.string.mata_uang)+" 0",R.drawable.porto8));
-        data3.add(new PortfolioModel("2",getResources().getString(R.string.DIPS_INVESTMENT),getResources().getString(R.string.mata_uang)+" 0",R.drawable.porto8));
+        int len = produkListPorto.length();
+        for (int i = 0; i < len; i++) {
+            try {
+                JSONObject produkObj = produkListPorto.getJSONObject(i);
+                String catg = produkObj.getString("kategori");
+                if (catg.trim().toLowerCase().equals("kredit")) {
+                    JSONArray listProduk = produkObj.getJSONArray("list");
+                    for (int j = 0; j < listProduk.length(); j++) {
+                        String namaProduk = listProduk.getJSONObject(j).getString("namaProduk").trim();
+                        String noRekening = listProduk.getJSONObject(j).getString("noRekening").trim();
+                        String jumlahDana = String.valueOf(listProduk.getJSONObject(j).getLong("jumlahDana"));
+
+                        BigDecimal parsed = frag_dialog_rtgs.parseCurrencyValue(jumlahDana);
+                        String formatted = frag_dialog_rtgs.numberFormat.format(parsed);
+
+                        namaProduk += " - "+noRekening;
+                        String dataN = getResources().getString(R.string.mata_uang) + " " + formatted;
+                        int getImg = 0;
+                        int lenImg = imgInves.length;
+                        if (j < lenImg-1) {
+                            getImg = imgInves[j];
+                        } else {
+                            getImg = imgInves[lenImg-1];
+                        }
+
+                        data3.add(new PortfolioModel(String.valueOf(j),namaProduk,dataN,getImg));
+                    }
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+        /*data3.add(new PortfolioModel("1",getResources().getString(R.string.DIPS_MODAL_KERJA),getResources().getString(R.string.mata_uang)+" 15.000.000,00",R.drawable.porto8));
+        data3.add(new PortfolioModel("2",getResources().getString(R.string.DIPS_INVESTMENT),getResources().getString(R.string.mata_uang)+" 12.000.000,00",R.drawable.porto8));*/
     }
     private void addDataKreditMasking(){
         data3 = new ArrayList<>();
-        data3.add(new PortfolioModel("1",getResources().getString(R.string.DIPS_MODAL_KERJA),getResources().getString(R.string.mata_uang)+" XXXXXX",R.drawable.porto8));
-        data3.add(new PortfolioModel("2",getResources().getString(R.string.DIPS_INVESTMENT),getResources().getString(R.string.mata_uang)+" XXXXXX",R.drawable.porto8));
+        int len = produkListPorto.length();
+        for (int i = 0; i < len; i++) {
+            try {
+                JSONObject produkObj = produkListPorto.getJSONObject(i);
+                String catg = produkObj.getString("kategori");
+                if (catg.trim().toLowerCase().equals("kredit")) {
+                    JSONArray listProduk = produkObj.getJSONArray("list");
+                    for (int j = 0; j < listProduk.length(); j++) {
+                        String namaProduk = listProduk.getJSONObject(j).getString("namaProduk").trim();
+                        String noRekening = listProduk.getJSONObject(j).getString("noRekening").trim();
+                        String jumlahDana = String.valueOf(listProduk.getJSONObject(j).getLong("jumlahDana"));
+
+                        BigDecimal parsed = frag_dialog_rtgs.parseCurrencyValue(jumlahDana);
+                        String formatted = frag_dialog_rtgs.numberFormat.format(parsed);
+                        formatted = formatted.replace(formatted,"XXXXXX");
+
+                        namaProduk += " - "+noRekening;
+                        String dataN = getResources().getString(R.string.mata_uang) + " " + formatted;
+                        int getImg = 0;
+                        int lenImg = imgInves.length;
+                        if (j < lenImg-1) {
+                            getImg = imgInves[j];
+                        } else {
+                            getImg = imgInves[lenImg-1];
+                        }
+
+                        data3.add(new PortfolioModel(String.valueOf(j),namaProduk,dataN,getImg));
+                    }
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+        /*data3.add(new PortfolioModel("1",getResources().getString(R.string.DIPS_MODAL_KERJA),getResources().getString(R.string.mata_uang)+" XXXXXX",R.drawable.porto8));
+        data3.add(new PortfolioModel("2",getResources().getString(R.string.DIPS_INVESTMENT),getResources().getString(R.string.mata_uang)+" XXXXXX",R.drawable.porto8));*/
     }
 }

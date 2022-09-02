@@ -777,7 +777,7 @@
                         android:layout_height="35dp"
                         android:gravity="center_vertical"
                         android:includeFontPadding="false"
-                        android:inputType="number"
+                        android:inputType="textCapWords"
                         android:paddingVertical="@dimen/dp_10"
                         android:textSize="12dp" />
 
@@ -840,7 +840,7 @@
                         android:layout_height="35dp"
                         android:gravity="center_vertical"
                         android:includeFontPadding="false"
-                        android:inputType="number"
+                        android:inputType="date"
                         android:paddingVertical="@dimen/dp_10"
                         android:textSize="12dp" />
                 </com.google.android.material.textfield.TextInputLayout>

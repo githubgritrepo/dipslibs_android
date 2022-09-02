@@ -253,30 +253,15 @@ public class frag_summary_rtgs extends Fragment {
         idDips = session.getKEY_IdDips();
 
         String dataJsonS = session.getCIF();
+        JSONArray dataArrCIF = null;
         if (dataJsonS != null) {
             try {
                 objectCIF = new JSONObject(dataJsonS);
+                dataArrCIF = objectCIF.getJSONArray("data");
+                no_handphone = dataArrCIF.get(25).toString();
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-        }
-
-        JSONArray dataArrCIF = null;
-        try {
-            no_handphone = "62895401303096";
-            if (objectCIF == null) {
-                objectCIF = new JSONObject();
-                JSONArray jsArr = new JSONArray();
-                jsArr.put(no_handphone);
-                objectCIF.put("data",jsArr);
-            } else {
-                dataArrCIF = objectCIF.getJSONArray("data");
-                if (dataArrCIF.length() > 24) {
-                    no_handphone = dataArrCIF.get(25).toString();
-                }
-            }
-        } catch (JSONException e) {
-            e.printStackTrace();
         }
 
         if (dataRTGS != null) {
@@ -469,6 +454,9 @@ public class frag_summary_rtgs extends Fragment {
                 .commit();
     }
     private void PopUp(){
+        String sub_no_handphone = no_handphone.substring(no_handphone.length() - 3);
+        String noHandphone = no_handphone.replace(sub_no_handphone,"XXX");
+
         inflater = getLayoutInflater();
         dialogView = inflater.inflate(R.layout.item_otp,null);
 
@@ -480,8 +468,8 @@ public class frag_summary_rtgs extends Fragment {
 
         TextView textIBMB = (TextView) dialogView.findViewById(R.id.textIBMB);
         String contentText = textIBMB.getText().toString();
-        Log.e("CEK","contentText : "+contentText+" | no_handphone : "+no_handphone);
-        contentText.replace("+62812 3456 7XXX",no_handphone);
+        Log.e("CEK","contentText : "+contentText+" | no_handphone : "+noHandphone);
+        contentText = contentText.replace("+62812 3456 7XXX",noHandphone);
         Log.e("CEK","contentText new : "+contentText);
         textIBMB.setText(contentText);
         btnVerifikasi = dialogView.findViewById(R.id.btnVerifikasi);

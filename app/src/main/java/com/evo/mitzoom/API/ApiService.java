@@ -101,4 +101,10 @@ public interface ApiService {
     @POST("api/form/resendOtp")
     Call<JsonObject> ResendOTP(@Body RequestBody body);
 
+    @Headers("Content-Type: "+ MyConstants.CONTENT_TYPE)
+    @GET("api/customer/portofolio/{idDiPS}")
+    Call<JsonObject> GetPortofolio(
+            @Path("idDiPS") String idDiPS
+    );
+
 }

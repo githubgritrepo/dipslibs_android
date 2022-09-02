@@ -169,6 +169,21 @@ public class frag_data_keuangan extends Fragment {
         btnProses.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                if (accountType.isEmpty()) {
+                    Toast.makeText(context,"Silakan Pilih Jenis Rekening",Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                if (productName.isEmpty()) {
+                    Toast.makeText(context,"Silakan Pilih Nama Produk",Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                if (currency.isEmpty()) {
+                    Toast.makeText(context,"Silakan Pilih Mata Uang",Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
                 try {
                     JSONArray dataArrCIF = objectCIF.getJSONArray("data");
                     dataArrCIF.put(39,productName);

@@ -376,7 +376,7 @@ public class frag_aktivasi_ibmb extends Fragment {
             dataArrCIF = objectCIF.getJSONArray("data");
             no_handphone = dataArrCIF.get(25).toString();
             String sub_no_handphone = no_handphone.substring(no_handphone.length() - 3);
-            no_handphone.replace(sub_no_handphone,"XXX");
+            no_handphone = no_handphone.replace(sub_no_handphone,"XXX");
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -392,7 +392,7 @@ public class frag_aktivasi_ibmb extends Fragment {
         TextView textIBMB = (TextView) dialogView.findViewById(R.id.textIBMB);
         String contentText = textIBMB.getText().toString();
         Log.e("CEK","contentText : "+contentText+" | no_handphone : "+no_handphone);
-        contentText.replace("+62812 3456 7XXX",no_handphone);
+        contentText = contentText.replace("+62812 3456 7XXX",no_handphone);
         Log.e("CEK","contentText new : "+contentText);
         textIBMB.setText(contentText);
         btnVerifikasi = dialogView.findViewById(R.id.btnVerifikasi);
@@ -431,8 +431,8 @@ public class frag_aktivasi_ibmb extends Fragment {
                         numberOTP = numberOTP.substring(0, lenOTP - 1);
                     }
                 }
-                newString = myFilter(s.toString());
                 otp.removeTextChangedListener(this);
+                newString = myFilter(s.toString());
                 handler = new Handler();
                 myRunnable = new Runnable() {
                     @Override
@@ -442,10 +442,10 @@ public class frag_aktivasi_ibmb extends Fragment {
                 };
                 otp.addTextChangedListener(this);
                 handler.postDelayed(myRunnable, 1500);
-                if (otp.length() == 6 || otp.length() == 0){
+                if (otp.length() == 6 || otp.length() == 0) {
                     handler.removeMessages(0);
                     handler.removeCallbacks(myRunnable);
-                    Log.d("TAG","STOP Loop");
+                    Log.d("TAG", "STOP Loop");
                 }
             }
         });

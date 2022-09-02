@@ -45,7 +45,8 @@
         android:preserveLegacyExternalStorage="true"
         android:roundIcon="@mipmap/dips361_round"
         android:supportsRtl="true"
-        android:usesCleartextTraffic="true">
+        android:usesCleartextTraffic="true"
+        android:dataExtractionRules="@xml/data_extraction_rules">
 
         <activity
             android:name=".ui.DipsOutboundCall"

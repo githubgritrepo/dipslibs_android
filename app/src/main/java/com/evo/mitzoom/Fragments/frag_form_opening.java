@@ -184,9 +184,6 @@ public class frag_form_opening extends Fragment {
                 else if (NoHp.getText().toString().trim().isEmpty()){
                     NoHp.setError(getResources().getString(R.string.error_field));
                 }
-                else if (NomorTelephone.getText().toString().isEmpty()){
-                    NomorTelephone.setError(getResources().getString(R.string.error_field));
-                }
                 else if (statusRumah.getText().toString().isEmpty()){
                     statusRumah.setError(getResources().getString(R.string.error_field));
                 }

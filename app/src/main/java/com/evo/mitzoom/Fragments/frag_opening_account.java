@@ -69,6 +69,7 @@ public class frag_opening_account extends Fragment {
     private String idDips, KTP_BASE64, provinsi, kota_kabupaten, nik, nama, ttl, jeniskelamin, golongan_darah, alamat, rtrw, desa_kelurahan, kecamatan, agama, status_perkawinan, kewarganegaraan, pekerjaan;
     private SessionManager session;
     private TextView NIK, Nama, TTL, TTL2;
+    private boolean flagOCR = false;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -144,7 +145,11 @@ public class frag_opening_account extends Fragment {
                     //Mirroring2(true,"320124150585005","Andi Wijaya Lesmana","Bogor","13-03-1985");
                     //ocrKTP();
                     saveImage();
-                    PopUpOCR(KTP);
+                    if (flagOCR) {
+                        PopUpOCR(KTP);
+                    } else {
+                        Toast.makeText(context,"Maaf, OCR masih dalam proses...!!!",Toast.LENGTH_SHORT).show();
+                    }
                 }
             }
         });
@@ -481,6 +486,7 @@ public class frag_opening_account extends Fragment {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
                 if (response.isSuccessful()) {
+                    flagOCR = true;
                     String dataS = response.body().toString();
                     Log.d("Response OCR",""+dataS);
                     try {
@@ -506,11 +512,13 @@ public class frag_opening_account extends Fragment {
                     }
                 }
                 else {
+                    flagOCR = false;
                     Log.d("CEK","MASUK ELSE");
                 }
             }
             @Override
             public void onFailure(Call<JsonObject> call, Throwable t) {
+                flagOCR = false;
                 Toast.makeText(context,t.getMessage(),Toast.LENGTH_SHORT).show();
             }
         });
