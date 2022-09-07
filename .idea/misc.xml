@@ -4,7 +4,11 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="..\:/Kerjaan GRIT/Project Mobile/DiPS361/app/src/main/res/layout/activity_dips_video_confren.xml" value="0.22826086956521738" />
+        <entry key="..\:/Kerjaan GRIT/Project Mobile/DiPS361/app/src/main/res/layout/choose_language.xml" value="0.13177083333333334" />
+        <entry key="..\:/Kerjaan GRIT/Project Mobile/DiPS361/app/src/main/res/layout/content_form_rtgs.xml" value="0.22826086956521738" />
+        <entry key="..\:/Kerjaan GRIT/Project Mobile/DiPS361/app/src/main/res/layout/content_frag_resi.xml" value="0.22826086956521738" />
         <entry key="..\:/Kerjaan GRIT/Project Mobile/DiPS361/app/src/main/res/layout/frag_data_keuangan.xml" value="0.22826086956521738" />
+        <entry key="..\:/Kerjaan GRIT/Project Mobile/DiPS361/app/src/main/res/layout/frag_form_credit.xml" value="0.25" />
         <entry key="..\:/Kerjaan GRIT/Project Mobile/DiPS361/app/src/main/res/layout/frag_form_opening_account.xml" value="0.22826086956521738" />
         <entry key="..\:/Kerjaan GRIT/Project Mobile/DiPS361/app/src/main/res/layout/frag_form_rtgs2.xml" value="0.22826086956521738" />
         <entry key="..\:/Kerjaan GRIT/Project Mobile/DiPS361/app/src/main/res/layout/frag_input_nik_nama.xml" value="0.22826086956521738" />
@@ -14,10 +18,15 @@
         <entry key="..\:/Kerjaan GRIT/Project Mobile/DiPS361/app/src/main/res/layout/frag_new_account_cs_resi.xml" value="0.22826086956521738" />
         <entry key="..\:/Kerjaan GRIT/Project Mobile/DiPS361/app/src/main/res/layout/frag_opening_account.xml" value="0.22826086956521738" />
         <entry key="..\:/Kerjaan GRIT/Project Mobile/DiPS361/app/src/main/res/layout/frag_resi.xml" value="0.22826086956521738" />
+        <entry key="..\:/Kerjaan GRIT/Project Mobile/DiPS361/app/src/main/res/layout/fragment_frag_cardless.xml" value="0.25" />
+        <entry key="..\:/Kerjaan GRIT/Project Mobile/DiPS361/app/src/main/res/layout/fragment_frag_new_resi.xml" value="0.22826086956521738" />
+        <entry key="..\:/Kerjaan GRIT/Project Mobile/DiPS361/app/src/main/res/layout/fragment_frag_resi_cardless.xml" value="0.22826086956521738" />
         <entry key="..\:/Kerjaan GRIT/Project Mobile/DiPS361/app/src/main/res/layout/header_new_account.xml" value="0.22826086956521738" />
         <entry key="..\:/Kerjaan GRIT/Project Mobile/DiPS361/app/src/main/res/layout/item_cif.xml" value="0.22826086956521738" />
         <entry key="..\:/Kerjaan GRIT/Project Mobile/DiPS361/app/src/main/res/layout/item_otp.xml" value="0.22826086956521738" />
         <entry key="..\:/Kerjaan GRIT/Project Mobile/DiPS361/app/src/main/res/layout/portfolio.xml" value="0.22826086956521738" />
+        <entry key="..\:/Kerjaan GRIT/Project Mobile/DiPS361/app/src/main/res/layout/summary_rtgs.xml" value="0.22826086956521738" />
+        <entry key="..\:/Kerjaan GRIT/Project Mobile/DiPS361/app/src/main/res/layout/type_service_autocomplete_row.xml" value="0.22826086956521738" />
       </map>
     </option>
   </component>

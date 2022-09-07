@@ -212,7 +212,7 @@ public class frag_new_account_cs extends Fragment {
                 String[] sumber = sumber_dana.split("\n");
                 rsd_1 = sumber[0];
                 rsd_2 = sumber[1];
-                rsd_3 = sumber[3];
+                rsd_3 = sumber[2];
                 Mirroring(filename,rsd_1,rsd_2,rsd_3, et_nama.getText().toString(),et_productType.getText().toString(),et_tgl_daftar.getText().toString(),et_nominal_daftar.getText(),"",false,false);
             }
         });

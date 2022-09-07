@@ -414,6 +414,9 @@ public class frag_aktivasi_ibmb extends Fragment {
                 Matcher matcher = pattern.matcher(wordOTP);
                 if (matcher.find()) {
                     String getNumberOTP=wordOTP.replaceAll("[^0-9]", "");
+                    if (getNumberOTP.length() > 1 && getNumberOTP.length() <= 6) {
+                        getNumberOTP = getNumberOTP.substring(getNumberOTP.length()-1,getNumberOTP.length());
+                    }
                     if (numberOTP.length() < 6) {
                         numberOTP += getNumberOTP;
                     }

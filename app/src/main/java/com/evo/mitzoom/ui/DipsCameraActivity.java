@@ -81,6 +81,7 @@ public class DipsCameraActivity extends AppCompatActivity {
     private double surfRight = 0;
     private double surfBottom = 0;
     private SessionManager sessions;
+    private boolean isConfigure;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -95,6 +96,8 @@ public class DipsCameraActivity extends AppCompatActivity {
         mContext = this;
 
         sessions = new SessionManager(mContext);
+
+        previewHolder();
 
         transHolder = transPreview.getHolder();
         transHolder.setFormat(PixelFormat.TRANSPARENT);
@@ -242,6 +245,8 @@ public class DipsCameraActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
 
+        isConfigure = false;
+
         hideStatusBar();
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -258,9 +263,6 @@ public class DipsCameraActivity extends AppCompatActivity {
                 requestPermission();
             }
         }
-
-        cameraConfigured = false;
-        previewHolder();
     }
     private void previewHolder(){
         previewHolder = preview.getHolder();
@@ -329,34 +331,36 @@ public class DipsCameraActivity extends AppCompatActivity {
     }
     private void initPreview(int width, int height) {
         if (camera != null && previewHolder.getSurface() != null) {
-            CameraManager manager = (CameraManager) getSystemService(Context.CAMERA_SERVICE);
-            if (manager == null) {
-                Log.i("CEK", "camera manager is null");
-                return;
-            }
             try {
-                for (String id: manager.getCameraIdList()) {
-                    CAM_ID = Integer.valueOf(id);
-                    setCameraDisplayOrientation();
+                camera.setPreviewDisplay(previewHolder);
+                //camera.setDisplayOrientation(90);
+                CameraManager manager = (CameraManager) getSystemService(Context.CAMERA_SERVICE);
+                if (manager == null) {
+                    Log.i("CEK", "camera manager is null");
+                    return;
                 }
-            } catch (CameraAccessException e) {
-                e.printStackTrace();
+                try {
+                    for (String id: manager.getCameraIdList()) {
+                        CAM_ID = Integer.valueOf(id);
+                        setCameraDisplayOrientation();
+
+                    }
+                } catch (CameraAccessException e) {
+                    e.printStackTrace();
+                }
+
+            } catch (IOException e) {
+                Toast.makeText(mContext, e.getMessage(), Toast.LENGTH_LONG).show();
             }
 
             if (!cameraConfigured) {
+                isConfigure = true;
                 Camera.Parameters parameters = camera.getParameters();
                 List<Camera.Size> sizes = parameters.getSupportedPreviewSizes();
                 Camera.Size size = getOptimalPreviewSize(sizes, width, height);
-                optimalWidth = size.width;
-                optimalHeight = size.height;
                 if (size != null) {
-                    parameters.setPreviewSize(optimalWidth, optimalHeight);
+                    parameters.setPreviewSize(size.width, size.height);
                     camera.setParameters(parameters);
-                    try {
-                        camera.setPreviewDisplay(previewHolder);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
                     cameraConfigured = true;
                 }
             }
@@ -372,8 +376,52 @@ public class DipsCameraActivity extends AppCompatActivity {
             }
             camera.setParameters(parameters);
             inPreview = true;
+            if (isConfigure) {
+                Log.d("CEK","MASUK isConfigure");
+                try {
+                    Thread.sleep(500);
+                    optimalCamera();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
         }
     }
+
+    private void optimalCamera() {
+        if (useFacing != null) {
+            if (useFacing == Camera.CameraInfo.CAMERA_FACING_FRONT) {
+                useFacing = Camera.CameraInfo.CAMERA_FACING_FRONT;
+            } else {
+                useFacing = Camera.CameraInfo.CAMERA_FACING_BACK;
+            }
+
+            onPause();
+            onResume();
+            try {
+                camera.setPreviewDisplay(previewHolder);
+                //camera.setDisplayOrientation(90);
+                CameraManager manager = (CameraManager) getSystemService(Context.CAMERA_SERVICE);
+                if (manager == null) {
+                    Log.i("CEK", "camera manager is null");
+                    return;
+                }
+                try {
+                    for (String id: manager.getCameraIdList()) {
+                        CAM_ID = Integer.valueOf(id);
+                        setCameraDisplayOrientation();
+
+                    }
+                } catch (CameraAccessException e) {
+                    e.printStackTrace();
+                }
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
     SurfaceHolder.Callback surfaceCallback = new SurfaceHolder.Callback() {
         @Override
         public void surfaceCreated(@NonNull SurfaceHolder holder) {
@@ -534,8 +582,8 @@ public class DipsCameraActivity extends AppCompatActivity {
             result = (360 - result) % 360;  // compensate the mirror
             degreeFront = result;
         } else {  // back-facing
-            result = (info.orientation - degrees + 360) % 360;
-            //result = 180;
+            //result = (info.orientation - degrees + 360) % 360;
+            result = 180;
         }
         camera.setDisplayOrientation(result);
     }

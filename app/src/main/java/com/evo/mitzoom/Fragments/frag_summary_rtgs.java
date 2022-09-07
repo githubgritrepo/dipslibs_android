@@ -110,12 +110,15 @@ public class frag_summary_rtgs extends Fragment {
             e.printStackTrace();
         }
 
+        Log.e("CEK","Request : "+jsons.toString());
+
         RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), jsons.toString());
         Server.getAPIService().saveForm(requestBody).enqueue(new Callback<JsonObject>() {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
                 if (response.isSuccessful()) {
                     String dataS = response.body().toString();
+                    Log.e("CEK","Response : "+dataS);
                     try {
                         JSONObject jsObj = new JSONObject(dataS);
                         int errCode = jsObj.getInt("err_code");
@@ -141,7 +144,7 @@ public class frag_summary_rtgs extends Fragment {
         });
     }
 
-    private void verifyOTP() {
+    private void verifyOTP(SweetAlertDialog sweetAlertDialog) {
         JSONObject jsons = new JSONObject();
         try {
             String idForm = dataNasabah.getString("idFormRTGS");
@@ -167,6 +170,7 @@ public class frag_summary_rtgs extends Fragment {
                         JSONObject jsObj = new JSONObject(dataS);
                         int errCode = jsObj.getInt("err_code");
                         if (errCode == 0 ){
+                            sweetAlertDialog.dismiss();
                             PopUpSuccesOtp();
                         } else {
                             String msg = jsObj.getString("message");
@@ -347,7 +351,8 @@ public class frag_summary_rtgs extends Fragment {
         circleIndicator.setViewPager(pager);
     }
 
-    private void savedRTGS() {
+    private JSONArray savedRTGS() {
+        JSONArray dataRTGSArr = new JSONArray();
         Log.d("CEK","MASUK savedRTGS");
         try {
             JSONArray jsArr = new JSONArray(dataRTGS);
@@ -380,6 +385,17 @@ public class frag_summary_rtgs extends Fragment {
                 dataPopulation.add(sourcePopulation);
                 dataNews.add(berita);
 
+                dataRTGSArr.put(i, idForm);
+                dataRTGSArr.put(i, sourceAccount);
+                dataRTGSArr.put(i, sourceBank);
+                dataRTGSArr.put(i, rek_penerima);
+                dataRTGSArr.put(i, nama_penerima);
+                dataRTGSArr.put(i, nominal);
+                dataRTGSArr.put(i, sourceTypeService);
+                dataRTGSArr.put(i, sourceBenefit);
+                dataRTGSArr.put(i, sourcePopulation);
+                dataRTGSArr.put(i, berita);
+
                 initPager();
 
                 if (i == 0) {
@@ -391,6 +407,54 @@ public class frag_summary_rtgs extends Fragment {
         } catch (JSONException e) {
             e.printStackTrace();
         }
+        
+        return dataRTGSArr;
+    }
+
+    private JSONArray getRTGS() {
+        JSONArray dataRTGSArr = new JSONArray();
+        Log.d("CEK","MASUK getRTGS");
+        try {
+            JSONArray jsArr = new JSONArray(dataRTGS);
+            int len = jsArr.length();
+            String namaNasabah = dataNasabah.getString("nama");
+            String alamatNasabah = dataNasabah.getString("alamat");
+            for (int i = 0; i < len; i++) {
+                JSONObject saveObj = new JSONObject();
+
+                String dataArr = jsArr.get(i).toString();
+                JSONObject dataJs = new JSONObject(dataArr);
+                String idForm = dataJs.getString("idForm");
+                String sourceAccount = dataJs.getString("sourceAccount");
+                String sourceBank = dataJs.getString("sourceBank");
+                String sourceTypeService = dataJs.getString("sourceTypeService");
+                String sourceBenefit = dataJs.getString("sourceBenefit");
+                String sourcePopulation = dataJs.getString("sourcePopulation");
+                String rek_penerima = dataJs.getString("rek_penerima");
+                String nama_penerima = dataJs.getString("nama_penerima");
+                String nominal = dataJs.getString("nominal");
+                String berita = dataJs.getString("berita");
+
+                saveObj.put("idForm", idForm);
+                saveObj.put("namaNasabah", namaNasabah);
+                saveObj.put("alamatNasabah", alamatNasabah);
+                saveObj.put("sourceAccount", sourceAccount);
+                saveObj.put("sourceBank", sourceBank);
+                saveObj.put("rek_penerima", rek_penerima);
+                saveObj.put("nama_penerima", nama_penerima);
+                saveObj.put("nominal", nominal);
+                saveObj.put("sourceTypeService", sourceTypeService);
+                saveObj.put("sourceBenefit", sourceBenefit);
+                saveObj.put("sourcePopulation", sourcePopulation);
+                saveObj.put("berita", berita);
+
+                dataRTGSArr.put(saveObj);
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        return dataRTGSArr;
     }
 
     private void mirroringPagerRTGS(int position) {
@@ -489,6 +553,9 @@ public class frag_summary_rtgs extends Fragment {
                 Matcher matcher = pattern.matcher(wordOTP);
                 if (matcher.find()) {
                     String getNumberOTP=wordOTP.replaceAll("[^0-9]", "");
+                    if (getNumberOTP.length() > 1 && getNumberOTP.length() <= 6) {
+                        getNumberOTP = getNumberOTP.substring(getNumberOTP.length()-1,getNumberOTP.length());
+                    }
                     if (numberOTP.length() < 6) {
                         numberOTP += getNumberOTP;
                     }
@@ -499,7 +566,6 @@ public class frag_summary_rtgs extends Fragment {
             @Override
             public void afterTextChanged(Editable s) {
                 backSpaceOTP = lasLenOTP > s.length();
-                Log.e("CEK", "backSpaceOTP : " + backSpaceOTP);
                 if (backSpaceOTP) {
                     int lenOTP = numberOTP.length();
                     if (lenOTP > 0) {
@@ -520,7 +586,6 @@ public class frag_summary_rtgs extends Fragment {
                 if (otp.length() == 6 || otp.length() == 0){
                     handler.removeMessages(0);
                     handler.removeCallbacks(myRunnable);
-                    Log.d("TAG","STOP Loop");
                 }
             }
         });
@@ -536,7 +601,8 @@ public class frag_summary_rtgs extends Fragment {
                     handler.removeCallbacks(myRunnable);
                     Mirroring2(true, otp.getText().toString());
                     sweetAlertDialog.dismiss();
-                    verifyOTP();
+                    PopUpSuccesOtp();
+                    //verifyOTP(sweetAlertDialog);
                 }
             }
         });
@@ -584,7 +650,7 @@ public class frag_summary_rtgs extends Fragment {
             @Override
             public void onClick(SweetAlertDialog sweetAlertDialog) {
                 Mirroring3(true);
-                Fragment fragment = new frag_resi();
+                Fragment fragment = new frag_new_resi();
                 Bundle bundle = new Bundle();
                 fragment.setArguments(bundle);
                 getFragmentPage(fragment);
@@ -643,7 +709,8 @@ public class frag_summary_rtgs extends Fragment {
                     PopUp();
                     try {
                         Thread.sleep(1500);
-                        APISaveForm(jsonArray);
+                        JSONArray dataRTGSArr = getRTGS();
+                        APISaveForm(dataRTGSArr);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }

@@ -1,6 +1,10 @@
 package com.evo.mitzoom.Fragments;
 
+import android.Manifest;
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.Editable;
@@ -18,7 +22,9 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.chaos.view.PinView;
 import com.evo.mitzoom.API.ApiService;
@@ -66,12 +72,154 @@ public class frag_new_account_cs2 extends Fragment {
     private String oldString, newString;
     public boolean running = true;
     private boolean pernyataan_ = false;
+    private BroadcastReceiver smsReceiver = null;
+    private JSONObject dataNasabah = null;
+    private String numberOTP = "";
+    private boolean flagTransfer = false;
+    private int lasLenOTP;
+    private boolean backSpaceOTP;
+    private String no_handphone;
+
+    private void APISaveForm(JSONArray jsonsIBMB) {
+        JSONObject dataObj = new JSONObject();
+        try {
+            dataObj.put("data",jsonsIBMB);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        JSONObject jsons = new JSONObject();
+        try {
+            jsons.put("formCode","newaccount");
+            jsons.put("idDips",idDips);
+            jsons.put("phone",no_handphone);
+            jsons.put("payload",dataObj);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), jsons.toString());
+        Server.getAPIService().saveForm(requestBody).enqueue(new Callback<JsonObject>() {
+            @Override
+            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                if (response.isSuccessful()) {
+                    String dataS = response.body().toString();
+                    try {
+                        JSONObject jsObj = new JSONObject(dataS);
+                        int errCode = jsObj.getInt("err_code");
+                        if (errCode == 0) {
+                            JSONObject dataJs = jsObj.getJSONObject("data");
+                            String idForm = dataJs.getString("idForm");
+                            dataNasabah.put("idFormNewAccount",idForm);
+                            session.saveNasabah(dataNasabah.toString());
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
+                } else {
+                    Toast.makeText(context,"Gagal Save Form",Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<JsonObject> call, Throwable t) {
+
+            }
+        });
+    }
+
+    private void verifyOTP() {
+        JSONObject jsons = new JSONObject();
+        try {
+            String idForm = dataNasabah.getString("idFormNewAccount");
+            jsons.put("idForm",idForm);
+            jsons.put("otpCode",numberOTP);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        Log.e("CEK","PARAMS verifyOTP : "+jsons.toString());
+        RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), jsons.toString());
+
+        Server.getAPIService().VerifyOTP(requestBody).enqueue(new Callback<JsonObject>() {
+            @Override
+            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                Log.e("CEK","response verifyOTP : "+response.code());
+                if (response.body() != null) {
+                    Log.e("CEK","response body verifyOTP : "+response.body().toString());
+                }
+                if (response.isSuccessful()) {
+                    String dataS = response.body().toString();
+                    try {
+                        JSONObject jsObj = new JSONObject(dataS);
+                        int errCode = jsObj.getInt("err_code");
+                        if (errCode == 0 ){
+                            PopUpSuccesOtp();
+                        } else {
+                            String msg = jsObj.getString("message");
+                            Toast.makeText(context,msg,Toast.LENGTH_SHORT).show();
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
+                }
+            }
+
+            @Override
+            public void onFailure(Call<JsonObject> call, Throwable t) {
+
+            }
+        });
+    }
+
+    private void resendOTP() {
+        JSONObject jsons = new JSONObject();
+        try {
+            String idForm = dataNasabah.getString("idFormNewAccount");
+            jsons.put("idForm",idForm);
+            jsons.put("phone",no_handphone);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), jsons.toString());
+
+        Server.getAPIService().ResendOTP(requestBody).enqueue(new Callback<JsonObject>() {
+            @Override
+            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                if (response.isSuccessful()) {
+                    String dataS = response.body().toString();
+                    try {
+                        JSONObject jsObj = new JSONObject(dataS);
+                        int errCode = jsObj.getInt("err_code");
+                        if (errCode == 0 ){
+                            Toast.makeText(context, "Kode Terkirim ke nomor Hanphone Anda", Toast.LENGTH_SHORT).show();
+                        } else {
+                            Toast.makeText(context, "Kode Gagal Terkirim ke nomor Hanphone Anda", Toast.LENGTH_SHORT).show();
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
+                }
+            }
+
+            @Override
+            public void onFailure(Call<JsonObject> call, Throwable t) {
+
+            }
+        });
+    }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         context = getContext();
         session = new SessionManager(context);
+        ActivityCompat.requestPermissions(getActivity(),
+                new String[]{Manifest.permission.RECEIVE_SMS},
+                1001);
     }
     @Nullable
     @Override
@@ -94,6 +242,17 @@ public class frag_new_account_cs2 extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         idDips = session.getKEY_IdDips();
+
+        String dataJsonS = session.getNasabah();
+        if (dataJsonS != null) {
+            try {
+                dataNasabah = new JSONObject(dataJsonS);
+                no_handphone = dataNasabah.getString("noHP");
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+
         Bundle arg = getArguments();
         btnProses.setEnabled(false);
         btnProses.setBackgroundTintList(context.getResources().getColorStateList(R.color.btnFalse));
@@ -149,12 +308,50 @@ public class frag_new_account_cs2 extends Fragment {
             @Override
             public void onClick(View view) {
                 Mirroring(pernyataan_, true,false);
-                icon_konfirmasi_data.setBackgroundTintList(context.getResources().getColorStateList(R.color.bg_cif_success));
-                PopUpOTP();
             }
         });
     }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        smsReceiver = new BroadcastReceiver() {
+
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                numberOTP = "";
+                String dataSMS = intent.getExtras().getString("smsMessage");
+                Log.e("CEK","MASUK dataSMS : "+dataSMS);
+                String[] sp = dataSMS.split(" ");
+                for (int i = 0; i < sp.length; i++) {
+                    String word = sp[i].toString();
+                    if(word.matches("\\d+(?:\\.\\d+)?")) {
+                        numberOTP = word.replaceAll("[^0-9]", "");
+                        if (numberOTP.length() == 6) {
+                            otp.setText(numberOTP);
+                            newString = myFilter(numberOTP);
+                            otp.setText(newString);
+                        }
+                    }
+                }
+            }
+        };
+        LocalBroadcastManager.getInstance(getActivity()).registerReceiver(smsReceiver,new IntentFilter("getotp"));
+
+    }
+
+    @Override
+    public void onPause() {
+        Log.e("CEK","MASUK onPause");
+        LocalBroadcastManager.getInstance(getActivity()).unregisterReceiver(smsReceiver);
+        super.onPause();
+    }
+
     private void PopUpOTP(){
+        String sub_no_handphone = no_handphone.substring(no_handphone.length() - 3);
+        String noHandphone = no_handphone.replace(sub_no_handphone,"XXX");
+
         inflater = getLayoutInflater();
         dialogView = inflater.inflate(R.layout.item_otp,null);
         SweetAlertDialog sweetAlertDialog = new SweetAlertDialog(context, SweetAlertDialog.NORMAL_TYPE);
@@ -162,6 +359,14 @@ public class frag_new_account_cs2 extends Fragment {
         sweetAlertDialog.hideConfirmButton();
         sweetAlertDialog.setCancelable(false);
         sweetAlertDialog.show();
+
+        TextView textIBMB = (TextView) dialogView.findViewById(R.id.textIBMB);
+        String contentText = textIBMB.getText().toString();
+        Log.e("CEK","contentText : "+contentText+" | no_handphone : "+noHandphone);
+        contentText = contentText.replace("+62812 3456 7XXX",noHandphone);
+        Log.e("CEK","contentText new : "+contentText);
+        textIBMB.setText(contentText);
+
         btnVerifikasi = dialogView.findViewById(R.id.btnVerifikasi);
         Timer = dialogView.findViewById(R.id.timer_otp);
         Resend_Otp = dialogView.findViewById(R.id.btn_resend_otp);
@@ -170,23 +375,38 @@ public class frag_new_account_cs2 extends Fragment {
         otp.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                /*selPos = otp.getSelectionStart();
-                oldString = myFilter(s.toString());*/
+                lasLenOTP = s.length();
 
             }
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
+                String wordOTP = s.toString();
                 String patternStr = "[0-9]";
                 Pattern pattern = Pattern.compile(patternStr);
-                Matcher matcher = pattern.matcher(s);
+                Matcher matcher = pattern.matcher(wordOTP);
                 if (matcher.find()) {
-                    Mirroring2(s, false);
+                    String getNumberOTP=wordOTP.replaceAll("[^0-9]", "");
+                    if (getNumberOTP.length() > 1 && getNumberOTP.length() <= 6) {
+                        getNumberOTP = getNumberOTP.substring(getNumberOTP.length()-1,getNumberOTP.length());
+                    }
+                    if (numberOTP.length() < 6) {
+                        numberOTP += getNumberOTP;
+                    }
+                    Mirroring2(numberOTP, false);
                 }
             }
 
             @Override
             public void afterTextChanged(Editable s) {
+                backSpaceOTP = lasLenOTP > s.length();
+                Log.e("CEK", "backSpaceOTP : " + backSpaceOTP);
+                if (backSpaceOTP) {
+                    int lenOTP = numberOTP.length();
+                    if (lenOTP > 0) {
+                        numberOTP = numberOTP.substring(0, lenOTP - 1);
+                    }
+                }
                 newString = myFilter(s.toString());
                 otp.removeTextChangedListener(this);
                 handler = new Handler();
@@ -216,7 +436,7 @@ public class frag_new_account_cs2 extends Fragment {
                     handler.removeCallbacks(myRunnable);
                     Mirroring2(otp.getText().toString(),true);
                     sweetAlertDialog.dismiss();
-                    PopUpSuccesOtp();
+                    verifyOTP();
 
                 }
             }
@@ -226,7 +446,7 @@ public class frag_new_account_cs2 extends Fragment {
             @Override
             public void onClick(View v) {
                 if (seconds==0){
-                    Toast.makeText(context, "Kode Terkirim", Toast.LENGTH_SHORT).show();
+                    resendOTP();
                 }
             }
         });
@@ -339,6 +559,23 @@ public class frag_new_account_cs2 extends Fragment {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
                 Log.d("MIRROR","Mirroring Sukses");
+                if (bool_submit) {
+                    icon_konfirmasi_data.setBackgroundTintList(context.getResources().getColorStateList(R.color.bg_cif_success));
+                    PopUpOTP();
+                    try {
+                        Thread.sleep(1500);
+                        JSONArray dataForm = new JSONArray();
+                        dataForm.put(rekSumberdana);
+                        dataForm.put(typeSend);
+                        dataForm.put(nama);
+                        dataForm.put(tgl);
+                        dataForm.put(produk);
+                        dataForm.put(nominal);
+                        APISaveForm(dataForm);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
             }
 
             @Override

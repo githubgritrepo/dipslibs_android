@@ -7,6 +7,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
 import okhttp3.RequestBody;
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
@@ -105,6 +106,29 @@ public interface ApiService {
     @GET("api/customer/portofolio/{idDiPS}")
     Call<JsonObject> GetPortofolio(
             @Path("idDiPS") String idDiPS
+    );
+
+    @Headers("Content-Type: "+ MyConstants.CONTENT_TYPE)
+    @GET("api/form/resume-rtgs/{indexTypeTran}-{etc}-{noFIP}-{isPenduduk}-{namaPenyetor}-{addrPenyetor}-{noHP}-" +
+            "{noRek}-{total}-{biaya}-{namaPenerima}-{addrPenerima}-{bankPenerima}-{noRekPenerima}-{berita}-" +
+            "{namaTeller}")
+    Call<JsonObject> GetResumeTransaction(
+            @Path("indexTypeTran") int indexTypeTran,
+            @Path("etc") String etc,
+            @Path("noFIP") String noFIP,
+            @Path("isPenduduk") boolean isPenduduk,
+            @Path("namaPenyetor") String namaPenyetor,
+            @Path("addrPenyetor") String addrPenyetor,
+            @Path("noHP") String noHP,
+            @Path("noRek") String noRek,
+            @Path("total") String total,
+            @Path("biaya") int biaya,
+            @Path("namaPenerima") String namaPenerima,
+            @Path("addrPenerima") String addrPenerima,
+            @Path("bankPenerima") String bankPenerima,
+            @Path("noRekPenerima") String noRekPenerima,
+            @Path("berita") String berita,
+            @Path("namaTeller") String namaTeller
     );
 
 }

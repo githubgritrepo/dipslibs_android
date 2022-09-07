@@ -201,7 +201,6 @@ public class frag_portfolio extends Fragment {
                             sessionManager.saveNasabah(dataNasabah.toString());
                             produkListPorto = datas.getJSONArray("produk");
                             setChartNasabah();
-                            setLegendChart();
                             addDataDanaPihakKetigaMasking();
                             addDataInvestasiMasking();
                             addDataKreditMasking();
@@ -272,6 +271,8 @@ public class frag_portfolio extends Fragment {
         pieChart.setDrawHoleEnabled(true);
         pieChart.setDrawEntryLabels(false);
         pieChart.getDescription().setEnabled(false);
+
+        setLegendChart();
 
         int len = produkListPorto.length();
         JSONArray typeProdukListArr = new JSONArray();
@@ -377,9 +378,10 @@ public class frag_portfolio extends Fragment {
     }
     private void setLegendChart(){
         Legend l = pieChart.getLegend();
-        l.setVerticalAlignment(Legend.LegendVerticalAlignment.TOP);
+        l.setVerticalAlignment(Legend.LegendVerticalAlignment.CENTER);
         l.setHorizontalAlignment(Legend.LegendHorizontalAlignment.RIGHT);
         l.setOrientation(Legend.LegendOrientation.VERTICAL);
+        l.setTextSize(12);
         l.setDrawInside(false);
     }
     private void getFragmentPage(Fragment fragment){

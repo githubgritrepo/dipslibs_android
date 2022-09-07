@@ -145,19 +145,19 @@ public class frag_form_credit extends Fragment {
                     pernyataan__ = true;
                     switch (state){
                         case 1:
-                            MirroringCREDIT(et_nama.getText().toString(),et_nik.getText().toString(),et_nohp.getText().toString(),et_email.getText().toString(),et_alamat.getText().toString(),et_agama.getText().toString(),et_status.getText().toString(),tenor_,et_nominal.getText().toString(),pernyataan__,false,true);
+                            MirroringCREDIT(et_nama.getText().toString(),et_nik.getText().toString(),et_nohp.getText().toString(),et_email.getText().toString(),et_alamat.getText().toString(),et_agama.getText().toString(),et_status.getText().toString(),tenor_,et_nominal.getText().toString(),pernyataan__,false,false);
                             getFragmentPage(new frag_service());
                             break;
                         case 2:
-                            MirroringKYCUpdating(et_nama.getText().toString(),et_nik.getText().toString(),et_nohp.getText().toString(),et_email.getText().toString(),et_alamat.getText().toString(),et_agama.getText().toString(),et_status.getText().toString(),pernyataan__,false,true);
+                            MirroringKYCUpdating(et_nama.getText().toString(),et_nik.getText().toString(),et_nohp.getText().toString(),et_email.getText().toString(),et_alamat.getText().toString(),et_agama.getText().toString(),et_status.getText().toString(),pernyataan__,false,false);
                             getFragmentPage(new frag_service());
                             break;
                         case 3:
-                            MirroringKYCUpdating(et_nama.getText().toString(),et_nik.getText().toString(),et_nohp.getText().toString(),et_email.getText().toString(),et_alamat.getText().toString(),et_agama.getText().toString(),et_status.getText().toString(),pernyataan__,false,true);
+                            MirroringKYCUpdating(et_nama.getText().toString(),et_nik.getText().toString(),et_nohp.getText().toString(),et_email.getText().toString(),et_alamat.getText().toString(),et_agama.getText().toString(),et_status.getText().toString(),pernyataan__,false,false);
                             getFragmentPage(new frag_service());
                             break;
                         case 4:
-                            MirroringKYCUpdating(et_nama.getText().toString(),et_nik.getText().toString(),et_nohp.getText().toString(),et_email.getText().toString(),et_alamat.getText().toString(),et_agama.getText().toString(),et_status.getText().toString(),pernyataan__,false,true);
+                            MirroringKYCUpdating(et_nama.getText().toString(),et_nik.getText().toString(),et_nohp.getText().toString(),et_email.getText().toString(),et_alamat.getText().toString(),et_agama.getText().toString(),et_status.getText().toString(),pernyataan__,false,false);
                             getFragmentPage(new frag_service());
                             break;
                     }
@@ -195,6 +195,7 @@ public class frag_form_credit extends Fragment {
             public void onClick(View view) {
                 switch (state){
                     case 1:
+                        MirroringCREDIT("","","","","","","","","",pernyataan__,false,true);
                         getFragmentPage(new frag_service());
                         break;
                     case 2:
@@ -355,15 +356,15 @@ public class frag_form_credit extends Fragment {
                 switch(idRb) {
                     case R.id.duabelas_Bulan:
                         tenor_ = "12 Bulan";
-                        MirroringCREDIT(et_nama.getText().toString(),et_nik.getText().toString(),et_nohp.getText().toString(),et_email.getText().toString(),et_alamat.getText().toString(),et_agama.getText().toString(),et_status.getText().toString(),tenor_,et_nominal.getText().toString(),pernyataan__,false,true);
+                        MirroringCREDIT(et_nama.getText().toString(),et_nik.getText().toString(),et_nohp.getText().toString(),et_email.getText().toString(),et_alamat.getText().toString(),et_agama.getText().toString(),et_status.getText().toString(),tenor_,et_nominal.getText().toString(),pernyataan__,false,false);
                         break;
                     case R.id.duaempat_Bulan:
                         tenor_ = "24 Bulan";
-                        MirroringCREDIT(et_nama.getText().toString(),et_nik.getText().toString(),et_nohp.getText().toString(),et_email.getText().toString(),et_alamat.getText().toString(),et_agama.getText().toString(),et_status.getText().toString(),tenor_,et_nominal.getText().toString(),pernyataan__,false,true);
+                        MirroringCREDIT(et_nama.getText().toString(),et_nik.getText().toString(),et_nohp.getText().toString(),et_email.getText().toString(),et_alamat.getText().toString(),et_agama.getText().toString(),et_status.getText().toString(),tenor_,et_nominal.getText().toString(),pernyataan__,false,false);
                         break;
                     case R.id.tigalima_Bulan:
                         tenor_ = "35 Bulan";
-                        MirroringCREDIT(et_nama.getText().toString(),et_nik.getText().toString(),et_nohp.getText().toString(),et_email.getText().toString(),et_alamat.getText().toString(),et_agama.getText().toString(),et_status.getText().toString(),tenor_,et_nominal.getText().toString(),pernyataan__,false,true);
+                        MirroringCREDIT(et_nama.getText().toString(),et_nik.getText().toString(),et_nohp.getText().toString(),et_email.getText().toString(),et_alamat.getText().toString(),et_agama.getText().toString(),et_status.getText().toString(),tenor_,et_nominal.getText().toString(),pernyataan__,false,false);
                         break;
                 }
                 et_nominal.addTextChangedListener(new TextWatcher() {
@@ -383,7 +384,7 @@ public class frag_form_credit extends Fragment {
                         BigDecimal parsed = parseCurrencyValue(et_nominal.getText().toString());
                         String formatted = numberFormat.format(parsed);
                         et_nominal.setText(formatted);
-                        MirroringCREDIT(et_nama.getText().toString(),et_nik.getText().toString(),et_nohp.getText().toString(),et_email.getText().toString(),et_alamat.getText().toString(),et_agama.getText().toString(),et_status.getText().toString(),tenor_,formatted,pernyataan__,false,true);
+                        MirroringCREDIT(et_nama.getText().toString(),et_nik.getText().toString(),et_nohp.getText().toString(),et_email.getText().toString(),et_alamat.getText().toString(),et_agama.getText().toString(),et_status.getText().toString(),tenor_,formatted,pernyataan__,false,false);
                         et_nominal.setSelection(formatted.length());
                         et_nominal.addTextChangedListener(this);
                     }
