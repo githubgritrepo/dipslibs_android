@@ -416,7 +416,11 @@ public class frag_portfolio extends Fragment {
                         namaProduk += " - "+noRekening;
                         String curs = getResources().getString(R.string.mata_uang);
                         if (!kurs.equals(curs)) {
-                            curs = kurs;
+                            if (curs.equals("Rp")) {
+                                curs = curs;
+                            } else {
+                                curs = kurs;
+                            }
                         }
                         String dataN = curs + " " + formatted;
                         int getImg = 0;
@@ -463,7 +467,11 @@ public class frag_portfolio extends Fragment {
                         namaProduk += " - "+noRekening;
                         String curs = getResources().getString(R.string.mata_uang);
                         if (!kurs.equals(curs)) {
-                            curs = kurs;
+                            if (curs.equals("Rp")) {
+                                curs = curs;
+                            } else {
+                                curs = kurs;
+                            }
                         }
                         String dataN = curs + " " + formatted;
                         int getImg = 0;
@@ -509,7 +517,11 @@ public class frag_portfolio extends Fragment {
                         namaProduk += " - "+noRekening;
                         String curs = getResources().getString(R.string.mata_uang);
                         if (!kurs.equals(curs)) {
-                            curs = kurs;
+                            if (curs.equals("Rp")) {
+                                curs = curs;
+                            } else {
+                                curs = kurs;
+                            }
                         }
                         String dataN = curs + " " + formatted;
                         int getImg = 0;
@@ -552,7 +564,11 @@ public class frag_portfolio extends Fragment {
                         namaProduk += " - "+noRekening;
                         String curs = getResources().getString(R.string.mata_uang);
                         if (!kurs.equals(curs)) {
-                            curs = kurs;
+                            if (curs.equals("Rp")) {
+                                curs = curs;
+                            } else {
+                                curs = kurs;
+                            }
                         }
                         String dataN = curs + " " + formatted;
                         int getImg = 0;
@@ -595,7 +611,11 @@ public class frag_portfolio extends Fragment {
                         namaProduk += " - "+noRekening;
                         String curs = getResources().getString(R.string.mata_uang);
                         if (!kurs.equals(curs)) {
-                            curs = kurs;
+                            if (curs.equals("Rp")) {
+                                curs = curs;
+                            } else {
+                                curs = kurs;
+                            }
                         }
                         String dataN = curs + " " + formatted;
                         int getImg = 0;
@@ -639,7 +659,11 @@ public class frag_portfolio extends Fragment {
                         namaProduk += " - "+noRekening;
                         String curs = getResources().getString(R.string.mata_uang);
                         if (!kurs.equals(curs)) {
-                            curs = kurs;
+                            if (curs.equals("Rp")) {
+                                curs = curs;
+                            } else {
+                                curs = kurs;
+                            }
                         }
                         String dataN = curs + " " + formatted;
                         int getImg = 0;

@@ -600,9 +600,9 @@ public class frag_summary_rtgs extends Fragment {
                     handler.removeMessages(0);
                     handler.removeCallbacks(myRunnable);
                     Mirroring2(true, otp.getText().toString());
-                    sweetAlertDialog.dismiss();
-                    PopUpSuccesOtp();
-                    //verifyOTP(sweetAlertDialog);
+                    /*sweetAlertDialog.dismiss();
+                    PopUpSuccesOtp();*/
+                    verifyOTP(sweetAlertDialog);
                 }
             }
         });
