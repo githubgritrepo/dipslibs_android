@@ -9,7 +9,9 @@ import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.Settings;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -40,6 +42,7 @@ public class DipsSplashScreen extends AppCompatActivity {
     public static final int REQUEST_READ_PERMISSION = 787;
     private static final int MY_CAMERA_PERMISSION_CODE = 100;
     private static final int REQUEST_READ_PHONE_STATE = 787;
+    private static final int ATTACHMENT_MANAGE_ALL_FILE = 308;
     private static final int REQUEST_ALL = 888;
     private ImageView imgSplash;
     private TextView tvVersion;
@@ -76,14 +79,15 @@ public class DipsSplashScreen extends AppCompatActivity {
 
         sessions = new SessionManager(mContext);
 
-        /*if (ActivityCompat.checkSelfPermission(mContext, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
-            PermissionCamera();
-        } else {
-            permissionWrite();
-        }*/
-        reqPermission();
 
     }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        reqPermission();
+    }
+
     private void reqPermission(){
         if (ActivityCompat.checkSelfPermission(DipsSplashScreen.this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED &&
                 ActivityCompat.checkSelfPermission(DipsSplashScreen.this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED &&
@@ -100,19 +104,41 @@ public class DipsSplashScreen extends AppCompatActivity {
             processNext();
         }
     }
+
     private void processNext() {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                doWork();
-                runOnUiThread(new Runnable() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            if (!Environment.isExternalStorageManager()){
+                Intent getpermission = new Intent();
+                getpermission.setAction(Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION);
+                startActivityForResult(getpermission,ATTACHMENT_MANAGE_ALL_FILE);
+            } else {
+                new Thread(new Runnable() {
                     @Override
                     public void run() {
-                        chooseLanguage();
+                        doWork();
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                chooseLanguage();
+                            }
+                        });
                     }
-                });
+                }).start();
             }
-        }).start();
+        } else {
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    doWork();
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            chooseLanguage();
+                        }
+                    });
+                }
+            }).start();
+        }
     }
     private void chooseLanguage() {
         imgSplash.setVisibility(View.INVISIBLE);

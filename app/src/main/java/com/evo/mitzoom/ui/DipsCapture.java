@@ -15,6 +15,7 @@ import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.PixelFormat;
 import android.graphics.RectF;
+import android.hardware.Camera;
 import android.media.ExifInterface;
 import android.os.Bundle;
 import android.os.Environment;
@@ -23,10 +24,12 @@ import android.os.Looper;
 import android.telephony.TelephonyManager;
 import android.util.Base64;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
@@ -253,6 +256,54 @@ public class DipsCapture extends AppCompatActivity implements CameraSource.Pictu
         return config;
     }
 
+    private Bitmap prosesOptimalImage(Bitmap bitmap, File mediaFile) {
+        int file_size = Integer.parseInt(String.valueOf(mediaFile.length()/1024));
+        Log.d("CEK", "file_size : "+file_size);
+
+        int perDiff = 1;
+        if (file_size > 3072) {
+            perDiff = 6;
+        } else if (file_size > 2048) {
+            perDiff = 4;
+        } else if (file_size > 1024) {
+            perDiff = 2;
+        }/* else if (file_size > 550) {
+            perDiff = 2;
+        }*/
+
+        Bitmap bitmapCrop = getResizedBitmap(bitmap, (bitmap.getWidth() / perDiff), (bitmap.getHeight() / perDiff));
+
+        return bitmapCrop;
+    }
+
+    private Bitmap getResizedBitmap(Bitmap bm, int newWidth, int newHeight) {
+        int width = bm.getWidth();
+        int height = bm.getHeight();
+        float sx = 0;
+        float sy = 0;
+        if (useFacing == Camera.CameraInfo.CAMERA_FACING_FRONT) {
+            sx = ((float) newWidth) / width;
+            sy = ((float) newHeight) / height;
+        } else {
+            sx = ((float) newHeight) / height;
+            sy = ((float) newWidth) / width;
+        }
+
+        int cx = (int) (width / 3.8);
+        int cy = (int) (height / 4.7);
+
+        Matrix matrix = new Matrix();
+        // RESIZE THE BIT MAP
+        matrix.postScale(sx, sy);
+
+        // "RECREATE" THE NEW BITMAP
+        Bitmap resizedBitmap = Bitmap.createBitmap(
+                bm, cx, cy, (int) (width * 0.5), (int) (height * 0.47), matrix, false);
+        //bm.recycle();
+
+        return resizedBitmap;
+    }
+
     SurfaceHolder.Callback surfaceCallback = new SurfaceHolder.Callback() {
         @Override
         public void surfaceCreated(@NonNull SurfaceHolder holder) {
@@ -345,18 +396,18 @@ public class DipsCapture extends AppCompatActivity implements CameraSource.Pictu
     }
 
     private void processCropImage(byte[] dataPhoto) {
-        Bitmap bitmap = BitmapFactory.decodeByteArray(dataPhoto, 0, dataPhoto.length);
-        Bitmap bitmapCrop = resizeAndCropCenter(bitmap, 640, false);
+        Bitmap realBitmap = BitmapFactory.decodeByteArray(dataPhoto, 0, dataPhoto.length);
+        //Bitmap bitmapCrop = resizeAndCropCenter(realBitmap, 640, false);
 
         int rotationInDegree = 1;
         try {
             File mediaFile = createTemporaryFile(dataPhoto);
             try {
                 String pathFile = mediaFile.getPath();
+                Bitmap bitmapCrop = prosesOptimalImage(realBitmap, mediaFile);
                 ExifInterface exif = new ExifInterface(pathFile);
                 int rotation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL);
                 rotationInDegree = rotation;
-                Log.d("CEK","rotationInDegree before : "+rotationInDegree);
                 rotationInDegree = exifToDegrees(rotationInDegree);
 
                 if (mediaFile.exists()) {
@@ -370,20 +421,18 @@ public class DipsCapture extends AppCompatActivity implements CameraSource.Pictu
                     }
                 }
 
+                String imgBase64 = imageRotateBase64(bitmapCrop, rotationInDegree);
+
+                if (!imgBase64.isEmpty()) {
+                    showProgress(true);
+                    processCaptureIdentify(imgBase64);
+                }
+
             } catch (IOException e) {
                 e.printStackTrace();
             }
         } catch (Exception e) {
             e.printStackTrace();
-        }
-
-        Log.d("CEK","rotationInDegree : "+rotationInDegree);
-
-        String imgBase64 = imageRotateBase64(bitmapCrop, rotationInDegree);
-
-        if (!imgBase64.isEmpty()) {
-            showProgress(true);
-            processCaptureIdentify(imgBase64);
         }
 
     }
@@ -452,6 +501,7 @@ public class DipsCapture extends AppCompatActivity implements CameraSource.Pictu
     private void processCaptureIdentify(String imgBase64) {
 
         if (!NetworkUtil.hasDataNetwork(mContext)) {
+            showProgress(false);
             Toast.makeText(this, "Connection Failed. Please check your network connection and try again.", Toast.LENGTH_LONG).show();
             return;
         }

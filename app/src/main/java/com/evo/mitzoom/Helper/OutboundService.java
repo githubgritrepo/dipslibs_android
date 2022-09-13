@@ -233,8 +233,8 @@ public class OutboundService extends Service implements SocketEventListener.List
     @Override
     public void onTaskRemoved(Intent rootIntent) {
         Log.i(TAG,"MASUK onTaskRemoved");
-        Intent intent = new Intent("com.android.ServiceStopped");
-        sendBroadcast(intent);
+        NotificationMgr.removeConfNotification();
+        stopSelf();
     }
 
     public static String getPassword_session(){
