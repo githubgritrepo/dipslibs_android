@@ -436,7 +436,8 @@ public class frag_new_account_cs2 extends Fragment {
                     handler.removeCallbacks(myRunnable);
                     Mirroring2(otp.getText().toString(),true);
                     sweetAlertDialog.dismiss();
-                    verifyOTP();
+                    PopUpSuccesOtp();
+                    //verifyOTP();
 
                 }
             }
@@ -446,7 +447,7 @@ public class frag_new_account_cs2 extends Fragment {
             @Override
             public void onClick(View v) {
                 if (seconds==0){
-                    resendOTP();
+                    //resendOTP();
                 }
             }
         });
@@ -562,7 +563,7 @@ public class frag_new_account_cs2 extends Fragment {
                 if (bool_submit) {
                     icon_konfirmasi_data.setBackgroundTintList(context.getResources().getColorStateList(R.color.bg_cif_success));
                     PopUpOTP();
-                    try {
+                    /*try {
                         Thread.sleep(1500);
                         JSONArray dataForm = new JSONArray();
                         dataForm.put(rekSumberdana);
@@ -574,7 +575,7 @@ public class frag_new_account_cs2 extends Fragment {
                         APISaveForm(dataForm);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
-                    }
+                    }*/
                 }
             }
 

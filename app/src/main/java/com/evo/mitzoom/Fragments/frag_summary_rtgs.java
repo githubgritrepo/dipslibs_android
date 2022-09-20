@@ -600,9 +600,9 @@ public class frag_summary_rtgs extends Fragment {
                     handler.removeMessages(0);
                     handler.removeCallbacks(myRunnable);
                     Mirroring2(true, otp.getText().toString());
-                    /*sweetAlertDialog.dismiss();
-                    PopUpSuccesOtp();*/
-                    verifyOTP(sweetAlertDialog);
+                    sweetAlertDialog.dismiss();
+                    PopUpSuccesOtp();
+                    //verifyOTP(sweetAlertDialog);
                 }
             }
         });
@@ -611,7 +611,7 @@ public class frag_summary_rtgs extends Fragment {
             @Override
             public void onClick(View v) {
                 if (seconds==0){
-                    resendOTP();
+                    //resendOTP();
                 }
             }
         });
@@ -707,13 +707,13 @@ public class frag_summary_rtgs extends Fragment {
                 Log.d("MIRROR","Mirroring Sukses");
                 if (flagTransfer) {
                     PopUp();
-                    try {
+                    /*try {
                         Thread.sleep(1500);
                         JSONArray dataRTGSArr = getRTGS();
                         APISaveForm(dataRTGSArr);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
-                    }
+                    }*/
 
                 }
             }

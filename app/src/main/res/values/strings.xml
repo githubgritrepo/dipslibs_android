@@ -254,6 +254,13 @@
     <string name="headline_cardless">Terima kasih telah mempercayakan transaksi perbankan Anda pada Bank XYZ. Gunakan Aplikasi XYZ Mobile Banking untuk pengalaman transaksi penuh keuntungan. <b>Resi Digital Form telah dikirimkan ke alamat email Anda.</b> Harap untuk periksa email Anda.</string>
     <string name="unduh_resi">Unduh Resi</string>
     <string name="alamat_penerima">Alamat Penerima</string>
+    <string name="no_cif">No. CIF</string>
+    <string name="pemegang_kartu_atm">Pemegang Kartu ATM</string>
+    <string name="no_kartu_atm">No. Kartu ATM</string>
+    <string name="mengajukan_penggantian">Mengajukan Penggantian</string>
+    <string name="no_surat_kepolisian">No. Surat Kepolisian</string>
+    <string name="dengan_hormat">Dengan hormat,\nYang bertanda tangan dibawah ini:</string>
     <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="success_create_card">SELAMAT!\nPermohonan Kartu Anda Berhasil</string>
+    <string name="tnc_atm">Dengan ini Saya/Kami mengajukan permohonan Kartu ATM. Segala Resiko yang akan timbul adalah merupakan tanggung jawab Saya/Kami sepenuhnya dan dalam hal ini Saya/Kami membebaskan pihak Bank dari segala tuntutan.</string>
 </resources>

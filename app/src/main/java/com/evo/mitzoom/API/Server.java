@@ -7,6 +7,7 @@ public class Server {
     //public static final String BASE_URL_API = "http://45.127.133.162:3000/"; //prod
     //public static final String BASE_URL_API = "https://next-backup.vercel.app/";
     //public static final String BASE_URL_API = "http://192.168.10.198:4000/";
+    public static final String BASE_URL_RABBITMQ = "amqp://dips361:dips2022@103.140.90.42:6004";
 
     public static ApiService getAPIService() {
         return Client.getClientUnsafe(BASE_URL_API).create(ApiService.class);

@@ -13,6 +13,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.Settings;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
@@ -48,7 +49,6 @@ public class DipsSplashScreen extends AppCompatActivity {
     private TextView tvVersion;
     private SessionManager sessions;
     private SweetAlertDialog sweetAlertDialog = null;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -57,7 +57,7 @@ public class DipsSplashScreen extends AppCompatActivity {
         imgSplash = (ImageView) findViewById(R.id.imgSplash);
         tvVersion = (TextView) findViewById(R.id.tvVersion);
 
-        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+        //AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
         getSupportActionBar().hide();
 
@@ -79,13 +79,24 @@ public class DipsSplashScreen extends AppCompatActivity {
 
         sessions = new SessionManager(mContext);
 
-
     }
 
     @Override
     protected void onResume() {
         super.onResume();
+        Log.e("CEK","MASUK onResume");
         reqPermission();
+    }
+
+    @Override
+    protected void onDestroy() {
+        Log.e("CEK", this + ": onDestroy()");
+        if (sweetAlertDialog != null) {
+            Log.e("CEK","onDestroy sweetAlertDialog");
+            sweetAlertDialog.dismissWithAnimation();
+            sweetAlertDialog.cancel();
+        }
+        super.onDestroy();
     }
 
     private void reqPermission(){
@@ -101,13 +112,16 @@ public class DipsSplashScreen extends AppCompatActivity {
                     Manifest.permission.READ_SMS,Manifest.permission.READ_PHONE_NUMBERS}, REQUEST_ALL);
         }
         else{
+            Log.e("CEK","MASUK reqPermission ELSE");
             processNext();
         }
     }
 
     private void processNext() {
+        Log.e("CEK","MASUK processNext");
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             if (!Environment.isExternalStorageManager()){
+                Log.e("CEK","MASUK IF");
                 Intent getpermission = new Intent();
                 getpermission.setAction(Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION);
                 startActivityForResult(getpermission,ATTACHMENT_MANAGE_ALL_FILE);
@@ -115,10 +129,12 @@ public class DipsSplashScreen extends AppCompatActivity {
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
+                        Log.e("CEK","ELSE doWork");
                         doWork();
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
+                                Log.e("CEK","BEFORE chooseLanguage");
                                 chooseLanguage();
                             }
                         });
@@ -129,10 +145,12 @@ public class DipsSplashScreen extends AppCompatActivity {
             new Thread(new Runnable() {
                 @Override
                 public void run() {
+                    Log.e("CEK","ELSE doWork 2");
                     doWork();
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
+                            Log.e("CEK","BEFORE chooseLanguage 2");
                             chooseLanguage();
                         }
                     });
@@ -141,16 +159,17 @@ public class DipsSplashScreen extends AppCompatActivity {
         }
     }
     private void chooseLanguage() {
+        Log.e("CEK","MASUK chooseLanguage");
         imgSplash.setVisibility(View.INVISIBLE);
         LayoutInflater inflater = getLayoutInflater();
         View dialogView = inflater.inflate(R.layout.choose_language, null);
         if (sweetAlertDialog == null) {
+            Log.e("CEK","MASUK NULL sweetAlertDialog");
             sweetAlertDialog = new SweetAlertDialog(DipsSplashScreen.this, SweetAlertDialog.NORMAL_TYPE);
         }
         sweetAlertDialog.setCustomView(dialogView);
         sweetAlertDialog.hideConfirmButton();
         sweetAlertDialog.setCancelable(false);
-        sweetAlertDialog.show();
 
         RadioGroup radioGroup = (RadioGroup) dialogView.findViewById(R.id.groupradio);
         Button btnNext = (Button) dialogView.findViewById(R.id.btnNext);
@@ -169,30 +188,43 @@ public class DipsSplashScreen extends AppCompatActivity {
                 }
                 else {
                     sweetAlertDialog.dismissWithAnimation();
+                    sweetAlertDialog.cancel();
                     RadioButton radioButton = (RadioButton) radioGroup.findViewById(selectedId);
                     int idRb = radioButton.getId();
-                    String langCode = "";
                     switch(idRb) {
                         case R.id.rbId:
-                            langCode = "id";
-                            sessions.saveLANG(langCode);
-                            setLocale(DipsSplashScreen.this,langCode);
-                            startApp();
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    String langCode = "id";
+                                    sessions.saveLANG(langCode);
+                                    setLocale(DipsSplashScreen.this,langCode);
+                                    startApp();
+                                }
+                            });
                             break;
                         case R.id.rbEn:
-                            langCode = "en";
-                            sessions.saveLANG(langCode);
-                            setLocale(DipsSplashScreen.this,langCode);
-                            startApp();
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    String langCode = "en";
+                                    sessions.saveLANG(langCode);
+                                    setLocale(DipsSplashScreen.this,langCode);
+                                    startApp();
+                                }
+                            });
                             break;
                     }
                 }
             }
         });
+        sweetAlertDialog.show();
     }
     private void startApp() {
+        Log.e("CEK","MASUK startApp");
         startActivity(new Intent(DipsSplashScreen.this, DipsCapture.class));
         finishAffinity();
+        Log.e("CEK","AFTER startApp");
     }
     private void doWork() {
         for (int progress=0; progress<=100; progress+=20) {
@@ -209,6 +241,7 @@ public class DipsSplashScreen extends AppCompatActivity {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == REQUEST_ALL) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                Log.e("CEK","MASUK PERMISSION_GRANTED");
                 processNext();
             } else {
                 Toast.makeText(DipsSplashScreen.this,"Permission Denied", Toast.LENGTH_LONG).show();

@@ -56,6 +56,7 @@ import com.google.android.gms.vision.face.LargestFaceFocusingProcessor;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -85,6 +86,7 @@ public class DipsCapture extends AppCompatActivity implements CameraSource.Pictu
     private FaceDetector detector;
     private RelativeLayout rlprogress;
     private SessionManager sessions;
+    public static boolean flagCapture = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -94,7 +96,7 @@ public class DipsCapture extends AppCompatActivity implements CameraSource.Pictu
         String lang = sessions.getLANG();
         setLocale(this, lang);
 
-        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+        //AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
         getSupportActionBar().hide();
@@ -196,6 +198,7 @@ public class DipsCapture extends AppCompatActivity implements CameraSource.Pictu
     }
 
     public void captureImage() {
+        flagCapture = true;
         // We add a delay of 200ms so that image captured is stable.
         new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
             @Override
@@ -424,8 +427,26 @@ public class DipsCapture extends AppCompatActivity implements CameraSource.Pictu
                 String imgBase64 = imageRotateBase64(bitmapCrop, rotationInDegree);
 
                 if (!imgBase64.isEmpty()) {
-                    showProgress(true);
-                    processCaptureIdentify(imgBase64);
+                    byte[] bytePhoto = Base64.decode(imgBase64, Base64.NO_WRAP);
+                    Bitmap bitmap = BitmapFactory.decodeByteArray(bytePhoto, 0, bytePhoto.length);
+
+                    View dialogView = getLayoutInflater().inflate(R.layout.layout_show_image, null);
+                    SweetAlertDialog sweetAlertDialog = new SweetAlertDialog(mContext, SweetAlertDialog.NORMAL_TYPE);
+                    sweetAlertDialog.setCustomView(dialogView);
+                    sweetAlertDialog.setCancelable(false);
+
+                    ImageView imgCapture = (ImageView) dialogView.findViewById(R.id.imgCapture);
+                    imgCapture.setImageBitmap(bitmap);
+
+                    sweetAlertDialog.setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
+                        @Override
+                        public void onClick(SweetAlertDialog sweetAlertDialog) {
+                            sweetAlertDialog.dismissWithAnimation();
+                            showProgress(true);
+                            processCaptureIdentify(imgBase64);
+                        }
+                    });
+                    sweetAlertDialog.show();
                 }
 
             } catch (IOException e) {
@@ -511,9 +532,15 @@ public class DipsCapture extends AppCompatActivity implements CameraSource.Pictu
 
         ApiService API = Server.getAPIService();
         Call<CaptureIdentify> call = API.CaptureIdentify(jsons);
+        Log.e("CEK","REQUEST CALL : "+call.request().url());
         call.enqueue(new Callback<CaptureIdentify>() {
             @Override
             public void onResponse(Call<CaptureIdentify> call, Response<CaptureIdentify> response) {
+                flagCapture = false;
+                Log.e("CEK","RESPONSE CODE: "+response.code());
+                if (response.body() != null) {
+                    Log.e("CEK","Response Body : "+response.body().toString());
+                }
                 showProgress(false);
                 if (response.isSuccessful() && response.body() != null) {
                     int errCode = response.body().getErr_code();
@@ -570,11 +597,45 @@ public class DipsCapture extends AppCompatActivity implements CameraSource.Pictu
 
             @Override
             public void onFailure(Call<CaptureIdentify> call, Throwable t) {
+                String filename = "base64_capture.txt";
+                try {
+                    createTemporaryFile(imgBase64,filename);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                Log.e("CEK","onFailure MESSAGE : "+t.getMessage());
+                flagCapture = false;
                 showProgress(false);
                 startCamera();
                 Toast.makeText(mContext, t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    private File createDir() {
+        String appName = getString(R.string.app_name_dips);
+        String IMAGE_DIRECTORY_NAME = appName;
+        File mediaStorageDir = new File(
+                Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS), IMAGE_DIRECTORY_NAME);
+
+        return mediaStorageDir;
+    }
+
+    private File createTemporaryFile(String dataX, String filename) throws Exception {
+        File mediaStorageDir = createDir();
+
+        mediaStorageDir.mkdirs();
+
+        File mediaFile;
+        mediaFile = new File(mediaStorageDir.getPath() + File.separator +
+                filename);
+
+        FileWriter writer = new FileWriter(mediaFile);
+        writer.append(dataX);
+        writer.flush();
+        writer.close();
+
+        return mediaFile;
     }
 
     private void showProgress(Boolean bool){

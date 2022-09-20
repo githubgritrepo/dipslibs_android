@@ -59,6 +59,9 @@ public class GraphicFaceTracker extends Tracker<Face> {
      */
     @Override
     public void onUpdate(FaceDetector.Detections<Face> detectionResults, Face face) {
+        if (DipsCapture.flagCapture) {
+            return;
+        }
         PointF posF = face.getPosition();
         float posFX = posF.x;
         float posFY = posF.y;

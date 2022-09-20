@@ -255,4 +255,12 @@
     <string name="headline_cardless">Thank you for entrusting your banking transactions to XYZ Bank. Use the XYZ Mobile Banking App for a profitable transaction experience. <b>Resi Digital Form has been sent to your email address</b> Please check your email.</string>
     <string name="unduh_resi">Download Receipt</string>
     <string name="alamat_penerima">Recipient Address</string>
+    <string name="no_cif">No. CIF</string>
+    <string name="pemegang_kartu_atm">ATM Card Holder</string>
+    <string name="no_kartu_atm">No. ATM CARD</string>
+    <string name="mengajukan_penggantian">Applying for Replacement</string>
+    <string name="no_surat_kepolisian">No. Police Letter</string>
+    <string name="dengan_hormat">Yours faithfully,\nThe undersigned below:</string>
+    <string name="success_create_card">CONGRATULATIONS!\nYour Card Application Successful</string>
+    <string name="tnc_atm">Me/Us hereby apply for an ATM Card. All risks that will arise are the full responsibility of Me/Us and in this case Me/Us free the bank from all claims.</string>
 </resources>

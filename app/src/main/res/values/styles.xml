@@ -12,8 +12,6 @@
         <item name="tabIndicatorHeight">1dp</item>
     </style>
 
-
-
     <style name="FullscreenTheme" parent="AppTheme">
         <item name="android:actionBarStyle">@style/FullscreenActionBarStyle</item>
         <item name="android:windowActionBarOverlay">true</item>

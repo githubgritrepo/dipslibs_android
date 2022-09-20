@@ -644,6 +644,7 @@ public class frag_rtgs extends Fragment {
         JSONObject jsons = new JSONObject();
         JSONArray jsonArray = new JSONArray();
         try {
+            nominal = nominal.toString().replace(".","");
             jsonArray.put(filename);
             String dataRekening = sumberRekening.toString();
             String noRek = "";

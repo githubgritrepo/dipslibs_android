@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:tools="http://schemas.android.com/tools"
-    android:theme="@style/Theme.MaterialComponents.DayNight.DarkActionBar">
+    android:theme="@style/Theme.MaterialComponents.Light.DarkActionBar">
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rv_kirim_file"
         android:layout_width="match_parent"

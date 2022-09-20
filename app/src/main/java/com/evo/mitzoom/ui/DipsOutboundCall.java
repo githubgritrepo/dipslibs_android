@@ -149,14 +149,12 @@ public class DipsOutboundCall extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        playNotificationSound();
+        Log.e("CEK","MASUK onCreate DipsOutboundCall");
         if (getIntent().getAction() != null) {
             getAction = getIntent().getAction();
             Log.i("CEK","MASUK ACTION : "+getAction);
-            if (getIntent().getAction().equals("closeapps") || getIntent().getAction().equals("endcall")) {
-                finish();
-                return;
-            }
+        } else {
+            playNotificationSound();
         }
 
         mContext = this;
@@ -168,7 +166,7 @@ public class DipsOutboundCall extends AppCompatActivity {
 
         getPackageManager().getLaunchIntentForPackage("com.evo.mitzoom");
 
-        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+        //AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
         getSupportActionBar().hide();
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
@@ -327,6 +325,7 @@ public class DipsOutboundCall extends AppCompatActivity {
     }
 
     private void PopUpSchedule(){
+        Log.e("CEK","MASUK POPUPSCHEDULE mRingtone : "+mRingtone);
         if (mRingtone != null) {
             mRingtone.stop();
         }

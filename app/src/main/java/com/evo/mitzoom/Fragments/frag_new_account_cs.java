@@ -252,7 +252,12 @@ public class frag_new_account_cs extends Fragment {
 
             @Override
             public void afterTextChanged(Editable editable) {
-
+                et_nominal_daftar.removeTextChangedListener(this);
+                BigDecimal parsed = parseCurrencyValue(et_nominal_daftar.getText().toString());
+                String formatted = numberFormat.format(parsed);
+                et_nominal_daftar.setText(formatted);
+                et_nominal_daftar.setSelection(formatted.length());
+                et_nominal_daftar.addTextChangedListener(this);
             }
         });
     }

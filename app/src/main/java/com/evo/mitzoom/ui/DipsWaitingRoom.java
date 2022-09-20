@@ -15,6 +15,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
+import android.os.Message;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -56,6 +57,13 @@ import com.evo.mitzoom.util.ErrorMsgUtil;
 import com.evo.mitzoom.util.NetworkUtil;
 import com.google.android.material.button.MaterialButton;
 import com.google.gson.JsonObject;
+import com.rabbitmq.client.AMQP;
+import com.rabbitmq.client.CancelCallback;
+import com.rabbitmq.client.Channel;
+import com.rabbitmq.client.Connection;
+import com.rabbitmq.client.ConnectionFactory;
+import com.rabbitmq.client.DeliverCallback;
+import com.rabbitmq.client.Delivery;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -65,9 +73,14 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.BlockingDeque;
+import java.util.concurrent.LinkedBlockingDeque;
+import java.util.concurrent.TimeoutException;
 
 import cn.pedant.SweetAlert.SweetAlertDialog;
 import io.socket.client.IO;
@@ -128,16 +141,20 @@ public class DipsWaitingRoom extends AppCompatActivity {
     private DisplayMetrics displayMetrics;
     private String Savetanggal;
     private int Savewaktu;
+    //RabitMQ
+    ConnectionFactory connectionFactory = new ConnectionFactory();
 
 
 
     private Socket mSocket;
+    private Thread subscribeThread;
+    private Thread publishThread;
+
     {
         try {
             mSocket = IO.socket(Server.BASE_URL_API);
         } catch (URISyntaxException e) {}
     }
-
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
@@ -146,9 +163,11 @@ public class DipsWaitingRoom extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         mContext = this;
 
-        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+        //AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
         getSupportActionBar().hide();
+
+        setupConnectionFactory(); //RabbitMQ
 
         AnimationCall();
 
@@ -180,6 +199,8 @@ public class DipsWaitingRoom extends AppCompatActivity {
         lastTicket = findViewById(R.id.last_ticket2);
 
         sessions.saveIdDips(idDips);
+
+        publishToAMQP(); //RabbitMQ
 
         processGetTicket(myTicket);
         AnimationCall = findViewById(R.id.AnimationCall);
@@ -223,6 +244,112 @@ public class DipsWaitingRoom extends AppCompatActivity {
         previewHolder();
         stopPopSuccess = false;
         AnimationCall();
+    }
+
+    private void setupConnectionFactory() {
+        String uriRabbit = Server.BASE_URL_RABBITMQ;
+        try {
+            Log.e("CEK","setupConnectionFactory uriRabbit : "+uriRabbit);
+            connectionFactory.setAutomaticRecoveryEnabled(false);
+            connectionFactory.setUri(uriRabbit);
+        } catch (URISyntaxException | NoSuchAlgorithmException | KeyManagementException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private JSONObject dataGetTicket() {
+        long unixTime = System.currentTimeMillis() / 1000L;
+
+        JSONObject custObj = new JSONObject();
+        try {
+            custObj.put("custId",idDips);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        JSONObject jsObj = new JSONObject();
+        try {
+            jsObj.put("from","Cust");
+            jsObj.put("to","QS");
+            jsObj.put("created",unixTime);
+            jsObj.put("transaction",custObj);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        return jsObj;
+    }
+
+    private void publishToAMQP() {
+        publishThread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Log.e("CEK", "MASUK publishToAMQP");
+                    Connection connection = connectionFactory.newConnection();
+                    Log.e("CEK", "connection : "+connection.getAddress().toString());
+                    Channel ch = connection.createChannel();
+                    Log.e("CEK", "createChannel : "+ch.getChannelNumber());
+                    ch.confirmSelect();
+
+                    JSONObject dataTicketObj = dataGetTicket();
+                    String dataTicket = dataTicketObj.toString();
+                    Log.e("CEK", "dataTicket : " + dataTicket);
+
+                    ch.basicPublish("","dips.queue.service.req.ticket",false,null,dataTicket.getBytes());
+                    ch.waitForConfirmsOrDie();
+                    Log.e("CEK", "AFTEER waitForConfirmsOrDie");
+
+                    subscribe();
+                } catch (IOException | TimeoutException | InterruptedException e) {
+                    Log.e("CEK", "publishToAMQP Connection broken: " + e.getClass().getName());
+                    try {
+                        Thread.sleep(5000); //sleep and then try again
+                    } catch (InterruptedException e1) {
+
+                    }
+                }
+            }
+        });
+        publishThread.start();
+    }
+
+    void subscribe()
+    {
+        subscribeThread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Log.e("CEK", "MASUK subscribe");
+                    Connection connection = connectionFactory.newConnection();
+                    Log.e("CEK", "connection : "+connection.getAddress().toString());
+                    Channel channel = connection.createChannel();
+                    Log.e("CEK", "createChannel : "+channel.getChannelNumber());
+                    channel.basicQos(1);
+                    channel.queueDeclare("dips.queue.service.req.ticket",false,false,false,null);
+                    channel.basicConsume("dips.queue.service.req.ticket", true, new DeliverCallback() {
+                        @Override
+                        public void handle(String consumerTag, Delivery message) throws IOException {
+                            String getMessage = new String(message.getBody());
+                            Log.e("CEK","subscribeThread getMessage : "+getMessage);
+                        }
+                    }, new CancelCallback() {
+                        @Override
+                        public void handle(String consumerTag) throws IOException {
+                            Log.e("CEK","subscribeThread consumerTag : "+consumerTag);
+                        }
+                    });
+
+                } catch (Exception e1) {
+                    Log.e("CEK", "subscribe Connection broken: " + e1.getClass().getName());
+                    try {
+                        Thread.sleep(4000); //sleep and then try again
+                    } catch (InterruptedException e) {
+                    }
+                }
+            }
+        });
+        subscribeThread.start();
     }
 
     private void AnimationCall(){
@@ -316,6 +443,8 @@ public class DipsWaitingRoom extends AppCompatActivity {
 
         mSocket.disconnect();
         mSocket.off("waiting");
+        subscribeThread.interrupt();
+        publishThread.interrupt();
     }
 
     private void previewHolder(){

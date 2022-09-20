@@ -443,7 +443,8 @@ public class frag_cardless extends Fragment {
                     handler.removeCallbacks(myRunnable);
                     MirroringOTP(otp.getText().toString(),true);
                     sweetAlertDialog.dismiss();
-                    verifyOTP();
+                    PopUpSuccesOtp();
+                    //verifyOTP();
                 }
             }
         });
@@ -452,7 +453,7 @@ public class frag_cardless extends Fragment {
             @Override
             public void onClick(View v) {
                 if (seconds==0){
-                    resendOTP();
+                    //resendOTP();
                 }
             }
         });
@@ -547,7 +548,7 @@ public class frag_cardless extends Fragment {
                 Log.d("MIRROR","Mirroring Sukses");
                 if (btnsubmit) {
                     PopUp();
-                    APISaveForm(jsonArray);
+                    //APISaveForm(jsonArray);
                 }
             }
 

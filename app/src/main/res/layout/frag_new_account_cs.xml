@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:theme="@style/Theme.MaterialComponents.DayNight.DarkActionBar">
+    android:theme="@style/Theme.MaterialComponents.Light.DarkActionBar">
     <include layout="@layout/header_new_account" />
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
@@ -99,7 +99,7 @@
                         android:id="@+id/et_nama_new_cs"
                         android:layout_width="match_parent"
                         android:layout_height="35dp"
-                        android:inputType="text"
+                        android:inputType="textCapWords"
                         android:paddingVertical="@dimen/dp_10"
                         android:textSize="12dp"
                         android:includeFontPadding="false"

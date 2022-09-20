@@ -1,5 +1,8 @@
 package com.evo.mitzoom.ui;
 
+import static com.evo.mitzoom.ui.DipsSplashScreen.setLocale;
+
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.KeyEvent;
@@ -14,6 +17,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 
 import com.evo.mitzoom.R;
+import com.evo.mitzoom.Session.SessionManager;
 import com.google.android.material.button.MaterialButton;
 
 import cn.pedant.SweetAlert.SweetAlertDialog;
@@ -23,12 +27,20 @@ public class RatingActivity extends AppCompatActivity {
     private MaterialButton btnSend;
     private RatingBar rating;
     private EditText kritik;
+    private Context mContext;
+    private SessionManager sessions;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        mContext = this;
+        sessions = new SessionManager(mContext);
+        String lang = sessions.getLANG();
+        setLocale(this, lang);
+
         setContentView(R.layout.activity_rating);
-        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+        //AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
         getSupportActionBar().hide();
         rating = findViewById(R.id.ratingBar);

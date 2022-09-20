@@ -39,7 +39,6 @@ import java.util.Locale;
 import cn.pedant.SweetAlert.SweetAlertDialog;
 import okhttp3.MediaType;
 import okhttp3.RequestBody;
-import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -105,8 +104,10 @@ public class frag_new_resi extends Fragment {
         btnOK.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Log.e("CEK","MASUK BUTTON OK");
                 sessions.clearPartData();
-                Mirroring(true,1,1);
+                String linkResi = "";
+                Mirroring(true,1,1, linkResi);
                 getFragmentPage(new frag_portfolio());
             }
         });
@@ -114,6 +115,7 @@ public class frag_new_resi extends Fragment {
         btnUnduhResi.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                Log.e("CEK","MASUK BUTTON UnduhResi");
                 if (bytePhoto == null) {
                     Toast.makeText(mContext,"Tidak dapat mengunduh Formulir",Toast.LENGTH_SHORT).show();
                     return;
@@ -209,19 +211,21 @@ public class frag_new_resi extends Fragment {
                 .commit();
     }
 
-    private void Mirroring(boolean bool, int page, int pageAll){
+    private void Mirroring(boolean bool, int page, int pageAll, String linkResi){
         JSONObject jsons = new JSONObject();
         JSONArray jsonArray = new JSONArray();
         try {
             jsonArray.put(page);
             jsonArray.put(pageAll);
             jsonArray.put(bool);
+            jsonArray.put(linkResi);
             jsons.put("idDips",idDips);
             jsons.put("code",20);
             jsons.put("data",jsonArray);
         } catch (JSONException e) {
             e.printStackTrace();
         }
+        Log.e("CEK","PARAM MIRRORING : "+jsons.toString());
         RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), jsons.toString());
         ApiService API = Server.getAPIService();
         Call<JsonObject> call = API.Mirroring(requestBody);
@@ -258,6 +262,8 @@ public class frag_new_resi extends Fragment {
                     String alamat_penerima = dataJs.getString("alamat_penerima");
                     String nominal = dataJs.getString("nominal");
                     String berita = dataJs.getString("berita");
+
+                    nominal = nominal.replace(".","");
 
                     int index = 5;
                     String etc = " ";
@@ -309,7 +315,12 @@ public class frag_new_resi extends Fragment {
                     Call<JsonObject> call = API.GetResumeTransaction(index,etc,idForm,penduduk,namaRek,alamatNasabah,no_handphone,noRek,nominal,biaya,
                             nama_penerima,alamat_penerima,sourceBank,rek_penerima,berita,"Hadi");
                     Log.e("CEK","request : "+call.request().toString());
-                    Log.e("CEK","request 2 : "+call.request().url().toString());
+                    String linkResi = call.request().url().toString();
+                    Log.e("CEK","request 2 : "+linkResi);
+                    String URLServ = Server.BASE_URL_API;
+                    Log.e("CEK","URLServ : "+URLServ);
+                    String finalLinkResi = linkResi.replace(URLServ,"");
+                    Log.e("CEK","finalLinkResi : "+finalLinkResi);
                     call.enqueue(new Callback<JsonObject>() {
                         @Override
                         public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
@@ -317,6 +328,8 @@ public class frag_new_resi extends Fragment {
                                 Log.e("CEK", "response : " + response.body().toString());
                             }
                             if (response.isSuccessful()) {
+                                btnUnduhResi.setEnabled(true);
+                                Mirroring(false,1,1, finalLinkResi);
                                 String dataS = response.body().toString();
                                 try {
                                     JSONObject obj = new JSONObject(dataS);

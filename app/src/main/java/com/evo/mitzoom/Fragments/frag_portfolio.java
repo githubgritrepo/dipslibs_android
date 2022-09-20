@@ -343,22 +343,26 @@ public class frag_portfolio extends Fragment {
                 if (dataNasabah.has("pai")) {
                     if (!dataNasabah.isNull("pai")) {
                         Log.e("CEK","MASUK PAI namaProduk : "+namaProduk);
-                        JSONObject paiProduk = dataNasabah.getJSONObject("pai").getJSONObject(namaProduk);
-                        Log.e("CEK","paiProduk : "+paiProduk.toString());
-                        int getPercent = paiProduk.getInt("persenan");
-                        double d = (double) getPercent / 10;
-                        percent = String.format("%.1f", d);
-                        Log.e("CEK","percent : "+percent);
+                        if (dataNasabah.getJSONObject("pai").has(namaProduk)) {
+                            JSONObject paiProduk = dataNasabah.getJSONObject("pai").getJSONObject(namaProduk);
+                            Log.e("CEK","paiProduk : "+paiProduk.toString());
+                            int getPercent = paiProduk.getInt("persenan");
+                            double d = (double) getPercent / 10;
+                            percent = String.format("%.1f", d);
+                            Log.e("CEK","percent : "+percent);
+                        }
                     }
                 }
 
-                if (percent.isEmpty()) {
+                /*if (percent.isEmpty()) {
                     double d = (double) valProduk / totalVal;
                     float valPercent = (float) d * 10;
                     percent = String.format("%.1f", valPercent);
+                }*/
+                if (!percent.isEmpty()) {
+                    percent = percent.replace(",", ".");
+                    pieEntryList.add(new PieEntry(Float.parseFloat(percent), namaProduk));
                 }
-                percent = percent.replace(",",".");
-                pieEntryList.add(new PieEntry(Float.parseFloat(percent),namaProduk));
             } catch (JSONException e) {
                 e.printStackTrace();
             }

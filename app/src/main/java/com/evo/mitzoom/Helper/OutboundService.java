@@ -111,7 +111,9 @@ public class OutboundService extends Service implements SocketEventListener.List
     @Override
     public void onDestroy() {
         super.onDestroy();
-        Log.i(TAG,"MASUK onDestroy");
+        Log.i(TAG,mContext+"MASUK onDestroy");
+        closeSocketOutbound();
+        stopForeground(IDSERVICES);
     }
 
     private void getSocketListener() {
@@ -233,8 +235,8 @@ public class OutboundService extends Service implements SocketEventListener.List
     @Override
     public void onTaskRemoved(Intent rootIntent) {
         Log.i(TAG,"MASUK onTaskRemoved");
-        NotificationMgr.removeConfNotification();
-        stopSelf();
+//        NotificationMgr.removeConfNotification();
+//        stopSelf();
     }
 
     public static String getPassword_session(){
@@ -401,7 +403,7 @@ public class OutboundService extends Service implements SocketEventListener.List
         else
         {
             pendingIntentCall = PendingIntent.getActivity
-                    (this, 0, intent1, 0);
+                    (this, 0, intent1, PendingIntent.FLAG_CANCEL_CURRENT);
         }
 
         Intent intent2 = new Intent(getApplicationContext(), DipsOutboundCall.class);
@@ -416,7 +418,7 @@ public class OutboundService extends Service implements SocketEventListener.List
         else
         {
             pendingIntentEnd = PendingIntent.getActivity
-                    (this, 0, intent2, 0);
+                    (this, 0, intent2, PendingIntent.FLAG_CANCEL_CURRENT);
         }
 
         String nameApps = getResources().getString(R.string.app_name_dips);
