@@ -1,6 +1,6 @@
 package com.evo.mitzoom.ui;
 
-import static com.evo.mitzoom.ui.DipsSplashScreen.setLocale;
+import static com.evo.mitzoom.ui.DipsChooseLanguage.setLocale;
 
 import android.Manifest;
 import android.app.ActivityManager;
@@ -148,6 +148,7 @@ public class DipsWaitingRoom extends AppCompatActivity {
 
     private Socket mSocket;
     private Thread subscribeThread;
+    private Thread subscribeThreadCall;
     private Thread publishThread;
 
     {
@@ -159,69 +160,28 @@ public class DipsWaitingRoom extends AppCompatActivity {
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        Log.d("CEK","MASUK onCreate");
         super.onCreate(savedInstanceState);
-        mContext = this;
 
-        //AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
         getSupportActionBar().hide();
 
-        setupConnectionFactory(); //RabbitMQ
-
-        AnimationCall();
-
-        mSocket.on("waiting", waitingListener);
-        mSocket.connect();
-
-        /*if (OutboundService.mSocket != null) {
-            OutboundService.mSocket.disconnect();
-            OutboundService.mSocket.off(OutboundService.EVENT_OUTBOUND);
-        }*/
-
+        mContext = this;
         sessions = new SessionManager(mContext);
         sessions.saveRTGS(null);
         String lang = sessions.getLANG();
         setLocale(this,lang);
         setContentView(R.layout.activity_dips_waiting_room);
 
+        myTicket = findViewById(R.id.myticket2);
+        lastTicket = findViewById(R.id.last_ticket2);
+        AnimationCall = findViewById(R.id.AnimationCall);
+        CardView cardSurf = (CardView) findViewById(R.id.cardSurf);
+        preview = (SurfaceView) findViewById(R.id.mySurface2);
+
         displayMetrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
         int widthDisp = displayMetrics.widthPixels;
         int dyWidth = (int) Math.ceil(widthDisp / 2);
-
-        isCust = getIntent().getExtras().getBoolean("ISCUSTOMER");
-        custName = getIntent().getExtras().getString("CUSTNAME");
-        idDips = getIntent().getExtras().getString("idDips");
-        NameSession = getIntent().getExtras().getString("SessionName");
-        SessionPass = getIntent().getExtras().getString("SessionPass");
-        myTicket = findViewById(R.id.myticket2);
-        lastTicket = findViewById(R.id.last_ticket2);
-
-        sessions.saveIdDips(idDips);
-
-        publishToAMQP(); //RabbitMQ
-
-        processGetTicket(myTicket);
-        AnimationCall = findViewById(R.id.AnimationCall);
-        CardView cardSurf = (CardView) findViewById(R.id.cardSurf);
-
-        Log.d("CEK", "idDips : "+idDips);
-
-        savedAuthCredentialIDDiPS(idDips);
-
-        initializeSdk();
-
-        //if(!foregroundServiceRunning()) {
-            Intent serviceIntent = new Intent(this, OutboundService.class);
-            startForegroundService(serviceIntent);
-        //}
-
-        /*btnSchedule = (MaterialButton) findViewById(R.id.btnSchedule);
-        btnEndCall = findViewById(R.id.end_call);*/
-        preview = (SurfaceView) findViewById(R.id.mySurface2);
-
-        getFragmentPage(new frag_berita());
 
         Intent intent = getIntent();
         useFacing = intent.getIntExtra(KEY_USE_FACING, Camera.CameraInfo.CAMERA_FACING_FRONT);
@@ -229,6 +189,8 @@ public class DipsWaitingRoom extends AppCompatActivity {
         ViewGroup.LayoutParams lp = cardSurf.getLayoutParams();
         lp.width = dyWidth;
         cardSurf.setLayoutParams(lp);
+
+        initialWaitingRoom();
 
     }
 
@@ -244,6 +206,42 @@ public class DipsWaitingRoom extends AppCompatActivity {
         previewHolder();
         stopPopSuccess = false;
         AnimationCall();
+    }
+
+    private void initialWaitingRoom() {
+        setupConnectionFactory(); //RabbitMQ
+
+        mSocket.on("waiting", waitingListener);
+        mSocket.connect();
+
+        isCust = getIntent().getExtras().getBoolean("ISCUSTOMER");
+        custName = getIntent().getExtras().getString("CUSTNAME");
+        idDips = getIntent().getExtras().getString("idDips");
+        NameSession = getIntent().getExtras().getString("SessionName");
+        SessionPass = getIntent().getExtras().getString("SessionPass");
+
+        sessions.saveIdDips(idDips);
+
+        publishToAMQP(); //RabbitMQ
+        subscribe(); //RabbitMQ
+        subscribeCall(); //RabbitMQ
+
+        processGetTicket(myTicket);
+
+        Log.d("CEK", "idDips : "+idDips);
+
+        savedAuthCredentialIDDiPS(idDips);
+
+        initializeSdk();
+
+        Intent serviceIntent = new Intent(this, OutboundService.class);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            startForegroundService(serviceIntent);
+        } else {
+            startService(serviceIntent);
+        }
+
+        getFragmentPage(new frag_berita());
     }
 
     private void setupConnectionFactory() {
@@ -296,11 +294,11 @@ public class DipsWaitingRoom extends AppCompatActivity {
                     String dataTicket = dataTicketObj.toString();
                     Log.e("CEK", "dataTicket : " + dataTicket);
 
+                    ch.queueDeclare("dips.queue.service.req.ticket",true,false,false,null);
                     ch.basicPublish("","dips.queue.service.req.ticket",false,null,dataTicket.getBytes());
                     ch.waitForConfirmsOrDie();
                     Log.e("CEK", "AFTEER waitForConfirmsOrDie");
 
-                    subscribe();
                 } catch (IOException | TimeoutException | InterruptedException e) {
                     Log.e("CEK", "publishToAMQP Connection broken: " + e.getClass().getName());
                     try {
@@ -322,16 +320,17 @@ public class DipsWaitingRoom extends AppCompatActivity {
                 try {
                     Log.e("CEK", "MASUK subscribe");
                     Connection connection = connectionFactory.newConnection();
-                    Log.e("CEK", "connection : "+connection.getAddress().toString());
                     Channel channel = connection.createChannel();
-                    Log.e("CEK", "createChannel : "+channel.getChannelNumber());
                     channel.basicQos(1);
-                    channel.queueDeclare("dips.queue.service.req.ticket",false,false,false,null);
-                    channel.basicConsume("dips.queue.service.req.ticket", true, new DeliverCallback() {
+                    AMQP.Queue.DeclareOk q = channel.queueDeclare();
+                    channel.exchangeDeclare("dips361-cust-ticket", "direct", true);
+                    channel.queueBind(q.getQueue(), "dips361-cust-ticket", "dips.direct.cust."+idDips+".ticket");
+                    channel.basicConsume(q.getQueue(), true, new DeliverCallback() {
                         @Override
                         public void handle(String consumerTag, Delivery message) throws IOException {
                             String getMessage = new String(message.getBody());
-                            Log.e("CEK","subscribeThread getMessage : "+getMessage);
+                            Log.e("CEK","Success subscribeThread getMessage : "+getMessage);
+                            Log.e("CEK","Success subscribeThread consumerTag : "+consumerTag);
                         }
                     }, new CancelCallback() {
                         @Override
@@ -350,6 +349,45 @@ public class DipsWaitingRoom extends AppCompatActivity {
             }
         });
         subscribeThread.start();
+    }
+
+    void subscribeCall()
+    {
+        subscribeThreadCall = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Log.e("CEK", "MASUK subscribeCall");
+                    Connection connection = connectionFactory.newConnection();
+                    Channel channel = connection.createChannel();
+                    channel.basicQos(1);
+                    AMQP.Queue.DeclareOk q = channel.queueDeclare();
+                    channel.exchangeDeclare("dips361-cust-call", "direct", true);
+                    channel.queueBind(q.getQueue(), "dips361-cust-call", "dips.direct.cust."+idDips+".call");
+                    channel.basicConsume(q.getQueue(), true, new DeliverCallback() {
+                        @Override
+                        public void handle(String consumerTag, Delivery message) throws IOException {
+                            String getMessage = new String(message.getBody());
+                            Log.e("CEK","Success subscribeCall getMessage : "+getMessage);
+                            Log.e("CEK","Success subscribeCall consumerTag : "+consumerTag);
+                        }
+                    }, new CancelCallback() {
+                        @Override
+                        public void handle(String consumerTag) throws IOException {
+                            Log.e("CEK","subscribeCall consumerTag : "+consumerTag);
+                        }
+                    });
+
+                } catch (Exception e1) {
+                    Log.e("CEK", "subscribeCall Connection broken: " + e1.getClass().getName());
+                    try {
+                        Thread.sleep(4000); //sleep and then try again
+                    } catch (InterruptedException e) {
+                    }
+                }
+            }
+        });
+        subscribeThreadCall.start();
     }
 
     private void AnimationCall(){
@@ -443,8 +481,9 @@ public class DipsWaitingRoom extends AppCompatActivity {
 
         mSocket.disconnect();
         mSocket.off("waiting");
-        subscribeThread.interrupt();
         publishThread.interrupt();
+        subscribeThread.interrupt();
+        subscribeThreadCall.interrupt();
     }
 
     private void previewHolder(){

@@ -10,12 +10,22 @@
         app:cardCornerRadius="15dp"
         android:layout_gravity="center">
         <ImageView
-            android:src="@drawable/adsv1"
+            android:src="@drawable/sedangmemuat"
             android:id="@+id/images"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:scaleType="centerCrop"
             android:adjustViewBounds="true"/>
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <VideoView
+                android:id="@+id/vvVideo"
+                android:layout_width="wrap_content"
+                android:layout_height="125dp"
+                android:visibility="gone"
+                android:layout_centerInParent="true"/>
+        </RelativeLayout>
         <TextView
             android:maxLines="3"
             android:id="@+id/nama_item_caroseoul"
@@ -25,7 +35,8 @@
             android:layout_marginStart="15dp"
             android:textSize="17dp"
             android:textStyle="bold"
-            android:textAppearance="@style/TextAppearance.AppCompat.Display1"/>
+            android:textAppearance="@style/TextAppearance.AppCompat.Display1"
+            android:visibility="gone"/>
 
     </androidx.cardview.widget.CardView>
 

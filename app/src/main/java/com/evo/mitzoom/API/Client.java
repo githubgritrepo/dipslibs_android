@@ -30,7 +30,13 @@ public class Client {
     public static Retrofit getClients(String baseUrl) {
         HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
         interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
-        OkHttpClient client = new OkHttpClient.Builder().addInterceptor(interceptor)
+        OkHttpClient client = new OkHttpClient.Builder()
+                .connectTimeout(3, TimeUnit.MINUTES)
+                .readTimeout(3, TimeUnit.SECONDS)
+                .writeTimeout(3, TimeUnit.SECONDS)
+                .build();
+
+        /*OkHttpClient client = new OkHttpClient.Builder().addInterceptor(interceptor)
                 .connectTimeout(1, TimeUnit.MINUTES)
                 .readTimeout(30, TimeUnit.SECONDS)
                 .writeTimeout(15, TimeUnit.SECONDS)
@@ -43,7 +49,7 @@ public class Client {
                     }
                 })
                 .addInterceptor(interceptor)
-                .build();
+                .build();*/
 
         Gson gson = new GsonBuilder()
                 .setLenient()

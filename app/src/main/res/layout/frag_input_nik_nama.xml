@@ -6,7 +6,42 @@
     android:layout_below="@id/llUsersVideo"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto">
-    <LinearLayout
+
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/swipe"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="20dp">
+
+            <WebView
+                android:id="@+id/views"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_above="@id/btnNext"/>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnNext"
+                android:clickable="false"
+                android:layout_width="match_parent"
+                android:layout_height="35dp"
+                android:layout_marginTop="10dp"
+                android:textStyle="bold"
+                android:textSize="13dp"
+                android:background="@drawable/oval_background_10dp"
+                app:backgroundTint="@color/btnFalse"
+                android:textAppearance="@style/TextAppearance.AppCompat.Button"
+                android:text="@string/btn_continue"
+                android:textColor="@color/white"
+                android:layout_alignParentBottom="true"/>
+
+        </RelativeLayout>
+
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+    <!--<LinearLayout
         android:layout_margin="40dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -74,5 +109,5 @@
             android:textAppearance="@style/TextAppearance.AppCompat.Button"
             android:text="@string/btn_continue"
             android:textColor="@color/white"/>
-    </LinearLayout>
+    </LinearLayout>-->
 </FrameLayout>

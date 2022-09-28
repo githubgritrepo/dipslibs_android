@@ -1,6 +1,6 @@
 package com.evo.mitzoom.ui;
 
-import static com.evo.mitzoom.ui.DipsSplashScreen.setLocale;
+import static com.evo.mitzoom.ui.DipsChooseLanguage.setLocale;
 
 import android.content.Context;
 import android.content.Intent;

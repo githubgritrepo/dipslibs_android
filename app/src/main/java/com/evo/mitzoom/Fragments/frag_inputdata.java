@@ -7,13 +7,17 @@ import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.Editable;
+import android.text.Html;
 import android.text.InputFilter;
 import android.text.Spanned;
 import android.text.TextWatcher;
+import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.JavascriptInterface;
+import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
@@ -23,6 +27,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.evo.mitzoom.API.ApiService;
 import com.evo.mitzoom.API.Server;
@@ -35,12 +40,15 @@ import com.google.gson.JsonObject;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.xml.sax.XMLReader;
 
+import java.io.IOException;
 import java.util.Locale;
 
 import cn.pedant.SweetAlert.SweetAlertDialog;
 import okhttp3.MediaType;
 import okhttp3.RequestBody;
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -60,6 +68,8 @@ public class frag_inputdata extends Fragment {
     private SessionManager session;
     private String idDips, TW_NIK, TW_NAMA;
     private SweetAlertDialog sweetAlertDialogTNC;
+    private WebView views;
+    private SwipeRefreshLayout swipe;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -73,8 +83,10 @@ public class frag_inputdata extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.frag_input_nik_nama, container, false);
-        et_NamaNasabah = view.findViewById(R.id.et_nama);
-        et_NikNasabah = view.findViewById(R.id.et_nik);
+        swipe = (SwipeRefreshLayout) view.findViewById(R.id.swipe);
+        views = view.findViewById(R.id.views);
+        /*et_NamaNasabah = view.findViewById(R.id.et_nama);
+        et_NikNasabah = view.findViewById(R.id.et_nik);*/
         btnNext = view.findViewById(R.id.btnNext);
         sweetAlertDialogTNC = new SweetAlertDialog(context, SweetAlertDialog.NORMAL_TYPE);
         return view;
@@ -84,8 +96,21 @@ public class frag_inputdata extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         idDips = session.getKEY_IdDips();
+
+        swipe.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                getFormNIK();
+            }
+        });
+
+        views.getSettings().setJavaScriptEnabled(true);
+        views.addJavascriptInterface(new WebAppInterface(getActivity()), "Android");
+
+        getFormNIK();
+
         //Popup();
-        et_NamaNasabah.setFilters(new InputFilter[]{
+        /*et_NamaNasabah.setFilters(new InputFilter[]{
             new InputFilter() {
                 @Override
                 public CharSequence filter(CharSequence cs, int start, int end, Spanned dest, int dstart, int dend) {
@@ -148,7 +173,7 @@ public class frag_inputdata extends Fragment {
                 }
 
             }
-        });
+        });*/
 
         btnNext.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -164,6 +189,50 @@ public class frag_inputdata extends Fragment {
                 else {
                     CekData();
                 }
+            }
+        });
+    }
+
+    public class WebAppInterface {
+        Context mContext;
+
+        /** Instantiate the interface and set the context */
+        WebAppInterface(Context c) {
+            mContext = c;
+        }
+
+        /** Show a toast from the web page */
+        @JavascriptInterface
+        public void showToast(String toast) {
+            Toast.makeText(mContext, toast, Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void getFormNIK() {
+        Server.getAPIWAITING_PRODUCT().getFormNIK().enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                swipe.setRefreshing(false);
+                if (response.isSuccessful()) {
+                    try {
+                        String dataHtml = response.body().string();
+                        JSONObject dataObj = new JSONObject(dataHtml);
+                        String formHTML = dataObj.getString("form");
+                        String encodedHtml = Base64.encodeToString(formHTML.getBytes(),
+                                Base64.NO_PADDING);
+                        views.loadData(encodedHtml, "text/html", "base64");
+                        views.loadUrl("javascript:document.getElementById('inputNama').addEventListener('change',function(e){" +
+                                " var val = e.target.value; Android.showToast(val);" +
+                                "},false);");
+                    } catch (IOException | JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                swipe.setRefreshing(false);
             }
         });
     }

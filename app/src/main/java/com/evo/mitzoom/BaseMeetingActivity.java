@@ -1,6 +1,6 @@
 package com.evo.mitzoom;
 
-import static com.evo.mitzoom.ui.DipsSplashScreen.setLocale;
+import static com.evo.mitzoom.ui.DipsChooseLanguage.setLocale;
 import static com.evo.mitzoom.ui.DipsVideoConfren.text_timer;
 import static com.evo.mitzoom.ui.DipsVideoConfren.timer;
 

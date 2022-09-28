@@ -247,7 +247,7 @@ public class frag_new_account_cs extends Fragment {
 
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                Mirroring(filename,rsd_1,rsd_2,rsd_3, et_nama.getText().toString(), et_productType.getText().toString(),et_tgl_daftar.getText().toString(),charSequence,"",false,false);
+
             }
 
             @Override
@@ -258,6 +258,7 @@ public class frag_new_account_cs extends Fragment {
                 et_nominal_daftar.setText(formatted);
                 et_nominal_daftar.setSelection(formatted.length());
                 et_nominal_daftar.addTextChangedListener(this);
+                Mirroring(filename,rsd_1,rsd_2,rsd_3, et_nama.getText().toString(), et_productType.getText().toString(),et_tgl_daftar.getText().toString(),et_nominal_daftar.getText().toString(),"",false,false);
             }
         });
     }

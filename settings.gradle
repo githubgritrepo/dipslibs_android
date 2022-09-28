@@ -5,6 +5,10 @@ dependencyResolutionManagement {
         mavenCentral()
         jcenter() // Warning: this repository is going to shut down soon
         maven {url("https://jitpack.io")}
+        maven {
+            url 'http://public-n3.advai.net/repository/maven-releases/'
+            allowInsecureProtocol = true
+        }
     }
 }
 rootProject.name = "DiPS361"

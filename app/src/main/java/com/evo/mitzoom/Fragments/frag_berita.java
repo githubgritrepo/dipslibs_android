@@ -4,6 +4,9 @@ import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -24,6 +27,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import androidx.viewpager.widget.ViewPager;
 
 import com.evo.mitzoom.API.ApiService;
@@ -35,11 +39,19 @@ import com.evo.mitzoom.Session.SessionManager;
 import com.google.android.material.button.MaterialButton;
 import com.google.gson.JsonObject;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -47,6 +59,7 @@ import cn.pedant.SweetAlert.SweetAlertDialog;
 import me.relex.circleindicator.CircleIndicator;
 import okhttp3.MediaType;
 import okhttp3.RequestBody;
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -69,6 +82,9 @@ public class frag_berita extends Fragment {
     private int Savewaktu;
     private SessionManager sessions;
     private String idDips;
+    private JSONArray dataArrSpanduk = null;
+    private List<JSONObject> newDataProd;
+    private SwipeRefreshLayout swipe;
 
 
     @Override
@@ -83,6 +99,7 @@ public class frag_berita extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.frag_berita, container, false);
+        swipe = (SwipeRefreshLayout) view.findViewById(R.id.swipe);
         rv_product = view.findViewById(R.id.rv_product);
         mPager = view.findViewById(R.id.pager);
         circleIndicator = view.findViewById(R.id.indicator);
@@ -95,10 +112,16 @@ public class frag_berita extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        rv_product.setLayoutManager(new GridLayoutManager(context,2));
-        gridAdapter = new GridProductAdapter(context,gambar);
-        rv_product.setAdapter(gridAdapter);
-        initPager();
+
+        swipe.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                new AsyncProcess().execute();
+                swipe.setRefreshing(false);
+            }
+        });
+
+        new AsyncProcess().execute();
 
         btnSchedule.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -114,6 +137,180 @@ public class frag_berita extends Fragment {
         });
 
     }
+
+    private class AsyncProcess extends AsyncTask<Void,Void,Void> {
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            processGetSpanduk();
+            processGetProduct();
+            return null;
+        }
+    }
+
+    private void processGetSpanduk() {
+        Server.getAPIWAITING_PRODUCT().getSpandukPublish().enqueue(new Callback<JsonObject>() {
+            @Override
+            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                Log.e("CEK","Response Code processGetSpanduk : "+response.code());
+                if (response.isSuccessful()) {
+                    String dataS = response.body().toString();
+                    try {
+                        JSONObject dataObj = new JSONObject(dataS);
+                        int errCode = dataObj.getInt("err_code");
+                        if (errCode == 0) {
+                            dataArrSpanduk = dataObj.getJSONArray("data");
+                            if (dataArrSpanduk.length() > 0) {
+                                for (int i = 0; i < dataArrSpanduk.length(); i++) {
+                                    JSONObject dataStream = dataArrSpanduk.getJSONObject(i);
+                                    int idSpanduk = dataStream.getInt("id");
+                                    processSpandukMedia(idSpanduk,dataStream,i);
+                                }
+                            } else {
+                                mPager.setVisibility(View.GONE);
+                                circleIndicator.setVisibility(View.GONE);
+                            }
+                        }
+
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<JsonObject> call, Throwable t) {
+            }
+        });
+    }
+
+    private void processSpandukMedia(int idSpanduk, JSONObject dataStream, int indexs) {
+        Server.getAPIWAITING_PRODUCT().getSpandukMedia(idSpanduk).enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                if (response.code() == 200) {
+                    String Content_Type = response.headers().get("Content-Type");
+                    if (Content_Type.indexOf("json") < 0) {
+                        InputStream in = response.body().byteStream();
+                        processParsingMedia(in,Content_Type,dataStream,indexs);
+
+                        mPager.setVisibility(View.VISIBLE);
+                        circleIndicator.setVisibility(View.VISIBLE);
+                        initPager();
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+
+            }
+        });
+    }
+
+    private void processParsingMedia(InputStream stream, String content_Type, JSONObject dataStream, int indexs) {
+        if (content_Type.indexOf("image") > -1) {
+            Bitmap bitmap = BitmapFactory.decodeStream(stream);
+            try {
+                dataStream.put("dataBitmap",bitmap);
+                dataStream.put("content_Type",content_Type);
+                dataArrSpanduk.put(indexs,dataStream);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        } else {
+            takeInputStream(stream,content_Type,dataStream,indexs);
+        }
+    }
+
+    private void takeInputStream(InputStream stream, String content_Type, JSONObject dataStream, int indexs) {
+        File mBufferFile;
+        try {
+            File bufferFile = File.createTempFile("test", ".mp4");
+            BufferedOutputStream bufferOS = new BufferedOutputStream(
+                    new FileOutputStream(bufferFile));
+
+            BufferedInputStream bis = new BufferedInputStream(stream,2048);
+
+            byte[] buffer = new byte[16384];
+            int numRead;
+            while ((numRead = bis.read(buffer)) != -1) {
+                bufferOS.write(buffer, 0, numRead);
+                bufferOS.flush();
+            }
+            mBufferFile = bufferFile;
+            try {
+                dataStream.put("dataStream",mBufferFile);
+                dataStream.put("content_Type",content_Type);
+                dataArrSpanduk.put(indexs,dataStream);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void processGetProduct() {
+        Server.getAPIWAITING_PRODUCT().getProductPublish().enqueue(new Callback<JsonObject>() {
+            @Override
+            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                Log.e("CEK","Response Code processGetProduct : "+response.code());
+                if (response.isSuccessful()) {
+                    String dataS = response.body().toString();
+                    try {
+                        JSONObject dataObj = new JSONObject(dataS);
+                        int errCode = dataObj.getInt("err_code");
+                        Log.e("CEK","errCode : "+errCode);
+                        if (errCode == 0) {
+                            JSONArray dataRows = dataObj.getJSONObject("data").getJSONArray("rows");
+                            Log.e("CEK","dataRows : "+dataRows.length());
+                            newDataProd = new ArrayList<JSONObject>();
+                            List<JSONObject> newDataProdRight = new ArrayList<JSONObject>();
+                            int indexsLeft = 0;
+                            int indexsRight = 0;
+                            for (int i = 0; i < dataRows.length(); i++) {
+                                boolean isLeft = dataRows.getJSONObject(i).getBoolean("isLeft");
+                                if (isLeft) {
+                                    newDataProd.add(indexsLeft, dataRows.getJSONObject(i));
+                                    indexsLeft++;
+                                } else {
+                                    newDataProdRight.add(indexsRight, dataRows.getJSONObject(i));
+                                    indexsRight++;
+                                }
+                            }
+
+                            for (int i = 0; i < newDataProdRight.size(); i++) {
+                                List<JSONObject> prodRight = new ArrayList<JSONObject>();
+                                prodRight.add(newDataProdRight.get(i));
+                                int urutanRight = newDataProdRight.get(i).getInt("urutan");
+                                for (int j = 0; j < newDataProd.size(); j++) {
+                                    int urutanLeft = newDataProd.get(j).getInt("urutan");
+                                    if (urutanRight == urutanLeft) {
+                                        int loop = j+1;
+                                        newDataProd.addAll(loop,prodRight);
+                                        break;
+                                    }
+                                }
+                            }
+
+                            rv_product.setLayoutManager(new GridLayoutManager(context,2));
+                            gridAdapter = new GridProductAdapter(context,gambar,newDataProd);
+                            rv_product.setAdapter(gridAdapter);
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<JsonObject> call, Throwable t) {
+
+            }
+        });
+    }
+
     private void EndCall(){
         SweetAlertDialog sweetAlertDialog = new SweetAlertDialog(context, SweetAlertDialog.WARNING_TYPE);
         sweetAlertDialog.setContentText(getResources().getString(R.string.headline_endcall));
@@ -142,17 +339,18 @@ public class frag_berita extends Fragment {
         //System.exit(0);
     }
     private void initPager() {
-        for (int i = 0; i < img.length; i++) {
+        /*for (int i = 0; i < img.length; i++) {
             imgArray.add(img[i]);
-            mPager.setAdapter(new AdapterSlide(imgArray, context));
-            circleIndicator.setViewPager(mPager);
-        }
+        }*/
 
-        Handler handler = new Handler();
+        mPager.setAdapter(new AdapterSlide(context, dataArrSpanduk));
+        circleIndicator.setViewPager(mPager);
+
+        /*Handler handler = new Handler();
         Runnable updates = new Runnable() {
             @Override
             public void run() {
-                if (currentPage == img.length) {
+                if (currentPage == dataArrSpanduk.length()) {
                     currentPage = 0;
                 }
                 mPager.setCurrentItem(currentPage, true);
@@ -166,7 +364,7 @@ public class frag_berita extends Fragment {
             public void run() {
                 handler.post(updates);
             }
-        }, 2500, 2500);
+        }, 5000, 5000);*/
     }
 
     private void PopUpSchedule(){

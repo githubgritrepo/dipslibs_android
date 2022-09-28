@@ -33,6 +33,8 @@ public class SessionManager {
     public static final String KEY_CIF = "CIF";
     public static final String KEY_CONF_AGREE = "CONF_AGREE";
     public static final String KEY_NASABAH = "NASABAH";
+    public static final String KEY_ADVANCE_AI_LICENSE = "ADVANCE_AI_LICENSE";
+    public static final String KEY_ADVANCE_AI_EXPIREDTIME = "ADVANCE_AI_EXPIREDTIME";
 
     // Constructor
     public SessionManager(Context context){
@@ -92,6 +94,12 @@ public class SessionManager {
 
     public void saveFlagConfAgree(boolean data) {
         editor.putBoolean(KEY_CONF_AGREE,data);
+        editor.commit();
+    }
+
+    public void saveAuthAdvanceAI(String license, long expiredTimes) {
+        editor.putString(KEY_ADVANCE_AI_LICENSE,license);
+        editor.putLong(KEY_ADVANCE_AI_EXPIREDTIME, expiredTimes);
         editor.commit();
     }
 
@@ -163,5 +171,9 @@ public class SessionManager {
     public boolean getFlagConfAgree (){
         return pref.getBoolean(KEY_CONF_AGREE,false);
     }
+    public String getAuthAdvanceAI() {
+        return pref.getString(KEY_ADVANCE_AI_LICENSE,null);
+    }
+    public long getExpiredTimeAdvanceAI() { return pref.getLong(KEY_ADVANCE_AI_EXPIREDTIME,0);}
 
 }

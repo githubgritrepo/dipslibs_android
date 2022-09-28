@@ -1,6 +1,6 @@
 package com.evo.mitzoom.ui;
 
-import static com.evo.mitzoom.ui.DipsSplashScreen.setLocale;
+import static com.evo.mitzoom.ui.DipsChooseLanguage.setLocale;
 
 import android.Manifest;
 import android.content.Context;
@@ -62,6 +62,10 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
+import ai.advance.liveness.lib.CameraType;
+import ai.advance.liveness.lib.GuardianLivenessDetectionSDK;
+import ai.advance.liveness.lib.Market;
+import ai.advance.liveness.sdk.activity.LivenessActivity;
 import cn.pedant.SweetAlert.SweetAlertDialog;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -580,6 +584,13 @@ public class DipsCapture extends AppCompatActivity implements CameraSource.Pictu
                     sessions.saveIdDips(idDips);
                     sessions.saveIsCust(isCust);
 
+                    /*String filename = "base64_capture_success.txt";
+                    try {
+                        createTemporaryFile(imgBase64,filename);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }*/
+
                     Intent intent = new Intent(DipsCapture.this,DipsWaitingRoom.class);
                     intent.putExtra("ISCUSTOMER",isCust);
                     intent.putExtra("CUSTNAME",custName);
@@ -597,12 +608,12 @@ public class DipsCapture extends AppCompatActivity implements CameraSource.Pictu
 
             @Override
             public void onFailure(Call<CaptureIdentify> call, Throwable t) {
-                String filename = "base64_capture.txt";
+                /*String filename = "base64_capture.txt";
                 try {
                     createTemporaryFile(imgBase64,filename);
                 } catch (Exception e) {
                     e.printStackTrace();
-                }
+                }*/
                 Log.e("CEK","onFailure MESSAGE : "+t.getMessage());
                 flagCapture = false;
                 showProgress(false);

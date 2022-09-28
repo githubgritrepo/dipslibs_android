@@ -28,6 +28,10 @@ public interface ApiService {
     Call<CaptureIdentify> CaptureIdentify(@Body JsonCaptureIdentify body);
 
     @Headers("Content-Type: "+ MyConstants.CONTENT_TYPE)
+    @POST("api/capture/advance")
+    Call<CaptureIdentify> CaptureAdvanceAI(@Body JsonCaptureIdentify body);
+
+    @Headers("Content-Type: "+ MyConstants.CONTENT_TYPE)
     @POST("api/zoom/signature")
     Call<JsonObject> Signature(@Body RequestBody body);
 
@@ -129,6 +133,30 @@ public interface ApiService {
             @Path("noRekPenerima") String noRekPenerima,
             @Path("berita") String berita,
             @Path("namaTeller") String namaTeller
+    );
+
+
+    @Headers("Content-Type: "+ MyConstants.CONTENT_TYPE)
+    @GET("spanduk/publish")
+    Call<JsonObject> getSpandukPublish();
+
+    @GET("spanduk/media/{id}")
+    Call<ResponseBody> getSpandukMedia(@Path("id") int id);
+
+    @Headers("Content-Type: "+ MyConstants.CONTENT_TYPE)
+    @GET("publish_product")
+    Call<JsonObject> getProductPublish();
+
+    @GET("produk/media/{id}")
+    Call<ResponseBody> getProductMedia(@Path("id") int id);
+
+    @GET("percobaan/form-nik")
+    Call<ResponseBody> getFormNIK();
+
+    @Headers("Content-Type: "+ MyConstants.CONTENT_TYPE)
+    @POST("openapi/liveness/v1/auth-license")
+    Call<JsonObject> AuthLicenseLiveness(@Body RequestBody body,
+                                         @Header("X-ADVAI-KEY") String authHeader
     );
 
 }

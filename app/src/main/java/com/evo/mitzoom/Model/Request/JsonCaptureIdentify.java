@@ -7,6 +7,17 @@ public class JsonCaptureIdentify {
     @SerializedName("image")
     private String image;
 
+    @SerializedName("idDips")
+    private String idDips;
+
+    public String getIdDips() {
+        return idDips;
+    }
+
+    public void setIdDips(String idDips) {
+        this.idDips = idDips;
+    }
+
     public String getImage() {
         return image;
     }

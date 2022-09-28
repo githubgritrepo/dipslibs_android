@@ -8,9 +8,19 @@ public class Server {
     //public static final String BASE_URL_API = "https://next-backup.vercel.app/";
     //public static final String BASE_URL_API = "http://192.168.10.198:4000/";
     public static final String BASE_URL_RABBITMQ = "amqp://dips361:dips2022@103.140.90.42:6004";
+    public static final String BASE_URL_PRODUK = "http://103.140.90.122:4040";
+    public static final String BASE_URL_ADVANCEAI = "https://api.advance.ai/";
 
     public static ApiService getAPIService() {
         return Client.getClientUnsafe(BASE_URL_API).create(ApiService.class);
+    }
+
+    public static ApiService getAPIWAITING_PRODUCT() {
+        return Client.getClients(BASE_URL_PRODUK).create(ApiService.class);
+    }
+
+    public static ApiService getAPIServiceAdvanceAI() {
+        return Client.getClientUnsafe(BASE_URL_ADVANCEAI).create(ApiService.class);
     }
 
     /* public static ApiService getAPIFirebase() {

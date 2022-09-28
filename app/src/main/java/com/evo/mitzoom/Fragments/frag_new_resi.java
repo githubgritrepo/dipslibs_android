@@ -267,15 +267,15 @@ public class frag_new_resi extends Fragment {
 
                     int index = 5;
                     String etc = " ";
-                    if (sourceTypeService.trim().toLowerCase().indexOf("rtgs") > -1) {
+                    if (sourceTypeService.trim().toLowerCase().equals("rtgs")) {
                         index = 3;
-                    } else if (sourceTypeService.trim().toLowerCase().indexOf("setoran") > -1) {
+                    } else if (sourceTypeService.trim().toLowerCase().equals("setoran")) {
                         index = 0;
-                    } else if (sourceTypeService.trim().toLowerCase().indexOf("pemindahbukuan") > -1) {
+                    } else if (sourceTypeService.trim().toLowerCase().equals("pemindahbukuan")) {
                         index = 1;
-                    } else if (sourceTypeService.trim().toLowerCase().indexOf("kliring") > -1) {
+                    } else if (sourceTypeService.trim().toLowerCase().equals("kliring")) {
                         index = 2;
-                    } else if (sourceTypeService.trim().toLowerCase().indexOf("inkaso") > -1) {
+                    } else if (sourceTypeService.trim().toLowerCase().equals("inkaso")) {
                         index = 4;
                     } else {
                         etc = sourceTypeService.trim();
