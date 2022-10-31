@@ -71,6 +71,8 @@ public class frag_transaksi_valas extends Fragment {
     private SessionManager session;
     private boolean pernyataan__ = false;
     public static final NumberFormat numberFormat = NumberFormat.getInstance(new Locale("id", "ID"));
+    private int lasLenOTP;
+    private boolean backSpaceOTP;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -161,7 +163,7 @@ public class frag_transaksi_valas extends Fragment {
         etNPWP.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
+                lasLenOTP = charSequence.length();
             }
 
             @Override
@@ -170,8 +172,22 @@ public class frag_transaksi_valas extends Fragment {
             }
 
             @Override
-            public void afterTextChanged(Editable editable) {
-
+            public void afterTextChanged(Editable s) {
+                etNPWP.removeTextChangedListener(this);
+                backSpaceOTP = lasLenOTP > s.length();
+                if (!backSpaceOTP) {
+                    String dataNPWP = s.toString();
+                    String formatNPWP = "";
+                    if (dataNPWP.length() == 2 || dataNPWP.length() == 6 || dataNPWP.length() == 10 || dataNPWP.length() == 16) {
+                        formatNPWP = ".";
+                    } else if (dataNPWP.length() == 12) {
+                        formatNPWP = "-";
+                    }
+                    String cekBuilder = new StringBuilder(dataNPWP).insert(dataNPWP.length(), formatNPWP).toString();
+                    etNPWP.setText(cekBuilder);
+                    etNPWP.setSelection(cekBuilder.length());
+                }
+                etNPWP.addTextChangedListener(this);
             }
         });
         etCurrency.setOnItemClickListener(new AdapterView.OnItemClickListener() {

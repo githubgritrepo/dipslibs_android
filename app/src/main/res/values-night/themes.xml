@@ -27,6 +27,8 @@
         <item name="android:forceDarkAllowed" tools:targetApi="q">false</item>
         <item name="android:fontFamily">@font/poppins_regular</item>
         <item name="bottomSheetDialogTheme">@style/BottomSheetDialogTheme</item>
+        <item name="customTextInputStyle">@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox</item>
+        <item name="customTextInputStyleDropDown">@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu</item>
     </style>
 
     <style name="BottomSheetDialogTheme" parent="Theme.Design.Light.BottomSheetDialog">

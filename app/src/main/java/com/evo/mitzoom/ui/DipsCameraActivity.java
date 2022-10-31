@@ -1,5 +1,7 @@
 package com.evo.mitzoom.ui;
 
+import static com.evo.mitzoom.ui.DipsChooseLanguage.setLocale;
+
 import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
@@ -27,7 +29,11 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -38,6 +44,7 @@ import androidx.core.content.ContextCompat;
 
 import com.evo.mitzoom.R;
 import com.evo.mitzoom.Session.SessionManager;
+import com.google.android.material.appbar.AppBarLayout;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -64,6 +71,12 @@ public class DipsCameraActivity extends AppCompatActivity {
     private static final String KEY_USE_FACING = "use_facing";
     private static final int RESULT_CODE = 110;
     public static Integer useFacing = null;
+    private AppBarLayout appbar;
+    private FrameLayout flFrame;
+    private LinearLayout llHeader;
+    private TextView tvHeader;
+    private TextView tvContent;
+    private LinearLayout llMsg;
     private ImageView btnTake, imgSwitch;
     private ImageView btn_back;
     private byte[] dataImage = new byte[0];
@@ -82,30 +95,57 @@ public class DipsCameraActivity extends AppCompatActivity {
     private double surfBottom = 0;
     private SessionManager sessions;
     private boolean isConfigure;
+    private boolean cekSwafoto = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        mContext = this;
+        sessions = new SessionManager(mContext);
+        String lang = sessions.getLANG();
+        setLocale(this,lang);
+
         setContentView(R.layout.activity_dips_camera);
 
         //AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
         initialElements();
-
-        mContext = this;
-
-        sessions = new SessionManager(mContext);
-
         previewHolder();
 
-        transHolder = transPreview.getHolder();
-        transHolder.setFormat(PixelFormat.TRANSPARENT);
-        transHolder.addCallback(surfaceCallbackTrans);
-        transHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
-
         Intent intent = getIntent();
-        useFacing = intent.getIntExtra(KEY_USE_FACING, Camera.CameraInfo.CAMERA_FACING_BACK);
+
+        if (getIntent().getExtras() != null) {
+            cekSwafoto = getIntent().getExtras().containsKey("SWAFOTO");
+            transPreview.setVisibility(View.GONE);
+            appbar.setVisibility(View.GONE);
+            llHeader.setVisibility(View.VISIBLE);
+            llMsg.setVisibility(View.VISIBLE);
+
+            useFacing = intent.getIntExtra(KEY_USE_FACING, Camera.CameraInfo.CAMERA_FACING_FRONT);
+
+            RelativeLayout.LayoutParams paramsFrame = new RelativeLayout.LayoutParams(
+                    RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT);
+
+            paramsFrame.setMargins(0, 120, 0, 0);
+            flFrame.setLayoutParams(paramsFrame);
+            tvHeader.setText("Foto diri dengan KTP");
+            tvContent.setText("Pastikan foto terlihat jelas dan tidak buram");
+            llMsg.getBackground().setAlpha(150);
+        } else {
+            transPreview.setVisibility(View.VISIBLE);
+            appbar.setVisibility(View.VISIBLE);
+            llHeader.setVisibility(View.GONE);
+            llMsg.setVisibility(View.GONE);
+
+            useFacing = intent.getIntExtra(KEY_USE_FACING, Camera.CameraInfo.CAMERA_FACING_BACK);
+
+            transHolder = transPreview.getHolder();
+            transHolder.setFormat(PixelFormat.TRANSPARENT);
+            transHolder.addCallback(surfaceCallbackTrans);
+            transHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
+        }
 
         btnTake.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -235,6 +275,12 @@ public class DipsCameraActivity extends AppCompatActivity {
         return bitmapCrop;
     }
     private void initialElements() {
+        appbar = (AppBarLayout) findViewById(R.id.appbar);
+        flFrame = (FrameLayout) findViewById(R.id.flFrame);
+        llHeader = (LinearLayout) findViewById(R.id.llHeader);
+        tvHeader = (TextView) findViewById(R.id.tvHeader);
+        tvContent = (TextView) findViewById(R.id.tvContent);
+        llMsg = (LinearLayout) findViewById(R.id.llMsg);
         imgSwitch = findViewById(R.id.imgSwitch);
         preview = findViewById(R.id.mySurface);
         transPreview = findViewById(R.id.transSurface);
@@ -608,27 +654,43 @@ public class DipsCameraActivity extends AppCompatActivity {
     private Bitmap getResizedBitmap(Bitmap bm, int newWidth, int newHeight) {
         int width = bm.getWidth();
         int height = bm.getHeight();
-        float sx = 0;
-        float sy = 0;
-        if (useFacing == Camera.CameraInfo.CAMERA_FACING_FRONT) {
-            sx = ((float) newWidth) / width;
-            sy = ((float) newHeight) / height;
+        Bitmap resizedBitmap = null;
+
+        if (cekSwafoto) {
+            float scaleWidth = ((float) newWidth) / width;
+            float scaleHeight = ((float) newHeight) / height;
+
+            Matrix matrix = new Matrix();
+            // RESIZE THE BIT MAP
+            matrix.postScale(scaleWidth, scaleHeight);
+
+            // "RECREATE" THE NEW BITMAP
+            resizedBitmap = Bitmap.createBitmap(
+                    bm, 0, 0, width, height, matrix, false);
         } else {
-            sx = ((float) newHeight) / height;
-            sy = ((float) newWidth) / width;
+
+            float sx = 0;
+            float sy = 0;
+            if (useFacing == Camera.CameraInfo.CAMERA_FACING_FRONT) {
+                sx = ((float) newWidth) / width;
+                sy = ((float) newHeight) / height;
+            } else {
+                sx = ((float) newHeight) / height;
+                sy = ((float) newWidth) / width;
+            }
+
+            int cx = (int) (width / 2.77);
+            int cy = (int) (height / 5.2);
+            int diffH = cy * 2;
+
+            Matrix matrix = new Matrix();
+            // RESIZE THE BIT MAP
+            matrix.postScale(sx, sy);
+
+            // "RECREATE" THE NEW BITMAP
+            resizedBitmap = Bitmap.createBitmap(
+                    bm, cx, cy, (int) (width * 0.3), (height - diffH), matrix, false);
         }
-
-        int cx = (int) (width / 2.77);
-        int cy = (int) (height / 5.2);
-        int diffH = cy * 2;
-
-        Matrix matrix = new Matrix();
-        // RESIZE THE BIT MAP
-        matrix.postScale(sx, sy);
-
-        // "RECREATE" THE NEW BITMAP
-        Bitmap resizedBitmap = Bitmap.createBitmap(
-                bm, cx, cy, (int) (width * 0.3), (height-diffH), matrix, false);
         //bm.recycle();
 
         return resizedBitmap;

@@ -15,7 +15,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
-import android.os.Message;
+import android.util.Base64;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -32,13 +32,13 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.app.AppCompatDelegate;
 import androidx.cardview.widget.CardView;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
@@ -51,6 +51,8 @@ import com.evo.mitzoom.BaseMeetingActivity;
 import com.evo.mitzoom.Constants.AuthConstants;
 import com.evo.mitzoom.Fragments.frag_berita;
 import com.evo.mitzoom.Helper.OutboundService;
+import com.evo.mitzoom.Model.Request.JsonCaptureIdentify;
+import com.evo.mitzoom.Model.Response.CaptureIdentify;
 import com.evo.mitzoom.R;
 import com.evo.mitzoom.Session.SessionManager;
 import com.evo.mitzoom.util.ErrorMsgUtil;
@@ -78,8 +80,6 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.BlockingDeque;
-import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.TimeoutException;
 
 import cn.pedant.SweetAlert.SweetAlertDialog;
@@ -148,8 +148,12 @@ public class DipsWaitingRoom extends AppCompatActivity {
 
     private Socket mSocket;
     private Thread subscribeThread;
+    private Thread subscribeReqTicketThread;
     private Thread subscribeThreadCall;
+    private Thread subscribeAllTicketInfoCall;
     private Thread publishThread;
+    private Thread publishQSTicketThread;
+    private Thread publishCallAcceptThread;
 
     {
         try {
@@ -190,7 +194,27 @@ public class DipsWaitingRoom extends AppCompatActivity {
         lp.width = dyWidth;
         cardSurf.setLayoutParams(lp);
 
-        initialWaitingRoom();
+        initializeSdk();
+
+        boolean cekConstain = getIntent().getExtras().containsKey("RESULT_IMAGE_AI");
+        if (cekConstain) {
+            byte[] resultImage = getIntent().getExtras().getByteArray("RESULT_IMAGE_AI");
+            idDips = getIntent().getExtras().getString("idDips");
+            sessions.saveIdDips(idDips);
+            String imgBase64 = Base64.encodeToString(resultImage, Base64.DEFAULT);
+            //processCaptureIdentify(imgBase64);
+            processCaptureIdentifyAuth(imgBase64);
+        } else {
+            isCust = getIntent().getExtras().getBoolean("ISCUSTOMER");
+            custName = getIntent().getExtras().getString("CUSTNAME");
+            idDips = getIntent().getExtras().getString("idDips");
+            sessions.saveIdDips(idDips);
+            /*NameSession = getIntent().getExtras().getString("SessionName");
+            SessionPass = getIntent().getExtras().getString("SessionPass");*/
+
+            initialWaitingRoom();
+        }
+        getFragmentPage(new frag_berita());
 
     }
 
@@ -208,31 +232,81 @@ public class DipsWaitingRoom extends AppCompatActivity {
         AnimationCall();
     }
 
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            //preventing default implementation previous to android.os.Build.VERSION_CODES.ECLAIR
+            return true;
+        }
+
+        if (keyCode == KeyEvent.KEYCODE_HOME) {
+            //preventing default implementation previous to android.os.Build.VERSION_CODES.ECLAIR
+            return true;
+        }
+        return super.onKeyDown(keyCode, event);
+    }
+
+    @Override
+    protected void onPause() {
+        Log.e("CEK","MASUK ONPAUSE");
+        if (inPreview) {
+            camera.stopPreview();
+        }
+
+        if (camera != null) {
+            camera.release();
+            camera = null;
+            inPreview = false;
+        }
+
+        super.onPause();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        if (mSocket != null) {
+            mSocket.disconnect();
+            mSocket.off("waiting");
+        }
+        if (publishThread != null) {
+            publishThread.interrupt();
+        }
+        if (publishQSTicketThread != null) {
+            publishQSTicketThread.interrupt();
+        }
+        if (publishCallAcceptThread != null) {
+            publishCallAcceptThread.interrupt();
+        }
+        if (subscribeThread != null) {
+            subscribeThread.interrupt();
+        }
+        if (subscribeReqTicketThread != null) {
+            subscribeReqTicketThread.interrupt();
+        }
+        if (subscribeThreadCall != null) {
+            subscribeThreadCall.interrupt();
+        }
+        if (subscribeAllTicketInfoCall != null) {
+            subscribeAllTicketInfoCall.interrupt();
+        }
+    }
+
     private void initialWaitingRoom() {
         setupConnectionFactory(); //RabbitMQ
-
-        mSocket.on("waiting", waitingListener);
-        mSocket.connect();
-
-        isCust = getIntent().getExtras().getBoolean("ISCUSTOMER");
-        custName = getIntent().getExtras().getString("CUSTNAME");
-        idDips = getIntent().getExtras().getString("idDips");
-        NameSession = getIntent().getExtras().getString("SessionName");
-        SessionPass = getIntent().getExtras().getString("SessionPass");
-
-        sessions.saveIdDips(idDips);
-
-        publishToAMQP(); //RabbitMQ
-        subscribe(); //RabbitMQ
+        subscribeReqTicket();
         subscribeCall(); //RabbitMQ
+        subscribeAllTicketInfo(); //RabbitMQ
 
-        processGetTicket(myTicket);
+        /*mSocket.on("waiting", waitingListener);
+        mSocket.connect();*/
+
+        //processGetTicket(myTicket);
 
         Log.d("CEK", "idDips : "+idDips);
 
         savedAuthCredentialIDDiPS(idDips);
-
-        initializeSdk();
 
         Intent serviceIntent = new Intent(this, OutboundService.class);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -240,14 +314,183 @@ public class DipsWaitingRoom extends AppCompatActivity {
         } else {
             startService(serviceIntent);
         }
+    }
 
-        getFragmentPage(new frag_berita());
+    private void processCaptureIdentifyAuth(String imgBase64) {
+        if (!NetworkUtil.hasDataNetwork(mContext)) {
+            Toast.makeText(this, "Connection Failed. Please check your network connection and try again.", Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        JSONObject jsons = new JSONObject();
+        try {
+            jsons.put("idDips",idDips);
+            jsons.put("image",imgBase64);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        Log.e("CEK","processCaptureIdentifyAuth REQUEST json : "+jsons.toString());
+
+        RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), jsons.toString());
+
+        ApiService API = Server.getAPIService2();
+        Call<JsonObject> call = API.CaptureAuth(requestBody);
+        Log.e("CEK","REQUEST CALL : "+call.request().url());
+        call.enqueue(new Callback<JsonObject>() {
+            @Override
+            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                Log.e("CEK","RESPONSE CODE: "+response.code());
+                if (response.isSuccessful()) {
+                    String dataS = response.body().toString();
+                    Log.e("CEK","dataS: "+dataS);
+                    try {
+                        JSONObject dataObj = new JSONObject(dataS);
+                        JSONObject dataCustomer = dataObj.getJSONObject("data").getJSONObject("customer");
+                        JSONObject dataToken = dataObj.getJSONObject("data").getJSONObject("token");
+
+                        String idDipsOld = sessions.getKEY_IdDips();
+                        if (idDipsOld != null && OutboundService.mSocket != null) {
+                            OutboundService.leaveOutbound(idDipsOld);
+                        }
+
+                        String noCIF = "";
+                        if (dataCustomer.isNull("noCif")) {
+                            isCust = false;
+                        } else {
+                            isCust = true;
+                            noCIF = dataCustomer.getString("noCif");
+                        }
+                        custName = dataCustomer.getString("namaLengkap");
+                        idDips = dataCustomer.getString("idDips");
+                        String accessToken = dataToken.getString("accessToken");
+
+                        sessions.saveIdDips(idDips);
+                        sessions.saveIsCust(isCust);
+                        sessions.saveAuthToken(accessToken);
+
+                        getIntent().getExtras().clear();
+                        getIntent().removeExtra("RESULT_IMAGE_AI");
+
+                        initialWaitingRoom();
+
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }  else {
+                    String dataErr = response.errorBody().toString();
+                    Log.e("CEK","dataErr : "+dataErr);
+                    if (dataErr != null) {
+                        try {
+                            JSONObject dataObj = new JSONObject(dataErr);
+                            if(dataObj.has("message")) {
+                                String message = dataObj.getString("message");
+                                Toast.makeText(mContext, message,Toast.LENGTH_SHORT).show();
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    } else {
+                        Toast.makeText(mContext, R.string.msg_error, Toast.LENGTH_SHORT).show();
+                    }
+                    OutApps();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<JsonObject> call, Throwable t) {
+                Log.e("CEK","onFailure MESSAGE : "+t.getMessage());
+                Toast.makeText(mContext, t.getMessage(), Toast.LENGTH_SHORT).show();
+                OutApps();
+            }
+        });
+    }
+
+    private void OutApps(){
+        Intent intent = new Intent(Intent.ACTION_MAIN);
+        intent.addCategory(Intent.CATEGORY_HOME);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(intent);
+        overridePendingTransition(0,0);
+        finish();
+    }
+
+    private void processCaptureIdentify(String imgBase64) {
+        if (!NetworkUtil.hasDataNetwork(mContext)) {
+            Toast.makeText(this, "Connection Failed. Please check your network connection and try again.", Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        JsonCaptureIdentify jsons = new JsonCaptureIdentify();
+        jsons.setIdDips(idDips);
+        jsons.setImage(imgBase64);
+
+        Log.e("CEK","processCaptureIdentify REQUEST idDips : "+idDips);
+
+        ApiService API = Server.getAPIService();
+        //Call<CaptureIdentify> call = API.CaptureAdvanceAI(jsons);
+        Call<CaptureIdentify> call = API.CaptureIdentify(jsons);
+        Log.e("CEK","processCaptureIdentify URL CALL : "+call.request().url());
+        call.enqueue(new Callback<CaptureIdentify>() {
+            @Override
+            public void onResponse(Call<CaptureIdentify> call, Response<CaptureIdentify> response) {
+                Log.e("CEK","processCaptureIdentify RESPONSE CODE: "+response.code());
+                if (response.isSuccessful() && response.body() != null) {
+                    int errCode = response.body().getErr_code();
+                    if (errCode == 0) {
+                        SweetAlertDialog sweetDialog = new SweetAlertDialog(mContext,SweetAlertDialog.WARNING_TYPE);
+                        sweetDialog.setTitleText("Warning!!!");
+                        sweetDialog.setContentText(getResources().getString(R.string.not_using_dips));
+                        sweetDialog.setConfirmText("OK");
+                        sweetDialog.setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
+                            @Override
+                            public void onClick(SweetAlertDialog sweetAlertDialog) {
+                                sweetDialog.dismissWithAnimation();
+                                Intent intent = new Intent(Intent.ACTION_MAIN);
+                                intent.addCategory(Intent.CATEGORY_HOME);
+                                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);//***Change Here***
+                                startActivity(intent);
+                                finish();
+                            }
+                        });
+                        sweetDialog.show();
+                        return;
+                    }
+
+                    String idDipsOld = sessions.getKEY_IdDips();
+                    if (idDipsOld != null && OutboundService.mSocket != null) {
+                        OutboundService.leaveOutbound(idDipsOld);
+                    }
+
+                    isCust = response.body().isCustomer();
+                    custName = response.body().getName();
+                    idDips = response.body().getIdDips();
+                    NameSession = response.body().getDataSession().getNameSession();
+                    //SessionPass = response.body().getDataSession().getPass();
+
+                    sessions.saveIdDips(idDips);
+                    sessions.saveIsCust(isCust);
+
+                    getIntent().getExtras().clear();
+                    getIntent().removeExtra("RESULT_IMAGE_AI");
+
+                    initialWaitingRoom();
+                } else {
+                    Toast.makeText(mContext, R.string.msg_error,Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<CaptureIdentify> call, Throwable t) {
+                Log.e("CEK","onFailure MESSAGE : "+t.getMessage());
+                Toast.makeText(mContext, t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     private void setupConnectionFactory() {
         String uriRabbit = Server.BASE_URL_RABBITMQ;
         try {
-            Log.e("CEK","setupConnectionFactory uriRabbit : "+uriRabbit);
             connectionFactory.setAutomaticRecoveryEnabled(false);
             connectionFactory.setUri(uriRabbit);
         } catch (URISyntaxException | NoSuchAlgorithmException | KeyManagementException e) {
@@ -278,26 +521,70 @@ public class DipsWaitingRoom extends AppCompatActivity {
         return jsObj;
     }
 
+    private JSONObject reqQSTicket() {
+        long unixTime = System.currentTimeMillis() / 1000L;
+
+        JSONObject custObj = new JSONObject();
+        try {
+            custObj.put("custId",idDips);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        JSONObject jsObj = new JSONObject();
+        try {
+            jsObj.put("from","Cust");
+            jsObj.put("to","QS");
+            jsObj.put("created",unixTime);
+            jsObj.put("transaction",custObj);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        return jsObj;
+    }
+
+    private JSONObject reqAcceptCall() {
+        long unixTime = System.currentTimeMillis() / 1000L;
+
+        JSONObject custObj = new JSONObject();
+        try {
+            custObj.put("status","ack");
+            custObj.put("custId",idDips);
+            custObj.put("msg","OK");
+            custObj.put("ticket",myTicketNumber);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        JSONObject jsObj = new JSONObject();
+        try {
+            jsObj.put("from","Cust");
+            jsObj.put("to","CS");
+            jsObj.put("created",unixTime);
+            jsObj.put("transaction",custObj);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        return jsObj;
+    }
+
     private void publishToAMQP() {
         publishThread = new Thread(new Runnable() {
             @Override
             public void run() {
                 try {
-                    Log.e("CEK", "MASUK publishToAMQP");
                     Connection connection = connectionFactory.newConnection();
-                    Log.e("CEK", "connection : "+connection.getAddress().toString());
                     Channel ch = connection.createChannel();
-                    Log.e("CEK", "createChannel : "+ch.getChannelNumber());
                     ch.confirmSelect();
 
                     JSONObject dataTicketObj = dataGetTicket();
                     String dataTicket = dataTicketObj.toString();
-                    Log.e("CEK", "dataTicket : " + dataTicket);
 
                     ch.queueDeclare("dips.queue.service.req.ticket",true,false,false,null);
                     ch.basicPublish("","dips.queue.service.req.ticket",false,null,dataTicket.getBytes());
                     ch.waitForConfirmsOrDie();
-                    Log.e("CEK", "AFTEER waitForConfirmsOrDie");
 
                 } catch (IOException | TimeoutException | InterruptedException e) {
                     Log.e("CEK", "publishToAMQP Connection broken: " + e.getClass().getName());
@@ -312,13 +599,41 @@ public class DipsWaitingRoom extends AppCompatActivity {
         publishThread.start();
     }
 
+    private void publishQSReqTicket() {
+        publishQSTicketThread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Connection connection = connectionFactory.newConnection();
+                    Channel ch = connection.createChannel();
+                    ch.confirmSelect();
+
+                    JSONObject dataTicketObj = reqQSTicket();
+                    String dataTicket = dataTicketObj.toString();
+
+                    ch.queueDeclare("dips.queue.qs.req.ticket",true,false,false,null);
+                    ch.basicPublish("","dips.queue.qs.req.ticket",false,null,dataTicket.getBytes());
+                    ch.waitForConfirmsOrDie();
+
+                } catch (IOException | TimeoutException | InterruptedException e) {
+                    Log.e("CEK", "publishQSReqTicket Connection broken: " + e.getClass().getName());
+                    try {
+                        Thread.sleep(5000); //sleep and then try again
+                    } catch (InterruptedException e1) {
+
+                    }
+                }
+            }
+        });
+        publishQSTicketThread.start();
+    }
+
     void subscribe()
     {
         subscribeThread = new Thread(new Runnable() {
             @Override
             public void run() {
                 try {
-                    Log.e("CEK", "MASUK subscribe");
                     Connection connection = connectionFactory.newConnection();
                     Channel channel = connection.createChannel();
                     channel.basicQos(1);
@@ -330,7 +645,24 @@ public class DipsWaitingRoom extends AppCompatActivity {
                         public void handle(String consumerTag, Delivery message) throws IOException {
                             String getMessage = new String(message.getBody());
                             Log.e("CEK","Success subscribeThread getMessage : "+getMessage);
-                            Log.e("CEK","Success subscribeThread consumerTag : "+consumerTag);
+                            try {
+                                JSONObject dataObj = new JSONObject(getMessage);
+                                String getTicket = dataObj.getJSONObject("transaction").getString("ticket");
+                                Log.e("CEK","subscribeThread getTicket : "+getTicket);
+                                int myTicketInt = Integer.parseInt(getTicket);
+                                Log.e("CEK","subscribeThread myTicketInt : "+myTicketInt);
+                                myTicketNumber = String.format("%03d", myTicketInt).toString();
+                                Log.e("CEK","subscribeThread myTicketNumber : "+myTicketNumber);
+                                String myticketContent = "A" + myTicketNumber;
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        myTicket.setText(myticketContent);
+                                    }
+                                });
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
                         }
                     }, new CancelCallback() {
                         @Override
@@ -338,7 +670,7 @@ public class DipsWaitingRoom extends AppCompatActivity {
                             Log.e("CEK","subscribeThread consumerTag : "+consumerTag);
                         }
                     });
-
+                    publishToAMQP(); //RabbitMQ
                 } catch (Exception e1) {
                     Log.e("CEK", "subscribe Connection broken: " + e1.getClass().getName());
                     try {
@@ -351,13 +683,67 @@ public class DipsWaitingRoom extends AppCompatActivity {
         subscribeThread.start();
     }
 
+    void subscribeReqTicket()
+    {
+        subscribeReqTicketThread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Connection connection = connectionFactory.newConnection();
+                    Channel channel = connection.createChannel();
+                    channel.basicQos(1);
+                    AMQP.Queue.DeclareOk q = channel.queueDeclare();
+                    channel.exchangeDeclare("dips361-cust-req-ticket", "direct", true);
+                    channel.queueBind(q.getQueue(), "dips361-cust-req-ticket", "dips.direct.cust."+idDips+".req.ticket");
+                    channel.basicConsume(q.getQueue(), true, new DeliverCallback() {
+                        @Override
+                        public void handle(String consumerTag, Delivery message) throws IOException {
+                            String getMessage = new String(message.getBody());
+                            Log.e("CEK","Success subscribeReqTicket getMessage : "+getMessage);
+                            try {
+                                JSONObject dataObj = new JSONObject(getMessage);
+                                String ticketLast = dataObj.getJSONObject("transaction").getString("ticket");
+                                int ticketLastInt = Integer.parseInt(ticketLast);
+                                Log.e("CEK", "subscribeReqTicket ticketLast : " +ticketLast);
+                                String lastQueue = String.format("%03d", ticketLastInt).toString();
+                                Log.e("CEK", "subscribeReqTicket lastQueue : " +lastQueue);
+                                String lastTicketContent = "A" + lastQueue;
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        lastTicket.setText(lastTicketContent);
+                                    }
+                                });
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }, new CancelCallback() {
+                        @Override
+                        public void handle(String consumerTag) throws IOException {
+                            Log.e("CEK","subscribeReqTicket consumerTag : "+consumerTag);
+                        }
+                    });
+                    publishQSReqTicket();
+                    subscribe(); //RabbitMQ
+                } catch (Exception e1) {
+                    Log.e("CEK", "subscribeReqTicket Connection broken: " + e1.getClass().getName());
+                    try {
+                        Thread.sleep(4000); //sleep and then try again
+                    } catch (InterruptedException e) {
+                    }
+                }
+            }
+        });
+        subscribeReqTicketThread.start();
+    }
+
     void subscribeCall()
     {
         subscribeThreadCall = new Thread(new Runnable() {
             @Override
             public void run() {
                 try {
-                    Log.e("CEK", "MASUK subscribeCall");
                     Connection connection = connectionFactory.newConnection();
                     Channel channel = connection.createChannel();
                     channel.basicQos(1);
@@ -369,7 +755,45 @@ public class DipsWaitingRoom extends AppCompatActivity {
                         public void handle(String consumerTag, Delivery message) throws IOException {
                             String getMessage = new String(message.getBody());
                             Log.e("CEK","Success subscribeCall getMessage : "+getMessage);
-                            Log.e("CEK","Success subscribeCall consumerTag : "+consumerTag);
+                            try {
+                                JSONObject dataObj = new JSONObject(getMessage);
+                                int getTicket = dataObj.getJSONObject("transaction").getInt("ticket");
+                                Log.e("CEK","subscribeCall getTicket : "+getTicket);
+                                String getQueue = String.format("%03d", getTicket);
+                                String lastTicketContent = "A" + getQueue;
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        lastTicket.setText(lastTicketContent);
+                                    }
+                                });
+                                Log.e("CEK","subscribeCall getQueue : "+getQueue+" | myTicketNumber : "+myTicketNumber);
+                                if (getQueue.equals(myTicketNumber)) {
+                                    Log.e("CEK","subscribeCall MASUK IF");
+                                    String csId = dataObj.getJSONObject("transaction").getString("csId");
+                                    String password = dataObj.getJSONObject("transaction").getString("password");
+                                    Log.e("CEK","subscribeCall csId : "+csId);
+                                    Log.e("CEK","subscribeCall password : "+password);
+                                    NameSession = idDips;
+                                    SessionPass = password;
+                                    runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            PopUpSucces(csId);
+                                        }
+                                    });
+                                } else {
+                                    Log.e("CEK","subscribeCall MASUK ELSE WAITING");
+                                    runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            PopUpWaiting();
+                                        }
+                                    });
+                                }
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
                         }
                     }, new CancelCallback() {
                         @Override
@@ -388,6 +812,73 @@ public class DipsWaitingRoom extends AppCompatActivity {
             }
         });
         subscribeThreadCall.start();
+    }
+
+    void subscribeAllTicketInfo()
+    {
+        subscribeAllTicketInfoCall = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Connection connection = connectionFactory.newConnection();
+                    Channel channel = connection.createChannel();
+                    channel.basicQos(1);
+                    AMQP.Queue.DeclareOk q = channel.queueDeclare();
+                    channel.exchangeDeclare("", "broadcast", true);
+                    channel.queueBind(q.getQueue(), "", "dips.broadcast.all.ticket.info");
+                    channel.basicConsume(q.getQueue(), true, new DeliverCallback() {
+                        @Override
+                        public void handle(String consumerTag, Delivery message) throws IOException {
+                            String getMessage = new String(message.getBody());
+                            Log.e("CEK","Success subscribeAllTicketInfo getMessage : "+getMessage);
+                            Log.e("CEK","Success subscribeAllTicketInfo consumerTag : "+consumerTag);
+                        }
+                    }, new CancelCallback() {
+                        @Override
+                        public void handle(String consumerTag) throws IOException {
+                            Log.e("CEK","subscribeAllTicketInfo consumerTag : "+consumerTag);
+                        }
+                    });
+
+                } catch (Exception e1) {
+                    Log.e("CEK", "subscribeAllTicketInfo Connection broken: " + e1.getClass().getName());
+                    try {
+                        Thread.sleep(4000); //sleep and then try again
+                    } catch (InterruptedException e) {
+                    }
+                }
+            }
+        });
+        subscribeAllTicketInfoCall.start();
+    }
+
+    private void publishCallAccept(String csId) {
+        publishCallAcceptThread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Connection connection = connectionFactory.newConnection();
+                    Channel ch = connection.createChannel();
+                    ch.confirmSelect();
+
+                    JSONObject dataTicketObj = reqAcceptCall();
+                    String dataTicket = dataTicketObj.toString();
+
+                    ch.queueDeclare("dips.direct.cs."+csId+".accept.user",true,false,false,null);
+                    ch.basicPublish("dips361-cs-accept-user","dips.direct.cs."+csId+".accept.user",false,null,dataTicket.getBytes());
+                    ch.waitForConfirmsOrDie();
+
+                } catch (IOException | TimeoutException | InterruptedException e) {
+                    Log.e("CEK", "publishCallAccept Connection broken: " + e.getClass().getName());
+                    try {
+                        Thread.sleep(5000); //sleep and then try again
+                    } catch (InterruptedException e1) {
+
+                    }
+                }
+            }
+        });
+        publishCallAcceptThread.start();
     }
 
     private void AnimationCall(){
@@ -446,46 +937,6 @@ public class DipsWaitingRoom extends AppCompatActivity {
         },2000);
     }*/
 
-    @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if (keyCode == KeyEvent.KEYCODE_BACK) {
-            //preventing default implementation previous to android.os.Build.VERSION_CODES.ECLAIR
-            return true;
-        }
-
-        if (keyCode == KeyEvent.KEYCODE_HOME) {
-            //preventing default implementation previous to android.os.Build.VERSION_CODES.ECLAIR
-            return true;
-        }
-        return super.onKeyDown(keyCode, event);
-    }
-
-    @Override
-    protected void onPause() {
-        if (inPreview) {
-            camera.stopPreview();
-        }
-
-        if (camera != null) {
-            camera.release();
-            camera = null;
-            inPreview = false;
-        }
-
-        super.onPause();
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-
-        mSocket.disconnect();
-        mSocket.off("waiting");
-        publishThread.interrupt();
-        subscribeThread.interrupt();
-        subscribeThreadCall.interrupt();
-    }
-
     private void previewHolder(){
         previewHolder = preview.getHolder();
         previewHolder.addCallback(surfaceCallback);
@@ -493,6 +944,7 @@ public class DipsWaitingRoom extends AppCompatActivity {
     }
 
     private void initializeSdk() {
+        Log.e("CEK","initializeSdk");
         ZoomVideoSDKInitParams params = new ZoomVideoSDKInitParams();
         params.domain = AuthConstants.WEB_DOMAIN; // Required
         params.enableLog = true; // Optional for debugging
@@ -590,13 +1042,13 @@ public class DipsWaitingRoom extends AppCompatActivity {
                             lastTicket.setText("A"+lastQueue.substring(lastQueue.length()-3,lastQueue.length()));
                             NameSession = Session_name;
                             SessionPass = Session_password;
-                            PopUpSucces();
+                            PopUpSucces(null);
                         } else {
                               if (lastQueue.trim().equals(myTicketNumber) && Session_name.trim().equals(idDips) ){
                                 lastTicket.setText("A"+lastQueue.substring(lastQueue.length()-3,lastQueue.length()));
                                 NameSession = Session_name;
                                 SessionPass = Session_password;
-                                PopUpSucces();
+                                PopUpSucces(null);
                             }
                             else{
                                 //Ambil Data Antrian Terakhir terbaru dari Socket
@@ -831,35 +1283,40 @@ public class DipsWaitingRoom extends AppCompatActivity {
         }
     }
 
-    private void PopUpSucces(){
+    private void PopUpSucces(String csId){
         if (dialogSuccess == null) {
             dialogSuccess = new SweetAlertDialog(DipsWaitingRoom.this, SweetAlertDialog.SUCCESS_TYPE);
-            dialogSuccess.setContentText(getResources().getString(R.string.headline_success));
-            dialogSuccess.setConfirmText(getResources().getString(R.string.btn_continue));
-            dialogSuccess.setCancelText(getResources().getString(R.string.cancel));
-            dialogSuccess.setCancelable(false);
-            dialogSuccess.show();
-            Button btnConfirm = (Button) dialogSuccess.findViewById(cn.pedant.SweetAlert.R.id.confirm_button);
-            Button btnCancel = (Button) dialogSuccess.findViewById(cn.pedant.SweetAlert.R.id.cancel_button);
-            btnConfirm.setBackgroundTintList(DipsWaitingRoom.this.getResources().getColorStateList(R.color.Blue));
-            btnCancel.setBackgroundTintList(DipsWaitingRoom.this.getResources().getColorStateList(R.color.button_end_call));
-            dialogSuccess.setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
-                @Override
-                public void onClick(SweetAlertDialog sweetAlertDialog) {
-                    sweetAlertDialog.dismissWithAnimation();
-                    dialogSuccess = null;
-                    Popup();
-                }
-            });
-            dialogSuccess.setCancelClickListener(new SweetAlertDialog.OnSweetClickListener() {
-                @Override
-                public void onClick(SweetAlertDialog sweetAlertDialog) {
-                    sweetAlertDialog.dismissWithAnimation();
-                    PopUpSchedule();
-                    dialogSuccess = null;
-                }
-            });
         }
+        dialogSuccess.setContentText(getResources().getString(R.string.headline_success));
+        dialogSuccess.setConfirmText(getResources().getString(R.string.btn_continue));
+        dialogSuccess.setCancelText(getResources().getString(R.string.cancel));
+        dialogSuccess.setCancelable(false);
+        dialogSuccess.show();
+        Button btnConfirm = (Button) dialogSuccess.findViewById(cn.pedant.SweetAlert.R.id.confirm_button);
+        Button btnCancel = (Button) dialogSuccess.findViewById(cn.pedant.SweetAlert.R.id.cancel_button);
+        btnConfirm.setBackgroundTintList(DipsWaitingRoom.this.getResources().getColorStateList(R.color.Blue));
+        btnCancel.setBackgroundTintList(DipsWaitingRoom.this.getResources().getColorStateList(R.color.button_end_call));
+        dialogSuccess.setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
+            @Override
+            public void onClick(SweetAlertDialog sweetAlertDialog) {
+                if (!SessionPass.isEmpty()) {
+                    sweetAlertDialog.dismissWithAnimation();
+                    dialogSuccess = null;
+                    publishCallAccept(csId); //RabbitMQ
+                    Popup();
+                } else {
+                    Toast.makeText(mContext,"Password Conference belum ada",Toast.LENGTH_LONG).show();
+                }
+            }
+        });
+        dialogSuccess.setCancelClickListener(new SweetAlertDialog.OnSweetClickListener() {
+            @Override
+            public void onClick(SweetAlertDialog sweetAlertDialog) {
+                sweetAlertDialog.dismissWithAnimation();
+                PopUpSchedule();
+                dialogSuccess = null;
+            }
+        });
     }
 
     private void Popup(){
@@ -1033,27 +1490,37 @@ public class DipsWaitingRoom extends AppCompatActivity {
             e.printStackTrace();
         }
 
+        Log.e("CEK","processSignature REQ : "+jsons.toString());
+
         RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), jsons.toString());
 
         ApiService API = Server.getAPIService();
         Call<JsonObject> call = API.Signature(requestBody);
+        Log.e("CEK","Signature URL : "+call.request().url());
         call.enqueue(new Callback<JsonObject>() {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                Log.e("CEK","Signature RESPONSE "+response.code());
                 if (response.isSuccessful() && response.body().size() > 0) {
                     String dataS = response.body().toString();
+                    Log.e("CEK","Signature dataS : "+dataS);
                     try {
                         JSONObject jsObj = new JSONObject(dataS);
                         String signatures = "";
-                        if (jsObj.has("signature")) {
-                            if (!jsObj.isNull("signature")) {
-                                signatures = jsObj.getString("signature");
-                                processCreateVideo(signatures);
+                        if (jsObj.has("data")) {
+                            JSONObject dataSign = jsObj.getJSONObject("data");
+                            if (dataSign.has("signature")) {
+                                if (!dataSign.isNull("signature")) {
+                                    signatures = dataSign.getString("signature");
+                                    processCreateVideo(signatures);
+                                }
                             }
                         }
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
+                } else {
+                    Toast.makeText(mContext,"Terjadi Kesalahan. Silakan dicoba kembali",Toast.LENGTH_SHORT).show();
                 }
             }
 
@@ -1068,7 +1535,8 @@ public class DipsWaitingRoom extends AppCompatActivity {
         Map<String, Claim> allClaims = jwt.getClaims();
         String name = allClaims.get("user_identity").asString();
         String sessionName = allClaims.get("tpc").asString();
-        String sessionPass = allClaims.get("session_key").asString();
+        String sessionPassKey = allClaims.get("session_key").asString();
+        Log.e("CEK","processCreateVideo sessionPassKey : "+sessionPassKey);
 
         ZoomVideoSDKSessionContext sessionContext = new ZoomVideoSDKSessionContext();
 
@@ -1085,7 +1553,7 @@ public class DipsWaitingRoom extends AppCompatActivity {
         sessionContext.userName = name;
         sessionContext.token = signatures;
         //Optional
-        sessionContext.sessionPassword = sessionPass;
+        sessionContext.sessionPassword = sessionPassKey;
 
         ZoomVideoSDKSession session = ZoomVideoSDK.getInstance().joinSession(sessionContext);
 
@@ -1095,7 +1563,7 @@ public class DipsWaitingRoom extends AppCompatActivity {
 
         Intent intent = new Intent(this, DipsVideoConfren.class);
         intent.putExtra("name", name);
-        intent.putExtra("password", sessionPass);
+        intent.putExtra("password", sessionPassKey);
         intent.putExtra("sessionName", sessionName);
         intent.putExtra("render_type", renderType);
         intent.putExtra("ISCUSTOMER", isCust);
@@ -1116,4 +1584,5 @@ public class DipsWaitingRoom extends AppCompatActivity {
         }
         return false;
     }
+
 }

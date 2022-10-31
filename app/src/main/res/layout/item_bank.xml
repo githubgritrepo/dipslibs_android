@@ -19,14 +19,14 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
         android:layout_marginStart="15dp"
-        android:textSize="16dp"
+        android:textSize="12dp"
         android:textStyle="bold"
         android:textAppearance="@style/TextAppearance.AppCompat.Display1"/>
         <ImageView
             android:src="@drawable/item1"
             android:id="@+id/images_item"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:scaleType="centerInside"
-            android:adjustViewBounds="true"/>
+            android:layout_height="70dp"
+            android:scaleType="centerCrop"
+            android:adjustViewBounds="true" />
     </androidx.cardview.widget.CardView>

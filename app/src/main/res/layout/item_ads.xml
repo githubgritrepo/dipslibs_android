@@ -2,21 +2,23 @@
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="350dp"
     android:theme="@style/Theme.MaterialComponents.Light.DarkActionBar"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
-        android:layout_height="350dp"
-        android:layout_marginBottom="22dp">
+        android:layout_height="match_parent">
 
-        <LinearLayout
+        <TextView
+            android:id="@+id/tvContents"
             android:layout_width="match_parent"
-            android:layout_height="100dp"
-            android:layout_marginBottom="35dp"
+            android:layout_height="wrap_content"/>
+        <!--<LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:paddingBottom="35dp"
             android:orientation="vertical">
-
             <TextView
                 android:textSize="14dp"
                 android:layout_width="match_parent"
@@ -113,7 +115,7 @@
                 android:layout_marginBottom="10dp"
                 android:justificationMode="inter_word"
                 android:text="Belanja tak perlu keluar rumah, bisa langsung transaksi dengan mudah dan murah dari Company Brand menggunakan kartu XYZ tipe apapun! Discount hingga 50% khusus untuk pengguna baru dan dapatkan promo menarik lainnya!" />
-        </LinearLayout>
+        </LinearLayout>-->
     </androidx.core.widget.NestedScrollView>
     <LinearLayout
         android:layout_alignParentBottom="true"

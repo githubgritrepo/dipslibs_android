@@ -14,6 +14,7 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
 import android.provider.Settings;
 import android.util.Base64;
 import android.util.Log;
@@ -99,7 +100,15 @@ public class DipsSplashScreen extends AppCompatActivity {
     }
 
     private void processNext() {
-        new Thread(new Runnable() {
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                //setelah loading maka akan langsung berpindah ke home activity
+                startApp();
+
+            }
+        },5000);
+        /*new Thread(new Runnable() {
             @Override
             public void run() {
                 doWork();
@@ -110,7 +119,7 @@ public class DipsSplashScreen extends AppCompatActivity {
                     }
                 });
             }
-        }).start();
+        }).start();*/
     }
 
     private void startApp() {

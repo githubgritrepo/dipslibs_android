@@ -35,6 +35,7 @@ public class SessionManager {
     public static final String KEY_NASABAH = "NASABAH";
     public static final String KEY_ADVANCE_AI_LICENSE = "ADVANCE_AI_LICENSE";
     public static final String KEY_ADVANCE_AI_EXPIREDTIME = "ADVANCE_AI_EXPIREDTIME";
+    public static final String KEY_AUTHTOKEN = "AUTHTOKEN";
 
     // Constructor
     public SessionManager(Context context){
@@ -108,6 +109,11 @@ public class SessionManager {
         editor.commit();
     }
 
+    public void saveAuthToken(String data) {
+        editor.putString(KEY_AUTHTOKEN,data);
+        editor.commit();
+    }
+
     public void clearPartData(){
         editor.putString(KEY_RTGS,null);
         editor.putString(KEY_CIF,null);
@@ -175,5 +181,8 @@ public class SessionManager {
         return pref.getString(KEY_ADVANCE_AI_LICENSE,null);
     }
     public long getExpiredTimeAdvanceAI() { return pref.getLong(KEY_ADVANCE_AI_EXPIREDTIME,0);}
+    public String getAuthToken() {
+        return pref.getString(KEY_AUTHTOKEN,null);
+    }
 
 }

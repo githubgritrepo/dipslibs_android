@@ -5,6 +5,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <androidx.cardview.widget.CardView
+        android:id="@+id/cvSpanduk"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:cardCornerRadius="15dp"
@@ -14,16 +15,26 @@
             android:id="@+id/images"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:scaleType="centerCrop"
+            android:scaleType="fitCenter"
             android:adjustViewBounds="true"/>
         <RelativeLayout
+            android:id="@+id/rlVV"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:gravity="center"
+            android:visibility="gone">
             <VideoView
                 android:id="@+id/vvVideo"
-                android:layout_width="wrap_content"
-                android:layout_height="125dp"
-                android:visibility="gone"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"/>
+            <ImageView
+                android:id="@+id/imgBtnPlay"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:scaleType="centerInside"
+                android:src="@drawable/btn_play"
                 android:layout_centerInParent="true"/>
         </RelativeLayout>
         <TextView

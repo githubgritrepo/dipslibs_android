@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+    <!--<androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:id="@+id/swipe"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
@@ -40,8 +40,8 @@
 
         </RelativeLayout>
 
-    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
-    <!--<LinearLayout
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>-->
+    <LinearLayout
         android:layout_margin="40dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -109,5 +109,5 @@
             android:textAppearance="@style/TextAppearance.AppCompat.Button"
             android:text="@string/btn_continue"
             android:textColor="@color/white"/>
-    </LinearLayout>-->
+    </LinearLayout>
 </FrameLayout>

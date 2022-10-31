@@ -20,51 +20,64 @@ import retrofit2.http.Url;
 public interface ApiService {
 
     @Headers("Content-Type: "+ MyConstants.CONTENT_TYPE)
-    @POST("api/digitech/ocr-ktp")
+    @POST("digitech/ocr-ktp")
     Call<JsonObject> ocrKtp(@Body RequestBody body);
 
     @Headers("Content-Type: "+ MyConstants.CONTENT_TYPE)
-    @POST("api/capture/identify")
+    @POST("capture/identify")
     Call<CaptureIdentify> CaptureIdentify(@Body JsonCaptureIdentify body);
 
     @Headers("Content-Type: "+ MyConstants.CONTENT_TYPE)
-    @POST("api/capture/advance")
+    @POST("capture/advance")
     Call<CaptureIdentify> CaptureAdvanceAI(@Body JsonCaptureIdentify body);
 
     @Headers("Content-Type: "+ MyConstants.CONTENT_TYPE)
-    @POST("api/zoom/signature")
+    @POST("auth/customer/auth")
+    Call<JsonObject> CaptureAuth(@Body RequestBody body);
+
+    @Headers("Content-Type: "+ MyConstants.CONTENT_TYPE)
+    @POST("customer/get-by-nik")
+    Call<JsonObject> IdentifybyNIK(@Body RequestBody body,
+                                   @Header("Authorization") String authHeader);
+
+    @Headers("Content-Type: "+ MyConstants.CONTENT_TYPE)
+    @POST("auth/customer/exchange")
+    Call<JsonObject> ExchangeAuth(@Body RequestBody body);
+
+    @Headers("Content-Type: "+ MyConstants.CONTENT_TYPE)
+    @POST("credential/zoom-signature")
     Call<JsonObject> Signature(@Body RequestBody body);
 
     @Headers("Content-Type: "+ MyConstants.CONTENT_TYPE)
-    @POST("api/queue/tiket")
+    @POST("queue/tiket")
     Call<JsonObject> Ticket(@Body RequestBody body);
 
     @Headers("Content-Type: "+ MyConstants.CONTENT_TYPE)
-    @POST("api/nik/cek")
+    @POST("nik/cek")
     Call<JsonObject> CekData(@Body RequestBody body);
 
     @Headers("Content-Type: "+ MyConstants.CONTENT_TYPE)
-    @POST("api/document/savebase64")
+    @POST("document/savebase64")
     Call<JsonObject> SaveImage(@Body RequestBody body);
 
     @Headers("Content-Type: "+ MyConstants.CONTENT_TYPE)
-    @POST("api/transaction/conferencing")
+    @POST("transaction/conferencing")
     Call<JsonObject> Mirroring(@Body RequestBody body);
 
     @Headers("Content-Type: "+ MyConstants.CONTENT_TYPE)
-    @POST("api/outbound/accept")
+    @POST("outbound/accept")
     Call<JsonObject> acceptCall(@Body RequestBody body);
 
     @Headers("Content-Type: "+ MyConstants.CONTENT_TYPE)
-    @POST("api/outbound/reject")
+    @POST("outbound/reject")
     Call<JsonObject> rejectCall(@Body RequestBody body);
 
     @Headers("Content-Type: "+ MyConstants.CONTENT_TYPE)
-    @POST("api/scheduled/save")
+    @POST("scheduled/save")
     Call<JsonObject> saveSchedule(@Body RequestBody body);
 
     @Headers("Content-Type: "+ MyConstants.CONTENT_TYPE)
-    @POST("api/account_opening/createform")
+    @POST("account_opening/createform")
     Call<JsonObject> createAccount(@Body RequestBody body);
 
     @Headers("Content-Type: "+ MyConstants.CONTENT_TYPE)
@@ -75,45 +88,45 @@ public interface ApiService {
 
 
     @Headers("Content-Type: "+ MyConstants.CONTENT_TYPE)
-    @GET("api/prov/test")
+    @GET("prov/test")
     Call<JsonArray> getProv();
 
     @Headers("Content-Type: "+ MyConstants.CONTENT_TYPE)
-    @GET("api/kab/test/{id}")
+    @GET("kab/test/{id}")
     Call<JsonArray> ardGetKab(
             @Path("id") String id
     );
     @Headers("Content-Type: "+ MyConstants.CONTENT_TYPE)
-    @GET("api/kec/test/{id}")
+    @GET("kec/test/{id}")
     Call<JsonArray> ardGetKec(
             @Path("id") String id
     );
     @Headers("Content-Type: "+ MyConstants.CONTENT_TYPE)
-    @GET("api/kel/test/{id}")
+    @GET("kel/test/{id}")
     Call<JsonArray> ardGetKel(
             @Path("id") String id
     );
 
     @Headers("Content-Type: "+ MyConstants.CONTENT_TYPE)
-    @POST("/api/form/save")
+    @POST("form/save")
     Call<JsonObject> saveForm(@Body RequestBody body);
 
     @Headers("Content-Type: "+ MyConstants.CONTENT_TYPE)
-    @POST("api/form/verifyOtp")
+    @POST("form/verifyOtp")
     Call<JsonObject> VerifyOTP(@Body RequestBody body);
 
     @Headers("Content-Type: "+ MyConstants.CONTENT_TYPE)
-    @POST("api/form/resendOtp")
+    @POST("form/resendOtp")
     Call<JsonObject> ResendOTP(@Body RequestBody body);
 
     @Headers("Content-Type: "+ MyConstants.CONTENT_TYPE)
-    @GET("api/customer/portofolio/{idDiPS}")
+    @GET("customer/portofolio/{idDiPS}")
     Call<JsonObject> GetPortofolio(
             @Path("idDiPS") String idDiPS
     );
 
     @Headers("Content-Type: "+ MyConstants.CONTENT_TYPE)
-    @GET("api/form/resume-rtgs/{indexTypeTran}-{etc}-{noFIP}-{isPenduduk}-{namaPenyetor}-{addrPenyetor}-{noHP}-" +
+    @GET("form/resume-rtgs/{indexTypeTran}-{etc}-{noFIP}-{isPenduduk}-{namaPenyetor}-{addrPenyetor}-{noHP}-" +
             "{noRek}-{total}-{biaya}-{namaPenerima}-{addrPenerima}-{bankPenerima}-{noRekPenerima}-{berita}-" +
             "{namaTeller}")
     Call<JsonObject> GetResumeTransaction(
@@ -147,8 +160,15 @@ public interface ApiService {
     @GET("publish_product")
     Call<JsonObject> getProductPublish();
 
+    @Headers("Content-Type: "+ MyConstants.CONTENT_TYPE)
+    @GET("list-publish-product/list")
+    Call<JsonObject> getNewProductPublish();
+
     @GET("produk/media/{id}")
     Call<ResponseBody> getProductMedia(@Path("id") int id);
+
+    @GET("form-builder/list/{formid}")
+    Call<JsonObject> getFormBuilder(@Path("formid") int formId);
 
     @GET("percobaan/form-nik")
     Call<ResponseBody> getFormNIK();

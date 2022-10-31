@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.media.MediaPlayer;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
@@ -20,7 +21,9 @@ import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
+import android.widget.VideoView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -29,6 +32,9 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import androidx.viewpager.widget.ViewPager;
+import androidx.viewpager2.widget.CompositePageTransformer;
+import androidx.viewpager2.widget.MarginPageTransformer;
+import androidx.viewpager2.widget.ViewPager2;
 
 import com.evo.mitzoom.API.ApiService;
 import com.evo.mitzoom.API.Server;
@@ -36,6 +42,7 @@ import com.evo.mitzoom.Adapter.AdapterSlide;
 import com.evo.mitzoom.Adapter.GridProductAdapter;
 import com.evo.mitzoom.R;
 import com.evo.mitzoom.Session.SessionManager;
+import com.facebook.shimmer.ShimmerFrameLayout;
 import com.google.android.material.button.MaterialButton;
 import com.google.gson.JsonObject;
 
@@ -68,7 +75,7 @@ public class frag_berita extends Fragment {
     private Context context;
     int [] gambar = {R.drawable.rtgs, R.drawable.pembukaanakun, R.drawable.formulirkomplain, R.drawable.ads1,R.drawable.ads2, R.drawable.ads3, R.drawable.ads4, R.drawable.ads1,R.drawable.ads2, R.drawable.ads3, R.drawable.ads4, R.drawable.ads1,R.drawable.ads2, R.drawable.ads3, R.drawable.ads4, R.drawable.ads1};
     private RecyclerView rv_product;
-    private ViewPager mPager;
+    private ViewPager2 mPager;
     private GridProductAdapter gridAdapter;
     private static final Integer[]img = {R.drawable.adsv1, R.drawable.adsv2, R.drawable.adsv3};
     private ArrayList<Integer> imgArray = new ArrayList<Integer>();
@@ -85,6 +92,9 @@ public class frag_berita extends Fragment {
     private JSONArray dataArrSpanduk = null;
     private List<JSONObject> newDataProd;
     private SwipeRefreshLayout swipe;
+    private RelativeLayout rl_real;
+    private ShimmerFrameLayout shimmer_view;
+    private List<Integer> indeksNotFound;
 
 
     @Override
@@ -100,6 +110,8 @@ public class frag_berita extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.frag_berita, container, false);
         swipe = (SwipeRefreshLayout) view.findViewById(R.id.swipe);
+        rl_real = (RelativeLayout) view.findViewById(R.id.rl_real);
+        shimmer_view = (ShimmerFrameLayout) view.findViewById(R.id.shimmer_view);
         rv_product = view.findViewById(R.id.rv_product);
         mPager = view.findViewById(R.id.pager);
         circleIndicator = view.findViewById(R.id.indicator);
@@ -113,9 +125,15 @@ public class frag_berita extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        rl_real.setVisibility(View.INVISIBLE);
+        shimmer_view.startShimmer();
+
         swipe.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
+                rl_real.setVisibility(View.INVISIBLE);
+                shimmer_view.setVisibility(View.VISIBLE);
+                shimmer_view.startShimmer();
                 new AsyncProcess().execute();
                 swipe.setRefreshing(false);
             }
@@ -138,6 +156,8 @@ public class frag_berita extends Fragment {
 
     }
 
+
+
     private class AsyncProcess extends AsyncTask<Void,Void,Void> {
 
         @Override
@@ -149,6 +169,7 @@ public class frag_berita extends Fragment {
     }
 
     private void processGetSpanduk() {
+        indeksNotFound = new ArrayList<>();
         Server.getAPIWAITING_PRODUCT().getSpandukPublish().enqueue(new Callback<JsonObject>() {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
@@ -157,18 +178,23 @@ public class frag_berita extends Fragment {
                     String dataS = response.body().toString();
                     try {
                         JSONObject dataObj = new JSONObject(dataS);
-                        int errCode = dataObj.getInt("err_code");
-                        if (errCode == 0) {
-                            dataArrSpanduk = dataObj.getJSONArray("data");
-                            if (dataArrSpanduk.length() > 0) {
-                                for (int i = 0; i < dataArrSpanduk.length(); i++) {
-                                    JSONObject dataStream = dataArrSpanduk.getJSONObject(i);
-                                    int idSpanduk = dataStream.getInt("id");
-                                    processSpandukMedia(idSpanduk,dataStream,i);
+                        if (dataObj.has("err_code")) {
+                            int errCode = dataObj.getInt("err_code");
+                            if (errCode == 0) {
+                                dataArrSpanduk = dataObj.getJSONArray("data");
+                                int len = dataArrSpanduk.length();
+                                if (len > 0) {
+                                    processSyncSpandukMedia(0);
                                 }
-                            } else {
-                                mPager.setVisibility(View.GONE);
-                                circleIndicator.setVisibility(View.GONE);
+                            }
+                        } else {
+                            int errCode = dataObj.getInt("code");
+                            if (errCode == 200) {
+                                dataArrSpanduk = dataObj.getJSONArray("data");
+                                int len = dataArrSpanduk.length();
+                                if (len > 0) {
+                                    processSyncSpandukMedia(0);
+                                }
                             }
                         }
 
@@ -184,18 +210,68 @@ public class frag_berita extends Fragment {
         });
     }
 
+    private void processSyncSpandukMedia(int i) {
+        try {
+            JSONObject dataStream = dataArrSpanduk.getJSONObject(i);
+            int idSpanduk = dataStream.getInt("id");
+            processSpandukMedia(idSpanduk,dataStream,i);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
     private void processSpandukMedia(int idSpanduk, JSONObject dataStream, int indexs) {
+        Log.e("CEK","processSpandukMedia indexs : "+indexs+" | idSpanduk : "+idSpanduk);
+        final int[] loops = {indexs};
         Server.getAPIWAITING_PRODUCT().getSpandukMedia(idSpanduk).enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                Log.e("CEK","processSpandukMedia response : "+response.code());
                 if (response.code() == 200) {
                     String Content_Type = response.headers().get("Content-Type");
+                    Log.e("CEK","processSpandukMedia Content_Type : "+Content_Type);
                     if (Content_Type.indexOf("json") < 0) {
                         InputStream in = response.body().byteStream();
+
+                        if (indexs < dataArrSpanduk.length()-1) {
+                            loops[0]++;
+                            processSyncSpandukMedia(loops[0]);
+                        }
+
                         processParsingMedia(in,Content_Type,dataStream,indexs);
+
+                        if (indexs == dataArrSpanduk.length()-1) {
+                            rl_real.setVisibility(View.VISIBLE);
+                            shimmer_view.stopShimmer();
+                            shimmer_view.setVisibility(View.INVISIBLE);
+
+                            mPager.setVisibility(View.VISIBLE);
+                            circleIndicator.setVisibility(View.VISIBLE);
+                            for (int k = 0; k < indeksNotFound.size(); k++) {
+                                int indekNF = indeksNotFound.get(k);
+                                dataArrSpanduk.remove(indekNF);
+                            }
+                            initPager();
+                        }
+                    }
+                } else if(response.code() == 404) {
+                    indeksNotFound.add(indexs);
+                    if (indexs < dataArrSpanduk.length()-1) {
+                        loops[0]++;
+                        processSyncSpandukMedia(loops[0]);
+                    }
+
+                    if (indexs == dataArrSpanduk.length()-1) {
+                        rl_real.setVisibility(View.VISIBLE);
+                        shimmer_view.stopShimmer();
+                        shimmer_view.setVisibility(View.INVISIBLE);
 
                         mPager.setVisibility(View.VISIBLE);
                         circleIndicator.setVisibility(View.VISIBLE);
+                        for (int k = 0; k < indeksNotFound.size(); k++) {
+                            int indekNF = indeksNotFound.get(k);
+                            dataArrSpanduk.remove(indekNF);
+                        }
                         initPager();
                     }
                 }
@@ -209,6 +285,7 @@ public class frag_berita extends Fragment {
     }
 
     private void processParsingMedia(InputStream stream, String content_Type, JSONObject dataStream, int indexs) {
+        Log.e("CEK","processParsingMedia : "+content_Type);
         if (content_Type.indexOf("image") > -1) {
             Bitmap bitmap = BitmapFactory.decodeStream(stream);
             try {
@@ -252,7 +329,7 @@ public class frag_berita extends Fragment {
     }
 
     private void processGetProduct() {
-        Server.getAPIWAITING_PRODUCT().getProductPublish().enqueue(new Callback<JsonObject>() {
+        Server.getAPIWAITING_PRODUCT().getNewProductPublish().enqueue(new Callback<JsonObject>() {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
                 Log.e("CEK","Response Code processGetProduct : "+response.code());
@@ -260,11 +337,10 @@ public class frag_berita extends Fragment {
                     String dataS = response.body().toString();
                     try {
                         JSONObject dataObj = new JSONObject(dataS);
-                        int errCode = dataObj.getInt("err_code");
+                        int errCode = dataObj.getInt("code");
                         Log.e("CEK","errCode : "+errCode);
-                        if (errCode == 0) {
-                            JSONArray dataRows = dataObj.getJSONObject("data").getJSONArray("rows");
-                            Log.e("CEK","dataRows : "+dataRows.length());
+                        if (errCode == 200) {
+                            JSONArray dataRows = dataObj.getJSONArray("data");
                             newDataProd = new ArrayList<JSONObject>();
                             List<JSONObject> newDataProdRight = new ArrayList<JSONObject>();
                             int indexsLeft = 0;
@@ -339,12 +415,25 @@ public class frag_berita extends Fragment {
         //System.exit(0);
     }
     private void initPager() {
-        /*for (int i = 0; i < img.length; i++) {
-            imgArray.add(img[i]);
-        }*/
+        Log.e("CEK","initPager : "+dataArrSpanduk.length());
 
         mPager.setAdapter(new AdapterSlide(context, dataArrSpanduk));
-        circleIndicator.setViewPager(mPager);
+        mPager.setClipToPadding(false);
+        mPager.setClipChildren(false);
+        mPager.setOffscreenPageLimit(3);
+        mPager.getChildAt(0).setOverScrollMode(View.OVER_SCROLL_NEVER);
+
+        CompositePageTransformer transformer = new CompositePageTransformer();
+        transformer.addTransformer(new MarginPageTransformer(12));
+        transformer.addTransformer(new ViewPager2.PageTransformer() {
+            @Override
+            public void transformPage(@NonNull View page, float position) {
+                float v = 1 - Math.abs(position);
+                page.setScaleY(0.8f + v * 0.2f);
+            }
+        });
+        mPager.setPageTransformer(transformer);
+        //circleIndicator.setViewPager(mPager);
 
         /*Handler handler = new Handler();
         Runnable updates = new Runnable() {
@@ -433,22 +522,25 @@ public class frag_berita extends Fragment {
                     Toast.makeText(context.getApplicationContext(), R.string.notif_blank, Toast.LENGTH_SHORT).show();
                 }
                 else {
-                    saveSchedule();
-                    Toast.makeText(context.getApplicationContext(), getResources().getString(R.string.schedule)+tanggal+" & "+getResources().getString(R.string.jam)+waktu, Toast.LENGTH_LONG).show();
-                    sweetAlertDialog.dismiss();
-                    SweetAlertDialog sweetAlertDialog = new SweetAlertDialog(context, SweetAlertDialog.SUCCESS_TYPE);
-                    sweetAlertDialog.setContentText(getResources().getString(R.string.content_after_schedule));
-                    sweetAlertDialog.setConfirmText(getResources().getString(R.string.done));
-                    sweetAlertDialog.show();
-                    Button btnConfirm = (Button) sweetAlertDialog.findViewById(cn.pedant.SweetAlert.R.id.confirm_button);
-                    btnConfirm.setBackgroundTintList(context.getResources().getColorStateList(R.color.Blue));
-                    btnConfirm.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            sweetAlertDialog.dismiss();
-                            OutApps();
-                        }
-                    });
+                    if (idDips.isEmpty()) {
+                        idDips = sessions.getKEY_IdDips();
+                    }
+                        saveSchedule();
+                        Toast.makeText(context.getApplicationContext(), getResources().getString(R.string.schedule) + tanggal + " & " + getResources().getString(R.string.jam) + waktu, Toast.LENGTH_LONG).show();
+                        sweetAlertDialog.dismiss();
+                        SweetAlertDialog sweetAlertDialog = new SweetAlertDialog(context, SweetAlertDialog.SUCCESS_TYPE);
+                        sweetAlertDialog.setContentText(getResources().getString(R.string.content_after_schedule));
+                        sweetAlertDialog.setConfirmText(getResources().getString(R.string.done));
+                        sweetAlertDialog.show();
+                        Button btnConfirm = (Button) sweetAlertDialog.findViewById(cn.pedant.SweetAlert.R.id.confirm_button);
+                        btnConfirm.setBackgroundTintList(context.getResources().getColorStateList(R.color.Blue));
+                        btnConfirm.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                sweetAlertDialog.dismiss();
+                                OutApps();
+                            }
+                        });
                 }
 
             }

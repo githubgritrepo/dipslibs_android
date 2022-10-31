@@ -83,10 +83,10 @@ public class frag_inputdata extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.frag_input_nik_nama, container, false);
-        swipe = (SwipeRefreshLayout) view.findViewById(R.id.swipe);
-        views = view.findViewById(R.id.views);
-        /*et_NamaNasabah = view.findViewById(R.id.et_nama);
-        et_NikNasabah = view.findViewById(R.id.et_nik);*/
+        //swipe = (SwipeRefreshLayout) view.findViewById(R.id.swipe);
+        //views = view.findViewById(R.id.views);
+        et_NamaNasabah = view.findViewById(R.id.et_nama);
+        et_NikNasabah = view.findViewById(R.id.et_nik);
         btnNext = view.findViewById(R.id.btnNext);
         sweetAlertDialogTNC = new SweetAlertDialog(context, SweetAlertDialog.NORMAL_TYPE);
         return view;
@@ -97,20 +97,20 @@ public class frag_inputdata extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         idDips = session.getKEY_IdDips();
 
-        swipe.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+        /*swipe.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
                 getFormNIK();
             }
-        });
+        });*/
 
-        views.getSettings().setJavaScriptEnabled(true);
-        views.addJavascriptInterface(new WebAppInterface(getActivity()), "Android");
+        /*views.getSettings().setJavaScriptEnabled(true);
+        views.addJavascriptInterface(new WebAppInterface(getActivity()), "Android");*/
 
-        getFormNIK();
+        //getFormNIK();
 
-        //Popup();
-        /*et_NamaNasabah.setFilters(new InputFilter[]{
+        Popup();
+        et_NamaNasabah.setFilters(new InputFilter[]{
             new InputFilter() {
                 @Override
                 public CharSequence filter(CharSequence cs, int start, int end, Spanned dest, int dstart, int dend) {
@@ -173,7 +173,7 @@ public class frag_inputdata extends Fragment {
                 }
 
             }
-        });*/
+        });
 
         btnNext.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -188,6 +188,7 @@ public class frag_inputdata extends Fragment {
                 }
                 else {
                     CekData();
+                    //getByNIK();
                 }
             }
         });
@@ -212,7 +213,7 @@ public class frag_inputdata extends Fragment {
         Server.getAPIWAITING_PRODUCT().getFormNIK().enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                swipe.setRefreshing(false);
+                //swipe.setRefreshing(false);
                 if (response.isSuccessful()) {
                     try {
                         String dataHtml = response.body().string();
@@ -232,7 +233,7 @@ public class frag_inputdata extends Fragment {
 
             @Override
             public void onFailure(Call<ResponseBody> call, Throwable t) {
-                swipe.setRefreshing(false);
+                //swipe.setRefreshing(false);
             }
         });
     }
@@ -343,6 +344,74 @@ public class frag_inputdata extends Fragment {
         });
     }
 
+    private void getByNIK() {
+        String accessToken = session.getAuthToken();
+        Log.e("CEK","accessToken : "+accessToken);
+        JSONObject jsons = new JSONObject();
+        try {
+            jsons.put("nik",NIK);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        Log.e("CEK","REQUEST getByNIK : "+jsons.toString());
+        RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), jsons.toString());
+
+        ApiService API = Server.getAPIService2();
+        Call<JsonObject> call = API.IdentifybyNIK(requestBody,"Bearer "+accessToken);
+        call.enqueue(new Callback<JsonObject>() {
+            @Override
+            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                Log.e("CEK","Response Code : "+response.code());
+                if (response.isSuccessful()) {
+                    String dataS = response.body().toString();
+                    Log.e("CEK","Response dataS : "+dataS);
+                    try {
+                        JSONObject dataObj = new JSONObject(dataS);
+
+                        if (dataObj.getJSONObject("data").isNull("noCif")) {
+                            PopUpTnc();
+                        } else {
+                            Mirroring4(false);
+                            session.clearCIF();
+                            getFragmentPage(new frag_portfolio());
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                } else {
+                    try {
+                        String dataErr = response.errorBody().string();
+                        Log.e("CEK","dataErr : "+dataErr);
+                        if (dataErr != null) {
+                            try {
+                                JSONObject dataObj = new JSONObject(dataErr);
+                                if(dataObj.has("message")) {
+                                    String message = dataObj.getString("message");
+                                    Toast.makeText(context, message,Toast.LENGTH_SHORT).show();
+                                    if(response.code() == 404) {
+                                        PopUpTnc();
+                                    }
+                                }
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                        } else {
+                            Toast.makeText(context, R.string.msg_error, Toast.LENGTH_SHORT).show();
+                        }
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<JsonObject> call, Throwable t) {
+
+            }
+        });
+    }
+
     private void CekData(){
         String idDips = session.getKEY_IdDips();
         JSONObject jsons = new JSONObject();
@@ -421,8 +490,8 @@ public class frag_inputdata extends Fragment {
         btnConfirm.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                DipsVideoConfren.timer.setVisibility(View.VISIBLE);
-                runTimer(text_timer);
+                /*DipsVideoConfren.timer.setVisibility(View.VISIBLE);
+                runTimer(text_timer);*/
                 sweetAlertDialog.dismiss();
             }
         });
@@ -436,48 +505,48 @@ public class frag_inputdata extends Fragment {
                 .commit();
     }
     private void PopUpTnc(){
+        Log.e("CEK","MASUK PopUpTnc");
         inflater = ((Activity)context).getLayoutInflater();
-        dialogView = inflater.inflate(R.layout.item_tnc,null);
         if (sweetAlertDialogTNC == null) {
+            dialogView = inflater.inflate(R.layout.item_tnc,null);
             sweetAlertDialogTNC = new SweetAlertDialog(context, SweetAlertDialog.NORMAL_TYPE);
-        }
-        else{
             sweetAlertDialogTNC.setCustomView(dialogView);
             sweetAlertDialogTNC.hideConfirmButton();
             sweetAlertDialogTNC.setCancelable(false);
-            sweetAlertDialogTNC.show();
-            CheckBox checkBox = dialogView.findViewById(R.id.checktnc);
-            Button btn = dialogView.findViewById(R.id.btnnexttnc);
-            btn.setClickable(false);
-            checkBox.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (checkBox.isChecked()){
-                        Log.d("CHECK","TRUE");
-                        btn.setBackgroundTintList(context.getResources().getColorStateList(R.color.Blue));
-                        btn.setClickable(true);
-                    }
-                    else {
-                        Log.d("CHECK","FALSE");
-                        btn.setBackgroundTintList(context.getResources().getColorStateList(R.color.btnFalse));
-                        btn.setClickable(false);
-                    }
-                }
-            });
-            btn.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (checkBox.isChecked()){
-                        Mirroring2(true);
-                        Mirroring3(true);
-                        sweetAlertDialogTNC.dismiss();
-                        getFragmentPage(new frag_opening_account());
-                    }
-                    else {
-                        btn.setClickable(false);
-                    }
-                }
-            });
         }
+        sweetAlertDialogTNC.show();
+        CheckBox checkBox = dialogView.findViewById(R.id.checktnc);
+        Button btn = dialogView.findViewById(R.id.btnnexttnc);
+        btn.setClickable(false);
+        checkBox.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (checkBox.isChecked()){
+                    Log.d("CHECK","TRUE");
+                    btn.setBackgroundTintList(context.getResources().getColorStateList(R.color.Blue));
+                    btn.setClickable(true);
+                }
+                else {
+                    Log.d("CHECK","FALSE");
+                    btn.setBackgroundTintList(context.getResources().getColorStateList(R.color.btnFalse));
+                    btn.setClickable(false);
+                }
+            }
+        });
+        btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (checkBox.isChecked()){
+                    Mirroring2(true);
+                    Mirroring3(true);
+                    sweetAlertDialogTNC.dismiss();
+                    sweetAlertDialogTNC.cancel();
+                    getFragmentPage(new frag_opening_account());
+                }
+                else {
+                    btn.setClickable(false);
+                }
+            }
+        });
     }
 }

@@ -20,6 +20,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.evo.mitzoom.API.ApiService;
 import com.evo.mitzoom.API.Server;
 import com.evo.mitzoom.Adapter.AdapterPortofolio;
+import com.evo.mitzoom.Adapter.AdapterPortofolioNew;
 import com.evo.mitzoom.Model.PortfolioModel;
 import com.evo.mitzoom.R;
 import com.evo.mitzoom.Session.SessionManager;
@@ -72,11 +73,13 @@ public class frag_portfolio extends Fragment {
     int[] imgDana = {R.drawable.porto1,R.drawable.porto2,R.drawable.porto3};
     int[] imgInves = {R.drawable.porto4,R.drawable.porto5,R.drawable.porto6,R.drawable.porto7};
     int[] imgKredit = {R.drawable.porto8};
+    private JSONArray typeProdukListArr;
 
     private static final int[] MATERIAL_COLORS = {
             rgb("#2ecc71"), rgb("#f1c40f"), rgb("#e74c3c"), rgb("#3498db"), rgb("#ed0ff1"),
             rgb("#90e610"), rgb("#f2ad0c"), rgb("#0af28a"), rgb("#f20a4c"), rgb("#f20a7a")
     };
+    private RecyclerView rv_item_expand;
 
     private static int rgb(String hex) {
         int color = (int) Long.parseLong(hex.replace("#", ""), 16);
@@ -112,6 +115,9 @@ public class frag_portfolio extends Fragment {
         btnToogleShow = view.findViewById(R.id.btn_toogle_eye);
         btnToogleHide = view.findViewById(R.id.btn_toogle_eye2);
         tvCurrency = view.findViewById(R.id.currency);
+
+        rv_item_expand = (RecyclerView) view.findViewById(R.id.rv_item_expand);
+
         return view;
     }
 
@@ -138,8 +144,8 @@ public class frag_portfolio extends Fragment {
             tvtanggal.setText(TanggalSekarang);
         }
         tvCurrency.setText(getResources().getString(R.string.currency));
-        btnToogleHide.setVisibility(View.VISIBLE);
-        btnToogleShow.setVisibility(View.GONE);
+        //btnToogleHide.setVisibility(View.VISIBLE);
+        /*btnToogleShow.setVisibility(View.GONE);
         btnToogleShow.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -161,7 +167,7 @@ public class frag_portfolio extends Fragment {
                 addDataKredit();
                 setRecyler();
             }
-        });
+        });*/
         nestedScrollView.setOnScrollChangeListener(new NestedScrollView.OnScrollChangeListener() {
             @Override
             public void onScrollChange(@NonNull NestedScrollView v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
@@ -200,12 +206,14 @@ public class frag_portfolio extends Fragment {
                             dataNasabah = datas;
                             sessionManager.saveNasabah(dataNasabah.toString());
                             produkListPorto = datas.getJSONArray("produk");
+
                             setChartNasabah();
-                            addDataDanaPihakKetigaMasking();
+                            setRecylerExpand();
+                            /*addDataDanaPihakKetigaMasking();
                             addDataInvestasiMasking();
                             addDataKreditMasking();
 
-                            setRecyler();
+                            setRecyler();*/
                         }
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -218,6 +226,17 @@ public class frag_portfolio extends Fragment {
 
             }
         });
+    }
+
+    private void setRecylerExpand() {
+        Log.e("CEK","MASUK setRecylerExpand");
+
+        AdapterPortofolioNew dataExpand = new AdapterPortofolioNew(context, typeProdukListArr);
+
+        recylerViewLayoutManager = new LinearLayoutManager(context);
+
+        rv_item_expand.setLayoutManager(recylerViewLayoutManager);
+        rv_item_expand.setAdapter(dataExpand);
     }
 
     private void Mirroring(boolean bool){
@@ -248,6 +267,16 @@ public class frag_portfolio extends Fragment {
     }
 
     private void setRecyler(){
+        if (data2.size() == 0) {
+            Investasi.setVisibility(View.GONE);
+        } else {
+            Investasi.setVisibility(View.VISIBLE);
+        }
+        if (data3.size() == 0) {
+            Kredit.setVisibility(View.GONE);
+        } else {
+            Kredit.setVisibility(View.VISIBLE);
+        }
         recyclerViewAdapter = new AdapterPortofolio(context, data);
         recyclerViewAdapter2 = new AdapterPortofolio(context, data2);
         recyclerViewAdapter3 = new AdapterPortofolio(context, data3);
@@ -275,7 +304,7 @@ public class frag_portfolio extends Fragment {
         setLegendChart();
 
         int len = produkListPorto.length();
-        JSONArray typeProdukListArr = new JSONArray();
+        typeProdukListArr = new JSONArray();
         int loop = 0;
         for (int i = 0; i < len; i++) {
             try {
@@ -287,6 +316,7 @@ public class frag_portfolio extends Fragment {
                     JSONObject dataValProduk = new JSONObject();
 
                     String jenis = listProduk.getJSONObject(j).getString("jenis");
+                    String icon = listProduk.getJSONObject(j).getString("icon");
                     String namaProduk = listProduk.getJSONObject(j).getString("namaProduk").trim();
                     String typeProduk = jenis;
                     if (typeProdukListArr.length() > 0) {
@@ -299,22 +329,36 @@ public class frag_portfolio extends Fragment {
                                 int valProduk = typeProdukListArr.getJSONObject(k).getInt("value");
                                 int addVal = valProduk + 1;
                                 typeProdukListArr.getJSONObject(k).put("value",addVal);
+
+                                JSONArray dataList = typeProdukListArr.getJSONObject(k).getJSONArray("dataList");
+                                dataList.put(listProduk.getJSONObject(j));
+                                typeProdukListArr.getJSONObject(k).put("dataList",dataList);
                                 break;
                             }
                         }
 
                         if (cekFlag) {
+                            JSONArray dataList = new JSONArray();
+                            dataList.put(listProduk.getJSONObject(j));
+
                             dataValProduk.put("value",1);
                             dataValProduk.put("typeProduct",typeProduk);
                             dataValProduk.put("nameProduct",namaProduk);
+                            dataValProduk.put("icon",icon);
+                            dataValProduk.put("dataList",dataList);
                             typeProdukListArr.put(loop,dataValProduk);
                             loop++;
                         }
 
                     } else {
+                        JSONArray dataList = new JSONArray();
+                        dataList.put(listProduk.getJSONObject(j));
+
                         dataValProduk.put("value",1);
                         dataValProduk.put("typeProduct",typeProduk);
                         dataValProduk.put("nameProduct",namaProduk);
+                        dataValProduk.put("icon",icon);
+                        dataValProduk.put("dataList",dataList);
                         typeProdukListArr.put(loop,dataValProduk);
                         loop++;
                     }
@@ -323,6 +367,8 @@ public class frag_portfolio extends Fragment {
                 e.printStackTrace();
             }
         }
+
+        Log.e("CEK","typeProdukListArr : "+typeProdukListArr);
 
         int totalVal = 0;
         for (int i = 0; i < typeProdukListArr.length(); i++) {

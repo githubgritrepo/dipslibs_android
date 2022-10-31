@@ -28,6 +28,8 @@
 
     <style name="ZMTheme.SubWindow" parent="FullscreenTheme">
         <item name="android:windowNoTitle">true</item>
+        <item name="customTextInputStyle">@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox</item>
+        <item name="customTextInputStyleDropDown">@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu</item>
     </style>
 
     <style name="MyDialog" parent="Widget.AppCompat.ButtonBar.AlertDialog">

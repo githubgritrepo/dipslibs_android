@@ -1,10 +1,12 @@
 package com.evo.mitzoom.Helper;
 
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.PointF;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.evo.mitzoom.ui.DipsCameraSource;
 import com.evo.mitzoom.ui.DipsCapture;
 import com.google.android.gms.vision.Tracker;
 import com.google.android.gms.vision.face.Face;
@@ -17,15 +19,22 @@ public class GraphicFaceTracker extends Tracker<Face> {
 
     private static final float OPEN_THRESHOLD = 0.99f;
     private static final float CLOSE_THRESHOLD = 0.02f;
-    private final DipsCapture dipsCapture;
+    private DipsCapture dipsCapture;
+    private DipsCameraSource dipsCameraSource;
     private int state = 0;
     private boolean flag;
     private Context mContext;
+    private String activitys;
 
-    public GraphicFaceTracker(DipsCapture dipsCapture, Context mContext) {
-        this.dipsCapture = dipsCapture;
+    public GraphicFaceTracker( Context mContext, String activitys) {
         this.mContext = mContext;
         this.flag = false;
+        this.activitys = activitys;
+        if (activitys.equals("camerasource")) {
+            dipsCameraSource = (DipsCameraSource) mContext;
+        } else {
+            dipsCapture = (DipsCapture) mContext;
+        }
     }
 
     private void blink(float value) {
@@ -46,7 +55,11 @@ public class GraphicFaceTracker extends Tracker<Face> {
                 if (value > OPEN_THRESHOLD) {
                     // Both eyes are open again
                     state = 0;
-                    dipsCapture.captureImage();
+                    if (activitys.equals("camerasource")) {
+                        dipsCameraSource.captureImage();
+                    } else {
+                        dipsCapture.captureImage();
+                    }
                 }
                 break;
             default:
@@ -59,42 +72,50 @@ public class GraphicFaceTracker extends Tracker<Face> {
      */
     @Override
     public void onUpdate(FaceDetector.Detections<Face> detectionResults, Face face) {
-        if (DipsCapture.flagCapture) {
-            return;
-        }
-        PointF posF = face.getPosition();
-        float posFX = posF.x;
-        float posFY = posF.y;
-        if (((posFX < 90 || posFX > 220) || (posFY < 120 || posFY > 320)) && flag == false) {
-            Log.e("CEK","###### MASUK IF TOAST ######");
-            flag = true;
-            dipsCapture.runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        Toast.makeText(mContext.getApplicationContext(), "Mohon tempatkan Wajah Anda sesuai Lingkaran atau Dekatkan Wajah Anda..!!!",Toast.LENGTH_SHORT).show();
-                        Thread.sleep(2000);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
+        if (activitys.equals("camerasource")) {
+            if (DipsCameraSource.flagCapture) {
+                return;
+            }
+        } else {
+            if (DipsCapture.flagCapture) {
+                return;
+            }
+
+            PointF posF = face.getPosition();
+            float posFX = posF.x;
+            float posFY = posF.y;
+            if (((posFX < 90 || posFX > 220) || (posFY < 120 || posFY > 320)) && flag == false) {
+                Log.e("CEK","###### MASUK IF TOAST ######");
+                flag = true;
+                ((Activity)mContext).runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            Toast.makeText(mContext.getApplicationContext(), "Mohon tempatkan Wajah Anda sesuai Lingkaran atau Dekatkan Wajah Anda..!!!",Toast.LENGTH_SHORT).show();
+                            Thread.sleep(2000);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
                     }
-                }
-            });
-            return;
-        } else if ((posFX < 120 && posFY > 220) && flag == false) {
-            Log.e("CEK","###### MASUK IF TOAST TERLALU DEKAT ######");
-            flag = true;
-            dipsCapture.runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        Toast.makeText(mContext.getApplicationContext(),"Wajah Anda Terlalu Dekat..!!!",Toast.LENGTH_SHORT).show();
-                        Thread.sleep(2000);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
+                });
+                return;
+            } else if ((posFX < 120 && posFY > 220) && flag == false) {
+                Log.e("CEK","###### MASUK IF TOAST TERLALU DEKAT ######");
+                flag = true;
+                ((Activity)mContext).runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            Toast.makeText(mContext.getApplicationContext(),"Wajah Anda Terlalu Dekat..!!!",Toast.LENGTH_SHORT).show();
+                            Thread.sleep(2000);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
                     }
-                }
-            });
-            return;
+                });
+                return;
+            }
+
         }
         float left = face.getIsLeftEyeOpenProbability();
         float right = face.getIsRightEyeOpenProbability();

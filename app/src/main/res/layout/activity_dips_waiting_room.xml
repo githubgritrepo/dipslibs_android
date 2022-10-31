@@ -80,7 +80,7 @@
                         android:id="@+id/last_ticket2"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="A015"
+                        tools:text="A015"
                         android:textSize="10dp"
                         android:textStyle="bold"
                         android:gravity="center_vertical"/>
@@ -120,7 +120,7 @@
                         android:id="@+id/myticket2"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="A021"
+                        tools:text="A021"
                         android:textColor="@color/white"
                         android:textSize="10dp"
                         android:textStyle="bold" />
@@ -282,6 +282,5 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@id/rlHead" />
-
 
 </RelativeLayout>

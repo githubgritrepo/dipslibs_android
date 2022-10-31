@@ -91,6 +91,7 @@ public class DipsCapture extends AppCompatActivity implements CameraSource.Pictu
     private RelativeLayout rlprogress;
     private SessionManager sessions;
     public static boolean flagCapture = false;
+    private String idDips;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -99,6 +100,14 @@ public class DipsCapture extends AppCompatActivity implements CameraSource.Pictu
         sessions = new SessionManager(mContext);
         String lang = sessions.getLANG();
         setLocale(this, lang);
+
+        idDips = sessions.getKEY_IdDips();
+
+        if (idDips == null) {
+            idDips = "";
+        }
+
+        idDips = "1665126733117";
 
         //AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
@@ -230,7 +239,7 @@ public class DipsCapture extends AppCompatActivity implements CameraSource.Pictu
             }
             cameraSource.start(previewHolder);
             detector.setProcessor(new LargestFaceFocusingProcessor(detector,
-                    new GraphicFaceTracker(this,mContext)));
+                    new GraphicFaceTracker(mContext,"capture")));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -532,9 +541,11 @@ public class DipsCapture extends AppCompatActivity implements CameraSource.Pictu
         }
 
         JsonCaptureIdentify jsons = new JsonCaptureIdentify();
+        //jsons.setIdDips(idDips);
         jsons.setImage(imgBase64);
 
         ApiService API = Server.getAPIService();
+        //Call<CaptureIdentify> call = API.CaptureAdvanceAI(jsons);
         Call<CaptureIdentify> call = API.CaptureIdentify(jsons);
         Log.e("CEK","REQUEST CALL : "+call.request().url());
         call.enqueue(new Callback<CaptureIdentify>() {
@@ -553,10 +564,11 @@ public class DipsCapture extends AppCompatActivity implements CameraSource.Pictu
                         sweetDialog.setTitleText("Warning!!!");
                         sweetDialog.setContentText(getResources().getString(R.string.not_using_dips));
                         sweetDialog.setConfirmText("OK");
+                        sweetDialog.show();
                         sweetDialog.setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
                             @Override
                             public void onClick(SweetAlertDialog sweetAlertDialog) {
-                                sweetDialog.dismissWithAnimation();
+                                sweetDialog.cancel();
                                 Intent intent = new Intent(Intent.ACTION_MAIN);
                                 intent.addCategory(Intent.CATEGORY_HOME);
                                 intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);//***Change Here***
@@ -565,7 +577,6 @@ public class DipsCapture extends AppCompatActivity implements CameraSource.Pictu
                                 //System.exit(0);
                             }
                         });
-                        sweetDialog.show();
                         startCamera();
                         return;
                     }

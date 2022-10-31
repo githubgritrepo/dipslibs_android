@@ -133,14 +133,14 @@ public class frag_conferee_agree extends Fragment implements ZoomVideoSDKDelegat
             @Override
             public void onClick(View v) {
                 boolean flagAgree = session.getFlagConfAgree();
-                if (flagAgree == false) {
+                /*if (flagAgree == false) {
                     SweetAlertDialog dialogNotAgree = new SweetAlertDialog(context,SweetAlertDialog.WARNING_TYPE);
                     dialogNotAgree.setContentText(getString(R.string.waiting_conf));
                     dialogNotAgree.setCancelable(true);
                     dialogNotAgree.setConfirmText("OK");
                     dialogNotAgree.show();
                     return;
-                }
+                }*/
                 cekData();
                 BaseMeetingActivity.btnFile.setBackgroundTintList(context.getResources().getColorStateList(R.color.Blue));
                 BaseMeetingActivity.btnFile.setClickable(true);
@@ -192,7 +192,7 @@ public class frag_conferee_agree extends Fragment implements ZoomVideoSDKDelegat
         }
         else{
             //Jika muka tidak terdaftar maka menuju ke masukan nama & NIK
-            getFragmentPage(new frag_inputdata());
+            getFragmentPage(new frag_inputdata_new());
             Mirroring(0,1,true);
         }
     }

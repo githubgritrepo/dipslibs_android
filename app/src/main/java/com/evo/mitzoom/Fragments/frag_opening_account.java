@@ -196,6 +196,7 @@ public class frag_opening_account extends Fragment {
     private void chooseFromCamera() {
         Intent intent = new Intent(context, DipsCameraActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        //intent.putExtra("SWAFOTO",true);
         startActivityForResult(intent, 1);
     }
 

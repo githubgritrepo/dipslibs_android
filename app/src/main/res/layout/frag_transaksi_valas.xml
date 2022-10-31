@@ -71,7 +71,7 @@
                         android:id="@+id/et_nama_valas"
                         android:layout_width="match_parent"
                         android:layout_height="35dp"
-                        android:inputType="text"
+                        android:inputType="textCapWords"
                         android:paddingVertical="@dimen/dp_10"
                         android:textSize="12dp"
                         android:includeFontPadding="false"

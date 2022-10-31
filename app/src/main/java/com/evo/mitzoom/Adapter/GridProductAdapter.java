@@ -4,8 +4,11 @@ import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.text.Html;
+import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,6 +16,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -73,9 +77,10 @@ public class GridProductAdapter extends RecyclerView.Adapter<GridProductAdapter.
         String dataBody = "";
         String namaProduk = "";
         try {
-            int produkId = dataProduct.get(pos).getInt("produkId");
-            namaProduk = dataProduct.get(pos).getJSONObject("Product").getString("namaProduk").trim();
-            dataBody = dataProduct.get(pos).getJSONObject("Product").getString("body").trim();
+            JSONObject dataProdukId = dataProduct.get(pos).getJSONObject("produkId");
+            int produkId = dataProdukId.getInt("id");
+            namaProduk = dataProdukId.getString("namaProduk").trim();
+            dataBody = dataProdukId.getString("body").trim();
             processProductMedia(produkId,holder);
         } catch (JSONException e) {
             e.printStackTrace();
@@ -113,19 +118,51 @@ public class GridProductAdapter extends RecyclerView.Adapter<GridProductAdapter.
     }
 
     private void PopUPData(String finalNamaProduk, String finalDataBody) {
+        Log.e("CEK","finalDataBody : "+finalDataBody);
+
+        View views = LayoutInflater.from(ctx).inflate(R.layout.item_ads,null);
+
+        TextView tvContent = (TextView) views.findViewById(R.id.tvContents);
+        Button btnBack = (Button) views.findViewById(R.id.btnback);
+
+        tvContent.setText(Html.fromHtml(finalDataBody, Html.FROM_HTML_MODE_LEGACY, new Html.ImageGetter() {
+            @Override
+            public Drawable getDrawable(String source) {
+                int idx = source.indexOf(",");
+                idx += 1;
+                String new_source = source.substring(idx);
+                byte[] data = Base64.decode(new_source, Base64.NO_WRAP);
+                Bitmap bitmap = BitmapFactory.decodeByteArray(data, 0, data.length);
+                Drawable d = new BitmapDrawable(((Activity)ctx).getResources(), bitmap);
+                int intH = d.getIntrinsicHeight();
+                int intW = d.getIntrinsicWidth();
+                d.setBounds(0,0,intW,intH);
+                return d;
+            }
+        }, null));
+
         SweetAlertDialog sweet = new SweetAlertDialog(ctx,SweetAlertDialog.NORMAL_TYPE);
         sweet.setTitle(finalNamaProduk);
-        sweet.setContentText(Html.fromHtml(finalDataBody,Html.FROM_HTML_MODE_LEGACY).toString());
+        sweet.hideConfirmButton();
+        sweet.setCustomView(views);
         sweet.show();
+
+        btnBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                sweet.dismissWithAnimation();
+            }
+        });
     }
 
     private void processProductMedia(int produkId, GriViewHolder holder) {
+        Log.e("CEK","processProductMedia : "+produkId);
         Server.getAPIWAITING_PRODUCT().getProductMedia(produkId).enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                 if (response.code() == 200) {
                     String Content_Type = response.headers().get("Content-Type");
-                    Log.e("CEK","ProductMedia Content_Type : "+Content_Type);
+                    Log.e("CEK","processProductMedia Content_Type : "+Content_Type);
                     if (Content_Type.indexOf("json") < 0) {
                         InputStream in = response.body().byteStream();
                         processParsingMedia(in, Content_Type,holder);
@@ -141,7 +178,6 @@ public class GridProductAdapter extends RecyclerView.Adapter<GridProductAdapter.
     }
 
     private void processParsingMedia(InputStream in, String content_type, GriViewHolder holder) {
-        Log.e("CEK","processParsingMedia ProductMedia "+content_type);
         if (content_type.indexOf("image") > -1) {
             Bitmap bitmap = BitmapFactory.decodeStream(in);
             holder.ads.setImageBitmap(bitmap);

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item name="name" type="id"/>
+    <item name="nik" type="id"/>
+    <item name="open_eye" type="id"/>
+    <item name="close_eye" type="id"/>
+    <item name="tv_nominal_porto" type="id"/>
+</resources>

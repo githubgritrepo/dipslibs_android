@@ -74,6 +74,7 @@ public class frag_aktivasi_ibmb extends Fragment {
     private String numberOTP = "";
     private int lasLenOTP;
     private boolean backSpaceOTP;
+    private JSONObject dataNasabah = null;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -104,9 +105,16 @@ public class frag_aktivasi_ibmb extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         String dataJsonS = session.getCIF();
+        String dataJsonN = session.getNasabah();
         if (dataJsonS != null) {
             try {
                 objectCIF = new JSONObject(dataJsonS);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        } else if (dataJsonN != null) {
+            try {
+                dataNasabah = new JSONObject(dataJsonN);
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -373,8 +381,12 @@ public class frag_aktivasi_ibmb extends Fragment {
         JSONArray dataArrCIF = null;
         String no_handphone = null;
         try {
-            dataArrCIF = objectCIF.getJSONArray("data");
-            no_handphone = dataArrCIF.get(25).toString();
+            if (objectCIF != null) {
+                dataArrCIF = objectCIF.getJSONArray("data");
+                no_handphone = dataArrCIF.get(25).toString();
+            } else if (dataNasabah != null) {
+                no_handphone = dataNasabah.getString("noHP");
+            }
             String sub_no_handphone = no_handphone.substring(no_handphone.length() - 3);
             no_handphone = no_handphone.replace(sub_no_handphone,"XXX");
         } catch (JSONException e) {
@@ -463,8 +475,9 @@ public class frag_aktivasi_ibmb extends Fragment {
                     sweetAlertDialog.dismiss();
                     handler.removeMessages(0);
                     handler.removeCallbacks(myRunnable);
-                    Mirroring2(true, otp.getText().toString());
-                    verifyOTP();
+                    PopUpSuccesOtp();
+                    //Mirroring2(true, otp.getText().toString());
+                    //verifyOTP();
                 }
             }
         });
@@ -488,7 +501,12 @@ public class frag_aktivasi_ibmb extends Fragment {
     private void verifyOTP() {
         JSONObject jsons = new JSONObject();
         try {
-            String idForm = objectCIF.getString("idForm");
+            String idForm = "";
+            if (objectCIF != null) {
+                idForm = objectCIF.getString("idForm");
+            } else if (dataNasabah != null) {
+                idForm = dataNasabah.getString("idForm");
+            }
             jsons.put("idForm",idForm);
             jsons.put("otpCode",numberOTP);
         } catch (JSONException e) {
@@ -533,9 +551,16 @@ public class frag_aktivasi_ibmb extends Fragment {
     private void resendOTP() {
         JSONObject jsons = new JSONObject();
         try {
-            String idForm = objectCIF.getString("idForm");
-            JSONArray dataArrCIF = objectCIF.getJSONArray("data");
-            String no_handphone = dataArrCIF.get(25).toString();
+            String idForm = "";
+            String no_handphone = "";
+            if (objectCIF != null) {
+                idForm = objectCIF.getString("idForm");
+                JSONArray dataArrCIF = objectCIF.getJSONArray("data");
+                no_handphone = dataArrCIF.get(25).toString();
+            } else if (dataNasabah != null) {
+                idForm = dataNasabah.getString("idForm");
+                no_handphone = dataNasabah.getString("noHP");
+            }
             jsons.put("idForm",idForm);
             jsons.put("phone",no_handphone);
         } catch (JSONException e) {
@@ -645,12 +670,12 @@ public class frag_aktivasi_ibmb extends Fragment {
                 Log.d("MIRROR","Mirroring Sukses");
                 if (bool) {
                     PopUp();
-                    try {
+                    /*try {
                         Thread.sleep(1500);
                         APISaveForm(jsonArray);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
-                    }
+                    }*/
                 }
             }
 
@@ -726,8 +751,13 @@ public class frag_aktivasi_ibmb extends Fragment {
         JSONObject jsons = new JSONObject();
         JSONArray dataArrCIF = null;
         try {
-            dataArrCIF = objectCIF.getJSONArray("data");
-            String no_handphone = dataArrCIF.get(25).toString();
+            String no_handphone = "";
+            if (objectCIF != null) {
+                dataArrCIF = objectCIF.getJSONArray("data");
+                no_handphone = dataArrCIF.get(25).toString();
+            } else if (dataNasabah != null) {
+                no_handphone = dataNasabah.getString("noHP");
+            }
             jsons.put("formCode","IBMB");
             jsons.put("idDips",idDips);
             jsons.put("phone",no_handphone);
@@ -749,8 +779,13 @@ public class frag_aktivasi_ibmb extends Fragment {
                             JSONObject dataJs = jsObj.getJSONObject("data");
                             String idForm = dataJs.getString("idForm");
 
-                            objectCIF.put("idForm",idForm);
-                            session.saveCIF(objectCIF.toString());
+                            if (objectCIF != null) {
+                                objectCIF.put("idForm", idForm);
+                                session.saveCIF(objectCIF.toString());
+                            } else if (dataNasabah != null) {
+                                dataNasabah.put("idForm", idForm);
+                                session.saveNasabah(dataNasabah.toString());
+                            }
                         }
                     } catch (JSONException e) {
                         e.printStackTrace();

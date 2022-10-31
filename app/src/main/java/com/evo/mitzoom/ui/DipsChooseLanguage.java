@@ -7,6 +7,7 @@ import androidx.core.app.ActivityCompat;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.ActivityManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
@@ -91,6 +92,10 @@ public class DipsChooseLanguage extends AppCompatActivity {
 
         if (idDips == null) {
             idDips = "";
+        } else {
+            if (!foregroundServiceRunning()) {
+                idDips = "";
+            }
         }
 
         radioGroup = (RadioGroup) findViewById(R.id.groupradio);
@@ -116,6 +121,34 @@ public class DipsChooseLanguage extends AppCompatActivity {
             Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:" + getPackageName()));
             startActivityForResult(intent, 1);
         }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Log.e("CEK","MASUK onResume");
+        reqPermission();
+
+        long unixTime = System.currentTimeMillis() / 1000L;
+        long expiredTimesAuth = sessions.getExpiredTimeAdvanceAI();
+        String cekExp = String.valueOf(expiredTimesAuth);
+        if (cekExp.length() > 10) {
+            expiredTimesAuth = Long.parseLong(cekExp.substring(0,10));
+        }
+        if (expiredTimesAuth == 0 || expiredTimesAuth < unixTime) {
+            sessions.saveAuthAdvanceAI(null,0);
+            new AsyncAuth().execute();
+        }
+    }
+
+    public boolean foregroundServiceRunning(){
+        ActivityManager activityManager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+        for(ActivityManager.RunningServiceInfo service: activityManager.getRunningServices(Integer.MAX_VALUE)) {
+            if(OutboundService.class.getName().equals(service.service.getClassName())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private void onClickListener() {
@@ -165,6 +198,10 @@ public class DipsChooseLanguage extends AppCompatActivity {
     }
 
     private void startApp() {
+        /*Intent intent = new Intent(mContext,DipsCapture.class);
+        startActivity(intent);
+        finishAffinity();*/
+
         String licenseAI = sessions.getAuthAdvanceAI();
         Log.e("CEK","licenseAI : "+licenseAI);
         if (licenseAI != null) {
@@ -195,23 +232,6 @@ public class DipsChooseLanguage extends AppCompatActivity {
             case R.id.rbEn:
                 if (checked)
                     break;
-        }
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        Log.e("CEK","MASUK onResume");
-        reqPermission();
-
-        long unixTime = System.currentTimeMillis() / 1000L;
-        long expiredTimesAuth = sessions.getExpiredTimeAdvanceAI();
-        String cekExp = String.valueOf(expiredTimesAuth);
-        if (cekExp.length() > 10) {
-            expiredTimesAuth = Long.parseLong(cekExp.substring(0,10));
-        }
-        if (expiredTimesAuth == 0 || expiredTimesAuth < unixTime) {
-            new AsyncAuth().execute();
         }
     }
 
@@ -258,6 +278,7 @@ public class DipsChooseLanguage extends AppCompatActivity {
         GuardianLivenessDetectionSDK.setCameraType(CameraType.FRONT);// The back camera is CameraType.BACK
         GuardianLivenessDetectionSDK.setActionSequence(true, Detector.DetectionType.BLINK);
         GuardianLivenessDetectionSDK.setResultPictureSize(600); // Settable input range: [300,1000], unit: pixels
+        GuardianLivenessDetectionSDK.setActionTimeoutMills(20000);
         String checkResult = GuardianLivenessDetectionSDK.setLicenseAndCheck(yourLicense);
         Log.e("CEK","checkResult : "+checkResult);
         if ("SUCCESS".equals(checkResult)) {
@@ -281,11 +302,18 @@ public class DipsChooseLanguage extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REQUEST_CODE_LIVENESS) {
             if (LivenessResult.isSuccess()) {// Success
-                rlload.setVisibility(View.VISIBLE);
-                String livenessId = LivenessResult.getLivenessId();// livenessId
                 Bitmap livenessBitmap = LivenessResult.getLivenessBitmap();// picture
                 String imgBase64 = imgtoBase64(livenessBitmap);
-                processCaptureIdentify(imgBase64);
+                byte[] bytePhoto = Base64.decode(imgBase64, Base64.NO_WRAP);
+                Intent intent = new Intent(mContext, DipsWaitingRoom.class);
+                intent.putExtra("RESULT_IMAGE_AI",bytePhoto);
+                intent.putExtra("idDips", idDips);
+                startActivity(intent);
+                finishAffinity();
+
+                /*rlload.setVisibility(View.VISIBLE);
+                String livenessId = LivenessResult.getLivenessId();// livenessId
+                processCaptureIdentify(imgBase64);*/
             } else {// Failure
                 rlload.setVisibility(View.GONE);
                 String errorCode = LivenessResult.getErrorCode();// error code
@@ -308,7 +336,7 @@ public class DipsChooseLanguage extends AppCompatActivity {
     private void processGetAuthAdvanceAI() {
         JSONObject jsons = new JSONObject();
         try {
-            jsons.put("licenseEffectiveSeconds",600);
+            jsons.put("licenseEffectiveSeconds",86400);
             jsons.put("applicationId","ai.advance.liveness.demo,com.evo.mitzoom");
         } catch (JSONException e) {
             e.printStackTrace();
