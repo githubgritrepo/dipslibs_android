@@ -15,9 +15,12 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.DashPathEffect;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.PixelFormat;
+import android.graphics.RectF;
 import android.media.ExifInterface;
 import android.os.Bundle;
 import android.os.Environment;
@@ -56,10 +59,12 @@ public class DipsCameraSource extends AppCompatActivity implements CameraSource.
     private Context mContext;
     private SessionManager sessions;
     private SurfaceView preview;
+    private SurfaceView transPreview;
     private FaceDetector detector;
     public static Integer useFacing = null;
     private CameraSource cameraSource;
     private SurfaceHolder previewHolder = null;
+    private SurfaceHolder transHolder = null;
     public static boolean flagCapture = false;
 
 
@@ -79,6 +84,7 @@ public class DipsCameraSource extends AppCompatActivity implements CameraSource.
         setContentView(R.layout.activity_dips_camera_source);
 
         preview = (SurfaceView) findViewById(R.id.mySurface);
+        transPreview = (SurfaceView) findViewById(R.id.transSurface);
         TextView tvHeader = (TextView) findViewById(R.id.tvHeader);
         TextView tvContent = (TextView) findViewById(R.id.tvContent);
         LinearLayout llMsg = (LinearLayout) findViewById(R.id.llMsg);
@@ -110,6 +116,19 @@ public class DipsCameraSource extends AppCompatActivity implements CameraSource.
         }
     }
 
+    protected void onDestroy() {
+        super.onDestroy();
+
+        if (detector.isOperational()) {
+            detector.release();
+        }
+        if (cameraSource != null) {
+            cameraSource.stop();
+            cameraSource.release();
+        }
+        flagCapture = false;
+    }
+
     private void setupSurfaceHolder() {
         useFacing = CameraSource.CAMERA_FACING_FRONT;
         cameraSource = new CameraSource.Builder(this, detector)
@@ -123,6 +142,11 @@ public class DipsCameraSource extends AppCompatActivity implements CameraSource.
         previewHolder.addCallback(surfaceCallback);
         previewHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
 
+        transHolder = transPreview.getHolder();
+        transHolder.setFormat(PixelFormat.TRANSPARENT);
+        transHolder.addCallback(surfaceCallbackTrans);
+        transHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
+
     }
 
     SurfaceHolder.Callback surfaceCallback = new SurfaceHolder.Callback() {
@@ -133,12 +157,64 @@ public class DipsCameraSource extends AppCompatActivity implements CameraSource.
 
         @Override
         public void surfaceChanged(@NonNull SurfaceHolder holder, int format, int width, int height) {
-
         }
 
         @Override
         public void surfaceDestroyed(@NonNull SurfaceHolder holder) {
             cameraSource.stop();
+        }
+    };
+
+    SurfaceHolder.Callback surfaceCallbackTrans = new SurfaceHolder.Callback() {
+        @Override
+        public void surfaceCreated(@NonNull SurfaceHolder holder) {
+
+        }
+
+        @Override
+        public void surfaceChanged(@NonNull SurfaceHolder holder, int format, int width, int height) {
+            Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
+            paint.setColor(getResources().getColor(R.color.zm_v1_red_A100));
+            paint.setAlpha(130);
+            paint.setStyle(Paint.Style.STROKE);
+            paint.setStrokeWidth(10);
+
+            Log.e("CEK","surfaceChanged width : "+width+" | height : "+height);
+
+            float diffH = (float) height / 8;
+            float diffw = (float) width / 2;
+
+            Log.e("CEK","diffH : "+diffH+" | diffw : "+diffw);
+
+            int widthKTP = 1011; //pixel
+            int heightKTP = 638; //pixel
+            //resolusi 300dpi
+
+            int diffWidth = width - heightKTP;
+
+            float scaleH = (float) height / heightKTP;
+            Log.e("CEK","scaleH : "+scaleH);
+            float left = diffw - diffWidth;
+            Log.e("CEK","left : "+left);
+
+            float surfRight = (float) width - left;
+            float surfBottom = (float) height - diffH;
+
+            float top = surfBottom - 100;
+
+            Log.e("CEK","LEFT : "+left+" | TOP : "+top+" | RIGHT : "+surfRight+" | BOTTOM : "+surfBottom);
+
+            RectF rect = new RectF(left, top, surfRight, surfBottom);
+
+            Canvas canvas = transHolder.lockCanvas();
+            canvas.drawRect(rect,paint);
+
+            transHolder.unlockCanvasAndPost(canvas);
+        }
+
+        @Override
+        public void surfaceDestroyed(@NonNull SurfaceHolder holder) {
+
         }
     };
 
@@ -224,7 +300,14 @@ public class DipsCameraSource extends AppCompatActivity implements CameraSource.
                     byte[] bytePhoto = Base64.decode(imgBase64, Base64.NO_WRAP);
                     Bitmap bitmap = BitmapFactory.decodeByteArray(bytePhoto, 0, bytePhoto.length);
 
-                    View dialogView = getLayoutInflater().inflate(R.layout.layout_show_image, null);
+                    byte[] real_bytePhoto = Base64.decode(imgBase64, Base64.NO_WRAP);
+                    Intent returnIntent = getIntent();
+                    returnIntent.putExtra("result_camera", bytePhoto);
+                    returnIntent.putExtra("real",real_bytePhoto);
+                    setResult(Activity.RESULT_OK, returnIntent);
+                    finish();
+
+                    /*View dialogView = getLayoutInflater().inflate(R.layout.layout_show_image, null);
                     SweetAlertDialog sweetAlertDialog = new SweetAlertDialog(mContext, SweetAlertDialog.NORMAL_TYPE);
                     sweetAlertDialog.setCustomView(dialogView);
                     sweetAlertDialog.setCancelable(false);
@@ -240,11 +323,11 @@ public class DipsCameraSource extends AppCompatActivity implements CameraSource.
                             byte[] bytePhoto = Base64.decode(imgBase64, Base64.NO_WRAP);
                             Intent returnIntent = getIntent();
                             returnIntent.putExtra("result_camera", bytePhoto);
-                            setResult(Activity.RESULT_OK, returnIntent);
+                            setResult(Activity., retuRESULT_OKrnIntent);
                             finish();
                         }
                     });
-                    sweetAlertDialog.show();
+                    sweetAlertDialog.show();*/
                 }
 
             } catch (IOException e) {

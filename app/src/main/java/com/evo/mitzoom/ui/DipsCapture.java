@@ -48,6 +48,7 @@ import com.evo.mitzoom.Model.Request.JsonCaptureIdentify;
 import com.evo.mitzoom.Model.Response.CaptureIdentify;
 import com.evo.mitzoom.R;
 import com.evo.mitzoom.Session.SessionManager;
+import com.evo.mitzoom.ui.Alternative.DipsSwafoto;
 import com.evo.mitzoom.util.NetworkUtil;
 import com.google.android.gms.vision.CameraSource;
 import com.google.android.gms.vision.face.FaceDetector;
@@ -107,7 +108,7 @@ public class DipsCapture extends AppCompatActivity implements CameraSource.Pictu
             idDips = "";
         }
 
-        idDips = "1665126733117";
+        //idDips = "1665126733117";
 
         //AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
@@ -191,7 +192,22 @@ public class DipsCapture extends AppCompatActivity implements CameraSource.Pictu
         },2000);
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        if (detector.isOperational()) {
+            detector.release();
+        }
+        if (cameraSource != null) {
+            cameraSource.stop();
+            cameraSource.release();
+        }
+        flagCapture = false;
+    }
+
     private void setupSurfaceHolder() {
+        Log.e("CEK","setupSurfaceHolder");
         useFacing = CameraSource.CAMERA_FACING_FRONT;
         cameraSource = new CameraSource.Builder(this, detector)
                 .setFacing(useFacing)
@@ -237,6 +253,7 @@ public class DipsCapture extends AppCompatActivity implements CameraSource.Pictu
             if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
                 return;
             }
+            Log.e("CEK","START CAMERA");
             cameraSource.start(previewHolder);
             detector.setProcessor(new LargestFaceFocusingProcessor(detector,
                     new GraphicFaceTracker(mContext,"capture")));
@@ -323,6 +340,7 @@ public class DipsCapture extends AppCompatActivity implements CameraSource.Pictu
     SurfaceHolder.Callback surfaceCallback = new SurfaceHolder.Callback() {
         @Override
         public void surfaceCreated(@NonNull SurfaceHolder holder) {
+            Log.e("CEK","surfaceCreated START CAMERA");
             startCamera();
         }
 
@@ -456,7 +474,14 @@ public class DipsCapture extends AppCompatActivity implements CameraSource.Pictu
                         public void onClick(SweetAlertDialog sweetAlertDialog) {
                             sweetAlertDialog.dismissWithAnimation();
                             showProgress(true);
-                            processCaptureIdentify(imgBase64);
+                            //processCaptureIdentify(imgBase64);
+                            //Intent intent = new Intent(mContext, DipsWaitingRoom.class);
+                            sessions.saveFLOW(1);
+                            sessions.saveIdDips(idDips);
+                            Intent intent = new Intent(mContext, DipsSwafoto.class);
+                            intent.putExtra("RESULT_IMAGE_AI",bytePhoto);
+                            startActivity(intent);
+                            finishAffinity();
                         }
                     });
                     sweetAlertDialog.show();
@@ -603,7 +628,7 @@ public class DipsCapture extends AppCompatActivity implements CameraSource.Pictu
                     }*/
 
                     Intent intent = new Intent(DipsCapture.this,DipsWaitingRoom.class);
-                    intent.putExtra("ISCUSTOMER",isCust);
+                    sessions.saveIsCust(isCust);
                     intent.putExtra("CUSTNAME",custName);
                     intent.putExtra("idDips", idDips);
                     intent.putExtra("SessionName", sessionName);

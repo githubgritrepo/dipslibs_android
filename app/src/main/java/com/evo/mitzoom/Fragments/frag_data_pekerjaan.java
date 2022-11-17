@@ -635,8 +635,8 @@ public class frag_data_pekerjaan extends Fragment {
                     String dataS = response.body().toString();
                     try {
                         JSONObject jsObj = new JSONObject(dataS);
-                        int errCode = jsObj.getInt("err_code");
-                        if (errCode == 0) {
+                        int errCode = jsObj.getInt("code");
+                        if (errCode == 200) {
                             Fragment fragment = new frag_data_keuangan();
                             Bundle bundle = new Bundle();
                             bundle.putByteArray("ktp", KTP);

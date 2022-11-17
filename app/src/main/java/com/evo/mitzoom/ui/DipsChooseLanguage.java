@@ -129,7 +129,7 @@ public class DipsChooseLanguage extends AppCompatActivity {
         Log.e("CEK","MASUK onResume");
         reqPermission();
 
-        long unixTime = System.currentTimeMillis() / 1000L;
+        /*long unixTime = System.currentTimeMillis() / 1000L;
         long expiredTimesAuth = sessions.getExpiredTimeAdvanceAI();
         String cekExp = String.valueOf(expiredTimesAuth);
         if (cekExp.length() > 10) {
@@ -138,7 +138,7 @@ public class DipsChooseLanguage extends AppCompatActivity {
         if (expiredTimesAuth == 0 || expiredTimesAuth < unixTime) {
             sessions.saveAuthAdvanceAI(null,0);
             new AsyncAuth().execute();
-        }
+        }*/
     }
 
     public boolean foregroundServiceRunning(){
@@ -198,18 +198,18 @@ public class DipsChooseLanguage extends AppCompatActivity {
     }
 
     private void startApp() {
-        /*Intent intent = new Intent(mContext,DipsCapture.class);
+        Intent intent = new Intent(mContext,DipsCapture.class);
         startActivity(intent);
-        finishAffinity();*/
+        finishAffinity();
 
-        String licenseAI = sessions.getAuthAdvanceAI();
+        /*String licenseAI = sessions.getAuthAdvanceAI();
         Log.e("CEK","licenseAI : "+licenseAI);
         if (licenseAI != null) {
             startLivenessDetection(licenseAI);
         } else {
             Toast.makeText(mContext,"Terjadi Kesalahan", Toast.LENGTH_LONG).show();
             onResume();
-        }
+        }*/
     }
 
     public static void setLocale(Activity activity, String languageCode) {
@@ -316,10 +316,12 @@ public class DipsChooseLanguage extends AppCompatActivity {
                 processCaptureIdentify(imgBase64);*/
             } else {// Failure
                 rlload.setVisibility(View.GONE);
-                String errorCode = LivenessResult.getErrorCode();// error code
+                //String errorCode = LivenessResult.getErrorCode();// error code
                 String errorMsg = LivenessResult.getErrorMsg();// error message
-                String transactionId = LivenessResult.getTransactionId(); // Transaction number, which can be used to troubleshoot problems with us
-                Toast.makeText(mContext, errorMsg, Toast.LENGTH_LONG).show();
+                //String transactionId = LivenessResult.getTransactionId(); // Transaction number, which can be used to troubleshoot problems with us
+                if (errorMsg != null) {
+                    Toast.makeText(mContext, errorMsg, Toast.LENGTH_LONG).show();
+                }
             }
         }
     }
@@ -430,7 +432,7 @@ public class DipsChooseLanguage extends AppCompatActivity {
                     sessions.saveIsCust(isCust);
 
                     Intent intent = new Intent(mContext,DipsWaitingRoom.class);
-                    intent.putExtra("ISCUSTOMER",isCust);
+                    sessions.saveIsCust(isCust);
                     intent.putExtra("CUSTNAME",custName);
                     intent.putExtra("idDips", idDips);
                     intent.putExtra("SessionName", sessionName);

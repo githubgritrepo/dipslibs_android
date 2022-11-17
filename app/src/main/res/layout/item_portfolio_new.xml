@@ -7,6 +7,7 @@
     android:layout_marginBottom="@dimen/dp_10">
 
     <com.github.florent37.expansionpanel.ExpansionHeader
+        android:id="@+id/expansionHeader"
         android:layout_height="wrap_content"
         android:layout_width="match_parent"
         app:expansion_headerIndicator="@id/headerIndicator"
@@ -68,88 +69,6 @@
             android:orientation="vertical"
             android:background="@drawable/bg_porto">
 
-            <!--<RelativeLayout
-                android:id="@+id/rlExpandLayout"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:layout_marginEnd="@dimen/dp_20">
-                    <TextView
-                        android:textColor="@color/black"
-                        android:id="@+id/tv_nama_porto"
-                        android:textStyle="bold"
-                        android:layout_width="match_parent"
-                        android:maxLines="2"
-                        android:layout_height="wrap_content"
-                        android:text="Giro"
-                        android:textSize="15dp" />
-
-                    <TextView
-                        android:id="@+id/tv_nominal_porto"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="Rp 12.000.000"
-                        android:textColor="@color/black"
-                        android:textSize="15dp"/>
-                </LinearLayout>
-
-                <ImageView
-                    android:id="@+id/btn_toogle_eye"
-                    android:layout_width="25dp"
-                    android:layout_height="25dp"
-                    android:src="@drawable/ic_eye"
-                    android:layout_alignParentEnd="true"
-                    android:layout_centerVertical="true"/>
-
-            </RelativeLayout>
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="@color/black"
-                android:layout_marginTop="@dimen/dp_5"
-                android:layout_marginBottom="@dimen/dp_5"/>
-
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:layout_marginEnd="@dimen/dp_20">
-                    <TextView
-                        android:textColor="@color/black"
-                        android:textStyle="bold"
-                        android:layout_width="match_parent"
-                        android:maxLines="2"
-                        android:layout_height="wrap_content"
-                        android:text="Giro"
-                        android:textSize="15dp" />
-
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="Rp 12.000.000"
-                        android:textColor="@color/black"
-                        android:textSize="15dp"/>
-                </LinearLayout>
-
-                <ImageView
-                    android:layout_width="25dp"
-                    android:layout_height="25dp"
-                    android:src="@drawable/ic_eye"
-                    android:layout_alignParentEnd="true"
-                    android:layout_centerVertical="true"/>
-
-            </RelativeLayout>-->
         </LinearLayout>
 
     </com.github.florent37.expansionpanel.ExpansionLayout>

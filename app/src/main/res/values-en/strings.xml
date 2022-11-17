@@ -8,7 +8,7 @@
     <string name="not_using_dips">Sorry You Cant Use DiPS361 Services</string>
     <string name="tutup">Close</string>
     <string name="chat">Chat</string>
-    <string name="confirm_accept">Do you agree to use the DiPS361 Service?</string>
+    <string name="confirm_accept">For the sake of mutual convenience, this conversation will be recorded automatically.\nDo you agree to use the DiPS361 Service?</string>
     <string name="tidak_not">Not</string>
     <string name="setuju_accept">Accept</string>
     <string name="leave_message">Do you want to leave this session?</string>
@@ -26,7 +26,7 @@
     <string name="notif_blank">Data is empty</string>
     <string name="no">Cancel</string>
     <string name="headline_endcall">Are you sure to end voice call ?</string>
-    <string name="headline_waiting">Currently customer support is in the process with other customers. You can wait in the waiting room or schedule a call.</string>
+    <string name="headline_waiting">Currently all of our officers are serving other customer transactions. Please wait a while.</string>
     <string name="waiting">Ready to wait</string>
     <string name="headline_success">Customer Support ready to serve you.</string>
     <string name="btn_continue">Continue</string>
@@ -50,10 +50,11 @@
     <string name="terms_condition2"><![CDATA[Terms & Condition]]></string>
     <string name="checkbox_tnc">I agree to these terms &amp; condition</string>
     <string name="tnc_content">Syarat dan Ketentuan Umum PT Bank XYZ mengatur mengenai hubungan hukum antara PT XYZ dengan individu/korporasi yang menggunakan jasa/layanan PT Bank XYZ yang merupakan calon atau pemilik rekening di PT Bank XYZ sehubungan dengan segala produk, fasilitas dan/atau layanan yang tersedia bagi nasabah. Berikut ini merupakan poin - poin yang perlu diperhatikan sebelum melakukan pendaftaran ataupun transaksi.\n\n<ol><li><![CDATA[Hanya untuk nasabah perorangan Warga Negara Indonesia dan tidak berlaku Rekening Join]]></li>\n\n<li><![CDATA[Setoran awal pembukaan rekening Rp 20.000,-]]></li>\n\n<li><![CDATA[Setoran tunai selanjutnya Rp 10.000,-]]></li>\n\n<li><![CDATA[Saldo minimum rekening Rp 20.000,-]]></li>\n\n<li><![CDATA[Biaya apabila rekening tidak aktif Rp 2.000,- per bulan]]></li>\n\n<li><![CDATA[Apabila saldo rekening kurang dari Rp 20.000,- maka rekening akan ditutup secara otomatis oleh sistem]]></li>\n\n<li><![CDATA[Biaya penutupan rekening Rp 20.000,-]]></li>\n\n<li><![CDATA[Jumlah minimum penarikan di teller Rp 100.000,- kecuali pada saat nasabah ingin tutup rekening]]></li></ol></string>
+    <string name="Photo_ktp">KTP Photo</string>
     <string name="Photo_nktp">KTP\nPhoto</string>
     <string name="photo_nnpwp">NPWP\nPhoto</string>
     <string name="foto_ntanda_ntangan">Signature\nPhoto</string>
-    <string name="formulir_npembukaan_nrekening">Registration\nForm</string>
+    <string name="formulir_npembukaan_nrekening">Account\nOpening\nForm</string>
     <string name="pastikan_gambar_atau_foto_ktp_sudah_jelas_dan_tidak_buram">Make sure images or photo\n is clear and didn\'t blur</string>
     <string name="pilih_dari_galeri">Choose from gallery</string>
     <string name="email">Email</string>
@@ -129,8 +130,8 @@
     <string name="kredit">Credit</string>
     <string name="DIPS_MODAL_KERJA">DiPS Work Capital Credit - 992101345</string>
     <string name="DIPS_INVESTMENT">DiPS Kredit Investment - 992201209</string>
-    <string name="antrian_saya">(My Queue)</string>
-    <string name="antrian_sekarang">(Queue now)</string>
+    <string name="antrian_saya">(Your number)</string>
+    <string name="antrian_sekarang">(At the moment)</string>
     <string name="mata_uang">IDR</string>
     <string name="formulir_rtgs">Transfer Form</string>
     <string name="please_wait">Please Wait</string>
@@ -263,4 +264,8 @@
     <string name="dengan_hormat">Yours faithfully,\nThe undersigned below:</string>
     <string name="success_create_card">CONGRATULATIONS!\nYour Card Application Successful</string>
     <string name="tnc_atm">Me/Us hereby apply for an ATM Card. All risks that will arise are the full responsibility of Me/Us and in this case Me/Us free the bank from all claims.</string>
+    <string name="prepare_id_card">Please prepare your Identity Card (KTP).</string>
+    <string name="headline_close_conversation">Your queue has been missed. please end the call or schedule the best time for us to get back to you.</string>
+    <string name="open_account">Open Account</string>
+    <string name="ktp_swafoto">Self-portrait with ID card</string>
 </resources>

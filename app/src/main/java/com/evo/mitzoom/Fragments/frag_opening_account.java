@@ -3,6 +3,7 @@ package com.evo.mitzoom.Fragments;
 import static android.app.Activity.RESULT_OK;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -35,9 +36,12 @@ import androidx.fragment.app.Fragment;
 import com.evo.mitzoom.API.ApiService;
 import com.evo.mitzoom.API.Server;
 import com.evo.mitzoom.Constants.MyConstants;
+import com.evo.mitzoom.Helper.RabbitMirroring;
 import com.evo.mitzoom.R;
 import com.evo.mitzoom.Session.SessionManager;
 import com.evo.mitzoom.ui.DipsCameraActivity;
+import com.evo.mitzoom.ui.DipsCameraSource;
+import com.evo.mitzoom.ui.DipsWaitingRoom;
 import com.google.gson.JsonObject;
 
 import org.json.JSONArray;
@@ -53,6 +57,7 @@ import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+import us.zoom.sdk.ZoomVideoSDK;
 
 public class frag_opening_account extends Fragment {
     public static final int REQUEST_WRITE_PERMISSION = 786;
@@ -62,7 +67,8 @@ public class frag_opening_account extends Fragment {
     private LinearLayout btnGallery;
     private Button btnNext, delete, btnOCR1, btnOCR2;
     private LinearLayout chooseImage;
-    private byte[] KTP;
+    private byte[] KTP = new byte[0];
+    private byte[] KTP_SWAFOTO = new byte[0];
     private LayoutInflater inflater;
     private View dialogView;
     private LinearLayout LL;
@@ -70,17 +76,40 @@ public class frag_opening_account extends Fragment {
     private SessionManager session;
     private TextView NIK, Nama, TTL, TTL2;
     private boolean flagOCR = false;
+    private LinearLayout llTopBar;
+    private boolean isCust = false;
+    private boolean isSwafoto = false;
+    private TextView tvFotoKTP;
+    private byte[] bytePhoto = new byte[0];
+    private int chkFlow;
+    private boolean isSessionZoom = false;
+    private LinearLayout ll_head;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         context = getContext();
         session = new SessionManager(context);
+        isCust = session.getKEY_iSCust();
+        isSwafoto = session.getKEY_iSSwafoto();
+        chkFlow = session.getFLOW();
+        if (getArguments() != null) {
+            if (getArguments().containsKey("RESULT_IMAGE_AI")) {
+                bytePhoto = getArguments().getByteArray("RESULT_IMAGE_AI");
+            }
+            if (getArguments().containsKey("ktp")) {
+                KTP = getArguments().getByteArray("ktp");
+            }
+        }
+        isSessionZoom = ZoomVideoSDK.getInstance().isInSession();
     }
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.frag_opening_account, container, false);
+        llTopBar = (LinearLayout) view.findViewById(R.id.TopBar);
+        ll_head = (LinearLayout) view.findViewById(R.id.ll_head);
+        tvFotoKTP = (TextView) view.findViewById(R.id.tvFotoKTP);
         btnCamera = view.findViewById(R.id.choose_camera);
         btnGallery = view.findViewById(R.id.choose_gallery);
         btnNext = view.findViewById(R.id.btnNext);
@@ -97,8 +126,34 @@ public class frag_opening_account extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        btnNext.setClickable(false);
+        btnNext.setBackgroundTintList(context.getResources().getColorStateList(R.color.btnFalse));
+
+        if (isCust) {
+            llTopBar.setVisibility(View.GONE);
+            ll_head.setVisibility(View.VISIBLE);
+            if (KTP.length > 0 && KTP_SWAFOTO.length == 0) {
+                tvFotoKTP.setText(R.string.ktp_swafoto);
+            } else {
+                tvFotoKTP.setText(getString(R.string.pembukaan_akun));
+            }
+        } else {
+            llTopBar.setVisibility(View.VISIBLE);
+            if (isSessionZoom) {
+                ll_head.setVisibility(View.VISIBLE);
+                if (KTP.length > 0 && KTP_SWAFOTO.length == 0) {
+                    tvFotoKTP.setText(R.string.ktp_swafoto);
+                } else {
+                    tvFotoKTP.setText(getString(R.string.pembukaan_akun));
+                }
+            } else {
+                ll_head.setVisibility(View.GONE);
+            }
+        }
         idDips = session.getKEY_IdDips();
-        PopUp();
+        if (KTP.length == 0 && isSessionZoom) {
+            PopUp();
+        }
         iconKtp.setBackgroundTintList(context.getResources().getColorStateList(R.color.bg_cif));
         btnCamera.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -125,7 +180,9 @@ public class frag_opening_account extends Fragment {
         delete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Mirroring(false,"");
+                if (isSessionZoom) {
+                    Mirroring(false, "");
+                }
                 LL.setBackground(context.getResources().getDrawable(R.drawable.bg));
                 btnNext.setClickable(false);
                 btnNext.setBackgroundTintList(context.getResources().getColorStateList(R.color.btnFalse));
@@ -144,11 +201,24 @@ public class frag_opening_account extends Fragment {
                     //Mirroring(true,"");
                     //Mirroring2(true,"320124150585005","Andi Wijaya Lesmana","Bogor","13-03-1985");
                     //ocrKTP();
-                    saveImage();
-                    if (flagOCR) {
-                        PopUpOCR(KTP);
+                    if (KTP_SWAFOTO.length == 0 || chkFlow == 0) {
+                        saveImage();
+                        if (flagOCR) {
+                            PopUpOCR(KTP);
+                        } else {
+                            Toast.makeText(context, "Maaf, OCR masih dalam proses...!!!", Toast.LENGTH_SHORT).show();
+                        }
                     } else {
-                        Toast.makeText(context,"Maaf, OCR masih dalam proses...!!!",Toast.LENGTH_SHORT).show();
+                        if (isSessionZoom) {
+                            Bundle bundle = new Bundle();
+                            bundle.putByteArray("ktp",KTP);
+                            sendDataFragment(bundle, new frag_opening_account2());
+                        } else {
+                            Intent intent = new Intent(context, DipsWaitingRoom.class);
+                            intent.putExtra("RESULT_IMAGE_AI", bytePhoto);
+                            startActivity(intent);
+                            ((Activity) context).finishAffinity();
+                        }
                     }
                 }
             }
@@ -163,11 +233,13 @@ public class frag_opening_account extends Fragment {
         }
         return true;
     }
-    private void sendDataFragment(String tag, byte[] Text, Fragment fragment){
-        Bundle bundle = new Bundle();
-        bundle.putByteArray(tag,Text);
+    private void sendDataFragment(Bundle bundle, Fragment fragment){
         fragment.setArguments(bundle);
-        getFragmentPage(fragment);
+        if (chkFlow == 0 || isSessionZoom) {
+            getFragmentPage(fragment);
+        } else {
+            getFragmentPageDefault(fragment);
+        }
     }
 
     @Override
@@ -194,10 +266,15 @@ public class frag_opening_account extends Fragment {
         startActivityForResult(intent, 2);
     }
     private void chooseFromCamera() {
-        Intent intent = new Intent(context, DipsCameraActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        //intent.putExtra("SWAFOTO",true);
-        startActivityForResult(intent, 1);
+        if (chkFlow == 1 && KTP.length > 0){
+            Intent intent = new Intent(context, DipsCameraSource.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivityForResult(intent, 10);
+        } else {
+            Intent intent = new Intent(context, DipsCameraActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivityForResult(intent, 1);
+        }
     }
 
     @Override
@@ -214,6 +291,7 @@ public class frag_opening_account extends Fragment {
                 LL.setBackgroundResource(0);
                 btnNext.setBackgroundTintList(context.getResources().getColorStateList(R.color.bg_cif));
                 btnNext.setClickable(true);
+                delete.setBackgroundTintList(context.getResources().getColorStateList(R.color.red_btn_bg_pressed_color));
                 delete.setVisibility(View.VISIBLE);
                 viewImage.setVisibility(View.VISIBLE);
                 chooseImage.setVisibility(View.GONE);
@@ -233,12 +311,39 @@ public class frag_opening_account extends Fragment {
                 LL.setBackgroundResource(0);
                 btnNext.setBackgroundTintList(context.getResources().getColorStateList(R.color.bg_cif));
                 btnNext.setClickable(true);
+                delete.setBackgroundTintList(context.getResources().getColorStateList(R.color.red_btn_bg_pressed_color));
                 delete.setVisibility(View.VISIBLE);
                 viewImage.setVisibility(View.VISIBLE);
                 chooseImage.setVisibility(View.GONE);
                 prosesOptimalImage(picturePath);
                 /*Bitmap thumbnail = (BitmapFactory.decodeFile(picturePath));
                 getResizedBitmap(thumbnail, (thumbnail.getWidth()/4), (thumbnail.getHeight()/4));*/
+            } else if (requestCode == 10){
+                if (chkFlow == 1) {
+                    if (KTP.length > 0) {
+                        session.saveFlagUpDoc(true);
+                        KTP_SWAFOTO = data.getByteArrayExtra("result_camera");
+                        Bitmap bitmap = BitmapFactory.decodeByteArray(KTP_SWAFOTO, 0, KTP_SWAFOTO.length);
+                        LL.setBackgroundResource(0);
+                        btnNext.setBackgroundTintList(context.getResources().getColorStateList(R.color.bg_cif));
+                        btnNext.setClickable(true);
+                        delete.setBackgroundTintList(context.getResources().getColorStateList(R.color.red_btn_bg_pressed_color));
+                        delete.setVisibility(View.VISIBLE);
+                        viewImage.setVisibility(View.VISIBLE);
+                        chooseImage.setVisibility(View.GONE);
+                        viewImage.setImageBitmap(bitmap);
+                    }
+                } else {
+                    if (isCust) {
+                        session.clearCIF();
+                        getFragmentPage(new frag_portfolio());
+                    } else {
+                        byte[] DataKTP = data.getExtras().getByteArray("DataKTP");
+                        Bundle bundle = new Bundle();
+                        bundle.putByteArray("ktp",DataKTP);
+                        sendDataFragment(bundle, new frag_opening_account2());
+                    }
+                }
             }
         }
     }
@@ -296,6 +401,19 @@ public class frag_opening_account extends Fragment {
                 .addToBackStack(null)
                 .commit();
     }
+
+    private boolean getFragmentPageDefault(Fragment fragment){
+        if (fragment != null) {
+            getActivity().getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.layout_frame, fragment)
+                    .addToBackStack(null)
+                    .commit();
+            return true;
+        }
+        return false;
+    }
+
     private void PopUpOCR(byte[] DataKTP){
         inflater = getLayoutInflater();
         dialogView = inflater.inflate(R.layout.item_ocr,null);
@@ -315,6 +433,9 @@ public class frag_opening_account extends Fragment {
         TTL.setText(ttl);
         TTL2.setText(ttl);
 
+        btnOCR1.setBackgroundTintList(context.getColorStateList(R.color.button_end_call));
+        btnOCR2.setBackgroundTintList(context.getColorStateList(R.color.Blue));
+
         //TextWatcher
         NIK.addTextChangedListener(new TextWatcher() {
             @Override
@@ -324,7 +445,9 @@ public class frag_opening_account extends Fragment {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                Mirroring2(false,s,Nama.getText().toString(),TTL.getText().toString(),TTL2.getText().toString());
+                if (isSessionZoom) {
+                    Mirroring2(false, s, Nama.getText().toString(), TTL.getText().toString(), TTL2.getText().toString());
+                }
             }
 
             @Override
@@ -340,7 +463,9 @@ public class frag_opening_account extends Fragment {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                Mirroring2(false, NIK.getText().toString(), s,TTL.getText().toString(),TTL2.getText().toString());
+                if (isSessionZoom) {
+                    Mirroring2(false, NIK.getText().toString(), s, TTL.getText().toString(), TTL2.getText().toString());
+                }
             }
 
             @Override
@@ -356,7 +481,9 @@ public class frag_opening_account extends Fragment {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                Mirroring2(false, NIK.getText().toString(), Nama.getText().toString(), s,TTL2.getText().toString());
+                if (isSessionZoom) {
+                    Mirroring2(false, NIK.getText().toString(), Nama.getText().toString(), s, TTL2.getText().toString());
+                }
             }
 
             @Override
@@ -372,7 +499,9 @@ public class frag_opening_account extends Fragment {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                Mirroring2(false, NIK.getText().toString(), Nama.getText().toString(), TTL.getText().toString(),s);
+                if (isSessionZoom) {
+                    Mirroring2(false, NIK.getText().toString(), Nama.getText().toString(), TTL.getText().toString(), s);
+                }
             }
 
             @Override
@@ -384,18 +513,45 @@ public class frag_opening_account extends Fragment {
         btnOCR2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Mirroring(true,"");
-                Mirroring2(true,NIK.getText().toString(),Nama.getText().toString(),TTL.getText().toString(),TTL2.getText().toString());
+                if (isSessionZoom) {
+                    Mirroring(true, "");
+                    Mirroring2(true, NIK.getText().toString(), Nama.getText().toString(), TTL.getText().toString(), TTL2.getText().toString());
+                }
                 sweetAlertDialog.dismiss();
                 JSONObject dataCIF = dataCIFJson();
                 session.saveCIF(dataCIF.toString());
-                sendDataFragment("ktp",DataKTP,new frag_opening_account2());
+                if (isCust) {
+                    if (!isSwafoto) {
+                        Bundle bundle = new Bundle();
+                        bundle.putByteArray("ktp",DataKTP);
+                        bundle.putByteArray("RESULT_IMAGE_AI",bytePhoto);
+
+                        sendDataFragment(bundle, new frag_opening_account());
+                    } else {
+                        session.clearCIF();
+                        getFragmentPage(new frag_portfolio());
+                    }
+                } else {
+                    if (!isSwafoto || isSessionZoom) {
+                        Bundle bundle = new Bundle();
+                        bundle.putByteArray("ktp",DataKTP);
+                        bundle.putByteArray("RESULT_IMAGE_AI",bytePhoto);
+
+                        sendDataFragment(bundle, new frag_opening_account());
+                    } else {
+                        Bundle bundle = new Bundle();
+                        bundle.putByteArray("ktp",DataKTP);
+                        sendDataFragment(bundle, new frag_opening_account2());
+                    }
+                }
             }
         });
         btnOCR1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Mirroring2(false,"","","","");
+                if (isSessionZoom) {
+                    Mirroring2(false, "", "", "", "");
+                }
                 sweetAlertDialog.dismiss();
             }
         });
@@ -425,7 +581,9 @@ public class frag_opening_account extends Fragment {
         bitmap.compress(Bitmap.CompressFormat.JPEG,100, baos);
         byte[] imageBytes = baos.toByteArray();
         String encodedImage = Base64.encodeToString(imageBytes, Base64.NO_WRAP);
-        Mirroring(false,encodedImage);
+        if (isSessionZoom) {
+            Mirroring(false, encodedImage);
+        }
         KTP = imageBytes;
         KTP_BASE64 = encodedImage;
     }
@@ -487,27 +645,35 @@ public class frag_opening_account extends Fragment {
         call.enqueue(new Callback<JsonObject>() {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                Log.d("Response OCR",""+response.code());
                 if (response.isSuccessful()) {
                     flagOCR = true;
                     String dataS = response.body().toString();
                     Log.d("Response OCR",""+dataS);
                     try {
                         JSONObject jsObj = new JSONObject(dataS);
-                        provinsi = jsObj.getString("provinsi");
-                        kota_kabupaten = jsObj.getString("kota_kabupaten");
-                        nik = jsObj.getString("nik");
-                        nama = jsObj.getString("nama");
-                        ttl = jsObj.getString("ttl");
-                        jeniskelamin = jsObj.getString("jeniskelamin");
-                        golongan_darah = jsObj.getString("golongan_darah");
-                        alamat = jsObj.getString("alamat");
-                        rtrw = jsObj.getString("rtrw");
-                        desa_kelurahan = jsObj.getString("desa_kelurahan");
-                        kecamatan = jsObj.getString("kecamatan");
-                        agama = jsObj.getString("agama");
-                        status_perkawinan = jsObj.getString("status_perkawinan");
-                        kewarganegaraan = jsObj.getString("kewarganegaraan");
-                        pekerjaan = jsObj.getString("pekerjaan");
+                        int errCode = jsObj.getInt("code");
+                        String message = jsObj.getString("message");
+                        if (errCode == 200) {
+                            JSONObject dataObj = jsObj.getJSONObject("data");
+                            provinsi = dataObj.getString("provinsi");
+                            kota_kabupaten = dataObj.getString("kota_kabupaten");
+                            nik = dataObj.getString("nik");
+                            nama = dataObj.getString("nama");
+                            ttl = dataObj.getString("ttl");
+                            jeniskelamin = dataObj.getString("jeniskelamin");
+                            golongan_darah = dataObj.getString("golongan_darah");
+                            alamat = dataObj.getString("alamat");
+                            rtrw = dataObj.getString("rtrw");
+                            desa_kelurahan = dataObj.getString("desa_kelurahan");
+                            kecamatan = dataObj.getString("kecamatan");
+                            agama = dataObj.getString("agama");
+                            status_perkawinan = dataObj.getString("status_perkawinan");
+                            kewarganegaraan = dataObj.getString("kewarganegaraan");
+                            pekerjaan = dataObj.getString("pekerjaan");
+                        } else {
+                            Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
+                        }
 
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -604,61 +770,65 @@ public class frag_opening_account extends Fragment {
     }
 
     private void Mirroring(Boolean bool, String base64){
-        JSONObject jsons = new JSONObject();
-        JSONArray jsonArray = new JSONArray();
-        try {
-            jsonArray.put(base64);
-            jsonArray.put(bool);
-            jsons.put("idDips",idDips);
-            jsons.put("code",4);
-            jsons.put("data",jsonArray);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), jsons.toString());
-        ApiService API = Server.getAPIService();
-        Call<JsonObject> call = API.Mirroring(requestBody);
-        call.enqueue(new Callback<JsonObject>() {
-            @Override
-            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
-                Log.d("MIRROR","Mirroring Sukses");
+        if (!isCust) {
+            JSONObject jsons = new JSONObject();
+            JSONArray jsonArray = new JSONArray();
+            try {
+                jsonArray.put(base64);
+                jsonArray.put(bool);
+                jsons.put("idDips", idDips);
+                jsons.put("code", 4);
+                jsons.put("data", jsonArray);
+            } catch (JSONException e) {
+                e.printStackTrace();
             }
+            RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), jsons.toString());
+            ApiService API = Server.getAPIService();
+            Call<JsonObject> call = API.Mirroring(requestBody);
+            call.enqueue(new Callback<JsonObject>() {
+                @Override
+                public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                    Log.d("MIRROR", "Mirroring Sukses");
+                }
 
-            @Override
-            public void onFailure(Call<JsonObject> call, Throwable t) {
-                Log.d("MIRROR","Mirroring Gagal");
-                //Mirroring(false, base64);
-            }
-        });
+                @Override
+                public void onFailure(Call<JsonObject> call, Throwable t) {
+                    Log.d("MIRROR", "Mirroring Gagal");
+                    //Mirroring(false, base64);
+                }
+            });
+        }
     }
     private void Mirroring2(Boolean bool, CharSequence nik, CharSequence nama, CharSequence tempat, CharSequence ttl){
-        JSONObject jsons = new JSONObject();
-        JSONArray jsonArray = new JSONArray();
-        try {
-            jsonArray.put(nik);
-            jsonArray.put(nama);
-            jsonArray.put(tempat);
-            jsonArray.put(ttl);
-            jsonArray.put(bool);
-            jsons.put("idDips",idDips);
-            jsons.put("code",5);
-            jsons.put("data",jsonArray);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), jsons.toString());
-        ApiService API = Server.getAPIService();
-        Call<JsonObject> call = API.Mirroring(requestBody);
-        call.enqueue(new Callback<JsonObject>() {
-            @Override
-            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
-                Log.d("MIRROR","Mirroring Sukses");
+        if (!isCust) {
+            JSONObject jsons = new JSONObject();
+            JSONArray jsonArray = new JSONArray();
+            try {
+                jsonArray.put(nik);
+                jsonArray.put(nama);
+                jsonArray.put(tempat);
+                jsonArray.put(ttl);
+                jsonArray.put(bool);
+                jsons.put("idDips", idDips);
+                jsons.put("code", 5);
+                jsons.put("data", jsonArray);
+            } catch (JSONException e) {
+                e.printStackTrace();
             }
+            RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), jsons.toString());
+            ApiService API = Server.getAPIService();
+            Call<JsonObject> call = API.Mirroring(requestBody);
+            call.enqueue(new Callback<JsonObject>() {
+                @Override
+                public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                    Log.d("MIRROR", "Mirroring Sukses");
+                }
 
-            @Override
-            public void onFailure(Call<JsonObject> call, Throwable t) {
-                Log.d("MIRROR","Mirroring Gagal");
-            }
-        });
+                @Override
+                public void onFailure(Call<JsonObject> call, Throwable t) {
+                    Log.d("MIRROR", "Mirroring Gagal");
+                }
+            });
+        }
     }
 }

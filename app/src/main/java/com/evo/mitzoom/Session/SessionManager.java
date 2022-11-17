@@ -27,6 +27,7 @@ public class SessionManager {
     public static final String KEY_TTD = "TTD";
     public static final String KEY_CHAT = "CHAT";
     public static final String KEY_iSCust = "isCust";
+    public static final String KEY_iSSwafoto = "isSwafoto";
     public static final String KEY_FLAG_UPDOC = "FLAG_UPLOADDOC";
     public static final String KEY_MEDIA = "MEDIA";
     public static final String KEY_CAMERA = "CAMERA";
@@ -36,6 +37,10 @@ public class SessionManager {
     public static final String KEY_ADVANCE_AI_LICENSE = "ADVANCE_AI_LICENSE";
     public static final String KEY_ADVANCE_AI_EXPIREDTIME = "ADVANCE_AI_EXPIREDTIME";
     public static final String KEY_AUTHTOKEN = "AUTHTOKEN";
+    public static final String KEY_CSID = "CSID";
+    public static final String KEY_FLOW = "FLOW";
+    public static final String KEY_FORMCODE = "FORMCODE";
+    public static final String KEY_OCR = "OCR";
 
     // Constructor
     public SessionManager(Context context){
@@ -83,6 +88,10 @@ public class SessionManager {
         editor.putBoolean(KEY_iSCust,data);
         editor.commit();
     }
+    public void saveIsSwafoto(boolean data) {
+        editor.putBoolean(KEY_iSSwafoto,data);
+        editor.commit();
+    }
     public void saveMedia(int data){
         editor.putInt(KEY_MEDIA,data);
         editor.commit();
@@ -114,6 +123,26 @@ public class SessionManager {
         editor.commit();
     }
 
+    public void saveCSID(String data) {
+        editor.putString(KEY_CSID,data);
+        editor.commit();
+    }
+
+    public void saveFLOW(int data) {
+        editor.putInt(KEY_FLOW,data);
+        editor.commit();
+    }
+
+    public void saveFormCOde(int data){
+        editor.putInt(KEY_FORMCODE,data);
+        editor.commit();
+    }
+
+    public void saveOCR(String data) {
+        editor.putString(KEY_OCR,data);
+        editor.commit();
+    }
+
     public void clearPartData(){
         editor.putString(KEY_RTGS,null);
         editor.putString(KEY_CIF,null);
@@ -122,6 +151,11 @@ public class SessionManager {
         editor.putString(KEY_NPWP,null);
         editor.putString(KEY_TTD,null);
         editor.putBoolean(KEY_iSCust,false);
+        editor.putBoolean(KEY_iSSwafoto,false);
+        editor.putString(KEY_CSID,null);
+        editor.putString(KEY_OCR,null);
+        editor.putInt(KEY_FORMCODE,0);
+        editor.putInt(KEY_FLOW,0);
         editor.commit();
     }
 
@@ -165,6 +199,9 @@ public class SessionManager {
     public boolean getKEY_iSCust (){
         return pref.getBoolean(KEY_iSCust,false);
     }
+    public boolean getKEY_iSSwafoto (){
+        return pref.getBoolean(KEY_iSSwafoto,false);
+    }
     public boolean getFlagUpDoc (){
         return pref.getBoolean(KEY_FLAG_UPDOC,false);
     }
@@ -183,6 +220,18 @@ public class SessionManager {
     public long getExpiredTimeAdvanceAI() { return pref.getLong(KEY_ADVANCE_AI_EXPIREDTIME,0);}
     public String getAuthToken() {
         return pref.getString(KEY_AUTHTOKEN,null);
+    }
+    public String getCSID() {
+        return pref.getString(KEY_CSID,null);
+    }
+    public int getFLOW (){
+        return pref.getInt(KEY_FLOW,0);
+    }
+    public int getFormCode (){
+        return pref.getInt(KEY_FORMCODE,0);
+    }
+    public String getOCR() {
+        return pref.getString(KEY_OCR,null);
     }
 
 }

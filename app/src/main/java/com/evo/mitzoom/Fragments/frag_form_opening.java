@@ -23,6 +23,7 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -63,6 +64,8 @@ public class frag_form_opening extends Fragment {
     private String[] jenisIdentitasLain, jumlahTanggungan, pendidikanTerakhir, statusRumah_;
     private int lasLenOTP;
     private boolean backSpaceOTP;
+    private LinearLayout ll_head;
+    private TextView tvFotoKTP;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -74,6 +77,8 @@ public class frag_form_opening extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.frag_form_opening_account, container, false);
+        ll_head = (LinearLayout) view.findViewById(R.id.ll_head);
+        tvFotoKTP = (TextView) view.findViewById(R.id.tvFotoKTP);
         iconKtp = view.findViewById(R.id.icon_ktp);
         iconNpwp = view.findViewById(R.id.icon_npwp);
         iconSignature = view.findViewById(R.id.icon_signature);
@@ -119,6 +124,9 @@ public class frag_form_opening extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        ll_head.setVisibility(View.VISIBLE);
+        tvFotoKTP.setText(getString(R.string.pembukaan_akun));
+        
         String dataJsonS = session.getCIF();
         if (dataJsonS != null) {
             try {

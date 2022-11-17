@@ -57,6 +57,10 @@ public interface ApiService {
     Call<JsonObject> CekData(@Body RequestBody body);
 
     @Headers("Content-Type: "+ MyConstants.CONTENT_TYPE)
+    @POST("customer/nik-check")
+    Call<JsonObject> CekByNIK(@Body RequestBody body);
+
+    @Headers("Content-Type: "+ MyConstants.CONTENT_TYPE)
     @POST("document/savebase64")
     Call<JsonObject> SaveImage(@Body RequestBody body);
 
@@ -164,7 +168,7 @@ public interface ApiService {
     @GET("list-publish-product/list")
     Call<JsonObject> getNewProductPublish();
 
-    @GET("produk/media/{id}")
+    @GET("product/media/{id}")
     Call<ResponseBody> getProductMedia(@Path("id") int id);
 
     @GET("form-builder/list/{formid}")

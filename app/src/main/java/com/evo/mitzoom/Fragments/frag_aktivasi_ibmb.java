@@ -335,7 +335,9 @@ public class frag_aktivasi_ibmb extends Fragment {
                 }
                 else
                 {
-                    Mirroring(true,UserId2,Password2,Konfirmasi_password2,Mpin2,Konfirmasi_mpin2);
+                    //Mirroring(true,UserId2,Password2,Konfirmasi_password2,Mpin2,Konfirmasi_mpin2);
+                    Fragment fragment = new frag_aktivasi_berhasil();
+                    getFragmentPage(fragment);
                 }
             }
         });
@@ -774,8 +776,8 @@ public class frag_aktivasi_ibmb extends Fragment {
                     String dataS = response.body().toString();
                     try {
                         JSONObject jsObj = new JSONObject(dataS);
-                        int errCode = jsObj.getInt("err_code");
-                        if (errCode == 0) {
+                        int errCode = jsObj.getInt("code");
+                        if (errCode == 200) {
                             JSONObject dataJs = jsObj.getJSONObject("data");
                             String idForm = dataJs.getString("idForm");
 

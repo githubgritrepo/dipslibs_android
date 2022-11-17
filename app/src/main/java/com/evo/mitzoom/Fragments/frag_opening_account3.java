@@ -19,6 +19,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -56,6 +57,8 @@ public class frag_opening_account3 extends Fragment {
     private String idDips, TTD_BASE64;
     private SessionManager session;
     private LinearLayout chooseImage;
+    private LinearLayout ll_head;
+    private TextView tvFotoKTP;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -67,6 +70,8 @@ public class frag_opening_account3 extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.frag_opening_account3, container, false);
+        ll_head = (LinearLayout) view.findViewById(R.id.ll_head);
+        tvFotoKTP = (TextView) view.findViewById(R.id.tvFotoKTP);
         btnCamera = view.findViewById(R.id.choose_camera);
         btnGallery = view.findViewById(R.id.choose_gallery);
         btnNext = view.findViewById(R.id.btnNext);
@@ -90,6 +95,10 @@ public class frag_opening_account3 extends Fragment {
         KTP = arg.getByteArray("ktp");
         NPWP = arg.getByteArray("npwp");
         arg.clear();
+
+        ll_head.setVisibility(View.VISIBLE);
+        tvFotoKTP.setText(getString(R.string.pembukaan_akun));
+        
         iconKtp.setBackgroundTintList(context.getResources().getColorStateList(R.color.bg_cif_success));
         iconNpwp.setBackgroundTintList(context.getResources().getColorStateList(R.color.bg_cif_success));
         iconSignature.setBackgroundTintList(context.getResources().getColorStateList(R.color.bg_cif));
@@ -162,7 +171,7 @@ public class frag_opening_account3 extends Fragment {
                 btnNext.setClickable(true);
                 delete.setVisibility(View.VISIBLE);
                 viewImage.setVisibility(View.VISIBLE);
-                imgtoByteArray(bitmap); // <--- Untuk menghindari null pada foto
+                //imgtoByteArray(bitmap); // <--- Untuk menghindari null pada foto
                 chooseImage.setVisibility(View.GONE);
                 //getResizedBitmap(bitmap, (bitmap.getWidth()/6), (bitmap.getHeight()/6));
                 viewImage.setImageBitmap(bitmap);

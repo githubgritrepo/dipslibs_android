@@ -106,8 +106,8 @@ public class frag_cardless extends Fragment {
                     String dataS = response.body().toString();
                     try {
                         JSONObject jsObj = new JSONObject(dataS);
-                        int errCode = jsObj.getInt("err_code");
-                        if (errCode == 0) {
+                        int errCode = jsObj.getInt("code");
+                        if (errCode == 200) {
                             JSONObject dataJs = jsObj.getJSONObject("data");
                             String idForm = dataJs.getString("idForm");
                             dataNasabah.put("idFormCardless",idForm);

@@ -1,6 +1,8 @@
 package com.evo.mitzoom.Fragments;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -17,6 +19,7 @@ import com.evo.mitzoom.API.ApiService;
 import com.evo.mitzoom.API.Server;
 import com.evo.mitzoom.R;
 import com.evo.mitzoom.Session.SessionManager;
+import com.evo.mitzoom.ui.RatingActivity;
 import com.google.gson.JsonObject;
 
 import org.json.JSONArray;
@@ -78,9 +81,11 @@ public class frag_aktivasi_berhasil extends Fragment {
         btnSelesai.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Mirroring(true);
+                //Mirroring(true);
                 session.clearCIF();
-                getFragmentPage(new frag_portfolio());
+                //getFragmentPage(new frag_portfolio());
+                startActivity(new Intent(context, RatingActivity.class));
+                ((Activity) context).finish();
             }
         });
     }

@@ -2,7 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     package="com.evo.mitzoom"
-    android:installLocation="auto" >
+    android:installLocation="auto">
 
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
@@ -46,15 +46,22 @@
         android:requestLegacyExternalStorage="true"
         android:roundIcon="@mipmap/dips361_round"
         android:supportsRtl="true"
-        android:usesCleartextTraffic="true" >
+        android:usesCleartextTraffic="true">
+        <activity
+            android:name=".ui.Alternative.DipsSwafoto"
+            android:exported="false"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.MITZoom"
+            android:windowSoftInputMode="adjustPan"/>
         <activity
             android:name=".ui.DipsCameraSource"
             android:exported="false"
             android:screenOrientation="portrait"
-            android:theme="@style/Theme.MITZoom"/>
+            android:theme="@style/Theme.MITZoom" />
         <activity
             android:name=".ui.DipsChooseLanguage"
             android:exported="false"
+            android:screenOrientation="portrait"
             android:theme="@style/Theme.MITZoom" />
         <activity
             android:name=".ui.DipsOutboundCall"
@@ -98,7 +105,7 @@
             android:name=".ui.DipsSplashScreen"
             android:exported="true"
             android:screenOrientation="portrait"
-            android:theme="@style/Theme.MITZoom" >
+            android:theme="@style/Theme.MITZoom">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -110,7 +117,7 @@
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.provider"
             android:exported="false"
-            android:grantUriPermissions="true" >
+            android:grantUriPermissions="true">
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/provider_path" />
@@ -126,14 +133,14 @@
             android:name=".Helper.MyBroadcastReceiver"
             android:enabled="true"
             android:exported="true"
-            android:permission="android.permission.RECEIVE_BOOT_COMPLETED" >
+            android:permission="android.permission.RECEIVE_BOOT_COMPLETED">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
         </receiver>
         <receiver
             android:name=".Helper.OtpReceiver"
-            android:exported="true" >
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.provider.Telephony.SMS_RECEIVED" />
             </intent-filter>

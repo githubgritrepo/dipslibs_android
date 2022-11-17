@@ -11,16 +11,20 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_gravity="center"
-        android:layout_marginTop="120dp">
+        android:layout_marginTop="90dp">
       <RelativeLayout
           android:layout_width="match_parent"
           android:layout_height="match_parent"
           android:layout_gravity="center">
-        <SurfaceView
-            android:id="@+id/mySurface"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
+          <SurfaceView
+              android:id="@+id/mySurface"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"/>
 
+          <SurfaceView
+              android:id="@+id/transSurface"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent" />
       </RelativeLayout>
     </FrameLayout>
 
@@ -32,25 +36,25 @@
         android:orientation="vertical"
         android:padding="15dp">
 
-      <TextView
-          android:id="@+id/tvHeader"
-          android:layout_width="match_parent"
-          android:layout_height="wrap_content"
-          android:layout_marginTop="15dp"
-          android:gravity="center"
-          tools:text="@string/welcometext"
-          android:textColor="@color/black"
-          android:textSize="17dp"
-          android:textStyle="bold" />
+        <TextView
+            android:id="@+id/tvHeader"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            android:gravity="center"
+            android:textColor="@color/black"
+            android:textSize="17dp"
+            android:textStyle="bold"
+            tools:text="@string/welcometext" />
 
-      <TextView
-          android:id="@+id/tvContent"
-          android:layout_width="match_parent"
-          android:layout_height="wrap_content"
-          android:layout_marginTop="5dp"
-          android:gravity="center"
-          tools:text="@string/desc_welcome"
-          android:textSize="14dp" />
+        <TextView
+            android:id="@+id/tvContent"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:gravity="center"
+            android:textSize="14dp"
+            tools:text="@string/desc_welcome" />
     </LinearLayout>
 
     <LinearLayout
@@ -61,7 +65,7 @@
         android:layout_marginBottom="50dp"
         android:background="@drawable/oval_background"
         android:layout_below="@id/llHeader"
-        android:layout_marginTop="@dimen/dp_20">
+        android:layout_marginTop="30dp">
 
       <TextView
           android:layout_width="wrap_content"

@@ -155,6 +155,7 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
     private RelativeLayout offUsersVideo;
 
     protected Handler handler = new Handler(Looper.getMainLooper());
+    private boolean isSwafoto = false;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -168,6 +169,8 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
         setLocale(this,lang);
         sessions.saveFlagUpDoc(false);
         sessions.saveFlagConfAgree(false);
+        isCust = sessions.getKEY_iSCust();
+        isSwafoto = sessions.getKEY_iSSwafoto();
 
         if (savedInstanceState != null) {
             seconds = savedInstanceState.getInt("seconds");
@@ -241,9 +244,6 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
     }
 
     private void getFragmentPage(Fragment fragment){
-        Bundle bundle = new Bundle();
-        bundle.putBoolean("ISCUST",isCust);
-        fragment.setArguments(bundle);
         getSupportFragmentManager()
                 .beginTransaction()
                 .replace(R.id.layout_frame2, fragment)
@@ -546,7 +546,6 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
             meetingPwd = bundle.getString("password");
             sessionName = bundle.getString("sessionName");
             renderType = bundle.getInt("render_type", RENDER_TYPE_ZOOMRENDERER);
-            isCust = bundle.getBoolean("ISCUSTOMER");
         }
     }
 
@@ -1128,7 +1127,7 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
 
     @Override
     public void onCommandChannelConnectResult(boolean b) {
-        Log.d(TAG, "onCommandChannelConnectResult ");
+        Log.d(TAG, "onCommandChannelConnectResult "+b);
     }
 
     @Override

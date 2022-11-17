@@ -11,6 +11,9 @@ import android.content.pm.PackageManager;
 import android.hardware.Camera;
 import android.hardware.camera2.CameraAccessException;
 import android.hardware.camera2.CameraManager;
+import android.net.ConnectivityManager;
+import android.net.Network;
+import android.net.NetworkRequest;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
@@ -143,9 +146,6 @@ public class DipsWaitingRoom extends AppCompatActivity {
     private int Savewaktu;
     //RabitMQ
     ConnectionFactory connectionFactory = new ConnectionFactory();
-
-
-
     private Socket mSocket;
     private Thread subscribeThread;
     private Thread subscribeReqTicketThread;
@@ -154,6 +154,8 @@ public class DipsWaitingRoom extends AppCompatActivity {
     private Thread publishThread;
     private Thread publishQSTicketThread;
     private Thread publishCallAcceptThread;
+    private boolean isSwafoto = false;
+    private int chkFlow;
 
     {
         try {
@@ -172,6 +174,10 @@ public class DipsWaitingRoom extends AppCompatActivity {
         mContext = this;
         sessions = new SessionManager(mContext);
         sessions.saveRTGS(null);
+        sessions.saveCSID(null);
+        idDips = sessions.getKEY_IdDips();
+        isCust = sessions.getKEY_iSCust();
+        chkFlow = sessions.getFLOW();
         String lang = sessions.getLANG();
         setLocale(this,lang);
         setContentView(R.layout.activity_dips_waiting_room);
@@ -195,20 +201,17 @@ public class DipsWaitingRoom extends AppCompatActivity {
         cardSurf.setLayoutParams(lp);
 
         initializeSdk();
+        AnimationCall();
+        setupConnectionFactory(); //RabbitMQ
 
         boolean cekConstain = getIntent().getExtras().containsKey("RESULT_IMAGE_AI");
         if (cekConstain) {
             byte[] resultImage = getIntent().getExtras().getByteArray("RESULT_IMAGE_AI");
-            idDips = getIntent().getExtras().getString("idDips");
-            sessions.saveIdDips(idDips);
-            String imgBase64 = Base64.encodeToString(resultImage, Base64.DEFAULT);
+            String imgBase64 = Base64.encodeToString(resultImage, Base64.NO_WRAP);
             //processCaptureIdentify(imgBase64);
             processCaptureIdentifyAuth(imgBase64);
         } else {
-            isCust = getIntent().getExtras().getBoolean("ISCUSTOMER");
             custName = getIntent().getExtras().getString("CUSTNAME");
-            idDips = getIntent().getExtras().getString("idDips");
-            sessions.saveIdDips(idDips);
             /*NameSession = getIntent().getExtras().getString("SessionName");
             SessionPass = getIntent().getExtras().getString("SessionPass");*/
 
@@ -229,8 +232,34 @@ public class DipsWaitingRoom extends AppCompatActivity {
         cameraConfigured = false;
         previewHolder();
         stopPopSuccess = false;
-        AnimationCall();
+
+        /*ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkRequest networkRequest = new NetworkRequest.Builder().build();
+        connectivityManager.registerNetworkCallback(networkRequest, new ConnectivityManager.NetworkCallback() {
+            @Override
+            public void onAvailable(Network network) {
+                super.onAvailable(network);
+                Log.i("Tag", "active connection");
+            }
+
+            @Override
+            public void onLost(Network network) {
+                super.onLost(network);
+                Log.i("Tag", "losing active connection");
+                isNetworkConnected();
+            }
+        });*/
     }
+
+    /*private boolean isNetworkConnected() {
+        ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        if (!(cm.getActiveNetworkInfo() != null && cm.getActiveNetworkInfo().isConnected())) {
+            //Do something
+            Log.e("CEK","isNetworkConnected MASUK IF");
+            return false;
+        }
+        return true;
+    }*/
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
@@ -294,17 +323,14 @@ public class DipsWaitingRoom extends AppCompatActivity {
     }
 
     private void initialWaitingRoom() {
-        setupConnectionFactory(); //RabbitMQ
+        Log.d("CEK", "idDips : "+idDips);
         subscribeReqTicket();
-        subscribeCall(); //RabbitMQ
-        subscribeAllTicketInfo(); //RabbitMQ
+        //subscribeAllTicketInfo(); //RabbitMQ
 
         /*mSocket.on("waiting", waitingListener);
         mSocket.connect();*/
 
         //processGetTicket(myTicket);
-
-        Log.d("CEK", "idDips : "+idDips);
 
         savedAuthCredentialIDDiPS(idDips);
 
@@ -330,7 +356,16 @@ public class DipsWaitingRoom extends AppCompatActivity {
             e.printStackTrace();
         }
 
-        Log.e("CEK","processCaptureIdentifyAuth REQUEST json : "+jsons.toString());
+        //String dataCapture = jsons.toString();
+
+        /*String filename = "Auth_Customer_Capture.txt";
+        try {
+            createTemporaryFile(dataCapture,filename);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        Log.e("CEK","processCaptureIdentifyAuth REQUEST json : "+jsons.toString());*/
 
         RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), jsons.toString());
 
@@ -349,10 +384,7 @@ public class DipsWaitingRoom extends AppCompatActivity {
                         JSONObject dataCustomer = dataObj.getJSONObject("data").getJSONObject("customer");
                         JSONObject dataToken = dataObj.getJSONObject("data").getJSONObject("token");
 
-                        String idDipsOld = sessions.getKEY_IdDips();
-                        if (idDipsOld != null && OutboundService.mSocket != null) {
-                            OutboundService.leaveOutbound(idDipsOld);
-                        }
+                        isSwafoto = dataCustomer.getBoolean("isSwafoto");
 
                         String noCIF = "";
                         if (dataCustomer.isNull("noCif")) {
@@ -362,12 +394,18 @@ public class DipsWaitingRoom extends AppCompatActivity {
                             noCIF = dataCustomer.getString("noCif");
                         }
                         custName = dataCustomer.getString("namaLengkap");
-                        idDips = dataCustomer.getString("idDips");
+                        String idDipsNew = dataCustomer.getString("idDips");
+                        Log.e("CEK","idDipsNew : "+idDipsNew+" | idDips : "+idDips);
+                        if (idDips != null && OutboundService.mSocket != null && idDipsNew != idDips) {
+                            OutboundService.leaveOutbound(idDips);
+                        }
                         String accessToken = dataToken.getString("accessToken");
 
-                        sessions.saveIdDips(idDips);
+                        sessions.saveIdDips(idDipsNew);
                         sessions.saveIsCust(isCust);
                         sessions.saveAuthToken(accessToken);
+
+                        idDips = idDipsNew;
 
                         getIntent().getExtras().clear();
                         getIntent().removeExtra("RESULT_IMAGE_AI");
@@ -378,22 +416,31 @@ public class DipsWaitingRoom extends AppCompatActivity {
                         e.printStackTrace();
                     }
                 }  else {
-                    String dataErr = response.errorBody().toString();
-                    Log.e("CEK","dataErr : "+dataErr);
-                    if (dataErr != null) {
+                    if (response.code() < 500) {
+                        String dataErr = null;
                         try {
-                            JSONObject dataObj = new JSONObject(dataErr);
-                            if(dataObj.has("message")) {
-                                String message = dataObj.getString("message");
-                                Toast.makeText(mContext, message,Toast.LENGTH_SHORT).show();
-                            }
-                        } catch (JSONException e) {
+                            dataErr = response.errorBody().string();
+                        } catch (IOException e) {
                             e.printStackTrace();
                         }
+                        Log.e("CEK", "dataErr : " + dataErr);
+                        if (dataErr != null) {
+                            try {
+                                JSONObject dataObj = new JSONObject(dataErr);
+                                if (dataObj.has("message")) {
+                                    String message = dataObj.getString("message");
+                                    Toast.makeText(mContext, message, Toast.LENGTH_SHORT).show();
+                                }
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                        } else {
+                            Toast.makeText(mContext, R.string.msg_error, Toast.LENGTH_SHORT).show();
+                        }
+                        //OutApps();
                     } else {
                         Toast.makeText(mContext, R.string.msg_error, Toast.LENGTH_SHORT).show();
                     }
-                    OutApps();
                 }
             }
 
@@ -457,18 +504,17 @@ public class DipsWaitingRoom extends AppCompatActivity {
                         return;
                     }
 
-                    String idDipsOld = sessions.getKEY_IdDips();
-                    if (idDipsOld != null && OutboundService.mSocket != null) {
-                        OutboundService.leaveOutbound(idDipsOld);
-                    }
-
                     isCust = response.body().isCustomer();
                     custName = response.body().getName();
-                    idDips = response.body().getIdDips();
+                    String idDipsNew = response.body().getIdDips();
                     NameSession = response.body().getDataSession().getNameSession();
                     //SessionPass = response.body().getDataSession().getPass();
 
-                    sessions.saveIdDips(idDips);
+                    if (idDips != null && OutboundService.mSocket != null && idDipsNew != idDips) {
+                        OutboundService.leaveOutbound(idDips);
+                    }
+
+                    sessions.saveIdDips(idDipsNew);
                     sessions.saveIsCust(isCust);
 
                     getIntent().getExtras().clear();
@@ -582,14 +628,15 @@ public class DipsWaitingRoom extends AppCompatActivity {
                     JSONObject dataTicketObj = dataGetTicket();
                     String dataTicket = dataTicketObj.toString();
 
-                    ch.queueDeclare("dips.queue.service.req.ticket",true,false,false,null);
+                    //ch.queueDeclare("dips.queue.service.req.ticket",true,false,false,null);
                     ch.basicPublish("","dips.queue.service.req.ticket",false,null,dataTicket.getBytes());
                     ch.waitForConfirmsOrDie();
 
                 } catch (IOException | TimeoutException | InterruptedException e) {
                     Log.e("CEK", "publishToAMQP Connection broken: " + e.getClass().getName());
                     try {
-                        Thread.sleep(5000); //sleep and then try again
+                        Thread.sleep(4000); //sleep and then try again
+                        publishToAMQP();
                     } catch (InterruptedException e1) {
 
                     }
@@ -611,14 +658,15 @@ public class DipsWaitingRoom extends AppCompatActivity {
                     JSONObject dataTicketObj = reqQSTicket();
                     String dataTicket = dataTicketObj.toString();
 
-                    ch.queueDeclare("dips.queue.qs.req.ticket",true,false,false,null);
+                    //ch.queueDeclare("dips.queue.qs.req.ticket",true,false,false,null);
                     ch.basicPublish("","dips.queue.qs.req.ticket",false,null,dataTicket.getBytes());
                     ch.waitForConfirmsOrDie();
 
                 } catch (IOException | TimeoutException | InterruptedException e) {
                     Log.e("CEK", "publishQSReqTicket Connection broken: " + e.getClass().getName());
                     try {
-                        Thread.sleep(5000); //sleep and then try again
+                        Thread.sleep(4000); //sleep and then try again
+                        publishQSReqTicket();
                     } catch (InterruptedException e1) {
 
                     }
@@ -675,6 +723,7 @@ public class DipsWaitingRoom extends AppCompatActivity {
                     Log.e("CEK", "subscribe Connection broken: " + e1.getClass().getName());
                     try {
                         Thread.sleep(4000); //sleep and then try again
+                        subscribe();
                     } catch (InterruptedException e) {
                     }
                 }
@@ -689,6 +738,7 @@ public class DipsWaitingRoom extends AppCompatActivity {
             @Override
             public void run() {
                 try {
+                    Log.e("CEK","MASUK subscribeReqTicket");
                     Connection connection = connectionFactory.newConnection();
                     Channel channel = connection.createChannel();
                     channel.basicQos(1);
@@ -717,6 +767,9 @@ public class DipsWaitingRoom extends AppCompatActivity {
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             }
+
+                            subscribeCall(); //RabbitMQ
+                            subscribe(); //RabbitMQ
                         }
                     }, new CancelCallback() {
                         @Override
@@ -724,12 +777,13 @@ public class DipsWaitingRoom extends AppCompatActivity {
                             Log.e("CEK","subscribeReqTicket consumerTag : "+consumerTag);
                         }
                     });
+
                     publishQSReqTicket();
-                    subscribe(); //RabbitMQ
                 } catch (Exception e1) {
                     Log.e("CEK", "subscribeReqTicket Connection broken: " + e1.getClass().getName());
                     try {
                         Thread.sleep(4000); //sleep and then try again
+                        subscribeReqTicket();
                     } catch (InterruptedException e) {
                     }
                 }
@@ -744,12 +798,15 @@ public class DipsWaitingRoom extends AppCompatActivity {
             @Override
             public void run() {
                 try {
+                    Log.e("CEK","MASUK subscribeCall");
                     Connection connection = connectionFactory.newConnection();
                     Channel channel = connection.createChannel();
                     channel.basicQos(1);
                     AMQP.Queue.DeclareOk q = channel.queueDeclare();
+                    Log.e("CEK","subscribeCall getQueue : "+q.getQueue());
                     channel.exchangeDeclare("dips361-cust-call", "direct", true);
                     channel.queueBind(q.getQueue(), "dips361-cust-call", "dips.direct.cust."+idDips+".call");
+                    Log.e("CEK","AFTER subscribeCall queueBind getChannelNumber : "+channel.getChannelNumber());
                     channel.basicConsume(q.getQueue(), true, new DeliverCallback() {
                         @Override
                         public void handle(String consumerTag, Delivery message) throws IOException {
@@ -774,12 +831,20 @@ public class DipsWaitingRoom extends AppCompatActivity {
                                     String password = dataObj.getJSONObject("transaction").getString("password");
                                     Log.e("CEK","subscribeCall csId : "+csId);
                                     Log.e("CEK","subscribeCall password : "+password);
+
                                     NameSession = idDips;
                                     SessionPass = password;
+                                    sessions.saveCSID(csId);
                                     runOnUiThread(new Runnable() {
                                         @Override
                                         public void run() {
-                                            PopUpSucces(csId);
+                                            if (!isFinishing()) {
+                                                try {
+                                                    PopUpSucces(csId);
+                                                } catch (WindowManager.BadTokenException e) {
+                                                    Log.e("WindowManagerBad ", e.toString());
+                                                }
+                                            }
                                         }
                                     });
                                 } else {
@@ -806,6 +871,7 @@ public class DipsWaitingRoom extends AppCompatActivity {
                     Log.e("CEK", "subscribeCall Connection broken: " + e1.getClass().getName());
                     try {
                         Thread.sleep(4000); //sleep and then try again
+                        subscribeCall();
                     } catch (InterruptedException e) {
                     }
                 }
@@ -844,6 +910,7 @@ public class DipsWaitingRoom extends AppCompatActivity {
                     Log.e("CEK", "subscribeAllTicketInfo Connection broken: " + e1.getClass().getName());
                     try {
                         Thread.sleep(4000); //sleep and then try again
+                        subscribeAllTicketInfo();
                     } catch (InterruptedException e) {
                     }
                 }
@@ -864,14 +931,14 @@ public class DipsWaitingRoom extends AppCompatActivity {
                     JSONObject dataTicketObj = reqAcceptCall();
                     String dataTicket = dataTicketObj.toString();
 
-                    ch.queueDeclare("dips.direct.cs."+csId+".accept.user",true,false,false,null);
+                    ch.exchangeDeclare("dips361-cs-accept-user", "direct", true);
                     ch.basicPublish("dips361-cs-accept-user","dips.direct.cs."+csId+".accept.user",false,null,dataTicket.getBytes());
                     ch.waitForConfirmsOrDie();
 
                 } catch (IOException | TimeoutException | InterruptedException e) {
                     Log.e("CEK", "publishCallAccept Connection broken: " + e.getClass().getName());
                     try {
-                        Thread.sleep(5000); //sleep and then try again
+                        Thread.sleep(4000); //sleep and then try again
                     } catch (InterruptedException e1) {
 
                     }
@@ -1285,6 +1352,7 @@ public class DipsWaitingRoom extends AppCompatActivity {
 
     private void PopUpSucces(String csId){
         if (dialogSuccess == null) {
+            Log.e("CEK","dialogSuccess");
             dialogSuccess = new SweetAlertDialog(DipsWaitingRoom.this, SweetAlertDialog.SUCCESS_TYPE);
         }
         dialogSuccess.setContentText(getResources().getString(R.string.headline_success));
@@ -1301,9 +1369,11 @@ public class DipsWaitingRoom extends AppCompatActivity {
             public void onClick(SweetAlertDialog sweetAlertDialog) {
                 if (!SessionPass.isEmpty()) {
                     sweetAlertDialog.dismissWithAnimation();
+                    sweetAlertDialog.cancel();
                     dialogSuccess = null;
                     publishCallAccept(csId); //RabbitMQ
-                    Popup();
+                    processJoinVideo();
+                    //Popup();
                 } else {
                     Toast.makeText(mContext,"Password Conference belum ada",Toast.LENGTH_LONG).show();
                 }
@@ -1313,10 +1383,20 @@ public class DipsWaitingRoom extends AppCompatActivity {
             @Override
             public void onClick(SweetAlertDialog sweetAlertDialog) {
                 sweetAlertDialog.dismissWithAnimation();
-                PopUpSchedule();
+                sweetAlertDialog.cancel();
+                EndCall();
                 dialogSuccess = null;
             }
         });
+    }
+
+    private void EndCall(){
+        SweetAlertDialog sweetAlertDialog = new SweetAlertDialog(mContext, SweetAlertDialog.WARNING_TYPE);
+        sweetAlertDialog.setContentText(getString(R.string.headline_close_conversation));
+        sweetAlertDialog.showCancelButton(false);
+        sweetAlertDialog.show();
+        Button btnConfirm = (Button) sweetAlertDialog.findViewById(cn.pedant.SweetAlert.R.id.confirm_button);
+        btnConfirm.setBackgroundTintList(mContext.getResources().getColorStateList(R.color.Blue));
     }
 
     private void Popup(){
@@ -1333,6 +1413,7 @@ public class DipsWaitingRoom extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 dialogConfirm.dismiss();
+                dialogConfirm.cancel();
                 processJoinVideo();
             }
         });
@@ -1561,12 +1642,14 @@ public class DipsWaitingRoom extends AppCompatActivity {
             return;
         }
 
+        sessions.saveIsSwafoto(isSwafoto);
+        sessions.saveIsCust(isCust);
+
         Intent intent = new Intent(this, DipsVideoConfren.class);
         intent.putExtra("name", name);
         intent.putExtra("password", sessionPassKey);
         intent.putExtra("sessionName", sessionName);
         intent.putExtra("render_type", renderType);
-        intent.putExtra("ISCUSTOMER", isCust);
         startActivity(intent);
         finish();
     }

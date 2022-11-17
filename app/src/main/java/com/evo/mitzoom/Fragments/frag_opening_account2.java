@@ -19,6 +19,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -56,6 +57,8 @@ public class frag_opening_account2 extends Fragment {
     private String idDips, NPWP_BASE64;
     private SessionManager session;
     private LinearLayout chooseImage;
+    private LinearLayout ll_head;
+    private TextView tvFotoKTP;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -67,6 +70,8 @@ public class frag_opening_account2 extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.frag_opening_account2, container, false);
+        ll_head = (LinearLayout) view.findViewById(R.id.ll_head);
+        tvFotoKTP = (TextView) view.findViewById(R.id.tvFotoKTP);
         btnCamera = view.findViewById(R.id.choose_camera);
         btnGallery = view.findViewById(R.id.choose_gallery);
         btnNext = view.findViewById(R.id.btnNext);
@@ -86,6 +91,10 @@ public class frag_opening_account2 extends Fragment {
         idDips = session.getKEY_IdDips();
         Bundle arg = getArguments();
         KTP = arg.getByteArray("ktp");
+
+        ll_head.setVisibility(View.VISIBLE);
+        tvFotoKTP.setText(getString(R.string.pembukaan_akun));
+
         arg.clear();
         btnNext.setClickable(false);
         btnNext.setBackgroundTintList(context.getResources().getColorStateList(R.color.btnFalse));

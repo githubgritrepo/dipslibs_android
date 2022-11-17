@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -60,6 +61,7 @@ public class frag_conferee_agree extends Fragment implements ZoomVideoSDKDelegat
     private Context context;
     private Button btn_Setuju,btn_tidak;
     private boolean isCust = true;
+    private boolean isSwafoto = false;
     private String idDips;
     private SessionManager session;
     protected ZoomVideoSDKSession sessionz;
@@ -71,8 +73,9 @@ public class frag_conferee_agree extends Fragment implements ZoomVideoSDKDelegat
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         context = getContext();
-        isCust = getArguments().getBoolean("ISCUST");
         session = new SessionManager(context);
+        isCust = session.getKEY_iSCust();
+        isSwafoto = session.getKEY_iSSwafoto();
     }
 
     @Nullable
@@ -102,7 +105,8 @@ public class frag_conferee_agree extends Fragment implements ZoomVideoSDKDelegat
                     dialogNotAgree.show();
                     return;
                 }
-                SweetAlertDialog dialogEnd = new SweetAlertDialog(context,SweetAlertDialog.WARNING_TYPE);
+                EndCall();
+                /*SweetAlertDialog dialogEnd = new SweetAlertDialog(context,SweetAlertDialog.WARNING_TYPE);
                 dialogEnd.setContentText(getString(R.string.leave_message));
                 dialogEnd.setCancelable(true);
                 dialogEnd.setConfirmText(getString(R.string.leave_leave_text));
@@ -126,21 +130,21 @@ public class frag_conferee_agree extends Fragment implements ZoomVideoSDKDelegat
                         dialogEnd.dismissWithAnimation();
                     }
                 });
-                dialogEnd.show();
+                dialogEnd.show();*/
             }
         });
         btn_Setuju.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 boolean flagAgree = session.getFlagConfAgree();
-                /*if (flagAgree == false) {
+                if (flagAgree == false) {
                     SweetAlertDialog dialogNotAgree = new SweetAlertDialog(context,SweetAlertDialog.WARNING_TYPE);
                     dialogNotAgree.setContentText(getString(R.string.waiting_conf));
                     dialogNotAgree.setCancelable(true);
                     dialogNotAgree.setConfirmText("OK");
                     dialogNotAgree.show();
                     return;
-                }*/
+                }
                 cekData();
                 BaseMeetingActivity.btnFile.setBackgroundTintList(context.getResources().getColorStateList(R.color.Blue));
                 BaseMeetingActivity.btnFile.setClickable(true);
@@ -150,6 +154,28 @@ public class frag_conferee_agree extends Fragment implements ZoomVideoSDKDelegat
             }
         });
     }
+
+    private void EndCall(){
+        SweetAlertDialog sweetAlertDialog = new SweetAlertDialog(context, SweetAlertDialog.WARNING_TYPE);
+        sweetAlertDialog.setContentText(getResources().getString(R.string.headline_endcall));
+        sweetAlertDialog.setConfirmText(getResources().getString(R.string.end_call));
+        sweetAlertDialog.setCancelText(getResources().getString(R.string.no));
+        sweetAlertDialog.show();
+        sweetAlertDialog.setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
+            @Override
+            public void onClick(SweetAlertDialog sweetAlertDialog) {
+                sweetAlertDialog.dismissWithAnimation();
+                releaseResource();
+                ZoomVideoSDK.getInstance().leaveSession(false);
+                session.clearPartData();
+                MirroringEnd();
+                OutApps();
+            }
+        });
+        Button btnCancel = (Button) sweetAlertDialog.findViewById(cn.pedant.SweetAlert.R.id.cancel_button);
+        btnCancel.setBackgroundTintList(context.getResources().getColorStateList(R.color.Blue));
+    }
+
     private void MirroringEnd(){
         String idDips = session.getKEY_IdDips();
         JSONObject jsons = new JSONObject();
@@ -192,14 +218,12 @@ public class frag_conferee_agree extends Fragment implements ZoomVideoSDKDelegat
         }
         else{
             //Jika muka tidak terdaftar maka menuju ke masukan nama & NIK
-            getFragmentPage(new frag_inputdata_new());
-            Mirroring(0,1,true);
+            /*getFragmentPage(new frag_inputdata_new());
+            Mirroring(0,1,true);*/
+            getFragmentPage(new frag_list_produk());
         }
     }
     private void getFragmentPage(Fragment fragment){
-        Bundle bundle = new Bundle();
-        bundle.putBoolean("ISCUST",isCust);
-        fragment.setArguments(bundle);
         getActivity().getSupportFragmentManager()
                 .beginTransaction()
                 .replace(R.id.layout_frame2, fragment)

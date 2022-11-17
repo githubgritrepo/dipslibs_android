@@ -10,9 +10,11 @@ import android.os.Bundle;
 import android.text.Html;
 import android.util.Base64;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.ImageView;
@@ -153,6 +155,12 @@ public class GridProductAdapter extends RecyclerView.Adapter<GridProductAdapter.
                 sweet.dismissWithAnimation();
             }
         });
+
+        int width = (int)(((Activity)ctx).getResources().getDisplayMetrics().widthPixels*0.60);
+        int height = (int)(((Activity)ctx).getResources().getDisplayMetrics().heightPixels*0.60);
+
+        sweet.getWindow().setGravity(Gravity.CENTER_HORIZONTAL);
+        sweet.getWindow().setLayout(width,height);
     }
 
     private void processProductMedia(int produkId, GriViewHolder holder) {

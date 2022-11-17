@@ -6,9 +6,15 @@ import static android.app.Activity.RESULT_OK;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
+import android.provider.OpenableColumns;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,6 +27,7 @@ import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -31,20 +38,35 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import com.evo.mitzoom.API.ApiService;
 import com.evo.mitzoom.API.Server;
 import com.evo.mitzoom.Helper.MyParserFormBuilder;
+import com.evo.mitzoom.Helper.RabbitMirroring;
 import com.evo.mitzoom.R;
 import com.evo.mitzoom.Session.SessionManager;
+import com.evo.mitzoom.ui.Alternative.DipsSwafoto;
 import com.evo.mitzoom.ui.DipsCameraActivity;
 import com.evo.mitzoom.ui.DipsCameraSource;
+import com.evo.mitzoom.ui.DipsWaitingRoom;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.gson.JsonObject;
+import com.rabbitmq.client.Channel;
+import com.rabbitmq.client.Connection;
+import com.rabbitmq.client.ConnectionFactory;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.URISyntaxException;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeoutException;
 
 import cn.pedant.SweetAlert.SweetAlertDialog;
 import okhttp3.MediaType;
@@ -71,13 +93,28 @@ public class frag_inputdata_new extends Fragment {
     private String Nama = "";
     private String NIK = "";
     private JSONArray idElement = new JSONArray();
+    private boolean isSwafoto = false;
+    private TextView tvSavedImg;
+    private TextView tvSavedFile;
+    JSONObject objEl = new JSONObject();
+    private RabbitMirroring rabbitMirroring;
+    private byte[] bytePhoto = new byte[0];
+    private int chkFlow;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mContext = getContext();
-        isCust = getArguments().getBoolean("ISCUST");
+        if (getArguments().containsKey("RESULT_IMAGE_AI")) {
+            bytePhoto = getArguments().getByteArray("RESULT_IMAGE_AI");
+        }
         session = new SessionManager(mContext);
+        isCust = session.getKEY_iSCust();
+        chkFlow = session.getFLOW();
+
+        if (chkFlow == 0) {
+            rabbitMirroring = new RabbitMirroring(mContext);
+        }
     }
 
     @Nullable
@@ -109,10 +146,6 @@ public class frag_inputdata_new extends Fragment {
             @Override
             public void onClick(View v) {
                 int child = llFormBuild.getChildCount();
-                Log.e("CEK","child tree : "+child);
-                Log.e("CEK","idElement : "+idElement.length());
-
-                JSONObject objEl = new JSONObject();
                 
                 if (child > 0 && idElement.length() > 0) {
                     boolean flagNext = true;
@@ -125,7 +158,6 @@ public class frag_inputdata_new extends Fragment {
                                     int idDataEl = idElement.getJSONObject(j).getInt("id");
                                     String nameDataEl = idElement.getJSONObject(j).getString("name");
                                     boolean requiredDataEl = idElement.getJSONObject(j).getBoolean("required");
-                                    Log.e("CEK","llFormBuild getId : "+idEl+" | idDataEl ke-"+j+" : "+idDataEl+" | nameDataEl : "+nameDataEl);
                                     if (idEl == idDataEl) {
 
                                         if (llFormBuild.getChildAt(i) instanceof EditText) {
@@ -163,14 +195,17 @@ public class frag_inputdata_new extends Fragment {
                                         } else if (llFormBuild.getChildAt(i) instanceof Spinner) {
                                             Log.e("CEK", "MASUK Spinner ke-" + i);
                                             Spinner spin = (Spinner) llFormBuild.getChildAt(i);
-                                            String results = spin.getSelectedItem().toString();
-                                            if (requiredDataEl && results.isEmpty()) {
-                                                Toast.makeText(mContext, nameDataEl + " harus diisi/dipilih", Toast.LENGTH_SHORT).show();
-                                                checkEmpty = true;
+                                            if (spin.isSelected()) {
+                                                String results = spin.getSelectedItem().toString();
+                                                if (requiredDataEl && results.isEmpty()) {
+                                                    Toast.makeText(mContext, nameDataEl + " harus diisi/dipilih", Toast.LENGTH_SHORT).show();
+                                                    checkEmpty = true;
+                                                }
+                                                objEl.put(nameDataEl, results);
                                             }
-                                            objEl.put(nameDataEl, results);
                                             break;
                                         } else if (llFormBuild.getChildAt(i) instanceof AutoCompleteTextView) {
+                                            Log.e("CEK", "MASUK AutoCompleteTextView ke-" + i);
                                             AutoCompleteTextView autoText = (AutoCompleteTextView) llFormBuild.getChildAt(i);
                                             String results = autoText.getText().toString();
                                             if (requiredDataEl && results.isEmpty()) {
@@ -180,6 +215,9 @@ public class frag_inputdata_new extends Fragment {
                                             }
                                             objEl.put(nameDataEl, results);
                                             break;
+                                        } else if (llFormBuild.getChildAt(i) instanceof LinearLayout) {
+                                            Log.e("CEK", "MASUK LinearLayout ke-" + i);
+                                            LinearLayout ll = (LinearLayout) llFormBuild.getChildAt(i);
                                         }
                                     }
                                 } catch (JSONException e) {
@@ -197,124 +235,36 @@ public class frag_inputdata_new extends Fragment {
                     }
 
                     if (flagNext) {
-                        CekDataElement(objEl);
+                        CekDataByNIK(objEl);
                     }
-
-                    //CekDataByNIK();
                 }
             }
         });
     }
 
-    private void CekDataElement(JSONObject dataArr) {
-        Log.e("CEK","CekDataElement : "+dataArr);
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+
+        if (chkFlow == 0) {
+            rabbitMirroring.closeThreadConnection();
+        }
     }
 
-    private void Mirroring(boolean bool, CharSequence sequence1, CharSequence sequence2){
-        JSONObject jsons = new JSONObject();
-        JSONArray jsonArray = new JSONArray();
+    private JSONObject dataMirroring(JSONObject dataObj) {
+        long unixTime = System.currentTimeMillis() / 1000L;
+
+        JSONObject jsObj = new JSONObject();
         try {
-            jsonArray.put(sequence1);
-            jsonArray.put(sequence2);
-            jsonArray.put(bool);
-            jsons.put("idDips",idDips);
-            jsons.put("code",1);
-            jsons.put("data",jsonArray);
+            jsObj.put("from","Cust");
+            jsObj.put("to","CS");
+            jsObj.put("created",unixTime);
+            jsObj.put("transaction",dataObj);
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), jsons.toString());
-        ApiService API = Server.getAPIService();
-        Call<JsonObject> call = API.Mirroring(requestBody);
-        call.enqueue(new Callback<JsonObject>() {
-            @Override
-            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
-                Log.d("MIRROR","Mirroring Sukses");
-            }
 
-            @Override
-            public void onFailure(Call<JsonObject> call, Throwable t) {
-                Log.d("MIRROR","Mirroring Gagal");
-            }
-        });
-    }
-    private void Mirroring2(boolean bool){
-        JSONObject jsons = new JSONObject();
-        JSONArray jsonArray = new JSONArray();
-        try {
-            jsonArray.put(bool);
-            jsons.put("idDips",idDips);
-            jsons.put("code",3);
-            jsons.put("data",jsonArray);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), jsons.toString());
-        ApiService API = Server.getAPIService();
-        Call<JsonObject> call = API.Mirroring(requestBody);
-        call.enqueue(new Callback<JsonObject>() {
-            @Override
-            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
-                Log.d("MIRROR","Mirroring Sukses");
-            }
-
-            @Override
-            public void onFailure(Call<JsonObject> call, Throwable t) {
-                Log.d("MIRROR","Mirroring Gagal");
-            }
-        });
-    }
-    private void Mirroring3(boolean bool){
-        JSONObject jsons = new JSONObject();
-        JSONArray jsonArray = new JSONArray();
-        try {
-            jsonArray.put(bool);
-            jsons.put("idDips",idDips);
-            jsons.put("code",2);
-            jsons.put("data",jsonArray);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), jsons.toString());
-        ApiService API = Server.getAPIService();
-        Call<JsonObject> call = API.Mirroring(requestBody);
-        call.enqueue(new Callback<JsonObject>() {
-            @Override
-            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
-                Log.d("MIRROR","Mirroring Sukses");
-            }
-
-            @Override
-            public void onFailure(Call<JsonObject> call, Throwable t) {
-                Log.d("MIRROR","Mirroring Gagal");
-            }
-        });
-    }
-    private void Mirroring4(boolean bool){
-        JSONObject jsons = new JSONObject();
-        JSONArray jsonArray = new JSONArray();
-        try {
-            jsonArray.put(bool);
-            jsons.put("idDips",idDips);
-            jsons.put("code",14);
-            jsons.put("data",jsonArray);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), jsons.toString());
-        ApiService API = Server.getAPIService();
-        Call<JsonObject> call = API.Mirroring(requestBody);
-        call.enqueue(new Callback<JsonObject>() {
-            @Override
-            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
-                Log.d("MIRROR","Mirroring Sukses");
-            }
-
-            @Override
-            public void onFailure(Call<JsonObject> call, Throwable t) {
-                Log.d("MIRROR","Mirroring Gagal");
-            }
-        });
+        return jsObj;
     }
 
     private void processGetForm() {
@@ -335,6 +285,9 @@ public class frag_inputdata_new extends Fragment {
                         Log.e("CEK","dataForm : "+dataForm);
                         MyParserFormBuilder parseForm = new MyParserFormBuilder(mContext, dataForm, llFormBuild);
                         idElement = parseForm.getForm();
+                        Log.e("CEK","dataElement : "+idElement.toString());
+                        processValidationActionForm();
+                        Log.e("CEK","DATA FORM : "+objEl.toString());
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
@@ -348,37 +301,200 @@ public class frag_inputdata_new extends Fragment {
         });
     }
 
-    private void CekDataByNIK(){
-        String idDips = session.getKEY_IdDips();
-        JSONObject jsons = new JSONObject();
-        try {
-            jsons.put("idDips",idDips);
-            jsons.put("nik",NIK);
-            jsons.put("name",Nama);
-        } catch (JSONException e) {
-            e.printStackTrace();
+    private void processValidationActionForm() {
+        Log.e("CEK","processValidationActionForm");
+        int child = llFormBuild.getChildCount();
+
+        if (child > 0 && idElement.length() > 0) {
+            for (int i = 0; i < child; i++) {
+                int idEl = llFormBuild.getChildAt(i).getId();
+                if (idEl > 0 || idEl < -1) {
+                    for (int j = 0; j < idElement.length(); j++) {
+                        try {
+                            int idDataEl = idElement.getJSONObject(j).getInt("id");
+                            String nameDataEl = idElement.getJSONObject(j).getString("name");
+                            if (idEl == idDataEl) {
+
+                                if (llFormBuild.getChildAt(i) instanceof EditText) {
+                                    EditText ed = (EditText) llFormBuild.getChildAt(i);
+                                    ed.addTextChangedListener(new TextWatcher() {
+                                        @Override
+                                        public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+                                        }
+
+                                        @Override
+                                        public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                                            Log.e("CEK",nameDataEl+" : "+charSequence);
+                                            try {
+                                                objEl.put(nameDataEl, charSequence);
+                                                objEl.put("idDips",idDips);
+                                            } catch (JSONException e) {
+                                                e.printStackTrace();
+                                            }
+                                            if (chkFlow == 0) {
+                                                rabbitMirroring.MirroringSendKey(objEl);
+                                            }
+                                        }
+
+                                        @Override
+                                        public void afterTextChanged(Editable editable) {
+
+                                        }
+                                    });
+                                    objEl.put(nameDataEl, "");
+                                } else if (llFormBuild.getChildAt(i) instanceof RadioGroup) {
+                                    objEl.put(nameDataEl, "");
+                                    break;
+                                } else if (llFormBuild.getChildAt(i) instanceof CheckBox) {
+                                    objEl.put(nameDataEl, false);
+                                    break;
+                                } else if (llFormBuild.getChildAt(i) instanceof Spinner) {
+                                    objEl.put(nameDataEl, "");
+                                    break;
+                                } else if (llFormBuild.getChildAt(i) instanceof AutoCompleteTextView) {
+                                    objEl.put(nameDataEl, "");
+                                    break;
+                                } else if (llFormBuild.getChildAt(i) instanceof LinearLayout) {
+                                    LinearLayout ll = (LinearLayout) llFormBuild.getChildAt(i);
+                                    Log.e("CEK", "LinearLayout getChildCount : " + ll.getChildCount());
+                                    if (ll.getChildCount() > 1) {
+                                        if (ll.getChildAt(0) instanceof LinearLayout) {
+                                            LinearLayout ll2 = (LinearLayout) ll.getChildAt(0);
+                                            Log.e("CEK", "MASUK LinearLayout CHILD ke-" + i);
+
+                                            TextView tvll = (TextView) ll2.getChildAt(1);
+                                            String txt = tvll.getText().toString();
+                                            Log.e("CEK", "tvll : " + txt);
+                                            if (txt.toLowerCase().indexOf("gambar") > 0 || txt.toLowerCase().indexOf("image") > 0) {
+                                                tvSavedImg = (TextView) ll.getChildAt(1);
+                                                ll2.setOnClickListener(new View.OnClickListener() {
+                                                    @Override
+                                                    public void onClick(View view) {
+                                                        chooseFromSD();
+                                                    }
+                                                });
+                                            } else {
+                                                tvSavedFile = (TextView) ll.getChildAt(1);
+                                                ll2.setOnClickListener(new View.OnClickListener() {
+                                                    @Override
+                                                    public void onClick(View view) {
+                                                        Intent intent = new Intent();
+                                                        intent.setType("*/*");
+                                                        intent.setAction(Intent.ACTION_OPEN_DOCUMENT);
+                                                        intent.addCategory(Intent.CATEGORY_OPENABLE);
+                                                        String[] mimetypes = { "application/pdf", "application/doc", "text/*" };
+                                                    /*String[] mimeTypes =
+                                                            {"application/msword", "application/vnd.openxmlformats-officedocument.wordprocessingml.document", // .doc & .docx
+                                                                    "application/vnd.ms-powerpoint", "application/vnd.openxmlformats-officedocument.presentationml.presentation", // .ppt & .pptx
+                                                                    "application/vnd.ms-excel", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", // .xls & .xlsx
+                                                                    "text/plain",
+                                                                    "application/pdf",
+                                                                    "application/zip", "application/vnd.android.package-archive"};*/
+
+                                                        intent.putExtra(Intent.EXTRA_MIME_TYPES, mimetypes);
+                                                        startActivityForResult(intent, 202);
+                                                    }
+                                                });
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            }
         }
+    }
+
+    private void chooseFromSD() {
+        Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivityForResult(intent, 201);
+    }
+
+    private void CekDataByNIK(JSONObject jsons){
+        Log.e("CEL","MASUK CekDataByNIK");
+
+        Log.e("CEL","REQUEST CekDataByNIK : "+jsons.toString());
+
         RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), jsons.toString());
 
         ApiService API = Server.getAPIService();
-        Call<JsonObject> call = API.CekData(requestBody);
+        Call<JsonObject> call = API.CekByNIK(requestBody);
+        Log.e("CEL","URL CekDataByNIK : "+call.request().url());
         call.enqueue(new Callback<JsonObject>() {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                Log.e("CEK","RESPONSE CekDataByNIK  : "+response.code());
                 if (response.isSuccessful() && response.body().size() > 0) {
-                    Mirroring(true, Nama, NIK);
+                    //Mirroring(true, Nama, NIK);
                     String dataS = response.body().toString();
                     Log.e("CEK","RESPONSE  : "+dataS);
                     try {
                         JSONObject jsObj = new JSONObject(dataS);
-                        int err_code = jsObj.getInt("err_code");
+                        int err_code = jsObj.getInt("code");
                         String message = jsObj.getString("message");
 
-                        session.saveMedia(1);
-                        Intent intent = new Intent(mContext, DipsCameraSource.class);
-                        intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                        intent.putExtra("result_cek_data",err_code);
-                        startActivityForResult(intent, 1);
+                        if (err_code == 200) {
+                            JSONObject dataObj = jsObj.getJSONObject("data");
+                            idDips = dataObj.getString("idDips");
+                            session.saveIdDips(idDips);
+                            if (session.getCSID() != null) {
+                                try {
+                                    jsons.put("idDips",idDips);
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+                                if (chkFlow == 0) {
+                                    rabbitMirroring.MirroringSendKey(jsons);
+                                }
+                            }
+                            isSwafoto = dataObj.getBoolean("isSwafoto");
+                            if (dataObj.has("noCif")) {
+                                if (!dataObj.isNull("noCif")) {
+                                    if (!isSwafoto){
+                                        session.saveIsCust(true);
+                                        session.saveIsSwafoto(isSwafoto);
+                                        session.saveFormCOde(4);
+                                        Fragment fragment = new frag_cif();
+                                        Bundle bundle = new Bundle();
+                                        bundle.putByteArray("RESULT_IMAGE_AI",bytePhoto);
+                                        fragment.setArguments(bundle);
+                                        if (chkFlow == 0) {
+                                            RabbitMirroring.MirroringSendEndpoint(3);
+                                            getFragmentPage(fragment);
+                                        } else {
+                                            getFragmentPageDefault(fragment);
+                                        }
+                                    } else {
+                                        if (chkFlow == 1) {
+                                            Intent intent = new Intent(mContext, DipsWaitingRoom.class);
+                                            intent.putExtra("RESULT_IMAGE_AI",bytePhoto);
+                                            startActivity(intent);
+                                            ((Activity) mContext).finishAffinity();
+                                        } else {
+                                            session.clearCIF();
+                                            getFragmentPage(new frag_portfolio());
+                                        }
+                                    }
+                                } else {
+                                    if (chkFlow == 1) {
+                                        Intent intent = new Intent(mContext, DipsWaitingRoom.class);
+                                        intent.putExtra("RESULT_IMAGE_AI",bytePhoto);
+                                        startActivity(intent);
+                                        ((Activity) mContext).finishAffinity();
+                                    } else {
+                                        PopUpTnc();
+                                    }
+                                }
+                            }
+                        } else {
+                            Toast.makeText(mContext, message, Toast.LENGTH_SHORT).show();
+                        }
 
                         /*if (err_code == 0){
                             PopUpTnc();
@@ -438,11 +554,24 @@ public class frag_inputdata_new extends Fragment {
             @Override
             public void onClick(View v) {
                 if (checkBox.isChecked()){
-                    Mirroring2(true);
-                    Mirroring3(true);
+                    session.saveFLOW(0);
                     sweetAlertDialogTNC.dismiss();
                     sweetAlertDialogTNC.cancel();
-                    getFragmentPage(new frag_opening_account());
+
+                    session.saveIsCust(true);
+                    session.saveIsSwafoto(isSwafoto);
+                    session.saveFormCOde(4);
+                    Fragment fragment = new frag_cif();
+                    Bundle bundle = new Bundle();
+                    bundle.putByteArray("RESULT_IMAGE_AI",bytePhoto);
+                    fragment.setArguments(bundle);
+
+                    if (chkFlow == 0) {
+                        RabbitMirroring.MirroringSendEndpoint(3);
+                        getFragmentPage(fragment);
+                    } else {
+                        getFragmentPageDefault(fragment);
+                    }
                 }
                 else {
                     btn.setClickable(false);
@@ -468,9 +597,44 @@ public class frag_inputdata_new extends Fragment {
                         PopUpTnc();
                     }
                     else {
-                        Mirroring4(false);
                         session.clearCIF();
-                        getFragmentPage(new frag_portfolio());
+                        if (chkFlow == 0) {
+                            RabbitMirroring.MirroringSendEndpoint(14);
+                            getFragmentPage(new frag_portfolio());
+                        } else {
+                            getFragmentPageDefault(new frag_portfolio());
+                        }
+                    }
+                }
+            } else if (requestCode == 201) {
+                Log.e("CEK","RESULT GAMBAR");
+                Uri selectedImage = data.getData();
+                String[] filePath = { MediaStore.Images.Media.DATA };
+                Cursor c = mContext.getContentResolver().query(selectedImage,filePath, null, null, null);
+                c.moveToFirst();
+                int columnIndex = c.getColumnIndex(filePath[0]);
+                String picturePath = c.getString(columnIndex);
+                File files = new File(picturePath);
+                String fileName = files.getName().toString();
+                Log.e("CEK","RESULT picturePath : "+picturePath);
+                Log.e("CEK","RESULT files.getName : "+fileName);
+                tvSavedImg.setText("filename : "+fileName);
+                c.close();
+                Bitmap thumbnail = (BitmapFactory.decodeFile(picturePath));
+            } else if (requestCode == 202) {
+                Log.e("CEK","RESULT FILE");
+                Uri uri = data.getData();
+                if (uri != null) {
+                    Cursor c = mContext.getContentResolver().query(uri,null, null, null, null);
+                    c.moveToFirst();
+                    String fileName = c.getString(c.getColumnIndex(OpenableColumns.DISPLAY_NAME));
+                    tvSavedFile.setText("filename : "+fileName);
+                    Log.e("CEK","RESULT fileName : "+fileName);
+                    c.close();
+                    try {
+                        BufferedReader br = new BufferedReader(new InputStreamReader(mContext.getContentResolver().openInputStream(uri)));
+                    } catch (FileNotFoundException e) {
+                        e.printStackTrace();
                     }
                 }
             }
@@ -485,5 +649,17 @@ public class frag_inputdata_new extends Fragment {
                 .replace(R.id.layout_frame2, fragment)
                 .addToBackStack(null)
                 .commit();
+    }
+
+    private boolean getFragmentPageDefault(Fragment fragment){
+        if (fragment != null) {
+            getActivity().getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.layout_frame, fragment)
+                    .addToBackStack(null)
+                    .commit();
+            return true;
+        }
+        return false;
     }
 }

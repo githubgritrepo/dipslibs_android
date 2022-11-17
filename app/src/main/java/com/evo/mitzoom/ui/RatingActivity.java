@@ -105,6 +105,7 @@ public class RatingActivity extends AppCompatActivity {
             @Override
             public void onClick(SweetAlertDialog sweetAlertDialog) {
                 sweetAlertDialog.dismiss();
+                sweetAlertDialog.cancel();
                 OutApps();
             }
         });

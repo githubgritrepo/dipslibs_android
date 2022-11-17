@@ -461,8 +461,8 @@ public class frag_data_keuangan extends Fragment {
                     String dataS = response.body().toString();
                     try {
                         JSONObject jsObj = new JSONObject(dataS);
-                        int errCode = jsObj.getInt("err_code");
-                        if (errCode == 0) {
+                        int errCode = jsObj.getInt("code");
+                        if (errCode == 200) {
                             PopUpSuccesRegistration();
                         }
                     } catch (JSONException e) {
