@@ -72,6 +72,7 @@ public class DipsSwafoto extends AppCompatActivity {
         sessions.saveCSID(null);
         sessions.saveIsSwafoto(false);
         idDips = sessions.getKEY_IdDips();
+        isCust = sessions.getKEY_iSCust();
         String lang = sessions.getLANG();
         setLocale(this,lang);
         setContentView(R.layout.activity_dips_swafoto);
@@ -101,17 +102,16 @@ public class DipsSwafoto extends AppCompatActivity {
 
         boolean cekConstain = getIntent().getExtras().containsKey("RESULT_IMAGE_AI");
         byte[] resultImage = new byte[0];
+        custName = getIntent().getExtras().getString("CUSTNAME");
         if (cekConstain) {
             resultImage = getIntent().getExtras().getByteArray("RESULT_IMAGE_AI");
-        } else {
-            isCust = getIntent().getExtras().getBoolean("ISCUSTOMER");
-            custName = getIntent().getExtras().getString("CUSTNAME");
         }
 
         Fragment fragment = new frag_inputdata_new();
         Bundle bundle = new Bundle();
         sessions.saveIsCust(isCust);
         bundle.putByteArray("RESULT_IMAGE_AI", resultImage);
+        bundle.putString("CUSTNAME",custName);
         fragment.setArguments(bundle);
         getFragmentPage(fragment);
 

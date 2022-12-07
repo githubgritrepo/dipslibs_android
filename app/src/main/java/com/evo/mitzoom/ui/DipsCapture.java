@@ -53,6 +53,10 @@ import com.evo.mitzoom.util.NetworkUtil;
 import com.google.android.gms.vision.CameraSource;
 import com.google.android.gms.vision.face.FaceDetector;
 import com.google.android.gms.vision.face.LargestFaceFocusingProcessor;
+import com.google.gson.JsonObject;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -68,6 +72,8 @@ import ai.advance.liveness.lib.GuardianLivenessDetectionSDK;
 import ai.advance.liveness.lib.Market;
 import ai.advance.liveness.sdk.activity.LivenessActivity;
 import cn.pedant.SweetAlert.SweetAlertDialog;
+import okhttp3.MediaType;
+import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -93,6 +99,9 @@ public class DipsCapture extends AppCompatActivity implements CameraSource.Pictu
     private SessionManager sessions;
     public static boolean flagCapture = false;
     private String idDips;
+    private boolean isSwafoto;
+    private boolean isCust;
+    private String custName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -363,20 +372,24 @@ public class DipsCapture extends AppCompatActivity implements CameraSource.Pictu
 
         @Override
         public void surfaceChanged(@NonNull SurfaceHolder holder, int format, int width, int height) {
+            Log.e("CEK","width : "+width);
+            Log.e("CEK","height : "+height);
             Canvas canvas = transHolder.lockCanvas();
 
-            int MarginSurf = 220;
+            int diff1 = 4;
             if (width < 680) {
-                MarginSurf = 140;
+                diff1 = 5;
             } else if (width > 1000) {
-                MarginSurf = 340;
+                diff1 = 6;
             }
             //double cx = Math.ceil(width / 2);
-            double leftright = Math.ceil(width / 4);
-            double cTop = Math.ceil(height / 3.2);
-            double marginTop = Math.ceil((cTop * 3) / 4);
-            int margins = MarginSurf * 2;
-            double rad = Math.ceil((width - margins) / 2);
+            float leftright = (float) width / diff1;
+            float cTop = (float) (height / diff1);
+            //float marginTop = (float) (cTop * 3) / diff1;
+            //int margins = MarginSurf * 2;
+            float rad = (float) width / 2;
+
+            Log.e("CEK","rad : "+rad);
             //double cy = rad + MarginSurf;
 
             int NUM_DASHES = 20;
@@ -387,6 +400,8 @@ public class DipsCapture extends AppCompatActivity implements CameraSource.Pictu
             float[] intervals = new float[]{ 5, 5 };
             intervals[0] = dashPlusGapSize * DASH_PORTION;
             intervals[1] = dashPlusGapSize * GAP_PORTION;
+            Log.e("CEK","intervals 0 : "+intervals[0]);
+            Log.e("CEK","intervals 1 : "+intervals[1]);
             DashPathEffect dashPath = new DashPathEffect(intervals, 0);
 
             Paint p = new Paint();
@@ -397,13 +412,13 @@ public class DipsCapture extends AppCompatActivity implements CameraSource.Pictu
 
             //canvas.drawCircle((float) cx,(float) cy,(float) rad,p);
 
-            double lefts = leftright;
-            double tops = marginTop;
-            double rights = (width - leftright);
-            double bottoms = (height-margins);
+            float lefts = leftright;
+            float tops = cTop;
+            float rights = (width - leftright);
+            float bottoms = (height - cTop);
             Log.e("CEK","lefts : "+lefts+" | lefts : "+tops+" | rights : "+rights+" | bottoms : "+bottoms);
 
-            RectF rect = new RectF((float) leftright,(float) marginTop,(float) (width-leftright),(float) (height-margins));
+            RectF rect = new RectF(leftright, tops, rights, bottoms);
             canvas.drawOval(rect,p);
 
             transHolder.unlockCanvasAndPost(canvas);
@@ -461,7 +476,10 @@ public class DipsCapture extends AppCompatActivity implements CameraSource.Pictu
                     byte[] bytePhoto = Base64.decode(imgBase64, Base64.NO_WRAP);
                     Bitmap bitmap = BitmapFactory.decodeByteArray(bytePhoto, 0, bytePhoto.length);
 
-                    View dialogView = getLayoutInflater().inflate(R.layout.layout_show_image, null);
+                    showProgress(true);
+                    processCaptureIdentifyAuth(imgBase64);
+
+                    /*View dialogView = getLayoutInflater().inflate(R.layout.layout_show_image, null);
                     SweetAlertDialog sweetAlertDialog = new SweetAlertDialog(mContext, SweetAlertDialog.NORMAL_TYPE);
                     sweetAlertDialog.setCustomView(dialogView);
                     sweetAlertDialog.setCancelable(false);
@@ -476,15 +494,10 @@ public class DipsCapture extends AppCompatActivity implements CameraSource.Pictu
                             showProgress(true);
                             //processCaptureIdentify(imgBase64);
                             //Intent intent = new Intent(mContext, DipsWaitingRoom.class);
-                            sessions.saveFLOW(1);
-                            sessions.saveIdDips(idDips);
-                            Intent intent = new Intent(mContext, DipsSwafoto.class);
-                            intent.putExtra("RESULT_IMAGE_AI",bytePhoto);
-                            startActivity(intent);
-                            finishAffinity();
+                            processCaptureIdentifyAuth(imgBase64);
                         }
                     });
-                    sweetAlertDialog.show();
+                    sweetAlertDialog.show();*/
                 }
 
             } catch (IOException e) {
@@ -557,6 +570,120 @@ public class DipsCapture extends AppCompatActivity implements CameraSource.Pictu
         return encodedImage;
     }
 
+    private void processCaptureIdentifyAuth(String imgBase64) {
+        if (!NetworkUtil.hasDataNetwork(mContext)) {
+            Toast.makeText(this, "Connection Failed. Please check your network connection and try again.", Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        byte[] bytePhoto = Base64.decode(imgBase64, Base64.NO_WRAP);
+
+        JSONObject jsons = new JSONObject();
+        try {
+            jsons.put("idDips","");
+            jsons.put("image",imgBase64);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        /*String filename = "CaptureAuth_"+idDips+".txt";
+        try {
+            createTemporaryFile(jsons.toString(),filename);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }*/
+
+        RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), jsons.toString());
+
+        ApiService API = Server.getAPIService2();
+        Call<JsonObject> call = API.CaptureAuth(requestBody);
+        Log.e("CEK","REQUEST CALL : "+call.request().url());
+        call.enqueue(new Callback<JsonObject>() {
+            @Override
+            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                showProgress(false);
+                Log.e("CEK","RESPONSE CODE: "+response.code());
+                if (response.isSuccessful()) {
+                    String dataS = response.body().toString();
+                    Log.e("CEK","dataS: "+dataS);
+                    try {
+                        JSONObject dataObj = new JSONObject(dataS);
+                        JSONObject dataCustomer = dataObj.getJSONObject("data").getJSONObject("customer");
+                        JSONObject dataToken = dataObj.getJSONObject("data").getJSONObject("token");
+
+                        isSwafoto = dataCustomer.getBoolean("isSwafoto");
+
+                        String noCIF = "";
+                        if (dataCustomer.isNull("noCif")) {
+                            isCust = false;
+                        } else {
+                            isCust = true;
+                            noCIF = dataCustomer.getString("noCif");
+                        }
+                        custName = dataCustomer.getString("namaLengkap");
+                        String idDipsNew = dataCustomer.getString("idDips");
+                        Log.e("CEK","idDipsNew : "+idDipsNew+" | idDips : "+idDips);
+                        /*if (idDips != null && OutboundService.mSocket != null && idDipsNew != idDips) {
+                            OutboundService.leaveOutbound(idDips);
+                        }*/
+                        String accessToken = dataToken.getString("accessToken");
+
+                        sessions.saveIdDips(idDipsNew);
+                        sessions.saveIsCust(isCust);
+                        sessions.saveAuthToken(accessToken);
+
+                        idDips = idDipsNew;
+
+                        sessions.saveFLOW(1);
+                        sessions.saveIdDips(idDips);
+
+                        Intent intent = new Intent(mContext, DipsSwafoto.class);
+                        intent.putExtra("RESULT_IMAGE_AI",bytePhoto);
+                        intent.putExtra("CUSTNAME",custName);
+                        startActivity(intent);
+                        finishAffinity();
+
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }  else {
+                    if (response.code() < 500) {
+                        String dataErr = null;
+                        try {
+                            dataErr = response.errorBody().string();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                        Log.e("CEK", "dataErr : " + dataErr);
+                        if (dataErr != null) {
+                            try {
+                                JSONObject dataObj = new JSONObject(dataErr);
+                                if (dataObj.has("message")) {
+                                    String message = dataObj.getString("message");
+                                    Toast.makeText(mContext, message, Toast.LENGTH_SHORT).show();
+                                }
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                        } else {
+                            Toast.makeText(mContext, R.string.msg_error, Toast.LENGTH_SHORT).show();
+                        }
+                        //OutApps();
+                    } else {
+                        Toast.makeText(mContext, R.string.msg_error, Toast.LENGTH_SHORT).show();
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<JsonObject> call, Throwable t) {
+                showProgress(false);
+                Log.e("CEK","onFailure MESSAGE : "+t.getMessage());
+                Toast.makeText(mContext, t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
     private void processCaptureIdentify(String imgBase64) {
 
         if (!NetworkUtil.hasDataNetwork(mContext)) {
@@ -607,9 +734,9 @@ public class DipsCapture extends AppCompatActivity implements CameraSource.Pictu
                     }
 
                     String idDipsOld = sessions.getKEY_IdDips();
-                    if (idDipsOld != null && OutboundService.mSocket != null) {
+                    /*if (idDipsOld != null && OutboundService.mSocket != null) {
                         OutboundService.leaveOutbound(idDipsOld);
-                    }
+                    }*/
 
                     boolean isCust = response.body().isCustomer();
                     String custName = response.body().getName();
@@ -619,13 +746,6 @@ public class DipsCapture extends AppCompatActivity implements CameraSource.Pictu
 
                     sessions.saveIdDips(idDips);
                     sessions.saveIsCust(isCust);
-
-                    /*String filename = "base64_capture_success.txt";
-                    try {
-                        createTemporaryFile(imgBase64,filename);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }*/
 
                     Intent intent = new Intent(DipsCapture.this,DipsWaitingRoom.class);
                     sessions.saveIsCust(isCust);

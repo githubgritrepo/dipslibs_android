@@ -19,6 +19,7 @@ import com.evo.mitzoom.API.ApiService;
 import com.evo.mitzoom.API.Server;
 import com.evo.mitzoom.Adapter.UserVideoAdapter;
 import com.evo.mitzoom.BaseMeetingActivity;
+import com.evo.mitzoom.Helper.RabbitMirroring;
 import com.evo.mitzoom.R;
 import com.evo.mitzoom.Session.SessionManager;
 import com.google.gson.JsonObject;
@@ -67,6 +68,7 @@ public class frag_conferee_agree extends Fragment implements ZoomVideoSDKDelegat
     protected ZoomVideoSDKSession sessionz;
     protected UserVideoAdapter adapter;
     private Boolean result = true;
+    private RabbitMirroring rabbitMirroring;
 
 
     @Override
@@ -76,6 +78,7 @@ public class frag_conferee_agree extends Fragment implements ZoomVideoSDKDelegat
         session = new SessionManager(context);
         isCust = session.getKEY_iSCust();
         isSwafoto = session.getKEY_iSSwafoto();
+        rabbitMirroring = new RabbitMirroring(context);
     }
 
     @Nullable
@@ -213,13 +216,11 @@ public class frag_conferee_agree extends Fragment implements ZoomVideoSDKDelegat
         if (isCust) {
             //Jika muka terdaftar maka langsung menuju ke portfolio
             session.clearCIF();
-            getFragmentPage(new frag_portfolio());
-            Mirroring(0,14,true);
+            getFragmentPage(new frag_portfolio_new());
+            rabbitMirroring.MirroringSendEndpoint(14);
         }
         else{
-            //Jika muka tidak terdaftar maka menuju ke masukan nama & NIK
-            /*getFragmentPage(new frag_inputdata_new());
-            Mirroring(0,1,true);*/
+            rabbitMirroring.MirroringSendEndpoint(2);
             getFragmentPage(new frag_list_produk());
         }
     }

@@ -52,6 +52,8 @@ import com.evo.mitzoom.Fragments.frag_file;
 import com.evo.mitzoom.Helper.NotificationMgr;
 import com.evo.mitzoom.Helper.NotificationService;
 import com.evo.mitzoom.Helper.OutboundService;
+import com.evo.mitzoom.Helper.OutboundServiceNew;
+import com.evo.mitzoom.Helper.RabbitMirroring;
 import com.evo.mitzoom.Session.SessionManager;
 import com.evo.mitzoom.screenshare.ShareToolbar;
 import com.evo.mitzoom.ui.DipsVideoConfren;
@@ -156,6 +158,7 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
 
     protected Handler handler = new Handler(Looper.getMainLooper());
     private boolean isSwafoto = false;
+    private RabbitMirroring rabbitMirroring;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -205,6 +208,7 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
         initView();
         initMeeting();
         updateSessionInfo();
+        rabbitMirroring = new RabbitMirroring(mContext);
         //showProgress(true);
         DipsVideoConfren.LogoCompany.setVisibility(View.VISIBLE);
         DipsVideoConfren.Zoom.setVisibility(View.VISIBLE);
@@ -692,7 +696,8 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
                 releaseResource();
                 int ret = ZoomVideoSDK.getInstance().leaveSession(false);
                 sessions.clearPartData();
-                MirroringEnd();
+                rabbitMirroring.MirroringSendEndpoint(99);
+                //MirroringEnd();
                 startActivity(new Intent(getApplicationContext(), RatingActivity.class));
                 finish();
             }
@@ -725,7 +730,7 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
                 Log.d("MIRROR","Mirroring Sukses");
-                Intent serviceIntent = new Intent(mContext, OutboundService.class);
+                Intent serviceIntent = new Intent(mContext, OutboundServiceNew.class);
                 startForegroundService(serviceIntent);
             }
 

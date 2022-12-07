@@ -37,6 +37,7 @@ public class frag_list_produk extends Fragment {
     private boolean isCust = false;
     private boolean isSwafoto = false;
     private SessionManager sessions;
+    private RabbitMirroring rabbitMirroring;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -46,6 +47,9 @@ public class frag_list_produk extends Fragment {
         isCust = sessions.getKEY_iSCust();
         isSwafoto = sessions.getKEY_iSSwafoto();
         isSessionZoom = ZoomVideoSDK.getInstance().isInSession();
+        if (isSessionZoom) {
+            rabbitMirroring = new RabbitMirroring(context);
+        }
     }
     @Nullable
     @Override
@@ -68,6 +72,8 @@ public class frag_list_produk extends Fragment {
         rlOpenAccount.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                //rabbitMirroring.MirroringSendEndpoint(0);
+                rabbitMirroring.MirroringSendEndpoint(361);
                 PopUpTnc();
             }
         });

@@ -18,6 +18,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
+import android.os.StrictMode;
 import android.util.Base64;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -54,6 +55,7 @@ import com.evo.mitzoom.BaseMeetingActivity;
 import com.evo.mitzoom.Constants.AuthConstants;
 import com.evo.mitzoom.Fragments.frag_berita;
 import com.evo.mitzoom.Helper.OutboundService;
+import com.evo.mitzoom.Helper.OutboundServiceNew;
 import com.evo.mitzoom.Model.Request.JsonCaptureIdentify;
 import com.evo.mitzoom.Model.Response.CaptureIdentify;
 import com.evo.mitzoom.R;
@@ -149,13 +151,14 @@ public class DipsWaitingRoom extends AppCompatActivity {
     private Socket mSocket;
     private Thread subscribeThread;
     private Thread subscribeReqTicketThread;
-    private Thread subscribeThreadCall;
+    public static Thread subscribeThreadCall;
     private Thread subscribeAllTicketInfoCall;
     private Thread publishThread;
     private Thread publishQSTicketThread;
     private Thread publishCallAcceptThread;
     private boolean isSwafoto = false;
     private int chkFlow;
+    public static Channel channelCall = null;
 
     {
         try {
@@ -170,6 +173,9 @@ public class DipsWaitingRoom extends AppCompatActivity {
 
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
         getSupportActionBar().hide();
+
+        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+        StrictMode.setThreadPolicy(policy);
 
         mContext = this;
         sessions = new SessionManager(mContext);
@@ -204,14 +210,16 @@ public class DipsWaitingRoom extends AppCompatActivity {
         AnimationCall();
         setupConnectionFactory(); //RabbitMQ
 
+        custName = getIntent().getExtras().getString("CUSTNAME");
+
         boolean cekConstain = getIntent().getExtras().containsKey("RESULT_IMAGE_AI");
         if (cekConstain) {
             byte[] resultImage = getIntent().getExtras().getByteArray("RESULT_IMAGE_AI");
             String imgBase64 = Base64.encodeToString(resultImage, Base64.NO_WRAP);
             //processCaptureIdentify(imgBase64);
-            processCaptureIdentifyAuth(imgBase64);
+            //processCaptureIdentifyAuth(imgBase64);
+            initialWaitingRoom();
         } else {
-            custName = getIntent().getExtras().getString("CUSTNAME");
             /*NameSession = getIntent().getExtras().getString("SessionName");
             SessionPass = getIntent().getExtras().getString("SessionPass");*/
 
@@ -333,8 +341,10 @@ public class DipsWaitingRoom extends AppCompatActivity {
         //processGetTicket(myTicket);
 
         savedAuthCredentialIDDiPS(idDips);
+    }
 
-        Intent serviceIntent = new Intent(this, OutboundService.class);
+    private void serviceOutbound() {
+        Intent serviceIntent = new Intent(this, OutboundServiceNew.class);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             startForegroundService(serviceIntent);
         } else {
@@ -396,9 +406,9 @@ public class DipsWaitingRoom extends AppCompatActivity {
                         custName = dataCustomer.getString("namaLengkap");
                         String idDipsNew = dataCustomer.getString("idDips");
                         Log.e("CEK","idDipsNew : "+idDipsNew+" | idDips : "+idDips);
-                        if (idDips != null && OutboundService.mSocket != null && idDipsNew != idDips) {
+                        /*if (idDips != null && OutboundService.mSocket != null && idDipsNew != idDips) {
                             OutboundService.leaveOutbound(idDips);
-                        }
+                        }*/
                         String accessToken = dataToken.getString("accessToken");
 
                         sessions.saveIdDips(idDipsNew);
@@ -510,9 +520,9 @@ public class DipsWaitingRoom extends AppCompatActivity {
                     NameSession = response.body().getDataSession().getNameSession();
                     //SessionPass = response.body().getDataSession().getPass();
 
-                    if (idDips != null && OutboundService.mSocket != null && idDipsNew != idDips) {
+                    /*if (idDips != null && OutboundService.mSocket != null && idDipsNew != idDips) {
                         OutboundService.leaveOutbound(idDips);
-                    }
+                    }*/
 
                     sessions.saveIdDips(idDipsNew);
                     sessions.saveIsCust(isCust);
@@ -800,14 +810,14 @@ public class DipsWaitingRoom extends AppCompatActivity {
                 try {
                     Log.e("CEK","MASUK subscribeCall");
                     Connection connection = connectionFactory.newConnection();
-                    Channel channel = connection.createChannel();
-                    channel.basicQos(1);
-                    AMQP.Queue.DeclareOk q = channel.queueDeclare();
+                    channelCall = connection.createChannel();
+                    channelCall.basicQos(1);
+                    AMQP.Queue.DeclareOk q = channelCall.queueDeclare();
                     Log.e("CEK","subscribeCall getQueue : "+q.getQueue());
-                    channel.exchangeDeclare("dips361-cust-call", "direct", true);
-                    channel.queueBind(q.getQueue(), "dips361-cust-call", "dips.direct.cust."+idDips+".call");
-                    Log.e("CEK","AFTER subscribeCall queueBind getChannelNumber : "+channel.getChannelNumber());
-                    channel.basicConsume(q.getQueue(), true, new DeliverCallback() {
+                    channelCall.exchangeDeclare("dips361-cust-call", "direct", true);
+                    channelCall.queueBind(q.getQueue(), "dips361-cust-call", "dips.direct.cust."+idDips+".call");
+                    Log.e("CEK","AFTER subscribeCall queueBind getChannelNumber : "+channelCall.getChannelNumber());
+                    channelCall.basicConsume(q.getQueue(), true, new DeliverCallback() {
                         @Override
                         public void handle(String consumerTag, Delivery message) throws IOException {
                             String getMessage = new String(message.getBody());
@@ -1216,121 +1226,6 @@ public class DipsWaitingRoom extends AppCompatActivity {
         return optimalSize;
     }
 
-    private void PopUpSchedule(){
-        inflater = getLayoutInflater();
-        dialogView = inflater.inflate(R.layout.item_schedule,null);
-        SweetAlertDialog sweetAlertDialog = new SweetAlertDialog(DipsWaitingRoom.this, SweetAlertDialog.NORMAL_TYPE);
-        sweetAlertDialog.setCustomView(dialogView);
-        sweetAlertDialog.hideConfirmButton();
-        sweetAlertDialog.show();
-        ArrayAdapter<String> adapterTime = new ArrayAdapter<String>(DipsWaitingRoom.this,R.layout.list_item, time);
-        btnclose = dialogView.findViewById(R.id.btn_close_schedule);
-        et_Date = dialogView.findViewById(R.id.et_Date);
-        et_time = dialogView.findViewById(R.id.et_time);
-        et_time.setAdapter(adapterTime);
-        et_time.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Savewaktu = position;
-
-            }
-        });
-        btnSchedule2 = dialogView.findViewById(R.id.btnSchedule2);
-
-        et_Date.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                final Calendar c = Calendar.getInstance();
-                year = c.get(Calendar.YEAR);
-                month = c.get(Calendar.MONTH);
-                day = c.get(Calendar.DAY_OF_MONTH);
-                DatePickerDialog datePickerDialog = new DatePickerDialog(DipsWaitingRoom.this, new DatePickerDialog.OnDateSetListener() {
-                    @Override
-                    public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-                        tanggal = dayOfMonth+"/"+(month + 1)+"/"+year;
-                        Log.i("Waiting", "month : "+month);
-                        Savetanggal = year+""+(month + 1)+""+dayOfMonth;
-                        Log.i("Waiting", "Savetanggal : "+Savetanggal);
-                        et_Date.setText(tanggal);
-                    }
-                }, year, month, day);
-                datePickerDialog.getDatePicker().setMinDate(System.currentTimeMillis() - 1000);
-                datePickerDialog.show();
-            }
-        });
-        btnclose.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                sweetAlertDialog.dismissWithAnimation();
-            }
-        });
-        btnSchedule2.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                tanggal = et_Date.getText().toString();
-                waktu = et_time.getText().toString();
-                if (tanggal.trim().equals("")){
-                    Toast.makeText(getApplicationContext(), R.string.notif_blank, Toast.LENGTH_SHORT).show();
-                }
-                else if (waktu.trim().equals("")){
-                    Toast.makeText(getApplicationContext(), R.string.notif_blank, Toast.LENGTH_SHORT).show();
-                }
-                else {
-                    saveSchedule();
-                    Toast.makeText(getApplicationContext(), "Jadwal panggilan anda "+tanggal+" jam "+waktu, Toast.LENGTH_LONG).show();
-                    sweetAlertDialog.dismissWithAnimation();
-                    SweetAlertDialog sweetAlertDialogEnd = new SweetAlertDialog(DipsWaitingRoom.this, SweetAlertDialog.SUCCESS_TYPE);
-                    sweetAlertDialogEnd.setContentText(getResources().getString(R.string.content_after_schedule));
-                    sweetAlertDialogEnd.setConfirmText(getResources().getString(R.string.done));
-                    sweetAlertDialogEnd.show();
-                    Button btnConfirm = (Button) sweetAlertDialogEnd.findViewById(cn.pedant.SweetAlert.R.id.confirm_button);
-                    btnConfirm.setBackgroundTintList(DipsWaitingRoom.this.getResources().getColorStateList(R.color.Blue));
-                    btnConfirm.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            sweetAlertDialogEnd.dismissWithAnimation();
-                            Intent intent = new Intent(Intent.ACTION_MAIN);
-                            intent.addCategory(Intent.CATEGORY_HOME);
-                            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                            startActivity(intent);
-                            overridePendingTransition(0,0);
-                            finish();
-                        }
-                    });
-                }
-
-            }
-        });
-        btnSchedule2.setBackgroundTintList(DipsWaitingRoom.this.getResources().getColorStateList(R.color.Blue));
-    }
-    private void saveSchedule(){
-        JSONObject jsons = new JSONObject();
-        try {
-            jsons.put("idDips",idDips);
-            jsons.put("tanggal",Savetanggal);
-            jsons.put("grup",Savewaktu);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        Log.d("PARAMS JADWAL","idDips = "+idDips+", Tanggal = "+Savetanggal+", Grup index Time of ["+Savewaktu+"]");
-        RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), jsons.toString());
-        ApiService API = Server.getAPIService();
-        Call<JsonObject> call = API.saveSchedule(requestBody);
-        call.enqueue(new Callback<JsonObject>() {
-            @Override
-            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
-                if (response.isSuccessful() && response.body().size() > 0) {
-                }
-            }
-
-            @Override
-            public void onFailure(Call<JsonObject> call, Throwable t) {
-
-            }
-        });
-
-    }
-
     private void PopUpWaiting(){
         if (dialogWaiting == null) {
             dialogWaiting = new SweetAlertDialog(DipsWaitingRoom.this, SweetAlertDialog.WARNING_TYPE);
@@ -1539,7 +1434,7 @@ public class DipsWaitingRoom extends AppCompatActivity {
     public boolean foregroundServiceRunning(){
         ActivityManager activityManager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
         for(ActivityManager.RunningServiceInfo service: activityManager.getRunningServices(Integer.MAX_VALUE)) {
-            if(OutboundService.class.getName().equals(service.service.getClassName())) {
+            if(OutboundServiceNew.class.getName().equals(service.service.getClassName())) {
                 return true;
             }
         }

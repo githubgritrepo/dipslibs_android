@@ -79,10 +79,10 @@
                     app:expansion_openOnlyOne="true"
                     android:orientation="vertical">
                     <include layout="@layout/item_tabungan" />
-                    <include layout="@layout/item_giro" />
-                    <include layout="@layout/item_deposito" />
-                    <include layout="@layout/item_insurance" />
-                    <include layout="@layout/item_reksadana" />
+                    <include layout="@layout/item_giro" android:visibility="gone" />
+                    <include layout="@layout/item_deposito" android:visibility="gone" />
+                    <include layout="@layout/item_insurance" android:visibility="gone" />
+                    <include layout="@layout/item_reksadana" android:visibility="gone" />
 
                 </com.github.florent37.expansionpanel.viewgroup.ExpansionsViewGroupLinearLayout>
 

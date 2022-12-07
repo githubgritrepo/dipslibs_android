@@ -6,14 +6,18 @@ import com.evo.mitzoom.Model.Response.CaptureIdentify;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
+import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
+import retrofit2.http.Field;
 import retrofit2.http.GET;
 import retrofit2.http.Header;
 import retrofit2.http.Headers;
+import retrofit2.http.Multipart;
 import retrofit2.http.POST;
+import retrofit2.http.Part;
 import retrofit2.http.Path;
 import retrofit2.http.Url;
 
@@ -77,8 +81,16 @@ public interface ApiService {
     Call<JsonObject> rejectCall(@Body RequestBody body);
 
     @Headers("Content-Type: "+ MyConstants.CONTENT_TYPE)
-    @POST("scheduled/save")
+    @POST("schedule/create")
     Call<JsonObject> saveSchedule(@Body RequestBody body);
+
+    @Headers("Content-Type: "+ MyConstants.CONTENT_TYPE)
+    @GET("schedule/not-available")
+    Call<JsonObject> GetCheckSchedule();
+
+    @Headers("Content-Type: "+ MyConstants.CONTENT_TYPE)
+    @GET("time-period")
+    Call<JsonObject> GetScheduleTimes();
 
     @Headers("Content-Type: "+ MyConstants.CONTENT_TYPE)
     @POST("account_opening/createform")
@@ -124,10 +136,26 @@ public interface ApiService {
     Call<JsonObject> ResendOTP(@Body RequestBody body);
 
     @Headers("Content-Type: "+ MyConstants.CONTENT_TYPE)
-    @GET("customer/portofolio/{idDiPS}")
+    @GET("customer-portfolio/{NoCIF}")
     Call<JsonObject> GetPortofolio(
-            @Path("idDiPS") String idDiPS
+            @Path("NoCIF") String NoCIF
     );
+
+    @Headers("Content-Type: "+ MyConstants.CONTENT_TYPE)
+    @POST("customer-portfolio")
+    Call<JsonObject> AddDataSelf(@Body RequestBody body);
+
+    @Headers("Content-Type: "+ MyConstants.CONTENT_TYPE)
+    @POST("employment-data")
+    Call<JsonObject> AddDataWork(@Body RequestBody body);
+
+    @Headers("Content-Type: "+ MyConstants.CONTENT_TYPE)
+    @POST("financial-data")
+    Call<JsonObject> AddDataFinance(@Body RequestBody body);
+
+    @Headers("Content-Type: "+ MyConstants.CONTENT_TYPE)
+    @POST("list-account/list")
+    Call<JsonObject> GetNewPortofolio(@Body RequestBody body);
 
     @Headers("Content-Type: "+ MyConstants.CONTENT_TYPE)
     @GET("form/resume-rtgs/{indexTypeTran}-{etc}-{noFIP}-{isPenduduk}-{namaPenyetor}-{addrPenyetor}-{noHP}-" +
@@ -182,5 +210,9 @@ public interface ApiService {
     Call<JsonObject> AuthLicenseLiveness(@Body RequestBody body,
                                          @Header("X-ADVAI-KEY") String authHeader
     );
+
+    @POST("form-data/data-diri")
+    Call<JsonObject> formAttachment(@Header("Content-Type") String contentType,
+                                    @Body RequestBody body);
 
 }

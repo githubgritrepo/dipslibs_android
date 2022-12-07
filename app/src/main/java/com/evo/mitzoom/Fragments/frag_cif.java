@@ -20,6 +20,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -28,6 +29,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -57,12 +59,18 @@ import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 
 import cn.pedant.SweetAlert.SweetAlertDialog;
 import okhttp3.MediaType;
+import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -108,7 +116,7 @@ public class frag_cif extends Fragment {
     private byte[] TTD = new byte[0];
     private String KTP_BASE64,NPWP_BASE64,TTD_BASE64;
     private String tmptLahir = "-";
-    private String provinsi, kota_kabupaten, nik, nama, ttl, jeniskelamin, golongan_darah, alamat, rtrw, desa_kelurahan, kecamatan, agama, status_perkawinan, kewarganegaraan, pekerjaan;
+    private String provinsi, kota_kabupaten, nik, nama, ttl, jeniskelamin, golongan_darah, alamat, rtrw, desa_kelurahan, kecamatan, agama, status_perkawinan, kewarganegaraan, pekerjaan = "";
     private boolean flagOCR = false;
     private boolean isSessionZoom;
     private RabbitMirroring rabbitMirroring;
@@ -120,6 +128,15 @@ public class frag_cif extends Fragment {
     private TextView tvSavedFile;
     private String idDips;
     private JSONObject datasReqOCR = null;
+    private int lasLenChar;
+    private boolean backSpaceChar;
+    private byte[] imageBytes;
+    private String encodedImage;
+    private String keysData = "";
+    private JSONObject dataFormCIF = null;
+    private String picturePath = "";
+    private File mediaFilePhoto = null;
+    private int idPhoto = 0;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -127,6 +144,7 @@ public class frag_cif extends Fragment {
 
         mContext = getContext();
         sessions = new SessionManager(mContext);
+        idPhoto = sessions.getIDCust();
         isCust = sessions.getKEY_iSCust();
         isSwafoto = sessions.getKEY_iSSwafoto();
         chkFlow = sessions.getFLOW();
@@ -162,10 +180,20 @@ public class frag_cif extends Fragment {
         Log.e("CEK",mContext+" NPWP : "+NPWP.length);
         Log.e("CEK",mContext+" TTD : "+TTD.length);
         Log.e("CEK",mContext+" form_id : "+form_id);
+        Log.e("CEK",mContext+" idPhoto : "+idPhoto);
         isSessionZoom = ZoomVideoSDK.getInstance().isInSession();
         Log.e("CEK",mContext+" isSessionZoom : "+isSessionZoom);
         if (isSessionZoom) {
             rabbitMirroring = new RabbitMirroring(mContext);
+        }
+        if (formCode == 8) {
+            keysData = "datadiri";
+        } else if (formCode == 801) {
+            keysData = "alamatberbeda";
+        } else if (formCode == 802) {
+            keysData = "pekerjaan";
+        } else if (formCode == 803) {
+            keysData = "keuangan";
         }
     }
 
@@ -206,14 +234,14 @@ public class frag_cif extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         if (formCode > 7) {
+            dataFormCIF = new JSONObject();
             inclBodyUpload.setVisibility(View.GONE);
             llFormBuild.setVisibility(View.VISIBLE);
-            btnProses.setVisibility(View.VISIBLE);
             if (formCode == 8 && form_id == 0) {
                 form_id = 10;
             }
 
-            if (formCode == 8) {
+            if (formCode == 8 || form_id == 5 || form_id == 14) {
                 if (KTP.length > 0) {
                     iconKtp.setBackgroundTintList(mContext.getResources().getColorStateList(R.color.bg_cif_success));
                 }
@@ -317,7 +345,22 @@ public class frag_cif extends Fragment {
             btnNext.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    if ((KTP.length == 0 && formCode == 4) || (NPWP.length == 0 && formCode == 6) || (TTD.length == 0 && formCode == 7)){
+                    Log.e("CEK","btnNext formCode : "+formCode+" | KTP : "+KTP.length+" | KTP_SWAFOTO : "+KTP_SWAFOTO.length);
+                    if (formCode == 4) {
+                        if (KTP.length > 0 && KTP_SWAFOTO.length == 0) {
+                            KTP_SWAFOTO = imageBytes;
+                            isSwafoto = true;
+                            sessions.saveIsSwafoto(isSwafoto);
+                        }
+                    } else if (formCode == 6) {
+                        NPWP = imageBytes;
+                        NPWP_BASE64 = encodedImage;
+                    } else if (formCode == 7) {
+                        TTD = imageBytes;
+                        TTD_BASE64 = encodedImage;
+                    }
+
+                    if ((NPWP.length == 0 && formCode == 6) || (TTD.length == 0 && formCode == 7)){
                         Toast.makeText(mContext, getResources().getString(R.string.error_image), Toast.LENGTH_SHORT).show();
                     }
                     else{
@@ -325,7 +368,16 @@ public class frag_cif extends Fragment {
                             //saveImage();
                             if (formCode == 4) {
                                 if (flagOCR) {
-                                    PopUpOCR(KTP);
+                                    if (KTP.length == 0) {
+                                        KTP = imageBytes;
+                                        KTP_BASE64 = encodedImage;
+                                    }
+
+                                    if ((KTP.length == 0 && formCode == 4)) {
+                                        Toast.makeText(mContext, getResources().getString(R.string.error_image), Toast.LENGTH_SHORT).show();
+                                    } else {
+                                        PopUpOCR();
+                                    }
                                 } else {
                                     Toast.makeText(mContext, "Maaf, OCR masih dalam proses...!!!", Toast.LENGTH_SHORT).show();
                                 }
@@ -338,12 +390,20 @@ public class frag_cif extends Fragment {
                                     bundle.putByteArray("swafoto", KTP_SWAFOTO);
                                     sessions.saveFormCOde(6);
                                     rabbitMirroring.MirroringSendEndpoint(6);
+                                    if (!picturePath.isEmpty()) {
+                                        String fieldName = "foto";
+                                        processFormDataAttachment(fieldName,picturePath);
+                                    }
                                 } else if (formCode == 6) {
                                     bundle.putByteArray("ktp",KTP);
                                     bundle.putByteArray("swafoto", KTP_SWAFOTO);
                                     bundle.putByteArray("npwp",NPWP);
                                     sessions.saveFormCOde(7);
                                     rabbitMirroring.MirroringSendEndpoint(7);
+                                    if (!picturePath.isEmpty()) {
+                                        String fieldName = "npwp";
+                                        processFormDataAttachment(fieldName,picturePath);
+                                    }
                                 } else if (formCode == 7) {
                                     bundle.putByteArray("ktp",KTP);
                                     bundle.putByteArray("swafoto", KTP_SWAFOTO);
@@ -352,6 +412,10 @@ public class frag_cif extends Fragment {
                                     bundle.putInt("form_id",10);
                                     sessions.saveFormCOde(8);
                                     rabbitMirroring.MirroringSendEndpoint(8);
+                                    if (!picturePath.isEmpty()) {
+                                        String fieldName = "ttd";
+                                        processFormDataAttachment(fieldName,picturePath);
+                                    }
                                 }
                                 sendDataFragment(bundle, new frag_cif());
                             } else {
@@ -463,28 +527,22 @@ public class frag_cif extends Fragment {
                         if (flagNext) {
                             Log.e("CEK","MASUK NEXT");
                             String getCif = sessions.getCIF();
-                            String keysData = "";
-                            if (formCode == 8) {
-                                keysData = "datadiri";
-                            } else if (formCode == 801) {
-                                keysData = "alamatberbeda";
-                            } else if (formCode == 802) {
-                                keysData = "pekerjaan";
-                            } else if (formCode == 803) {
-                                keysData = "keuangan";
-                            }
                             try {
                                 JSONObject dataCIF = null;
-                                if (!getCif.isEmpty()) {
+                                if (getCif != null) {
                                     dataCIF = new JSONObject(getCif);
                                 } else {
                                     dataCIF = new JSONObject();
                                 }
                                 dataCIF.put(keysData,objEl);
+                                dataFormCIF.put(keysData,objEl);
                                 sessions.saveCIF(dataCIF.toString());
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             }
+
+                            JSONObject reqFormSend = dataReqForm();
+
                             if (objEl.has("pernyataan") && formCode == 8) {
                                 try {
                                     boolean pernyataan = objEl.getBoolean("pernyataan");
@@ -493,19 +551,22 @@ public class frag_cif extends Fragment {
                                     bundle.putByteArray("swafoto", KTP_SWAFOTO);
                                     bundle.putByteArray("npwp",NPWP);
                                     bundle.putByteArray("ttd",TTD);
+
                                     if (pernyataan) {
                                         int intLayoutSelf = 801;
-                                        rabbitMirroring.MirroringSendKey(objEl);
+                                        rabbitMirroring.MirroringSendKey(dataFormCIF);
                                         rabbitMirroring.MirroringSendEndpoint(intLayoutSelf);
                                         bundle.putInt("form_id",9);
                                         sessions.saveFormCOde(intLayoutSelf);
+                                        sessions.saveFormReq(reqFormSend.toString());
                                         sendDataFragment(bundle, new frag_cif());
                                     } else {
                                         int intLayoutWork = 802;
-                                        rabbitMirroring.MirroringSendKey(objEl);
+                                        rabbitMirroring.MirroringSendKey(dataFormCIF);
                                         rabbitMirroring.MirroringSendEndpoint(intLayoutWork);
                                         bundle.putInt("form_id",5);
                                         sessions.saveFormCOde(intLayoutWork);
+                                        processSendFormCIF(reqFormSend);
                                         sendDataFragment(bundle, new frag_cif());
                                     }
                                 } catch (JSONException e) {
@@ -527,10 +588,12 @@ public class frag_cif extends Fragment {
                                 bundle.putByteArray("swafoto", KTP_SWAFOTO);
                                 bundle.putByteArray("npwp",NPWP);
                                 bundle.putByteArray("ttd",TTD);
-                                rabbitMirroring.MirroringSendKey(objEl);
+                                rabbitMirroring.MirroringSendKey(dataFormCIF);
                                 rabbitMirroring.MirroringSendEndpoint(intLayoutWork);
                                 sessions.saveFormCOde(intLayoutWork);
-                                if (intLayoutWork == 804) {
+                                Log.e("CEK","GET CIF : "+sessions.getCIF());
+                                processSendFormCIF(reqFormSend);
+                                if (intLayoutWork == 804 && sessions.getCIF() != null) {
                                     sendDataFragment(bundle, new frag_cif_full());
                                 } else {
                                     sendDataFragment(bundle, new frag_cif());
@@ -553,14 +616,113 @@ public class frag_cif extends Fragment {
         }
     }
 
+    private JSONObject dataReqForm() {
+        JSONObject dataFormObj = null;
+        try {
+            String forms = objEl.toString();
+            if (sessions.getFormReq() != null) {
+                forms = sessions.getFormReq();
+            }
+            dataFormObj = new JSONObject(forms);
+            if (formCode != 801) {
+                dataFormObj.put("id", idPhoto);
+            } else {
+                JSONObject dataFormObj2 = new JSONObject(objEl.toString());
+
+                String alamat2 = dataFormObj2.getString("alamattempattinggalsaatini");
+                String rt2 = dataFormObj2.getString("rt");
+                String rw2 = dataFormObj2.getString("rw");
+                String kelurahandesa2 = dataFormObj2.getString("kelurahandesa");
+                String kecamatan2 = dataFormObj2.getString("kecamatan");
+                String kabupatenkota2 = dataFormObj2.getString("kabupatenkota");
+                String provinsi2 = dataFormObj2.getString("provinsi");
+                String kodepos2 = dataFormObj2.getString("kodepos");
+
+                dataFormObj.put("alamat2",alamat2);
+                dataFormObj.put("rt2",rt2);
+                dataFormObj.put("rw2",rw2);
+                dataFormObj.put("kelurahandesa2",kelurahandesa2);
+                dataFormObj.put("kecamatan2",kecamatan2);
+                dataFormObj.put("kabupatenkota2",kabupatenkota2);
+                dataFormObj.put("provinsi2",provinsi2);
+                dataFormObj.put("kodepos2",kodepos2);
+            }
+
+            if (dataFormObj.has("pernyataan")) {
+                boolean pernyataan = dataFormObj.getBoolean("pernyataan");
+                dataFormObj.put("datatidaksesuai",pernyataan);
+                dataFormObj.remove("pernyataan");
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        return dataFormObj;
+    }
+
+    private void processSendFormCIF(JSONObject jsons) {
+        Log.e("CEK","processSendFormCIF : "+jsons.toString());
+        RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), jsons.toString());
+
+        ApiService API = Server.getAPIService();
+        Call<JsonObject> call = null;
+        if (formCode == 8 || formCode == 801) {
+            call = API.AddDataSelf(requestBody);
+        } else if (formCode == 802) {
+            call = API.AddDataWork(requestBody);
+        } else if (formCode == 803) {
+            call = API.AddDataFinance(requestBody);
+        }
+
+        Log.e("CEK","processSendFormCIF call : "+call.request());
+
+        call.enqueue(new Callback<JsonObject>() {
+            @Override
+            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                Log.e("CEK","processSendFormCIF code : "+response.code());
+                if (response.isSuccessful()) {
+                    String dataS = response.body().toString();
+                    Log.e("CEK","processSendFormCIF dataS : "+dataS);
+                    try {
+                        JSONObject dataObj = new JSONObject(dataS);
+                        int errCode = dataObj.getInt("code");
+                        String msg = dataObj.getString("message");
+                        if (errCode >= 200 && errCode <= 300) {
+                            Toast.makeText(mContext,msg,Toast.LENGTH_SHORT).show();
+                            sessions.saveFormReq(null);
+                        } else {
+                            Toast.makeText(mContext,msg,Toast.LENGTH_SHORT).show();
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                } else {
+                    if (response.body() != null) {
+                        Log.e("CEK","response body : "+response.body().toString());
+                    } else {
+                        Log.e("CEK","response errorBody : "+response.errorBody().toString());
+                    }
+                    Toast.makeText(mContext,getString(R.string.msg_error),Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<JsonObject> call, Throwable t) {
+                Toast.makeText(mContext,t.getMessage(),Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
     private void processGetForm(int formId) {
-        Log.e("CEK", this+" MASUK processGetForm");
+        Log.e("CEK", this+" MASUK processGetForm formId : "+formId);
+        Log.e("CEK", this+" MASUK formCode : "+formCode);
         Server.getAPIWAITING_PRODUCT().getFormBuilder(formId).enqueue(new Callback<JsonObject>() {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
                 swipe.setRefreshing(false);
                 Log.e("CEK","response processGetForm : "+response.code());
                 if (response.isSuccessful()) {
+                    btnProses.setVisibility(View.VISIBLE);
                     String dataS = response.body().toString();
                     Log.e("CEK","response dataS : "+dataS);
                     llFormBuild.removeAllViewsInLayout();
@@ -573,7 +735,9 @@ public class frag_cif extends Fragment {
                         idElement = parseForm.getForm();
                         Log.e("CEK","dataElement : "+idElement.toString());
                         processValidationActionForm();
-                        Log.e("CEK","DATA FORM : "+objEl.toString());
+                        dataFormCIF.put(keysData,objEl);
+                        Log.e("CEK","DATA FORM : "+dataFormCIF.toString());
+                        rabbitMirroring.MirroringSendKey(dataFormCIF);
                         if (formCode == 8) {
                             if (sessions.getOCR() != null) {
                                 processMatchData();
@@ -606,6 +770,7 @@ public class frag_cif extends Fragment {
                         try {
                             int idDataEl = idElement.getJSONObject(j).getInt("id");
                             String nameDataEl = idElement.getJSONObject(j).getString("name");
+                            Log.e("CEK","nameDataEl : "+nameDataEl);
                             if (idEl == idDataEl) {
                                 if (llFormBuild.getChildAt(i) instanceof EditText) {
                                     EditText ed = (EditText) llFormBuild.getChildAt(i);
@@ -619,18 +784,37 @@ public class frag_cif extends Fragment {
                                         RadioButton rb = (RadioButton) rg.findViewById(idRad);
                                         String labelRad = rb.getText().toString();
                                         String valEl = objEl.getString(nameDataEl);
+                                        String valRad = valEl.toLowerCase();
+                                        if (valEl.toLowerCase().equals("kawin")) {
+                                            valRad = "menikah";
+                                        }
                                         Log.e("CEK","labelRad : "+labelRad+" | valEl : "+valEl);
-                                        if (labelRad.equals(valEl)) {
+                                        if (labelRad.toLowerCase().equals(valRad)) {
                                             rb.setChecked(true);
                                             break;
+                                        } else {
+
+                                            if (valRad.contains("laki") && valRad.contains("-")) {
+                                                String[] sp = valRad.split("-");
+                                                valRad = sp[0]+" - "+sp[1];
+                                                if (labelRad.toLowerCase().equals(valRad)) {
+                                                    rb.setChecked(true);
+                                                    break;
+                                                }
+                                            }
                                         }
                                     }
                                     break;
                                 } else if (llFormBuild.getChildAt(i) instanceof CheckBox) {
                                     CheckBox chk = (CheckBox) llFormBuild.getChildAt(i);
                                     String labelCheck = chk.getText().toString();
-                                    boolean valEl = objEl.getBoolean(labelCheck);
-                                    chk.setChecked(valEl);
+                                    if (objEl.has(nameDataEl)) {
+                                        boolean valEl = objEl.getBoolean(nameDataEl);
+                                        chk.setChecked(valEl);
+                                    } else if (objEl.has(labelCheck)) {
+                                        boolean valEl = objEl.getBoolean(labelCheck);
+                                        chk.setChecked(valEl);
+                                    }
                                     break;
                                 } else if (llFormBuild.getChildAt(i) instanceof Spinner) {
                                     Spinner spin = (Spinner) llFormBuild.getChildAt(i);
@@ -675,7 +859,9 @@ public class frag_cif extends Fragment {
     }
 
     private void processMatchData() {
+        Log.e("CEK","processMatchData");
         String dataOCR = sessions.getOCR();
+        Log.e("CEK","dataOCR : "+dataOCR.toString());
         try {
             JSONObject dataObjOCR = new JSONObject(dataOCR);
             String namaOCR = dataObjOCR.getString("nama");
@@ -709,7 +895,7 @@ public class frag_cif extends Fragment {
             String rtOCR = "";
             String rwOCR = "";
             if (rtrwOCR.contains("/")) {
-                String[] sp = ttlOCR.split("/");
+                String[] sp = rtrwOCR.split("/");
                 rtOCR = sp[0];
                 rwOCR = sp[1];
             }
@@ -797,7 +983,9 @@ public class frag_cif extends Fragment {
                                     ed.addTextChangedListener(new TextWatcher() {
                                         @Override
                                         public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
+                                            if (nameDataEl.equals("npwp")) {
+                                                lasLenChar = charSequence.length();
+                                            }
                                         }
 
                                         @Override
@@ -805,31 +993,145 @@ public class frag_cif extends Fragment {
                                             Log.e("CEK",nameDataEl+" : "+charSequence);
                                             try {
                                                 objEl.put(nameDataEl, charSequence);
+                                                dataFormCIF.put(keysData,objEl);
                                             } catch (JSONException e) {
                                                 e.printStackTrace();
                                             }
                                             if (chkFlow == 0 || isSessionZoom) {
-                                                rabbitMirroring.MirroringSendKey(objEl);
+                                                rabbitMirroring.MirroringSendKey(dataFormCIF);
                                             }
                                         }
 
                                         @Override
-                                        public void afterTextChanged(Editable editable) {
-
+                                        public void afterTextChanged(Editable s) {
+                                            if (nameDataEl.equals("npwp")) {
+                                                ed.removeTextChangedListener(this);
+                                                backSpaceChar = lasLenChar > s.length();
+                                                if (!backSpaceChar) {
+                                                    String dataNPWP = s.toString();
+                                                    Log.e("CEK", "dataNPWP : " + dataNPWP);
+                                                    String formatNPWP = "";
+                                                    if (dataNPWP.length() == 2 || dataNPWP.length() == 6 || dataNPWP.length() == 10 || dataNPWP.length() == 16) {
+                                                        formatNPWP = ".";
+                                                    } else if (dataNPWP.length() == 12) {
+                                                        formatNPWP = "-";
+                                                    }
+                                                    String cekBuilder = new StringBuilder(dataNPWP).insert(dataNPWP.length(), formatNPWP).toString();
+                                                    ed.setText(cekBuilder);
+                                                    ed.setSelection(cekBuilder.length());
+                                                }
+                                                ed.addTextChangedListener(this);
+                                            }
                                         }
                                     });
                                     objEl.put(nameDataEl, "");
                                 } else if (llFormBuild.getChildAt(i) instanceof RadioGroup) {
                                     objEl.put(nameDataEl, "");
+
+                                    RadioGroup rg = (RadioGroup) llFormBuild.getChildAt(i);
+                                    rg.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+                                        @Override
+                                        public void onCheckedChanged(RadioGroup radioGroup, int i) {
+                                            int selectedId = rg.getCheckedRadioButtonId();
+                                            if (selectedId > 0 || selectedId < -1) {
+                                                RadioButton rb = (RadioButton) rg.findViewById(selectedId);
+                                                String results = rb.getText().toString();
+                                                try {
+                                                    objEl.put(nameDataEl, results);
+                                                    dataFormCIF.put(keysData,objEl);
+                                                    if (isSessionZoom) {
+                                                        rabbitMirroring.MirroringSendKey(dataFormCIF);
+                                                    }
+                                                } catch (JSONException e) {
+                                                    e.printStackTrace();
+                                                }
+                                            }
+                                        }
+                                    });
+
                                     break;
                                 } else if (llFormBuild.getChildAt(i) instanceof CheckBox) {
                                     objEl.put(nameDataEl, false);
+
+                                    CheckBox chk = (CheckBox) llFormBuild.getChildAt(i);
+                                    chk.setOnClickListener(new View.OnClickListener() {
+                                        @Override
+                                        public void onClick(View view) {
+                                            boolean isChk = chk.isChecked();
+                                            if (isChk) {
+                                                try {
+                                                    objEl.put(nameDataEl, isChk);
+                                                    dataFormCIF.put(keysData,objEl);
+                                                    if (isSessionZoom) {
+                                                        rabbitMirroring.MirroringSendKey(dataFormCIF);
+                                                    }
+                                                } catch (JSONException e) {
+                                                    e.printStackTrace();
+                                                }
+                                            }
+                                        }
+                                    });
+
                                     break;
                                 } else if (llFormBuild.getChildAt(i) instanceof Spinner) {
                                     objEl.put(nameDataEl, "");
+                                    Spinner spin = (Spinner) llFormBuild.getChildAt(i);
+                                    spin.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                                        @Override
+                                        public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                                            String results = spin.getSelectedItem().toString();
+                                            try {
+                                                objEl.put(nameDataEl, results);
+                                                dataFormCIF.put(keysData,objEl);
+                                                if (isSessionZoom) {
+                                                    rabbitMirroring.MirroringSendKey(dataFormCIF);
+                                                }
+                                            } catch (JSONException e) {
+                                                e.printStackTrace();
+                                            }
+                                        }
+
+                                        @Override
+                                        public void onNothingSelected(AdapterView<?> adapterView) {
+
+                                        }
+                                    });
                                     break;
                                 } else if (llFormBuild.getChildAt(i) instanceof AutoCompleteTextView) {
                                     objEl.put(nameDataEl, "");
+
+                                    AutoCompleteTextView autoText = (AutoCompleteTextView) llFormBuild.getChildAt(i);
+                                    autoText.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                                        @Override
+                                        public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                                            String results = autoText.getText().toString();
+                                            try {
+                                                objEl.put(nameDataEl, results);
+                                                dataFormCIF.put(keysData,objEl);
+                                                if (isSessionZoom) {
+                                                    rabbitMirroring.MirroringSendKey(dataFormCIF);
+                                                }
+                                            } catch (JSONException e) {
+                                                e.printStackTrace();
+                                            }
+                                        }
+                                    });
+                                    autoText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+                                        @Override
+                                        public void onFocusChange(View view, boolean b) {
+                                            String results = autoText.getText().toString();
+                                            try {
+                                                objEl.put(nameDataEl, results);
+                                                dataFormCIF.put(keysData,objEl);
+                                                if (isSessionZoom) {
+                                                    rabbitMirroring.MirroringSendKey(dataFormCIF);
+                                                }
+                                            } catch (JSONException e) {
+                                                e.printStackTrace();
+                                            }
+                                        }
+                                    });
+
                                     break;
                                 } else if (llFormBuild.getChildAt(i) instanceof LinearLayout) {
                                     LinearLayout ll = (LinearLayout) llFormBuild.getChildAt(i);
@@ -881,13 +1183,15 @@ public class frag_cif extends Fragment {
     }
 
     private void chooseFromSD() {
+        picturePath = "";
         Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
         intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivityForResult(intent, REQUESTCODE_GALLERY);
     }
 
     private void chooseFromCamera() {
-        if (chkFlow == 1 && KTP.length > 0 && KTP_SWAFOTO.length == 0){
+        picturePath = "";
+        if ((chkFlow == 1 || isSessionZoom) && KTP.length > 0 && KTP_SWAFOTO.length == 0){
             Intent intent = new Intent(mContext, DipsCameraSource.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivityForResult(intent, REQUESTCODE_SWAFOTO);
@@ -915,7 +1219,115 @@ public class frag_cif extends Fragment {
         return datasReqOCR;
     }
 
-    private void PopUpOCR(byte[] DataKTP){
+    private void processFormDataAttachment(String fieldName, String filePath) {
+        Log.e("CEK","processFormDataAttachment fieldName : "+fieldName+" | "+filePath+" | idPhoto : "+idPhoto+" | idDips : "+idDips);
+        File file = new File(filePath);
+        RequestBody requestFile = RequestBody.create(MediaType.parse("image/jpeg"),file);
+
+        RequestBody requestID = RequestBody.create(MediaType.parse("text/plain"), String.valueOf(idPhoto));
+        RequestBody requestidDips = RequestBody.create(MediaType.parse("text/plain"), String.valueOf(idDips));
+
+        ApiService API = Server.getAPIService2();
+        Call<JsonObject> call = null;
+        MultipartBody multipartBody = null;
+        String contentType = "";
+        if (fieldName.equals("ktp")) {
+            multipartBody = new MultipartBody.Builder()
+                    .addPart(MultipartBody.Part.createFormData(fieldName,file.getName(),requestFile))
+                    .build();
+            contentType = "multipart/form-data; charset=utf-8; boundary=" + multipartBody.boundary();
+        } else if (fieldName.equals("foto")) {
+            multipartBody = new MultipartBody.Builder()
+                    .addPart(MultipartBody.Part.createFormData(fieldName,file.getName(),requestFile))
+                    .addPart(MultipartBody.Part.createFormData("id",null,requestID))
+                    .addPart(MultipartBody.Part.createFormData("idDips",null,requestidDips))
+                    .build();
+            contentType = "multipart/form-data; charset=utf-8; boundary=" + multipartBody.boundary();
+        } else {
+            multipartBody = new MultipartBody.Builder()
+                    .addPart(MultipartBody.Part.createFormData(fieldName,file.getName(),requestFile))
+                    .addPart(MultipartBody.Part.createFormData("id",null,requestID))
+                    .build();
+            contentType = "multipart/form-data; charset=utf-8; boundary=" + multipartBody.boundary();
+        }
+
+        call = API.formAttachment(contentType,multipartBody);
+
+        Log.e("CEK","processFormDataAttachment call url : "+call.request().url());
+        Log.e("CEK","processFormDataAttachment call body : "+call.request());
+
+        call.enqueue(new Callback<JsonObject>() {
+            @Override
+            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                Log.e("CEK","processFormDataAttachment response code : "+response.code());
+                if (response.isSuccessful()) {
+                    String dataS = response.body().toString();
+                    Log.e("CEK","processFormDataAttachment : "+dataS);
+                    try {
+                        JSONObject dataObj = new JSONObject(dataS);
+                        int errCode = dataObj.getInt("code");
+                        String msg = dataObj.getString("message");
+                        if (errCode == 200 || errCode == 202) {
+                            int ids = dataObj.getJSONObject("data").getInt("id");
+                            Log.e("CEK","ID CUST : "+ids);
+                            sessions.saveIDCust(ids);
+                            if (isSessionZoom) {
+                                if (formCode == 4 && flagOCR && KTP_SWAFOTO.length == 0) {
+                                    JSONObject dataReq = dataReqOCR();
+                                    JSONObject reqOCR = new JSONObject();
+                                    try {
+                                        reqOCR.put("ocr", dataReq);
+                                    } catch (JSONException e) {
+                                        e.printStackTrace();
+                                    }
+                                    rabbitMirroring.MirroringSendKey(reqOCR);
+                                }
+                            }
+                            if (formCode == 4 && flagOCR) {
+                                if (!isSwafoto) {
+                                    Bundle bundle = new Bundle();
+                                    bundle.putByteArray("ktp", KTP);
+                                    bundle.putByteArray("RESULT_IMAGE_AI", bytePhoto);
+
+                                    sendDataFragment(bundle, new frag_cif());
+                                }
+                            }
+                        } else {
+                            Toast.makeText(mContext,msg,Toast.LENGTH_SHORT).show();
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                    if (mediaFilePhoto != null) {
+                        if (mediaFilePhoto.exists()) {
+                            try {
+                                mediaFilePhoto.getCanonicalFile().delete();
+                                if (mediaFilePhoto.exists()) {
+                                    getActivity().getApplicationContext().deleteFile(mediaFilePhoto.getName());
+                                }
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }
+                } else {
+                    if (response.body() != null) {
+                        Log.e("CEK","response body : "+response.body().toString());
+                    } else {
+                        Log.e("CEK","response errorBody : "+response.errorBody().toString());
+                    }
+                    Toast.makeText(mContext,getString(R.string.msg_error),Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<JsonObject> call, Throwable t) {
+                Toast.makeText(mContext,t.getMessage(),Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void PopUpOCR(){
         LayoutInflater inflater = getLayoutInflater();
         View dialogView = inflater.inflate(R.layout.item_ocr, null);
         SweetAlertDialog sweetAlertDialog = new SweetAlertDialog(mContext, SweetAlertDialog.NORMAL_TYPE);
@@ -949,7 +1361,13 @@ public class frag_cif extends Fragment {
                 if (isSessionZoom) {
                     nik = s.toString();
                     JSONObject dataReq = dataReqOCR();
-                    rabbitMirroring.MirroringSendKey(dataReq);
+                    JSONObject reqOCR = new JSONObject();
+                    try {
+                        reqOCR.put("ocr",dataReq);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                    rabbitMirroring.MirroringSendKey(reqOCR);
                 }
             }
 
@@ -969,7 +1387,13 @@ public class frag_cif extends Fragment {
                 if (isSessionZoom) {
                     nama = s.toString();
                     JSONObject dataReq = dataReqOCR();
-                    rabbitMirroring.MirroringSendKey(dataReq);
+                    JSONObject reqOCR = new JSONObject();
+                    try {
+                        reqOCR.put("ocr",dataReq);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                    rabbitMirroring.MirroringSendKey(reqOCR);
                 }
             }
 
@@ -989,7 +1413,13 @@ public class frag_cif extends Fragment {
                 if (isSessionZoom) {
                     tmptLahir = s.toString();
                     JSONObject dataReq = dataReqOCR();
-                    rabbitMirroring.MirroringSendKey(dataReq);
+                    JSONObject reqOCR = new JSONObject();
+                    try {
+                        reqOCR.put("ocr",dataReq);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                    rabbitMirroring.MirroringSendKey(reqOCR);
                 }
             }
 
@@ -1009,7 +1439,13 @@ public class frag_cif extends Fragment {
                 if (isSessionZoom) {
                     ttl = s.toString();
                     JSONObject dataReq = dataReqOCR();
-                    rabbitMirroring.MirroringSendKey(dataReq);
+                    JSONObject reqOCR = new JSONObject();
+                    try {
+                        reqOCR.put("ocr",dataReq);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                    rabbitMirroring.MirroringSendKey(reqOCR);
                 }
             }
 
@@ -1023,27 +1459,51 @@ public class frag_cif extends Fragment {
             @Override
             public void onClick(View v) {
                 if (isSessionZoom) {
-                    JSONObject dataReq = dataReqOCR();
-                    rabbitMirroring.MirroringSendKey(dataReq);
-                    rabbitMirroring.MirroringSendEndpoint(5);
+                    nik = NIK.getText().toString().trim();
+                    nama = Nama.getText().toString().trim();
+                    tmptLahir = TTL.getText().toString().trim();
+                    ttl = TTL2.getText().toString().trim();
+                    if (!picturePath.isEmpty()) {
+                        String fieldName = "ktp";
+                        processFormDataAttachment(fieldName,picturePath);
+                    }
+                    //rabbitMirroring.MirroringSendEndpoint(5);
                 }
                 sweetAlertDialog.dismiss();
-                if (!isSwafoto) {
-                    Bundle bundle = new Bundle();
-                    bundle.putByteArray("ktp",DataKTP);
-                    bundle.putByteArray("RESULT_IMAGE_AI",bytePhoto);
-
-                    sendDataFragment(bundle, new frag_cif());
-                }
             }
         });
         btnOCRCancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 sweetAlertDialog.dismiss();
+                KTP = new byte[0];
+                KTP_BASE64 = "";
             }
         });
 
+    }
+
+    private File createTemporaryFile(byte[] byteImage) throws Exception {
+        String appName = getString(R.string.app_name_dips);
+        String IMAGE_DIRECTORY_NAME = appName;
+        File mediaStorageDir = new File(
+                Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), IMAGE_DIRECTORY_NAME);
+        if (!mediaStorageDir.exists()) {
+            if (!mediaStorageDir.mkdirs()) {
+                return null;
+            }
+        }
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss",
+                Locale.getDefault()).format(new Date());
+        File mediaFile;
+        mediaFile = new File(mediaStorageDir.getPath() + File.separator +
+                "IMG_" + timeStamp + ".jpg");
+
+        FileOutputStream fos = new FileOutputStream(mediaFile);
+        fos.write(byteImage);
+        fos.close();
+
+        return mediaFile;
     }
 
     private void PopUp(){
@@ -1059,6 +1519,7 @@ public class frag_cif extends Fragment {
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == RESULT_OK && data != null) {
+            Log.e("CEK","requestCode : "+requestCode+" | chkFlow : "+chkFlow+" | KTP : "+KTP.length+" | KTP_SWAFOTO : "+KTP_SWAFOTO.length+" | isCust : "+isCust);
             if (requestCode == REQUESTCODE_CAPTURE){
                 Log.e("CEK","RETURN CAMERA");
                 sessions.saveFlagUpDoc(true);
@@ -1066,6 +1527,14 @@ public class frag_cif extends Fragment {
                 byte[] resultRealCamera = data.getByteArrayExtra("real");
                 Bitmap bitmap = BitmapFactory.decodeByteArray(resultCamera, 0, resultCamera.length);
                 Bitmap bitmap_real = BitmapFactory.decodeByteArray(resultRealCamera, 0, resultRealCamera.length);
+
+                try {
+                    mediaFilePhoto = createTemporaryFile(resultCamera);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                picturePath = mediaFilePhoto.getAbsolutePath();
+                Log.e("CEK","onActivityResult picturePath : "+picturePath);
                 LL.setBackgroundResource(0);
                 btnNext.setBackgroundTintList(mContext.getResources().getColorStateList(R.color.bg_cif));
                 btnNext.setClickable(true);
@@ -1075,9 +1544,16 @@ public class frag_cif extends Fragment {
                 chooseImage.setVisibility(View.GONE);
                 viewImage.setImageBitmap(bitmap);
                 processSendImage(bitmap);
-                if (KTP.length > 0 && KTP_SWAFOTO.length == 0) {
-                    imgtoBase64OCR(bitmap_real);
+                Log.e("CEK","IMAGE KTP : "+KTP.length);
+                Log.e("CEK","IMAGE KTP_SWAFOTO : "+KTP_SWAFOTO.length);
+                if (formCode == 4) {
+                    if (KTP.length == 0 && KTP_SWAFOTO.length == 0) {
+                        imgtoBase64OCR(bitmap_real);
+                    }
                 }
+                /*if (KTP.length > 0 && KTP_SWAFOTO.length == 0) {
+                    imgtoBase64OCR(bitmap_real);
+                }*/
             }
             else if (requestCode == REQUESTCODE_GALLERY){
                 Uri selectedImage = data.getData();
@@ -1085,8 +1561,14 @@ public class frag_cif extends Fragment {
                 Cursor c = mContext.getContentResolver().query(selectedImage, filePath, null, null, null);
                 c.moveToFirst();
                 int columnIndex = c.getColumnIndex(filePath[0]);
-                String picturePath = c.getString(columnIndex);
+                picturePath = c.getString(columnIndex);
                 c.close();
+
+                Log.e("CEK","onActivityResult picturePath : "+picturePath);
+                Log.e("CEK","REQUESTCODE_GALLERY : "+REQUESTCODE_GALLERY);
+                Log.e("CEK","IMAGE KTP : "+KTP.length);
+                Log.e("CEK","IMAGE KTP_SWAFOTO : "+KTP_SWAFOTO.length);
+
                 if (REQUESTCODE_GALLERY == 201) {
 
                 } else {
@@ -1101,11 +1583,19 @@ public class frag_cif extends Fragment {
                     prosesOptimalImage(picturePath);
                 }
             } else if (requestCode == REQUESTCODE_SWAFOTO){
-                if (chkFlow == 1) {
+                if (chkFlow == 1 || isSessionZoom) {
                     if (KTP.length > 0) {
                         sessions.saveFlagUpDoc(true);
-                        KTP_SWAFOTO = data.getByteArrayExtra("result_camera");
-                        Bitmap bitmap = BitmapFactory.decodeByteArray(KTP_SWAFOTO, 0, KTP_SWAFOTO.length);
+                        byte[] resultCamera = data.getByteArrayExtra("result_camera");
+                        Bitmap bitmap = BitmapFactory.decodeByteArray(resultCamera, 0, resultCamera.length);
+
+                        try {
+                            mediaFilePhoto = createTemporaryFile(resultCamera);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                        picturePath = mediaFilePhoto.getAbsolutePath();
+
                         LL.setBackgroundResource(0);
                         btnNext.setBackgroundTintList(mContext.getResources().getColorStateList(R.color.bg_cif));
                         btnNext.setClickable(true);
@@ -1114,6 +1604,9 @@ public class frag_cif extends Fragment {
                         viewImage.setVisibility(View.VISIBLE);
                         chooseImage.setVisibility(View.GONE);
                         viewImage.setImageBitmap(bitmap);
+                        if (isSessionZoom) {
+                            processSendImage(bitmap);
+                        }
                     }
                 } else {
                     if (isCust) {
@@ -1153,9 +1646,14 @@ public class frag_cif extends Fragment {
         } else {
             getResizedBitmap(thumbnail, (thumbnail.getWidth() / perDiff), (thumbnail.getHeight() / perDiff));
         }
-        if (KTP.length > 0 && KTP_SWAFOTO.length == 0) {
-            imgtoBase64OCR(thumbnail);
+        if (formCode == 4) {
+            if (KTP.length == 0 && KTP_SWAFOTO.length == 0) {
+                imgtoBase64OCR(thumbnail);
+            }
         }
+        /*if (KTP.length > 0 && KTP_SWAFOTO.length == 0) {
+            imgtoBase64OCR(thumbnail);
+        }*/
     }
 
     private void processSendImage(Bitmap bitmap) {
@@ -1202,31 +1700,25 @@ public class frag_cif extends Fragment {
     private void imgtoBase64(Bitmap bitmap) {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         bitmap.compress(Bitmap.CompressFormat.JPEG,100, baos);
-        byte[] imageBytes = baos.toByteArray();
-        String encodedImage = Base64.encodeToString(imageBytes, Base64.NO_WRAP);
+        imageBytes = baos.toByteArray();
+        encodedImage = Base64.encodeToString(imageBytes, Base64.NO_WRAP);
         String imgBase64 = "";
         String keys = "";
+        Log.e("CEK", "formCode : "+formCode);
+        Log.e("CEK", "KTP : "+KTP.length);
+        Log.e("CEK", "KTP_SWAFOTO : "+KTP_SWAFOTO.length);
         if (formCode == 4) {
             if (KTP.length > 0 && KTP_SWAFOTO.length == 0) {
-                KTP_SWAFOTO = imageBytes;
-                isSwafoto = true;
-                sessions.saveIsSwafoto(isSwafoto);
                 imgBase64 = encodedImage;
                 keys = "swafoto";
             } else {
-                KTP = imageBytes;
-                KTP_BASE64 = encodedImage;
                 imgBase64 = encodedImage;
                 keys = "ktp";
             }
         } else if (formCode == 6) {
-            NPWP = imageBytes;
-            NPWP_BASE64 = encodedImage;
             keys = "npwp";
             imgBase64 = encodedImage;
         } else if (formCode == 7) {
-            TTD = imageBytes;
-            TTD_BASE64 = encodedImage;
             keys = "ttd";
             imgBase64 = encodedImage;
         }
@@ -1265,7 +1757,6 @@ public class frag_cif extends Fragment {
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
                 Log.d("Response OCR",""+response.code());
                 if (response.isSuccessful()) {
-                    flagOCR = true;
                     String dataS = response.body().toString();
                     Log.d("Response OCR",""+dataS);
                     try {
@@ -1275,21 +1766,51 @@ public class frag_cif extends Fragment {
                         if (errCode == 200) {
                             JSONObject dataObj = jsObj.getJSONObject("data");
                             datasReqOCR = dataObj;
-                            provinsi = dataObj.getString("provinsi");
-                            kota_kabupaten = dataObj.getString("kota_kabupaten");
-                            nik = dataObj.getString("nik");
-                            nama = dataObj.getString("nama");
-                            ttl = dataObj.getString("ttl");
-                            jeniskelamin = dataObj.getString("jeniskelamin");
-                            golongan_darah = dataObj.getString("golongan_darah");
-                            alamat = dataObj.getString("alamat");
-                            rtrw = dataObj.getString("rtrw");
-                            desa_kelurahan = dataObj.getString("desa_kelurahan");
-                            kecamatan = dataObj.getString("kecamatan");
-                            agama = dataObj.getString("agama");
-                            status_perkawinan = dataObj.getString("status_perkawinan");
-                            kewarganegaraan = dataObj.getString("kewarganegaraan");
-                            pekerjaan = dataObj.getString("pekerjaan");
+                            if (dataObj.has("provinsi")) {
+                                provinsi = dataObj.getString("provinsi");
+                            }
+                            if (dataObj.has("kota_kabupaten")) {
+                                kota_kabupaten = dataObj.getString("kota_kabupaten");
+                            }
+                            if (dataObj.has("nik")) {
+                                nik = dataObj.getString("nik");
+                            }
+                            if (dataObj.has("nama")) {
+                                nama = dataObj.getString("nama");
+                            }
+                            if (dataObj.has("ttl")) {
+                                ttl = dataObj.getString("ttl");
+                            }
+                            if (dataObj.has("jeniskelamin")) {
+                                jeniskelamin = dataObj.getString("jeniskelamin");
+                            }
+                            if (dataObj.has("golongan_darah")) {
+                                golongan_darah = dataObj.getString("golongan_darah");
+                            }
+                            if (dataObj.has("alamat")) {
+                                alamat = dataObj.getString("alamat");
+                            }
+                            if (dataObj.has("rtrw")) {
+                                rtrw = dataObj.getString("rtrw");
+                            }
+                            if (dataObj.has("desa_kelurahan")) {
+                                desa_kelurahan = dataObj.getString("desa_kelurahan");
+                            }
+                            if (dataObj.has("kecamatan")) {
+                                kecamatan = dataObj.getString("kecamatan");
+                            }
+                            if (dataObj.has("agama")) {
+                                agama = dataObj.getString("agama");
+                            }
+                            if (dataObj.has("status_perkawinan")) {
+                                status_perkawinan = dataObj.getString("status_perkawinan");
+                            }
+                            if (dataObj.has("kewarganegaraan")) {
+                                kewarganegaraan = dataObj.getString("kewarganegaraan");
+                            }
+                            if (dataObj.has("pekerjaan")) {
+                                pekerjaan = dataObj.getString("pekerjaan");
+                            }
 
                             if (ttl.indexOf(",") > 0) {
                                 String[] sp = ttl.split(",");
@@ -1305,7 +1826,10 @@ public class frag_cif extends Fragment {
                             datasReqOCR.remove("kota_kabupaten");
                             datasReqOCR.remove("golongan_darah");
                             datasReqOCR.remove("kota_kabupaten");
-                            datasReqOCR.remove("statusperkawinan");
+                            datasReqOCR.remove("desa_kelurahan");
+                            datasReqOCR.remove("status_perkawinan");
+
+                            flagOCR = true;
                         } else {
                             Toast.makeText(mContext, message, Toast.LENGTH_SHORT).show();
                         }

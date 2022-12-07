@@ -53,14 +53,22 @@ public class AdapterPortofolioNew extends RecyclerView.Adapter<AdapterPortofolio
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         try {
             String typeProd = dataList.getJSONObject(position).getString("typeProduct");
-            String linkIcon = dataList.getJSONObject(position).getString("icon");
+            String linkIcon = "";
+            if (dataList.getJSONObject(position).has("icon")) {
+                linkIcon = dataList.getJSONObject(position).getString("icon");
+            }
             JSONArray dataListPorto = dataList.getJSONObject(position).getJSONArray("dataList");
 
             holder.tv_nama_product.setText(typeProd);
-            GlideApp.with(mContext)
-                    .load(linkIcon)
-                    .placeholder(R.drawable.porto1)
-                    .into(holder.img_logo_porto);
+
+            if (!linkIcon.isEmpty()) {
+                GlideApp.with(mContext)
+                        .load(linkIcon)
+                        .placeholder(R.drawable.porto1)
+                        .into(holder.img_logo_porto);
+            } else {
+                holder.img_logo_porto.setImageDrawable(mContext.getDrawable(R.drawable.porto1));
+            }
 
             for (int i = 0; i < dataListPorto.length(); i++) {
                 String idRelatifs = "11" + i;

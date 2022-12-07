@@ -19,6 +19,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -100,6 +101,9 @@ public class frag_inputdata_new extends Fragment {
     private RabbitMirroring rabbitMirroring;
     private byte[] bytePhoto = new byte[0];
     private int chkFlow;
+    private int lasLenChar;
+    private boolean backSpaceChar;
+    private String custName = "";
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -107,6 +111,9 @@ public class frag_inputdata_new extends Fragment {
         mContext = getContext();
         if (getArguments().containsKey("RESULT_IMAGE_AI")) {
             bytePhoto = getArguments().getByteArray("RESULT_IMAGE_AI");
+        }
+        if (getArguments().containsKey("CUSTNAME")) {
+            custName = getArguments().getString("CUSTNAME");
         }
         session = new SessionManager(mContext);
         isCust = session.getKEY_iSCust();
@@ -235,6 +242,7 @@ public class frag_inputdata_new extends Fragment {
                     }
 
                     if (flagNext) {
+                        Log.e("CEL","REQUEST : "+objEl.toString());
                         CekDataByNIK(objEl);
                     }
                 }
@@ -320,12 +328,13 @@ public class frag_inputdata_new extends Fragment {
                                     ed.addTextChangedListener(new TextWatcher() {
                                         @Override
                                         public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
+                                            if (nameDataEl.equals("npwp")) {
+                                                lasLenChar = charSequence.length();
+                                            }
                                         }
 
                                         @Override
                                         public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                                            Log.e("CEK",nameDataEl+" : "+charSequence);
                                             try {
                                                 objEl.put(nameDataEl, charSequence);
                                                 objEl.put("idDips",idDips);
@@ -338,8 +347,25 @@ public class frag_inputdata_new extends Fragment {
                                         }
 
                                         @Override
-                                        public void afterTextChanged(Editable editable) {
-
+                                        public void afterTextChanged(Editable s) {
+                                            if (nameDataEl.equals("npwp")) {
+                                                ed.removeTextChangedListener(this);
+                                                backSpaceChar = lasLenChar > s.length();
+                                                if (!backSpaceChar) {
+                                                    String dataNPWP = s.toString();
+                                                    Log.e("CEK", "dataNPWP : " + dataNPWP);
+                                                    String formatNPWP = "";
+                                                    if (dataNPWP.length() == 2 || dataNPWP.length() == 6 || dataNPWP.length() == 10 || dataNPWP.length() == 16) {
+                                                        formatNPWP = ".";
+                                                    } else if (dataNPWP.length() == 12) {
+                                                        formatNPWP = "-";
+                                                    }
+                                                    String cekBuilder = new StringBuilder(dataNPWP).insert(dataNPWP.length(), formatNPWP).toString();
+                                                    ed.setText(cekBuilder);
+                                                    ed.setSelection(cekBuilder.length());
+                                                }
+                                                ed.addTextChangedListener(this);
+                                            }
                                         }
                                     });
                                     objEl.put(nameDataEl, "");
@@ -351,6 +377,25 @@ public class frag_inputdata_new extends Fragment {
                                     break;
                                 } else if (llFormBuild.getChildAt(i) instanceof Spinner) {
                                     objEl.put(nameDataEl, "");
+                                    Spinner spin = (Spinner) llFormBuild.getChildAt(i);
+                                    spin.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                                        @Override
+                                        public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                                            Log.e("CEK","onItemSelected : "+spin.isSelected());
+                                            Log.e("CEK","getSelectedItem : "+spin.getSelectedItem().toString());
+                                            String results = spin.getSelectedItem().toString();
+                                            try {
+                                                objEl.put(nameDataEl, results);
+                                            } catch (JSONException e) {
+                                                e.printStackTrace();
+                                            }
+                                        }
+
+                                        @Override
+                                        public void onNothingSelected(AdapterView<?> adapterView) {
+
+                                        }
+                                    });
                                     break;
                                 } else if (llFormBuild.getChildAt(i) instanceof AutoCompleteTextView) {
                                     objEl.put(nameDataEl, "");
@@ -419,8 +464,6 @@ public class frag_inputdata_new extends Fragment {
     private void CekDataByNIK(JSONObject jsons){
         Log.e("CEL","MASUK CekDataByNIK");
 
-        Log.e("CEL","REQUEST CekDataByNIK : "+jsons.toString());
-
         RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), jsons.toString());
 
         ApiService API = Server.getAPIService();
@@ -456,6 +499,7 @@ public class frag_inputdata_new extends Fragment {
                             isSwafoto = dataObj.getBoolean("isSwafoto");
                             if (dataObj.has("noCif")) {
                                 if (!dataObj.isNull("noCif")) {
+                                    String noCif = dataObj.getString("noCif");
                                     if (!isSwafoto){
                                         session.saveIsCust(true);
                                         session.saveIsSwafoto(isSwafoto);
@@ -474,17 +518,23 @@ public class frag_inputdata_new extends Fragment {
                                         if (chkFlow == 1) {
                                             Intent intent = new Intent(mContext, DipsWaitingRoom.class);
                                             intent.putExtra("RESULT_IMAGE_AI",bytePhoto);
+                                            intent.putExtra("CUSTNAME",custName);
                                             startActivity(intent);
                                             ((Activity) mContext).finishAffinity();
                                         } else {
+                                            Fragment fragment = new frag_portfolio_new();
+                                            Bundle bundle = new Bundle();
+                                            bundle.putString("noCif",noCif);
+                                            fragment.setArguments(bundle);
                                             session.clearCIF();
-                                            getFragmentPage(new frag_portfolio());
+                                            getFragmentPage(fragment);
                                         }
                                     }
                                 } else {
                                     if (chkFlow == 1) {
                                         Intent intent = new Intent(mContext, DipsWaitingRoom.class);
                                         intent.putExtra("RESULT_IMAGE_AI",bytePhoto);
+                                        intent.putExtra("CUSTNAME",custName);
                                         startActivity(intent);
                                         ((Activity) mContext).finishAffinity();
                                     } else {
@@ -510,6 +560,13 @@ public class frag_inputdata_new extends Fragment {
                     }
                 }
                 else {
+                    if (response.code() == 404) {
+                        Intent intent = new Intent(mContext, DipsWaitingRoom.class);
+                        intent.putExtra("RESULT_IMAGE_AI",bytePhoto);
+                        intent.putExtra("CUSTNAME",custName);
+                        startActivity(intent);
+                        ((Activity) mContext).finishAffinity();
+                    }
                     Log.d("CEK","MASUK ELSE");
                 }
             }
@@ -600,9 +657,9 @@ public class frag_inputdata_new extends Fragment {
                         session.clearCIF();
                         if (chkFlow == 0) {
                             RabbitMirroring.MirroringSendEndpoint(14);
-                            getFragmentPage(new frag_portfolio());
+                            getFragmentPage(new frag_portfolio_new());
                         } else {
-                            getFragmentPageDefault(new frag_portfolio());
+                            getFragmentPageDefault(new frag_portfolio_new());
                         }
                     }
                 }

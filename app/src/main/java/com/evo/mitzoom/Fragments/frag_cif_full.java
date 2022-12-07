@@ -1,12 +1,16 @@
 package com.evo.mitzoom.Fragments;
 
 import android.app.Activity;
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
@@ -35,6 +39,7 @@ import com.evo.mitzoom.API.Server;
 import com.evo.mitzoom.Adapter.AdapterCIF;
 import com.evo.mitzoom.Adapter.AdapterPortofolioNew;
 import com.evo.mitzoom.Helper.MyParserFormBuilder;
+import com.evo.mitzoom.Helper.RabbitMirroring;
 import com.evo.mitzoom.R;
 import com.evo.mitzoom.Session.SessionManager;
 import com.github.florent37.expansionpanel.ExpansionHeader;
@@ -54,9 +59,11 @@ import cn.pedant.SweetAlert.SweetAlertDialog;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+import us.zoom.sdk.ZoomVideoSDK;
 
 public class frag_cif_full extends Fragment {
 
+    private String TAG = "CEK_frag_cif_full";
     private Context mContext;
     private SessionManager sessions;
     private boolean isCust;
@@ -69,7 +76,6 @@ public class frag_cif_full extends Fragment {
     private byte[] TTD = new byte[0];
     private int formCode;
     private String idDips;
-    private int form_id = 0;
     private View inclHead;
     private SwipeRefreshLayout swipe;
     private LinearLayout TopBar;
@@ -85,13 +91,17 @@ public class frag_cif_full extends Fragment {
     private JSONObject objValCIF;
     private int keysCount;
     private RecyclerView.LayoutManager recylerViewLayoutManager;
-    private String numberOTP;
+    private BroadcastReceiver smsReceiver = null;
+    private PinView otp;
+    private String numberOTP = "";
     private String newString = "";
     private Handler handler = null;
     private Runnable myRunnable = null;
     private int getMinutes = 2;
     private int seconds = 60;
     private boolean running = true;
+    private boolean isSessionZoom;
+    private RabbitMirroring rabbitMirroring;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -107,6 +117,7 @@ public class frag_cif_full extends Fragment {
         String valDataCIF = sessions.getCIF();
         try {
             objValCIF = new JSONObject(valDataCIF);
+            Log.e(TAG,"CIF FULL objValCIF : "+objValCIF.toString());
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -125,6 +136,50 @@ public class frag_cif_full extends Fragment {
                 TTD = getArguments().getByteArray("ttd");
             }
         }
+
+        Log.e(TAG,mContext+" isCust : "+isCust);
+        Log.e(TAG,mContext+" isSwafoto : "+isSwafoto);
+        Log.e(TAG,mContext+" chkFlow : "+chkFlow);
+        Log.e(TAG,mContext+" formCode : "+formCode);
+        Log.e(TAG,mContext+" idDips : "+idDips);
+        Log.e(TAG,mContext+" KTP : "+KTP.length);
+        Log.e(TAG,mContext+" KTP_SWAFOTO : "+KTP_SWAFOTO.length);
+        Log.e(TAG,mContext+" NPWP : "+NPWP.length);
+        Log.e(TAG,mContext+" TTD : "+TTD.length);
+        isSessionZoom = ZoomVideoSDK.getInstance().isInSession();
+        Log.e(TAG,mContext+" isSessionZoom : "+isSessionZoom);
+        if (isSessionZoom) {
+            rabbitMirroring = new RabbitMirroring(mContext);
+        }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        smsReceiver = new BroadcastReceiver() {
+
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                numberOTP = "";
+                String dataSMS = intent.getExtras().getString("smsMessage");
+                Log.e("CEK","MASUK dataSMS : "+dataSMS);
+                String[] sp = dataSMS.split(" ");
+                for (int i = 0; i < sp.length; i++) {
+                    String word = sp[i].toString();
+                    if(word.matches("\\d+(?:\\.\\d+)?")) {
+                        numberOTP = word.replaceAll("[^0-9]", "");
+                        if (numberOTP.length() == 6) {
+                            otp.setText(numberOTP);
+                            newString = myFilter(numberOTP);
+                            otp.setText(newString);
+                        }
+                    }
+                }
+            }
+        };
+        LocalBroadcastManager.getInstance(getActivity()).registerReceiver(smsReceiver,new IntentFilter("getotp"));
+
     }
 
     @Override
@@ -154,9 +209,34 @@ public class frag_cif_full extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        if (KTP.length > 0) {
+            iconKtp.setBackgroundTintList(mContext.getResources().getColorStateList(R.color.bg_cif_success));
+        }
+        if (NPWP.length > 0) {
+            iconNpwp.setBackgroundTintList(mContext.getResources().getColorStateList(R.color.bg_cif_success));
+        }
+        if (TTD.length > 0) {
+            iconSignature.setBackgroundTintList(mContext.getResources().getColorStateList(R.color.bg_cif_success));
+        }
+
+        iconForm.setBackgroundTintList(mContext.getResources().getColorStateList(R.color.bg_cif_success));
+
+        tvFotoKTP.setText(getString(R.string.pembukaan_akun));
+
+        if (isSessionZoom) {
+            TopBar.setVisibility(View.VISIBLE);
+            ll_head.setVisibility(View.VISIBLE);
+        } else {
+            TopBar.setVisibility(View.GONE);
+            ll_head.setVisibility(View.VISIBLE);
+        }
+
+        dataCIFArr = new JSONArray();
+
         swipe.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
+                dataCIFArr = new JSONArray();
                 processGetCIFForm();
             }
         });
@@ -166,7 +246,7 @@ public class frag_cif_full extends Fragment {
             String key = iter.next();
             keysCount++;
         }
-        Log.e("CEK","keysCount : "+keysCount);
+        Log.e(TAG,"keysCount : "+keysCount);
 
         processGetCIFForm();
 
@@ -175,121 +255,32 @@ public class frag_cif_full extends Fragment {
             public void onClick(View view) {
                 Toast.makeText(mContext,"SEDANG DIPROSES...!!",Toast.LENGTH_SHORT).show();
                 int childRecyle = rv_item_expand.getChildCount();
-                Log.e("CEK","childRecyle : "+childRecyle);
+                Log.e(TAG,"childRecyle : "+childRecyle);
                 if (childRecyle > 0) {
                     for (int i = 0; i < childRecyle; i++) {
                         if (rv_item_expand.getChildAt(i) instanceof LinearLayout) {
                             int countChild = ((LinearLayout) rv_item_expand.getChildAt(i)).getChildCount();
-                            Log.e("CEK","countChild : "+countChild);
+                            Log.e(TAG,"countChild : "+countChild);
                             if (countChild > 0) {
                                 if (((LinearLayout) rv_item_expand.getChildAt(i)).getChildAt(0) instanceof ExpansionHeader) {
                                     if (((ExpansionHeader) ((LinearLayout) rv_item_expand.getChildAt(i)).getChildAt(0)).getChildAt(0) instanceof RelativeLayout) {
                                         TextView tvHeader = (TextView) ((ExpansionHeader) ((LinearLayout) rv_item_expand.getChildAt(i)).getChildAt(0)).getChildAt(0).findViewById(R.id.tv_nama_product);
-                                        Log.e("CEK","tvHeader : "+tvHeader.getText());
+                                        Log.e(TAG,"tvHeader : "+tvHeader.getText());
                                     }
                                 }
 
                                 if (((LinearLayout) rv_item_expand.getChildAt(i)).getChildAt(0) instanceof ExpansionLayout) {
                                     LinearLayout container = (LinearLayout) ((LinearLayout) rv_item_expand.getChildAt(i)).getChildAt(0).findViewById(R.id.container);
                                     int childBodyExpand = container.getChildCount();
-                                    Log.e("CEK","childBodyExpand : "+childBodyExpand);
+                                    Log.e(TAG,"childBodyExpand : "+childBodyExpand);
                                 }
                             }
                         }
                     }
                 }
 
+                rabbitMirroring.MirroringSendEndpoint(11);
                 PopUpOTP();
-
-                /*int child = llFormBuild.getChildCount();
-
-                if (child > 0 && idElement.length() > 0) {
-                    boolean flagNext = true;
-                    for (int i = 0; i < child; i++) {
-                        boolean checkEmpty = false;
-                        int idEl = llFormBuild.getChildAt(i).getId();
-                        if (idEl > 0 || idEl < -1) {
-                            for (int j = 0; j < idElement.length(); j++) {
-                                try {
-                                    int idDataEl = idElement.getJSONObject(j).getInt("id");
-                                    String nameDataEl = idElement.getJSONObject(j).getString("name");
-                                    boolean requiredDataEl = idElement.getJSONObject(j).getBoolean("required");
-                                    if (idEl == idDataEl) {
-
-                                        if (llFormBuild.getChildAt(i) instanceof EditText) {
-                                            Log.e("CEK", "MASUK EDITTEXT ke-" + i);
-                                            EditText ed = (EditText) llFormBuild.getChildAt(i);
-                                            String results = ed.getText().toString();
-                                            if (requiredDataEl && results.isEmpty()) {
-                                                Toast.makeText(mContext, nameDataEl + " harus diisi/dipilih", Toast.LENGTH_SHORT).show();
-                                                checkEmpty = true;
-                                            }
-                                            objEl.put(nameDataEl, results);
-                                            break;
-                                        } else if (llFormBuild.getChildAt(i) instanceof RadioGroup) {
-                                            Log.e("CEK", "MASUK RadioGroup ke-" + i);
-                                            RadioGroup rg = (RadioGroup) llFormBuild.getChildAt(i);
-                                            int selectedId = rg.getCheckedRadioButtonId();
-                                            if (selectedId > 0 || selectedId < -1) {
-                                                RadioButton rb = (RadioButton) rg.findViewById(selectedId);
-                                                String results = rb.getText().toString();
-                                                if (requiredDataEl && results.isEmpty()) {
-                                                    Toast.makeText(mContext, nameDataEl + " harus diisi/dipilih", Toast.LENGTH_SHORT).show();
-                                                    checkEmpty = true;
-                                                }
-                                                objEl.put(nameDataEl, results);
-                                            }
-                                            break;
-                                        } else if (llFormBuild.getChildAt(i) instanceof CheckBox) {
-                                            Log.e("CEK", "MASUK CheckBox ke-" + i);
-                                            CheckBox chk = (CheckBox) llFormBuild.getChildAt(i);
-                                            boolean isChk = chk.isChecked();
-                                            if (isChk) {
-                                                objEl.put(nameDataEl, isChk);
-                                            }
-                                            break;
-                                        } else if (llFormBuild.getChildAt(i) instanceof Spinner) {
-                                            Log.e("CEK", "MASUK Spinner ke-" + i);
-                                            Spinner spin = (Spinner) llFormBuild.getChildAt(i);
-                                            if (spin.isSelected()) {
-                                                String results = spin.getSelectedItem().toString();
-                                                if (requiredDataEl && results.isEmpty()) {
-                                                    Toast.makeText(mContext, nameDataEl + " harus diisi/dipilih", Toast.LENGTH_SHORT).show();
-                                                    checkEmpty = true;
-                                                }
-                                                objEl.put(nameDataEl, results);
-                                            }
-                                            break;
-                                        } else if (llFormBuild.getChildAt(i) instanceof AutoCompleteTextView) {
-                                            Log.e("CEK", "MASUK AutoCompleteTextView ke-" + i);
-                                            AutoCompleteTextView autoText = (AutoCompleteTextView) llFormBuild.getChildAt(i);
-                                            String results = autoText.getText().toString();
-                                            if (requiredDataEl && results.isEmpty()) {
-                                                Toast.makeText(mContext, nameDataEl + " harus diisi/dipilih", Toast.LENGTH_SHORT).show();
-                                                checkEmpty = true;
-                                                break;
-                                            }
-                                            objEl.put(nameDataEl, results);
-                                            break;
-                                        } else if (llFormBuild.getChildAt(i) instanceof LinearLayout) {
-                                            Log.e("CEK", "MASUK LinearLayout ke-" + i);
-                                            LinearLayout ll = (LinearLayout) llFormBuild.getChildAt(i);
-                                        }
-                                    }
-                                } catch (JSONException e) {
-                                    e.printStackTrace();
-                                }
-                            }
-
-                            if (checkEmpty) {
-                                flagNext = false;
-                                break;
-                            } else {
-                                flagNext = true;
-                            }
-                        }
-                    }
-                }*/
             }
         });
     }
@@ -300,32 +291,36 @@ public class frag_cif_full extends Fragment {
     }
 
     private void processGetForm(int formId) {
-        Log.e("CEK", this+" MASUK processGetForm");
+        Log.e(TAG, this+" MASUK processGetForm formId : "+formId);
         Server.getAPIWAITING_PRODUCT().getFormBuilder(formId).enqueue(new Callback<JsonObject>() {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
                 swipe.setRefreshing(false);
-                Log.e("CEK","response processGetForm : "+response.code());
+                Log.e(TAG,"response processGetForm : "+response.code());
                 if (response.isSuccessful()) {
                     String dataS = response.body().toString();
-                    Log.e("CEK","response dataS : "+dataS);
+                    Log.e(TAG,"response dataS : "+dataS);
                     try {
                         JSONObject dataObj = new JSONObject(dataS);
                         JSONObject dataObjForm = dataObj.getJSONObject("data");
                         String dataForm = dataObjForm.getString("data");
-                        Log.e("CEK","dataForm : "+dataForm);
+                        Log.e(TAG,"dataForm : "+dataForm);
                         if (formId == 10) {
                             JSONArray arr = new JSONArray(dataForm);
                             JSONObject obj = new JSONObject();
+                            obj.put("labelForm","Data Diri");
                             obj.put("nameForm","datadiri");
                             obj.put("dataList",arr);
                             dataCIFArr.put(obj);
                             if (objValCIF.has("alamatberbeda")) {
                                 processGetForm(9);
+                            } else if (objValCIF.has("pekerjaan")) {
+                                processGetForm(5);
                             }
                         } else if (formId == 9) {
                             JSONArray arr = new JSONArray(dataForm);
                             JSONObject obj = new JSONObject();
+                            obj.put("labelForm","Alamat Domisili");
                             obj.put("nameForm","alamatberbeda");
                             obj.put("dataList",arr);
                             dataCIFArr.put(obj);
@@ -335,6 +330,7 @@ public class frag_cif_full extends Fragment {
                         } else if (formId == 5) {
                             JSONArray arr = new JSONArray(dataForm);
                             JSONObject obj = new JSONObject();
+                            obj.put("labelForm","Pekerjaan");
                             obj.put("nameForm","pekerjaan");
                             obj.put("dataList",arr);
                             dataCIFArr.put(obj);
@@ -344,6 +340,7 @@ public class frag_cif_full extends Fragment {
                         } else if (formId == 14) {
                             JSONArray arr = new JSONArray(dataForm);
                             JSONObject obj = new JSONObject();
+                            obj.put("labelForm","Keuangan");
                             obj.put("nameForm","keuangan");
                             obj.put("dataList",arr);
                             dataCIFArr.put(obj);
@@ -352,8 +349,10 @@ public class frag_cif_full extends Fragment {
                         e.printStackTrace();
                     }
 
-                    Log.e("CEK","keysCount : "+keysCount+" | dataCIFArr.length : "+dataCIFArr.length());
+                    Log.e(TAG,"keysCount : "+keysCount+" | dataCIFArr.length : "+dataCIFArr.length());
                     if (keysCount == dataCIFArr.length()) {
+                        btnProses.setVisibility(View.VISIBLE);
+                        rabbitMirroring.MirroringSendKey(objValCIF);
                         setRecylerExpand();
                     }
                 }
@@ -367,9 +366,11 @@ public class frag_cif_full extends Fragment {
     }
 
     private void setRecylerExpand() {
-        Log.e("CEK","MASUK setRecylerExpand");
+        Log.e(TAG,"MASUK setRecylerExpand");
+        Log.e(TAG,"dataCIFArr : ");
+        Log.e(TAG,dataCIFArr.toString());
 
-        AdapterCIF dataExpand = new AdapterCIF(dataCIFArr, mContext);
+        AdapterCIF dataExpand = new AdapterCIF(dataCIFArr, mContext, rabbitMirroring);
 
         recylerViewLayoutManager = new LinearLayoutManager(mContext);
 
@@ -396,7 +397,7 @@ public class frag_cif_full extends Fragment {
         Button btnVerifikasi = (Button) dialogView.findViewById(R.id.btnVerifikasi);
         TextView Timer = (TextView) dialogView.findViewById(R.id.timer_otp);
         TextView Resend_Otp = (TextView) dialogView.findViewById(R.id.btn_resend_otp);
-        PinView otp = (PinView) dialogView.findViewById(R.id.otp);
+        otp = (PinView) dialogView.findViewById(R.id.otp);
         otp.setAnimationEnable(true);
         otp.addTextChangedListener(new TextWatcher() {
             private boolean backSpaceOTP;
@@ -410,6 +411,7 @@ public class frag_cif_full extends Fragment {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 String wordOTP = s.toString();
+                Log.e("CEK","wordOTP : "+wordOTP);
                 String patternStr = "[0-9]";
                 Pattern pattern = Pattern.compile(patternStr);
                 Matcher matcher = pattern.matcher(s);
@@ -421,14 +423,20 @@ public class frag_cif_full extends Fragment {
                     if (numberOTP.length() < 6) {
                         numberOTP += getNumberOTP;
                     }
-                    //MirroringOTP(numberOTP,false);
+                    JSONObject otpObj = new JSONObject();
+                    try {
+                        otpObj.put("otp",numberOTP);
+                        rabbitMirroring.MirroringSendKey(otpObj);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
 
             @Override
             public void afterTextChanged(Editable s) {
                 backSpaceOTP = lasLenOTP > s.length();
-                Log.e("CEK", "backSpaceOTP : " + backSpaceOTP);
+                Log.e(TAG, "backSpaceOTP : " + backSpaceOTP);
                 if (backSpaceOTP) {
                     int lenOTP = numberOTP.length();
                     if (lenOTP > 0) {
@@ -481,6 +489,22 @@ public class frag_cif_full extends Fragment {
         });
     }
 
+    private static JSONObject dataMirroring(JSONObject dataObj) {
+        long unixTime = System.currentTimeMillis() / 1000L;
+
+        JSONObject jsObj = new JSONObject();
+        try {
+            jsObj.put("from","Cust");
+            jsObj.put("to","CS");
+            jsObj.put("created",unixTime);
+            jsObj.put("transaction",dataObj);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        return jsObj;
+    }
+
     private void PopUpSuccesOtp(){
         SweetAlertDialog sweetAlertDialog = new SweetAlertDialog(mContext, SweetAlertDialog.SUCCESS_TYPE);
         sweetAlertDialog.setTitleText(getResources().getString(R.string.otp_title));
@@ -528,7 +552,7 @@ public class frag_cif_full extends Fragment {
             @Override
             public void onClick(View v) {
                 sweetAlertDialog.dismiss();
-                getFragmentPage(new frag_aktivasi_ibmb());
+                getFragmentPage(new frag_aktivasi_berhasil());
             }
         });
     }

@@ -11,7 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:layout_margin="@dimen/dp_20"
+        android:layout_margin="50dp"
         android:layout_centerInParent="true"
         android:background="@drawable/oval_background">
 
@@ -27,14 +27,15 @@
         <View
             android:layout_width="match_parent"
             android:layout_height="2dp"
-            android:layout_marginTop="20dp"
-            android:layout_marginBottom="20dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
             android:background="#EDEDF4"/>
 
         <RadioGroup
             android:id="@+id/groupradio"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
 
             <RadioButton
                 android:textSize="14dp"
@@ -52,7 +53,9 @@
                 android:layout_height="wrap_content"
                 android:text="@string/lan_en"
                 android:textStyle="bold"
-                android:onClick="onRadioButtonClicked"/>
+                android:onClick="onRadioButtonClicked"
+                android:layout_marginStart="@dimen/dp_20"
+                android:layout_gravity="right"/>
 
         </RadioGroup>
 
@@ -64,7 +67,6 @@
             android:text="@string/lanjut_next"
             android:textColor="@color/white"
             android:background="@drawable/oval_background_10dp"
-            android:backgroundTint="@color/Blue"
             android:layout_gravity="center"
             android:layout_marginTop="@dimen/dp_10"/>
 

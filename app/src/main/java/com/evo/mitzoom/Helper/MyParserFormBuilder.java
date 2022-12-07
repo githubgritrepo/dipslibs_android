@@ -10,6 +10,7 @@ import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.text.Html;
+import android.text.InputFilter;
 import android.text.InputType;
 import android.text.method.LinkMovementMethod;
 import android.util.Base64;
@@ -70,6 +71,9 @@ public class MyParserFormBuilder {
                 int compLen = components.length();
                 String elNameRad = "";
                 boolean radGroup = false;
+                boolean finishRad = false;
+                int jkRad = 0;
+                int radB = 0;
                 for (int j = 0; j < compLen; j++) {
                     LinearLayout.LayoutParams lpLayout = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,LinearLayout.LayoutParams.WRAP_CONTENT);
                     lpLayout.setMargins(0,0,0,10);
@@ -100,7 +104,7 @@ public class MyParserFormBuilder {
 
                                 EditText ed = new EditText(mContext);
                                 ed.setId(intAplhabet);
-                                ed.setTextSize(12);
+                                ed.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
                                 ed.setGravity(Gravity.CENTER_VERTICAL);
                                 ed.setIncludeFontPadding(false);
                                 if (compType.equals("date")) {
@@ -134,11 +138,15 @@ public class MyParserFormBuilder {
                                 } else {
                                     ed.setHint(compPlaceholder);
                                     String lowLabel = compLabel.toLowerCase();
-                                    if (lowLabel.equals("nik") || lowLabel.equals("rt") || lowLabel.equals("rw") || lowLabel.indexOf("kode") > -1 ||
-                                            lowLabel.indexOf("no.") > -1 || lowLabel.indexOf("nomor") > -1 || lowLabel.indexOf("telp") > -1 ||
-                                            lowLabel.indexOf("telepon") > -1) {
+                                    if (lowLabel.equals("npwp")) {
+                                        ed.setFilters(new InputFilter[] {new InputFilter.LengthFilter(20)});
+                                    }
+
+                                    if (lowLabel.equals("nik") || lowLabel.equals("npwp") || lowLabel.equals("rt") || lowLabel.equals("rw") || lowLabel.contains("kode") ||
+                                            lowLabel.contains("no.") || lowLabel.contains("nomor") || lowLabel.contains("telp") ||
+                                            lowLabel.contains("telepon")) {
                                         ed.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_VARIATION_NORMAL);
-                                    } else if (lowLabel.indexOf("email") > -1) {
+                                    } else if (lowLabel.contains("email")) {
                                         ed.setInputType(InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
                                     } else {
                                         ed.setInputType(InputType.TYPE_TEXT_FLAG_CAP_WORDS);
@@ -148,17 +156,20 @@ public class MyParserFormBuilder {
                                 llFormBuild.addView(ed);
 
                                 int ids = ed.getId();
-                                Log.e("CEK","compName : "+compPlaceholder+" | ids : "+ids);
                                 String elName = compLabel.toLowerCase().replace(" ", "").replace("-", "").replace("/", "").replace(".", "");
+                                Log.e("CEK","compName : "+elName+" | ids : "+ids);
                                 dataObjEl.put("id",ids);
                                 dataObjEl.put("name",elName);
                                 dataObjEl.put("required",compRequired);
                                 dataArrElement.put(dataObjEl);
                             } else if (compType.equals("radio")) {
-                                boolean finishRad = false;
                                 if (!compLabel.isEmpty()) {
+                                    finishRad = false;
+                                    jkRad = 0;
+                                    radB = 0;
                                     radGroup = true;
                                 } else {
+                                    radB++;
                                     radGroup = false;
                                 }
                                 if (radGroup) {
@@ -169,11 +180,12 @@ public class MyParserFormBuilder {
 
                                     elNameRad = compLabel.toLowerCase().replace(" ", "").replace("-", "").replace("/", "").replace(".", "");
 
-                                    int jkRad = 0;
                                     Log.e("CEK","compLen Radio : "+compLen);
                                     for (int k = j; k < compLen; k++) {
                                         int loopP = k + 1;
+                                        jkRad++;
                                         if (loopP >= compLen) {
+                                            finishRad = true;
                                             break;
                                         }
                                         Log.e("CEK","Loop Radio : "+loopP);
@@ -182,11 +194,11 @@ public class MyParserFormBuilder {
                                         String compLabelP = compObjP.getString("label");
                                         String compTypeP = compObjP.getString("type");
 
-                                        jkRad++;
-
                                         if (!compTypeP.equals("radio")) {
+                                            finishRad = true;
                                             break;
                                         } else if (!compLabelP.isEmpty() && k > j) {
+                                            finishRad = true;
                                             break;
                                         }
                                     }
@@ -203,17 +215,6 @@ public class MyParserFormBuilder {
 
                                 }
 
-                                int loopP = j + 1;
-                                String compP = components.get(loopP).toString();
-                                JSONObject compObjP = new JSONObject(compP);
-                                String compLabelP = compObjP.getString("label");
-                                String compTypeP = compObjP.getString("type");
-                                if (!compTypeP.equals("radio")) {
-                                    finishRad = true;
-                                } else if (!compLabelP.isEmpty()) {
-                                    finishRad = true;
-                                }
-
                                 int intAplhabet = alphabetToInt(compPlaceholder);
 
                                 RadioButton rb = new RadioButton(mContext);
@@ -223,11 +224,13 @@ public class MyParserFormBuilder {
 
                                 radioGroup.addView(rb);
 
-                                if (finishRad) {
+                                Log.e("CEK","finishRad : "+finishRad+" | jkRad : "+jkRad+" | radB : "+radB);
+
+                                if (finishRad && radB == jkRad-1) {
                                     llFormBuild.addView(radioGroup);
 
                                     int ids = radioGroup.getId();
-                                    Log.e("CEK","compName : "+compPlaceholder+" | ids : "+ids);
+                                    Log.e("CEK","compName : "+elNameRad+" | ids : "+ids);
                                     dataObjEl.put("id",ids);
                                     dataObjEl.put("name",elNameRad);
                                     dataObjEl.put("required",compRequired);
@@ -250,8 +253,8 @@ public class MyParserFormBuilder {
                                 llFormBuild.addView(chk);
 
                                 int ids = chk.getId();
-                                Log.e("CEK","compName : "+compPlaceholder+" | ids : "+ids);
                                 String elName = compLabel.toLowerCase().replace(" ", "").replace("-", "").replace("/", "").replace(".", "");
+                                Log.e("CEK","compName : "+elName+" | ids : "+ids);
                                 dataObjEl.put("id",ids);
                                 dataObjEl.put("name",elName);
                                 dataObjEl.put("required",compRequired);
@@ -301,14 +304,14 @@ public class MyParserFormBuilder {
                                 tvSaved.setId(inttvSaved);
                                 tvSaved.setTextColor(Color.BLACK);
                                 tvSaved.setLayoutParams(lptv);
-                                tvSaved.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 12);
+                                tvSaved.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
                                 ln.addView(tvSaved);
 
                                 llFormBuild.addView(ln);
 
                                 int ids = ln.getId();
-                                Log.e("CEK","compName : "+compPlaceholder+" | ids : "+ids);
                                 String elName = compLabel.toLowerCase().replace(" ", "").replace("-", "").replace("/", "").replace(".", "");
+                                Log.e("CEK","compName : "+elName+" | ids : "+ids);
                                 dataObjEl.put("id",ids);
                                 dataObjEl.put("name",elName);
                                 dataObjEl.put("required",compRequired);
@@ -340,7 +343,7 @@ public class MyParserFormBuilder {
                                 dataDropDown.add(new FormSpin(idOpt,kodeOpt,labelOpt));
                             }
 
-                            LinearLayout.LayoutParams lpSpin = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,50);
+                            LinearLayout.LayoutParams lpSpin = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,50);
                             lpSpin.setMargins(0,0,0,10);
 
                             int intAplhabet = alphabetToInt(compLabel);
@@ -348,6 +351,7 @@ public class MyParserFormBuilder {
                             Spinner spinner = new Spinner(mContext);
                             spinner.setId(intAplhabet);
                             spinner.setLayoutParams(lpSpin);
+                            spinner.setFocusable(false);
                             ArrayAdapter<FormSpin> adapter = new ArrayAdapter<FormSpin>(mContext, android.R.layout.simple_spinner_dropdown_item, dataDropDown);
                             spinner.setAdapter(adapter);
 

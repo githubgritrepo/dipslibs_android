@@ -14,6 +14,7 @@ import android.widget.Toast;
 import com.evo.mitzoom.BaseMeetingActivity;
 import com.evo.mitzoom.Helper.NotificationService;
 import com.evo.mitzoom.Helper.OutboundService;
+import com.evo.mitzoom.Helper.OutboundServiceNew;
 import com.evo.mitzoom.R;
 import com.evo.mitzoom.cmd.CmdFeedbackPushRequest;
 import com.evo.mitzoom.cmd.CmdHandler;
@@ -85,7 +86,7 @@ public class DipsVideoConfren extends BaseMeetingActivity {
             startService(intent);
         }
 
-        Intent intentOutbound = new Intent(this, OutboundService.class);
+        Intent intentOutbound = new Intent(this, OutboundServiceNew.class);
         stopService(intentOutbound);
     }
 
@@ -93,12 +94,12 @@ public class DipsVideoConfren extends BaseMeetingActivity {
         Intent intent = new Intent(this, NotificationService.class);
         stopService(intent);
 
-        Intent intentOutbound = new Intent(this, OutboundService.class);
+        /*Intent intentOutbound = new Intent(this, OutboundServiceNew.class);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             startForegroundService(intentOutbound);
         } else {
             startService(intentOutbound);
-        }
+        }*/
     }
 
     @Override

@@ -3,7 +3,6 @@ package com.evo.mitzoom.ui;
 import static com.evo.mitzoom.ui.DipsChooseLanguage.setLocale;
 
 import android.Manifest;
-import android.app.DatePickerDialog;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -40,6 +39,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
 import com.auth0.android.jwt.Claim;
 import com.auth0.android.jwt.JWT;
@@ -47,20 +47,26 @@ import com.evo.mitzoom.API.ApiService;
 import com.evo.mitzoom.API.Server;
 import com.evo.mitzoom.BaseMeetingActivity;
 import com.evo.mitzoom.Constants.AuthConstants;
+import com.evo.mitzoom.Fragments.frag_berita;
 import com.evo.mitzoom.GlideApp;
 import com.evo.mitzoom.Helper.OutboundService;
+import com.evo.mitzoom.Helper.OutboundServiceNew;
 import com.evo.mitzoom.R;
 import com.evo.mitzoom.Session.SessionManager;
 import com.evo.mitzoom.util.ErrorMsgUtil;
 import com.evo.mitzoom.util.NetworkUtil;
 import com.google.android.material.button.MaterialButton;
 import com.google.gson.JsonObject;
+import com.wdullaer.materialdatetimepicker.date.DatePickerDialog;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -80,8 +86,12 @@ import us.zoom.sdk.ZoomVideoSDKSession;
 import us.zoom.sdk.ZoomVideoSDKSessionContext;
 import us.zoom.sdk.ZoomVideoSDKVideoOption;
 
-public class DipsOutboundCall extends AppCompatActivity {
+public class DipsOutboundCall extends AppCompatActivity implements DatePickerDialog.OnDateSetListener {
     private static String TAG = "DipsOutboundCall";
+    public static final int REQUEST_WRITE_PERMISSION = 786;
+    private static final int MY_CAMERA_PERMISSION_CODE = 100;
+    Camera.Parameters parameters;
+    private boolean isConfigure;
     private TextView incomingcall;
     private String passSession, idDips;
     public static ImageButton accept, reject;
@@ -106,7 +116,10 @@ public class DipsOutboundCall extends AppCompatActivity {
     private String tanggal, waktu;
     private String Savetanggal;
     private int Savewaktu;
-    String [] time = {"08.00 - 10.00", "10.00 - 12.00", "12.00 - 14.00", "14.00 - 16.00", "16.00 - 17.00"};
+    ArrayList<String> time = new ArrayList<>();
+    List<Integer> periodeInt = new ArrayList<>();
+    HashMap<Integer,String> dataPeriode = new HashMap<>();
+    HashMap<String,Integer> dataPeriodeId = new HashMap<>();
     private MaterialButton btnSchedule2;
     private Context mContext;
     private SessionManager sessions;
@@ -119,6 +132,9 @@ public class DipsOutboundCall extends AppCompatActivity {
     private int loop = 1;
     private String getAction = "";
     private Ringtone mRingtone = null;
+    private DatePickerDialog dpd;
+    private JSONArray tanggalPenuh;
+    private JSONArray periodePenuh;
 
     private Runnable runnable = new Runnable() {
         @Override
@@ -149,10 +165,10 @@ public class DipsOutboundCall extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.e("CEK","MASUK onCreate DipsOutboundCall");
+        Log.e(TAG,"MASUK onCreate DipsOutboundCall");
         if (getIntent().getAction() != null) {
             getAction = getIntent().getAction();
-            Log.i("CEK","MASUK ACTION : "+getAction);
+            Log.i(TAG,"MASUK ACTION : "+getAction);
         } else {
             playNotificationSound();
         }
@@ -195,21 +211,29 @@ public class DipsOutboundCall extends AppCompatActivity {
         reject = findViewById(R.id.rejectCall);
         Intent intent = getIntent();
         useFacing = intent.getIntExtra(KEY_USE_FACING, Camera.CameraInfo.CAMERA_FACING_FRONT);
-        passSession = OutboundService.getPassword_session();
-        customerName = OutboundService.getCustomerName();
-        imageAgent = OutboundService.getImagesAgent();
-        nameAgent = OutboundService.getNameAgent();
+        passSession = OutboundServiceNew.getPassword_session();
+        customerName = OutboundServiceNew.getCustomerName();
+        imageAgent = OutboundServiceNew.getImagesAgent();
+        nameAgent = OutboundServiceNew.getNameAgent();
         nama_agen.setText(nameAgent);
 
-        Log.i("CEK","imageAgent  : "+imageAgent);
-        Log.i("CEK","startTimeOut  : "+startTimeOut);
-        String imageAgentnew = imageAgent.replace("https://dips.grit.id:6503/", Server.BASE_URL_API);
-        Log.i("CEK GAMBAR",""+imageAgentnew);
+        Log.i(TAG,"passSession  : "+passSession);
+        Log.i(TAG,"imageAgent  : "+imageAgent);
+        Log.i(TAG,"startTimeOut  : "+startTimeOut);
 
-        GlideApp.with(mContext)
-            .load(imageAgentnew)
-             .placeholder(R.drawable.agen_profile)
-            .into(imgCS);
+        previewHolder();
+
+        if (!imageAgent.isEmpty()) {
+            String imageAgentnew = imageAgent.replace("https://dips.grit.id:6503/", Server.BASE_URL_API);
+            Log.i("CEK GAMBAR", "" + imageAgentnew);
+
+            GlideApp.with(mContext)
+                    .load(imageAgentnew)
+                    .placeholder(R.drawable.agen_profile)
+                    .into(imgCS);
+        } else {
+            imgCS.setImageDrawable(getDrawable(R.drawable.agen_profile));
+        }
 
         new AsynTimeout().execute();
         handlerTimes = new Handler();
@@ -229,7 +253,7 @@ public class DipsOutboundCall extends AppCompatActivity {
                 handlerTimes.removeMessages(0);
                 handlerTimes.removeCallbacks(myRunnable);
                 NotificationManager notificationManagerCompat = (NotificationManager) getApplicationContext().getSystemService(Context.NOTIFICATION_SERVICE);
-                notificationManagerCompat.cancel(OutboundService.NOTIFICATION_IDOutbound);
+                notificationManagerCompat.cancel(OutboundServiceNew.NOTIFICATION_IDOutbound);
                 if (mRingtone != null) {
                     mRingtone.stop();
                 }
@@ -247,7 +271,7 @@ public class DipsOutboundCall extends AppCompatActivity {
         });
 
         if (getIntent().getAction() != null) {
-            Log.i("CEK","MASUK ACTION : "+getAction);
+            Log.i(TAG,"MASUK ACTION : "+getAction);
             if (getAction.equals("endcall")) {
                 startTimeOut = false;
                 PopUpSchedule();
@@ -256,40 +280,106 @@ public class DipsOutboundCall extends AppCompatActivity {
             new AsynTimeout().execute();
         }
     }
-    private void playNotificationSound()
-    {
-        try
-        {
-            String paths = "/settings/system/ringtone";
-            //String paths = "/raw/notification";
-            //String ringtones = MyApplication.getInstance().getApplicationContext().getPackageName() + paths;
-            //Uri alarmSound = Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE + ":/" + ringtones);
-            Uri alarmSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_RINGTONE);
-            Log.i("CEK","alarmSound : "+alarmSound.getPath());
-            mRingtone = RingtoneManager.getRingtone(getApplicationContext(), alarmSound);
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-                mRingtone.setLooping(true);
-            }
-            mRingtone.play();
+
+    @Override
+    public void onDateSet(DatePickerDialog view, int year, int monthOfYear, int dayOfMonth) {
+        Log.e(TAG,"onDateSet");
+        int addmonths = (month + 1);
+        String months = String.valueOf(addmonths);
+        if (addmonths < 10) {
+            months = "0"+months;
         }
-        catch (Exception e)
-        {
-            e.printStackTrace();
+        String days = String.valueOf(dayOfMonth);
+        if (dayOfMonth < 10 ) {
+            days = "0"+days;
+        }
+        tanggal = days+"/"+months+"/"+year;
+        Savetanggal = year + "-" + months + "-" + days;
+        et_Date.setText(tanggal);
+
+        if (periodePenuh.length() > 0) {
+            ArrayList<String> times_new = new ArrayList<>();
+            times_new.addAll(time);
+            for (int i = 0; i < periodePenuh.length(); i++) {
+                try {
+                    String tglFull = periodePenuh.getJSONObject(i).getString("tanggal");
+                    int periodeId = periodePenuh.getJSONObject(i).getInt("periodeId");
+                    if (tglFull.equals(Savetanggal)) {
+                        String valP = dataPeriode.get(periodeId);
+                        for (int j = 0; j < times_new.size(); j++) {
+                            String times = times_new.get(j);
+                            if (valP.equals(times)) {
+                                times_new.remove(j);
+                                break;
+                            }
+                        }
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            ArrayAdapter<String> adapterTime = new ArrayAdapter<String>(mContext,R.layout.list_item, times_new);
+            et_time.setAdapter(adapterTime);
+        } else {
+            ArrayAdapter<String> adapterTime = new ArrayAdapter<String>(mContext,R.layout.list_item, time);
+            et_time.setAdapter(adapterTime);
         }
     }
-    private void initializeSdk() {
-        ZoomVideoSDKInitParams params = new ZoomVideoSDKInitParams();
-        params.domain = AuthConstants.WEB_DOMAIN; // Required
-        params.enableLog = true; // Optional for debugging
-        params.videoRawDataMemoryMode = ZoomVideoSDKRawDataMemoryMode.ZoomVideoSDKRawDataMemoryModeHeap;
-        params.audioRawDataMemoryMode = ZoomVideoSDKRawDataMemoryMode.ZoomVideoSDKRawDataMemoryModeHeap;
-        params.shareRawDataMemoryMode = ZoomVideoSDKRawDataMemoryMode.ZoomVideoSDKRawDataMemoryModeHeap;
 
-        int initResult = ZoomVideoSDK.getInstance().initialize(this, params);
-        if (initResult != ZoomVideoSDKErrors.Errors_Success) {
-            Toast.makeText(this, ErrorMsgUtil.getMsgByErrorCode(initResult), Toast.LENGTH_LONG).show();
+    @Override
+    protected void onResume() {
+        super.onResume();
+        isConfigure = false;
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (checkSelfPermission(Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+                requestPermissions(new String[]{Manifest.permission.CAMERA}, MY_CAMERA_PERMISSION_CODE);
+            } else {
+                requestPermission();
+            }
+        } else {
+            int resultPerm = ContextCompat.checkSelfPermission(mContext, Manifest.permission.CAMERA);
+            if (resultPerm != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, MY_CAMERA_PERMISSION_CODE);
+            } else {
+                requestPermission();
+            }
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        Log.i(TAG,"MASUK Destroy");
+        startTimeOut = false;
+        Thread.interrupted();
+        finish();
+    }
+
+    @Override
+    protected void onPause() {
+        if (inPreview) {
+            camera.stopPreview();
         }
 
+        if (camera != null) {
+            camera.release();
+            camera = null;
+            inPreview = false;
+        }
+
+        super.onPause();
+    }
+
+    private class AsyncProcess extends AsyncTask<Void,Void,Void> {
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            processGetCheckSchedule();
+            processGetScheduleTimes();
+            return null;
+        }
     }
 
     private class AsynTimeout extends AsyncTask<Void,Void,Void> {
@@ -324,8 +414,107 @@ public class DipsOutboundCall extends AppCompatActivity {
         }
     }
 
+    private void playNotificationSound()
+    {
+        try
+        {
+            String paths = "/settings/system/ringtone";
+            //String paths = "/raw/notification";
+            //String ringtones = MyApplication.getInstance().getApplicationContext().getPackageName() + paths;
+            //Uri alarmSound = Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE + ":/" + ringtones);
+            Uri alarmSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_RINGTONE);
+            Log.i(TAG,"alarmSound : "+alarmSound.getPath());
+            mRingtone = RingtoneManager.getRingtone(getApplicationContext(), alarmSound);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                mRingtone.setLooping(true);
+            }
+            mRingtone.play();
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+    }
+    private void initializeSdk() {
+        ZoomVideoSDKInitParams params = new ZoomVideoSDKInitParams();
+        params.domain = AuthConstants.WEB_DOMAIN; // Required
+        params.enableLog = true; // Optional for debugging
+        params.videoRawDataMemoryMode = ZoomVideoSDKRawDataMemoryMode.ZoomVideoSDKRawDataMemoryModeHeap;
+        params.audioRawDataMemoryMode = ZoomVideoSDKRawDataMemoryMode.ZoomVideoSDKRawDataMemoryModeHeap;
+        params.shareRawDataMemoryMode = ZoomVideoSDKRawDataMemoryMode.ZoomVideoSDKRawDataMemoryModeHeap;
+
+        int initResult = ZoomVideoSDK.getInstance().initialize(this, params);
+        if (initResult != ZoomVideoSDKErrors.Errors_Success) {
+            Toast.makeText(this, ErrorMsgUtil.getMsgByErrorCode(initResult), Toast.LENGTH_LONG).show();
+        }
+
+    }
+
+    private void processGetCheckSchedule() {
+        Server.getAPIService().GetCheckSchedule().enqueue(new Callback<JsonObject>() {
+            @Override
+            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                if (response.isSuccessful()) {
+                    String dataS = response.body().toString();
+                    try {
+                        JSONObject dataObj = new JSONObject(dataS);
+                        int errCode = dataObj.getInt("code");
+                        if (errCode == 200) {
+                            tanggalPenuh = dataObj.getJSONObject("data").getJSONArray("tanggalPenuh");
+                            periodePenuh = dataObj.getJSONObject("data").getJSONArray("periodePenuh");
+
+                            Log.e(TAG,"tanggalPenuh : "+tanggalPenuh.toString());
+                            Log.e(TAG,"periodePenuh : "+periodePenuh.toString());
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<JsonObject> call, Throwable t) {
+
+            }
+        });
+    }
+
+    private void processGetScheduleTimes() {
+        Server.getAPIService().GetScheduleTimes().enqueue(new Callback<JsonObject>() {
+            @Override
+            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                if (response.isSuccessful()) {
+                    String dataS = response.body().toString();
+                    try {
+                        JSONObject dataObj = new JSONObject(dataS);
+                        int errCode = dataObj.getInt("code");
+                        if (errCode == 200) {
+                            JSONArray dataArrTimes = dataObj.getJSONArray("data");
+                            for (int i = 0; i < dataArrTimes.length(); i++) {
+                                int periodeId = dataArrTimes.getJSONObject(i).getInt("id");
+                                String periode = dataArrTimes.getJSONObject(i).getString("periode");
+                                time.add(periode);
+                                periodeInt.add(periodeId);
+                                dataPeriode.put(periodeId,periode);
+                                dataPeriodeId.put(periode,periodeId);
+                            }
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
+                }
+            }
+
+            @Override
+            public void onFailure(Call<JsonObject> call, Throwable t) {
+
+            }
+        });
+    }
+
     private void PopUpSchedule(){
-        Log.e("CEK","MASUK POPUPSCHEDULE mRingtone : "+mRingtone);
+        Log.e(TAG,"MASUK POPUPSCHEDULE mRingtone : "+mRingtone);
         if (mRingtone != null) {
             mRingtone.stop();
         }
@@ -369,25 +558,75 @@ public class DipsOutboundCall extends AppCompatActivity {
                 year = c.get(Calendar.YEAR);
                 month = c.get(Calendar.MONTH);
                 day = c.get(Calendar.DAY_OF_MONTH);
-                DatePickerDialog datePickerDialog = new DatePickerDialog(DipsOutboundCall.this, new DatePickerDialog.OnDateSetListener() {
-                    @Override
-                    public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-                        int addmonths = (month + 1);
-                        String months = String.valueOf(addmonths);
-                        if (addmonths < 10) {
-                            months = "0"+months;
+                dpd = null;
+                if (dpd == null) {
+                    dpd = com.wdullaer.materialdatetimepicker.date.DatePickerDialog.newInstance(
+                            DipsOutboundCall.this,
+                            c.get(Calendar.YEAR),
+                            c.get(Calendar.MONTH),
+                            c.get(Calendar.DAY_OF_MONTH)
+                    );
+                } else {
+                    dpd.initialize(
+                            DipsOutboundCall.this,
+                            c.get(Calendar.YEAR),
+                            c.get(Calendar.MONTH),
+                            c.get(Calendar.DAY_OF_MONTH)
+                    );
+                }
+
+                // restrict to weekdays only
+                ArrayList<Calendar> weekdays = new ArrayList<Calendar>();
+                Calendar day = Calendar.getInstance();
+                int loopAdd = 0;
+                for (int i = 0; i < 30; i++) {
+                    if (day.get(Calendar.DAY_OF_WEEK) != Calendar.SATURDAY && day.get(Calendar.DAY_OF_WEEK) != Calendar.SUNDAY) {
+                        if (tanggalPenuh.length() > 0) {
+                            for (int tg = 0; tg < tanggalPenuh.length(); tg++) {
+                                try {
+                                    String tglFull = tanggalPenuh.getString(tg);
+                                    int yearChk = day.get(Calendar.YEAR);
+                                    int monthChk = day.get(Calendar.MONTH);
+                                    int dayChk = day.get(Calendar.DAY_OF_MONTH);
+
+                                    int addmonths = (monthChk + 1);
+                                    String months = String.valueOf(addmonths);
+                                    if (addmonths < 10) {
+                                        months = "0"+months;
+                                    }
+                                    String days = String.valueOf(dayChk);
+                                    if (dayChk < 10 ) {
+                                        days = "0"+days;
+                                    }
+
+                                    String tglChk = yearChk + "-" + months + "-" + days;
+                                    if (!tglFull.equals(tglChk)) {
+                                        Calendar d = (Calendar) day.clone();
+                                        weekdays.add(d);
+                                    }
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        } else {
+                            Calendar d = (Calendar) day.clone();
+                            weekdays.add(d);
                         }
-                        String days = String.valueOf(dayOfMonth);
-                        if (dayOfMonth < 10 ) {
-                            days = "0"+days;
-                        }
-                        tanggal = days+"/"+months+"/"+year;
-                        Savetanggal = year+""+months+""+days;
-                        et_Date.setText(tanggal);
+                    } else {
+                        loopAdd++;
                     }
-                }, year, month, day);
-                datePickerDialog.getDatePicker().setMinDate(System.currentTimeMillis() - 1000);
-                datePickerDialog.show();
+                    day.add(Calendar.DATE, 1);
+                }
+                Calendar[] weekdayDays = weekdays.toArray(new Calendar[weekdays.size()]);
+                dpd.setSelectableDays(weekdayDays);
+                //dpd.setMaxDate(day);
+
+                dpd.setOnCancelListener(dialog -> {
+                    Log.e("DatePickerDialog", "Dialog was cancelled");
+                    dpd = null;
+                });
+                dpd.show(getSupportFragmentManager(), "Datepickerdialog");
+
             }
         });
         btnclose.setOnClickListener(new View.OnClickListener() {
@@ -409,7 +648,7 @@ public class DipsOutboundCall extends AppCompatActivity {
                 }
                 else {
                     saveSchedule();
-                    OutboundService.rejectCall();
+                    //OutboundService.rejectCall();
                     Toast.makeText(getApplicationContext(), "Jadwal panggilan anda "+tanggal+" jam "+waktu, Toast.LENGTH_LONG).show();
                     sweetAlertDialog.dismissWithAnimation();
                     sweetAlertDialog.setCancelable(false);
@@ -422,7 +661,7 @@ public class DipsOutboundCall extends AppCompatActivity {
                     btnConfirm.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            Log.i("CEK","MASUK BUTTON CONFIRM");
+                            Log.i(TAG,"MASUK BUTTON CONFIRM");
                             sweetAlertDialog.dismiss();
                             OutApps();
                         }
@@ -438,7 +677,7 @@ public class DipsOutboundCall extends AppCompatActivity {
         try {
             jsons.put("idDips",idDips);
             jsons.put("tanggal",Savetanggal);
-            jsons.put("grup",Savewaktu);
+            jsons.put("periodeId",Savewaktu);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -467,7 +706,7 @@ public class DipsOutboundCall extends AppCompatActivity {
         }
         startTimeOut = false;
         NotificationManager notificationManagerCompat = (NotificationManager) getApplicationContext().getSystemService(Context.NOTIFICATION_SERVICE);
-        notificationManagerCompat.cancel(OutboundService.NOTIFICATION_IDOutbound);
+        notificationManagerCompat.cancel(OutboundServiceNew.NOTIFICATION_IDOutbound);
         Intent intent = new Intent(Intent.ACTION_MAIN);
         intent.addCategory(Intent.CATEGORY_HOME);
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -475,39 +714,6 @@ public class DipsOutboundCall extends AppCompatActivity {
         finish();
         //DipsOutboundCall.this.overridePendingTransition(0,0);
         //System.exit(0);
-    }
-    @Override
-    protected void onResume() {
-        super.onResume();
-        Log.i(TAG,"MASUK RESUME");
-        camera = Camera.open(useFacing);
-        //startPreview();
-        cameraConfigured = false;
-        previewHolder();
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        Log.i(TAG,"MASUK Destroy");
-        startTimeOut = false;
-        Thread.interrupted();
-        finish();
-    }
-
-    @Override
-    protected void onPause() {
-        if (inPreview) {
-            camera.stopPreview();
-        }
-
-        if (camera != null) {
-            camera.release();
-            camera = null;
-            inPreview = false;
-        }
-
-        super.onPause();
     }
 
     private void previewHolder(){
@@ -535,7 +741,7 @@ public class DipsOutboundCall extends AppCompatActivity {
     public void setCameraDisplayOrientation(){
         if (camera == null)
         {
-            Log.d("CEK","setCameraDisplayOrientation - camera null");
+            Log.d(TAG,"setCameraDisplayOrientation - camera null");
             return;
         }
 
@@ -604,7 +810,7 @@ public class DipsOutboundCall extends AppCompatActivity {
                 camera.setPreviewDisplay(previewHolder);
                 CameraManager manager = (CameraManager) getSystemService(Context.CAMERA_SERVICE);
                 if (manager == null) {
-                    Log.i("CEK", "camera manager is null");
+                    Log.i(TAG, "camera manager is null");
                     return;
                 }
                 try {
@@ -621,6 +827,7 @@ public class DipsOutboundCall extends AppCompatActivity {
             }
 
             if (!cameraConfigured) {
+                isConfigure = true;
                 Camera.Parameters parameters = camera.getParameters();
                 List<Camera.Size> sizes = parameters.getSupportedPreviewSizes();
                 Camera.Size size = getOptimalPreviewSize(sizes, width, height);
@@ -636,12 +843,62 @@ public class DipsOutboundCall extends AppCompatActivity {
     private void startPreview() {
         if (cameraConfigured && camera != null) {
             camera.startPreview();
+            parameters = camera.getParameters();
+            if (parameters.getSupportedFocusModes().contains(
+                    Camera.Parameters.FOCUS_MODE_CONTINUOUS_VIDEO)) {
+                parameters.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_VIDEO);
+            }
+            camera.setParameters(parameters);
             inPreview = true;
+            if (isConfigure) {
+                Log.d("CEK","MASUK isConfigure");
+                try {
+                    Thread.sleep(500);
+                    optimalCamera();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
         }
     }
+
+    private void optimalCamera() {
+        if (useFacing != null) {
+            if (useFacing == Camera.CameraInfo.CAMERA_FACING_FRONT) {
+                useFacing = Camera.CameraInfo.CAMERA_FACING_FRONT;
+            } else {
+                useFacing = Camera.CameraInfo.CAMERA_FACING_BACK;
+            }
+
+            onPause();
+            onResume();
+            try {
+                camera.setPreviewDisplay(previewHolder);
+                //camera.setDisplayOrientation(90);
+                CameraManager manager = (CameraManager) getSystemService(Context.CAMERA_SERVICE);
+                if (manager == null) {
+                    Log.i("CEK", "camera manager is null");
+                    return;
+                }
+                try {
+                    for (String id: manager.getCameraIdList()) {
+                        CAM_ID = Integer.valueOf(id);
+                        setCameraDisplayOrientation();
+
+                    }
+                } catch (CameraAccessException e) {
+                    e.printStackTrace();
+                }
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
     private void AnimationCall(){
         final Handler handler = new Handler();
-        Runnable runnable = new Runnable() {
+        Runnable runnableText = new Runnable() {
 
             int count = 0;
 
@@ -672,7 +929,7 @@ public class DipsOutboundCall extends AppCompatActivity {
                 handler.postDelayed(this, 1000);
             }
         };
-        handler.postDelayed(runnable, 1000);
+        handler.postDelayed(runnableText, 1000);
     }
     protected boolean requestPermission() {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED || ActivityCompat.checkSelfPermission(this,Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED || ActivityCompat.checkSelfPermission(this,Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
@@ -680,6 +937,8 @@ public class DipsOutboundCall extends AppCompatActivity {
                     Manifest.permission.RECORD_AUDIO, Manifest.permission.READ_EXTERNAL_STORAGE}, REQUEST_VIDEO_AUDIO_CODE);
             return false;
         }
+        camera = Camera.open(useFacing);
+        startPreview();
         return true;
     }
     @Override
@@ -707,13 +966,14 @@ public class DipsOutboundCall extends AppCompatActivity {
         btnConfirm.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                OutboundService.acceptCall();
+                OutboundServiceNew.acceptCall();
                 dialogConfirm.dismiss();
                 processJoinVideo();
             }
         });
     }
     private void processJoinVideo() {
+        Log.e(TAG,"processJoinVideo");
         if (!requestPermission())
             return;
         if (!NetworkUtil.hasDataNetwork(this)) {
@@ -729,6 +989,7 @@ public class DipsOutboundCall extends AppCompatActivity {
         processSignature();
     }
     private void processSignature() {
+        Log.e(TAG,"processSignature");
         JSONObject jsons = new JSONObject();
         try {
             jsons.put("sessionName",idDips);
@@ -739,22 +1000,30 @@ public class DipsOutboundCall extends AppCompatActivity {
             e.printStackTrace();
         }
 
+        Log.e(TAG,"processSignature REQ : "+jsons.toString());
+
         RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), jsons.toString());
 
         ApiService API = Server.getAPIService();
         Call<JsonObject> call = API.Signature(requestBody);
+        Log.e(TAG,"Signature URL : "+call.request().url());
         call.enqueue(new Callback<JsonObject>() {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                Log.e(TAG,"Signature RESPONSE "+response.code());
                 if (response.isSuccessful() && response.body().size() > 0) {
                     String dataS = response.body().toString();
+                    Log.e(TAG,"Signature dataS : "+dataS);
                     try {
                         JSONObject jsObj = new JSONObject(dataS);
                         String signatures = "";
-                        if (jsObj.has("signature")) {
-                            if (!jsObj.isNull("signature")) {
-                                signatures = jsObj.getString("signature");
-                                processCreateVideo(signatures);
+                        if (jsObj.has("data")) {
+                            JSONObject dataSign = jsObj.getJSONObject("data");
+                            if (dataSign.has("signature")) {
+                                if (!dataSign.isNull("signature")) {
+                                    signatures = dataSign.getString("signature");
+                                    processCreateVideo(signatures);
+                                }
                             }
                         }
                     } catch (JSONException e) {
@@ -770,7 +1039,7 @@ public class DipsOutboundCall extends AppCompatActivity {
         });
     }
     private void processCreateVideo(String signatures) {
-        Log.i("CEK","masuk processCreateVideo");
+        Log.i(TAG,"masuk processCreateVideo");
         JWT jwt = new JWT(signatures);
         Map<String, Claim> allClaims = jwt.getClaims();
         String name = allClaims.get("user_identity").asString();
@@ -797,18 +1066,17 @@ public class DipsOutboundCall extends AppCompatActivity {
         ZoomVideoSDKSession session = ZoomVideoSDK.getInstance().joinSession(sessionContext);
 
         if(null==session){
-            Log.i("CEK","SESSION NULL");
+            Log.i(TAG,"SESSION NULL");
             return;
         }
 
-        Log.i("CEK","LANJUUTT");
+        Log.i(TAG,"LANJUUTT");
 
         Intent intent = new Intent(this, DipsVideoConfren.class);
         intent.putExtra("name", name);
         intent.putExtra("password", sessionPass);
         intent.putExtra("sessionName", sessionName);
         intent.putExtra("render_type", renderType);
-        intent.putExtra("ISCUSTOMER", isCust);
         startActivity(intent);
         finish();
     }

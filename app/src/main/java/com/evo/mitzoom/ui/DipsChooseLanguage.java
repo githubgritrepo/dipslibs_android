@@ -35,10 +35,12 @@ import android.widget.Toast;
 import com.evo.mitzoom.API.ApiService;
 import com.evo.mitzoom.API.Server;
 import com.evo.mitzoom.Helper.OutboundService;
+import com.evo.mitzoom.Helper.OutboundServiceNew;
 import com.evo.mitzoom.Model.Request.JsonCaptureIdentify;
 import com.evo.mitzoom.Model.Response.CaptureIdentify;
 import com.evo.mitzoom.R;
 import com.evo.mitzoom.Session.SessionManager;
+import com.evo.mitzoom.ui.Alternative.DipsSwafoto;
 import com.evo.mitzoom.util.NetworkUtil;
 import com.google.gson.JsonObject;
 
@@ -46,6 +48,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.Locale;
 
 import ai.advance.liveness.lib.CameraType;
@@ -103,7 +106,6 @@ public class DipsChooseLanguage extends AppCompatActivity {
         tvVersion = (TextView) findViewById(R.id.tvVersion);
         rlload = (RelativeLayout) findViewById(R.id.rlload);
 
-        btnNext.setBackgroundTintList(getResources().getColorStateList(R.color.Blue));
         radioGroup.clearCheck();
 
         onClickListener();
@@ -144,7 +146,7 @@ public class DipsChooseLanguage extends AppCompatActivity {
     public boolean foregroundServiceRunning(){
         ActivityManager activityManager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
         for(ActivityManager.RunningServiceInfo service: activityManager.getRunningServices(Integer.MAX_VALUE)) {
-            if(OutboundService.class.getName().equals(service.service.getClassName())) {
+            if(OutboundServiceNew.class.getName().equals(service.service.getClassName())) {
                 return true;
             }
         }
@@ -305,11 +307,14 @@ public class DipsChooseLanguage extends AppCompatActivity {
                 Bitmap livenessBitmap = LivenessResult.getLivenessBitmap();// picture
                 String imgBase64 = imgtoBase64(livenessBitmap);
                 byte[] bytePhoto = Base64.decode(imgBase64, Base64.NO_WRAP);
-                Intent intent = new Intent(mContext, DipsWaitingRoom.class);
+
+                processCaptureIdentifyAuth(imgBase64);
+
+                /*Intent intent = new Intent(mContext, DipsWaitingRoom.class);
                 intent.putExtra("RESULT_IMAGE_AI",bytePhoto);
                 intent.putExtra("idDips", idDips);
                 startActivity(intent);
-                finishAffinity();
+                finishAffinity();*/
 
                 /*rlload.setVisibility(View.VISIBLE);
                 String livenessId = LivenessResult.getLivenessId();// livenessId
@@ -339,15 +344,18 @@ public class DipsChooseLanguage extends AppCompatActivity {
         JSONObject jsons = new JSONObject();
         try {
             jsons.put("licenseEffectiveSeconds",86400);
-            jsons.put("applicationId","ai.advance.liveness.demo,com.evo.mitzoom");
+            jsons.put("applicationId","default,com.evo.mitzoom");
         } catch (JSONException e) {
             e.printStackTrace();
         }
 
+        String AccessKey = "9daf9d6e9dfe6cdd";//bankvictoria_ebd
+        //String AccessKey = "75140e9a1d9c161f";//evolusi_test
+
         Log.e("CEK","REUQEST AUTH AI : "+jsons.toString());
         RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), jsons.toString());
 
-        Server.getAPIServiceAdvanceAI().AuthLicenseLiveness(requestBody,"75140e9a1d9c161f").enqueue(new Callback<JsonObject>() {
+        Server.getAPIServiceAdvanceAI().AuthLicenseLiveness(requestBody,AccessKey).enqueue(new Callback<JsonObject>() {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
                 Log.e("CEK","RESPONSE AUTH AI : "+response.code());
@@ -370,6 +378,118 @@ public class DipsChooseLanguage extends AppCompatActivity {
             @Override
             public void onFailure(Call<JsonObject> call, Throwable t) {
                 Log.e("CEK","onFailure AUTH AI : "+t.getMessage());
+            }
+        });
+    }
+
+    private void processCaptureIdentifyAuth(String imgBase64) {
+        if (!NetworkUtil.hasDataNetwork(mContext)) {
+            Toast.makeText(this, "Connection Failed. Please check your network connection and try again.", Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        byte[] bytePhoto = Base64.decode(imgBase64, Base64.NO_WRAP);
+
+        JSONObject jsons = new JSONObject();
+        try {
+            jsons.put("idDips","");
+            jsons.put("image",imgBase64);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        /*String filename = "CaptureAuth_"+idDips+".txt";
+        try {
+            createTemporaryFile(jsons.toString(),filename);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }*/
+
+        RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), jsons.toString());
+
+        ApiService API = Server.getAPIService2();
+        Call<JsonObject> call = API.CaptureAuth(requestBody);
+        Log.e("CEK","REQUEST CALL : "+call.request().url());
+        call.enqueue(new Callback<JsonObject>() {
+            @Override
+            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                Log.e("CEK","RESPONSE CODE: "+response.code());
+                if (response.isSuccessful()) {
+                    String dataS = response.body().toString();
+                    Log.e("CEK","dataS: "+dataS);
+                    try {
+                        JSONObject dataObj = new JSONObject(dataS);
+                        JSONObject dataCustomer = dataObj.getJSONObject("data").getJSONObject("customer");
+                        JSONObject dataToken = dataObj.getJSONObject("data").getJSONObject("token");
+
+                        boolean isSwafoto = dataCustomer.getBoolean("isSwafoto");
+
+                        String noCIF = "";
+                        boolean isCust;
+                        if (dataCustomer.isNull("noCif")) {
+                            isCust = false;
+                        } else {
+                            isCust = true;
+                            noCIF = dataCustomer.getString("noCif");
+                        }
+                        String custName = dataCustomer.getString("namaLengkap");
+                        String idDipsNew = dataCustomer.getString("idDips");
+                        Log.e("CEK","idDipsNew : "+idDipsNew+" | idDips : "+idDips);
+                        /*if (idDips != null && OutboundService.mSocket != null && idDipsNew != idDips) {
+                            OutboundService.leaveOutbound(idDips);
+                        }*/
+                        String accessToken = dataToken.getString("accessToken");
+
+                        sessions.saveIdDips(idDipsNew);
+                        sessions.saveIsCust(isCust);
+                        sessions.saveAuthToken(accessToken);
+
+                        idDips = idDipsNew;
+
+                        sessions.saveFLOW(1);
+                        sessions.saveIdDips(idDips);
+                        Intent intent = new Intent(mContext, DipsSwafoto.class);
+                        intent.putExtra("RESULT_IMAGE_AI",bytePhoto);
+                        intent.putExtra("CUSTNAME",custName);
+                        startActivity(intent);
+                        finishAffinity();
+
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }  else {
+                    if (response.code() < 500) {
+                        String dataErr = null;
+                        try {
+                            dataErr = response.errorBody().string();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                        Log.e("CEK", "dataErr : " + dataErr);
+                        if (dataErr != null) {
+                            try {
+                                JSONObject dataObj = new JSONObject(dataErr);
+                                if (dataObj.has("message")) {
+                                    String message = dataObj.getString("message");
+                                    Toast.makeText(mContext, message, Toast.LENGTH_SHORT).show();
+                                }
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                        } else {
+                            Toast.makeText(mContext, R.string.msg_error, Toast.LENGTH_SHORT).show();
+                        }
+                        //OutApps();
+                    } else {
+                        Toast.makeText(mContext, R.string.msg_error, Toast.LENGTH_SHORT).show();
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<JsonObject> call, Throwable t) {
+                Log.e("CEK","onFailure MESSAGE : "+t.getMessage());
+                Toast.makeText(mContext, t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -418,9 +538,9 @@ public class DipsChooseLanguage extends AppCompatActivity {
                     }
 
                     String idDipsOld = sessions.getKEY_IdDips();
-                    if (idDipsOld != null && OutboundService.mSocket != null) {
+                    /*if (idDipsOld != null && OutboundService.mSocket != null) {
                         OutboundService.leaveOutbound(idDipsOld);
-                    }
+                    }*/
 
                     boolean isCust = response.body().isCustomer();
                     String custName = response.body().getName();

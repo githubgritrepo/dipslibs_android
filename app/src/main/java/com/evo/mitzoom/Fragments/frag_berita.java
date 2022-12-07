@@ -1,15 +1,16 @@
 package com.evo.mitzoom.Fragments;
 
 import android.app.Activity;
-import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.MediaPlayer;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.StrictMode;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -40,11 +41,14 @@ import com.evo.mitzoom.API.ApiService;
 import com.evo.mitzoom.API.Server;
 import com.evo.mitzoom.Adapter.AdapterSlide;
 import com.evo.mitzoom.Adapter.GridProductAdapter;
+import com.evo.mitzoom.Helper.OutboundServiceNew;
 import com.evo.mitzoom.R;
 import com.evo.mitzoom.Session.SessionManager;
+import com.evo.mitzoom.ui.DipsWaitingRoom;
 import com.facebook.shimmer.ShimmerFrameLayout;
 import com.google.android.material.button.MaterialButton;
 import com.google.gson.JsonObject;
+import com.wdullaer.materialdatetimepicker.date.DatePickerDialog;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -58,9 +62,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.TimeoutException;
 
 import cn.pedant.SweetAlert.SweetAlertDialog;
 import me.relex.circleindicator.CircleIndicator;
@@ -71,7 +77,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class frag_berita extends Fragment {
+public class frag_berita extends Fragment implements com.wdullaer.materialdatetimepicker.date.DatePickerDialog.OnDateSetListener {
     private Context context;
     int [] gambar = {R.drawable.rtgs, R.drawable.pembukaanakun, R.drawable.formulirkomplain, R.drawable.ads1,R.drawable.ads2, R.drawable.ads3, R.drawable.ads4, R.drawable.ads1,R.drawable.ads2, R.drawable.ads3, R.drawable.ads4, R.drawable.ads1,R.drawable.ads2, R.drawable.ads3, R.drawable.ads4, R.drawable.ads1};
     private RecyclerView rv_product;
@@ -82,7 +88,10 @@ public class frag_berita extends Fragment {
     private CircleIndicator circleIndicator;
     private int currentPage;
     private MaterialButton btnSchedule,btnSchedule2, btnEndCall;
-    String [] time = {"08.00 - 10.00", "10.00 - 12.00", "12.00 - 14.00", "14.00 - 16.00", "16.00 - 17.00"};
+    ArrayList<String> time = new ArrayList<>();
+    List<Integer> periodeInt = new ArrayList<>();
+    HashMap<Integer,String> dataPeriode = new HashMap<>();
+    HashMap<String,Integer> dataPeriodeId = new HashMap<>();
     private int year, month, day, waktu_tunggu = 6000;
     private String tanggal, waktu;
     private String Savetanggal;
@@ -95,6 +104,11 @@ public class frag_berita extends Fragment {
     private RelativeLayout rl_real;
     private ShimmerFrameLayout shimmer_view;
     private List<Integer> indeksNotFound;
+    private DatePickerDialog dpd;
+    private EditText et_Date;
+    private AutoCompleteTextView et_time;
+    private JSONArray tanggalPenuh;
+    private JSONArray periodePenuh;
 
 
     @Override
@@ -103,6 +117,9 @@ public class frag_berita extends Fragment {
         context = getContext();
         sessions = new SessionManager(context);
         idDips = sessions.getKEY_IdDips();
+
+        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+        StrictMode.setThreadPolicy(policy);
     }
 
     @Nullable
@@ -156,7 +173,80 @@ public class frag_berita extends Fragment {
 
     }
 
+    private void processGetCheckSchedule() {
+        Server.getAPIService().GetCheckSchedule().enqueue(new Callback<JsonObject>() {
+            @Override
+            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                if (response.isSuccessful()) {
+                    String dataS = response.body().toString();
+                    try {
+                        JSONObject dataObj = new JSONObject(dataS);
+                        int errCode = dataObj.getInt("code");
+                        if (errCode == 200) {
+                            tanggalPenuh = dataObj.getJSONObject("data").getJSONArray("tanggalPenuh");
+                            periodePenuh = dataObj.getJSONObject("data").getJSONArray("periodePenuh");
 
+                            Log.e("CEK","tanggalPenuh : "+tanggalPenuh.toString());
+                            Log.e("CEK","periodePenuh : "+periodePenuh.toString());
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<JsonObject> call, Throwable t) {
+
+            }
+        });
+    }
+
+    @Override
+    public void onDateSet(com.wdullaer.materialdatetimepicker.date.DatePickerDialog view, int year, int monthOfYear, int dayOfMonth) {
+        Log.e("CEK","onDateSet");
+        int addmonths = (month + 1);
+        String months = String.valueOf(addmonths);
+        if (addmonths < 10) {
+            months = "0"+months;
+        }
+        String days = String.valueOf(dayOfMonth);
+        if (dayOfMonth < 10 ) {
+            days = "0"+days;
+        }
+        tanggal = days+"/"+months+"/"+year;
+        Savetanggal = year + "-" + months + "-" + days;
+        et_Date.setText(tanggal);
+
+        if (periodePenuh.length() > 0) {
+            ArrayList<String> times_new = new ArrayList<>();
+            times_new.addAll(time);
+            for (int i = 0; i < periodePenuh.length(); i++) {
+                try {
+                    String tglFull = periodePenuh.getJSONObject(i).getString("tanggal");
+                    int periodeId = periodePenuh.getJSONObject(i).getInt("periodeId");
+                    if (tglFull.equals(Savetanggal)) {
+                        String valP = dataPeriode.get(periodeId);
+                        for (int j = 0; j < times_new.size(); j++) {
+                            String times = times_new.get(j);
+                            if (valP.equals(times)) {
+                                times_new.remove(j);
+                                break;
+                            }
+                        }
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            ArrayAdapter<String> adapterTime = new ArrayAdapter<String>(context,R.layout.list_item, times_new);
+            et_time.setAdapter(adapterTime);
+        } else {
+            ArrayAdapter<String> adapterTime = new ArrayAdapter<String>(context,R.layout.list_item, time);
+            et_time.setAdapter(adapterTime);
+        }
+    }
 
     private class AsyncProcess extends AsyncTask<Void,Void,Void> {
 
@@ -164,8 +254,44 @@ public class frag_berita extends Fragment {
         protected Void doInBackground(Void... voids) {
             processGetSpanduk();
             processGetProduct();
+            processGetCheckSchedule();
+            processGetScheduleTimes();
             return null;
         }
+    }
+
+    private void processGetScheduleTimes() {
+        Server.getAPIService().GetScheduleTimes().enqueue(new Callback<JsonObject>() {
+            @Override
+            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                if (response.isSuccessful()) {
+                    String dataS = response.body().toString();
+                    try {
+                        JSONObject dataObj = new JSONObject(dataS);
+                        int errCode = dataObj.getInt("code");
+                        if (errCode == 200) {
+                            JSONArray dataArrTimes = dataObj.getJSONArray("data");
+                            for (int i = 0; i < dataArrTimes.length(); i++) {
+                                int periodeId = dataArrTimes.getJSONObject(i).getInt("id");
+                                String periode = dataArrTimes.getJSONObject(i).getString("periode");
+                                time.add(periode);
+                                periodeInt.add(periodeId);
+                                dataPeriode.put(periodeId,periode);
+                                dataPeriodeId.put(periode,periodeId);
+                            }
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
+                }
+            }
+
+            @Override
+            public void onFailure(Call<JsonObject> call, Throwable t) {
+
+            }
+        });
     }
 
     private void processGetSpanduk() {
@@ -399,7 +525,6 @@ public class frag_berita extends Fragment {
                 sweetAlertDialog.dismissWithAnimation();
                 Toast.makeText(context,getResources().getString(R.string.end_call2), Toast.LENGTH_LONG);
                 OutApps();
-
             }
         });
         Button btnCancel = (Button) sweetAlertDialog.findViewById(cn.pedant.SweetAlert.R.id.cancel_button);
@@ -463,16 +588,18 @@ public class frag_berita extends Fragment {
         sweetAlertDialog.setCustomView(dialogView);
         sweetAlertDialog.hideConfirmButton();
         sweetAlertDialog.show();
-        ArrayAdapter<String> adapterTime = new ArrayAdapter<String>(context,R.layout.list_item, time);
+
         ImageView btnclose = (ImageView) dialogView.findViewById(R.id.btn_close_schedule);
-        EditText et_Date = (EditText) dialogView.findViewById(R.id.et_Date);
-        AutoCompleteTextView et_time = (AutoCompleteTextView) dialogView.findViewById(R.id.et_time);
+        et_Date = (EditText) dialogView.findViewById(R.id.et_Date);
+        et_time = (AutoCompleteTextView) dialogView.findViewById(R.id.et_time);
+
+        ArrayAdapter<String> adapterTime = new ArrayAdapter<String>(context,R.layout.list_item, time);
+
         et_time.setAdapter(adapterTime);
         et_time.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Savewaktu = position;
-
             }
         });
         btnSchedule2 = dialogView.findViewById(R.id.btnSchedule2);
@@ -483,25 +610,75 @@ public class frag_berita extends Fragment {
                 year = c.get(Calendar.YEAR);
                 month = c.get(Calendar.MONTH);
                 day = c.get(Calendar.DAY_OF_MONTH);
-                DatePickerDialog datePickerDialog = new DatePickerDialog(context, new DatePickerDialog.OnDateSetListener() {
-                    @Override
-                    public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-                        int addmonths = (month + 1);
-                        String months = String.valueOf(addmonths);
-                        if (addmonths < 10) {
-                            months = "0"+months;
+                dpd = null;
+                if (dpd == null) {
+                    dpd = com.wdullaer.materialdatetimepicker.date.DatePickerDialog.newInstance(
+                            frag_berita.this,
+                            c.get(Calendar.YEAR),
+                            c.get(Calendar.MONTH),
+                            c.get(Calendar.DAY_OF_MONTH)
+                    );
+                } else {
+                    dpd.initialize(
+                            frag_berita.this,
+                            c.get(Calendar.YEAR),
+                            c.get(Calendar.MONTH),
+                            c.get(Calendar.DAY_OF_MONTH)
+                    );
+                }
+
+                // restrict to weekdays only
+                ArrayList<Calendar> weekdays = new ArrayList<Calendar>();
+                Calendar day = Calendar.getInstance();
+                int loopAdd = 0;
+                for (int i = 0; i < 30; i++) {
+                    if (day.get(Calendar.DAY_OF_WEEK) != Calendar.SATURDAY && day.get(Calendar.DAY_OF_WEEK) != Calendar.SUNDAY) {
+                        if (tanggalPenuh.length() > 0) {
+                            for (int tg = 0; tg < tanggalPenuh.length(); tg++) {
+                                try {
+                                    String tglFull = tanggalPenuh.getString(tg);
+                                    int yearChk = day.get(Calendar.YEAR);
+                                    int monthChk = day.get(Calendar.MONTH);
+                                    int dayChk = day.get(Calendar.DAY_OF_MONTH);
+
+                                    int addmonths = (monthChk + 1);
+                                    String months = String.valueOf(addmonths);
+                                    if (addmonths < 10) {
+                                        months = "0"+months;
+                                    }
+                                    String days = String.valueOf(dayChk);
+                                    if (dayChk < 10 ) {
+                                        days = "0"+days;
+                                    }
+
+                                    String tglChk = yearChk + "-" + months + "-" + days;
+                                    if (!tglFull.equals(tglChk)) {
+                                        Calendar d = (Calendar) day.clone();
+                                        weekdays.add(d);
+                                    }
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        } else {
+                            Calendar d = (Calendar) day.clone();
+                            weekdays.add(d);
                         }
-                        String days = String.valueOf(dayOfMonth);
-                        if (dayOfMonth < 10 ) {
-                            days = "0"+days;
-                        }
-                        tanggal = days+"/"+months+"/"+year;
-                        Savetanggal = year+""+months+""+days;
-                        et_Date.setText(tanggal);
+                    } else {
+                        loopAdd++;
                     }
-                }, year, month, day);
-                datePickerDialog.getDatePicker().setMinDate(System.currentTimeMillis() - 1000);
-                datePickerDialog.show();
+                    day.add(Calendar.DATE, 1);
+                }
+                Calendar[] weekdayDays = weekdays.toArray(new Calendar[weekdays.size()]);
+                dpd.setSelectableDays(weekdayDays);
+                //dpd.setMaxDate(day);
+
+                dpd.setOnCancelListener(dialog -> {
+                    Log.e("DatePickerDialog", "Dialog was cancelled");
+                    dpd = null;
+                });
+                dpd.show(requireFragmentManager(), "Datepickerdialog");
+
             }
         });
         btnclose.setOnClickListener(new View.OnClickListener() {
@@ -513,7 +690,7 @@ public class frag_berita extends Fragment {
         btnSchedule2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                tanggal = et_Date.getText().toString();
+                tanggal = et_Date.getText().toString().trim().trim();
                 waktu = et_time.getText().toString();
                 if (tanggal.trim().equals("")){
                     Toast.makeText(context.getApplicationContext(), R.string.notif_blank, Toast.LENGTH_SHORT).show();
@@ -525,37 +702,36 @@ public class frag_berita extends Fragment {
                     if (idDips.isEmpty()) {
                         idDips = sessions.getKEY_IdDips();
                     }
-                        saveSchedule();
-                        Toast.makeText(context.getApplicationContext(), getResources().getString(R.string.schedule) + tanggal + " & " + getResources().getString(R.string.jam) + waktu, Toast.LENGTH_LONG).show();
-                        sweetAlertDialog.dismiss();
-                        SweetAlertDialog sweetAlertDialog = new SweetAlertDialog(context, SweetAlertDialog.SUCCESS_TYPE);
-                        sweetAlertDialog.setContentText(getResources().getString(R.string.content_after_schedule));
-                        sweetAlertDialog.setConfirmText(getResources().getString(R.string.done));
-                        sweetAlertDialog.show();
-                        Button btnConfirm = (Button) sweetAlertDialog.findViewById(cn.pedant.SweetAlert.R.id.confirm_button);
-                        btnConfirm.setBackgroundTintList(context.getResources().getColorStateList(R.color.Blue));
-                        btnConfirm.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                sweetAlertDialog.dismiss();
-                                OutApps();
-                            }
-                        });
+                    //Toast.makeText(context.getApplicationContext(), getResources().getString(R.string.schedule) + tanggal + " & " + getResources().getString(R.string.jam) + waktu, Toast.LENGTH_LONG).show();
+                    sweetAlertDialog.dismiss();
+                    saveSchedule();
                 }
 
             }
         });
         btnSchedule2.setBackgroundTintList(context.getResources().getColorStateList(R.color.Blue));
     }
+
+    private void serviceOutbound() {
+        Intent serviceIntent = new Intent(context, OutboundServiceNew.class);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            ((Activity)context).startForegroundService(serviceIntent);
+        } else {
+            ((Activity)context).startService(serviceIntent);
+        }
+    }
+
     private void saveSchedule(){
+        int periodeId = dataPeriodeId.get(waktu);
         JSONObject jsons = new JSONObject();
         try {
             jsons.put("idDips",idDips);
             jsons.put("tanggal",Savetanggal);
-            jsons.put("grup",Savewaktu);
+            jsons.put("periodeId",periodeId);
         } catch (JSONException e) {
             e.printStackTrace();
         }
+        Log.e("CEK","PARAMS saveSchedule : "+jsons.toString());
         Log.d("PARAMS JADWAL","idDips = "+idDips+", Tanggal = "+Savetanggal+", Grup index Time of ["+Savewaktu+"]");
         RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), jsons.toString());
         ApiService API = Server.getAPIService();
@@ -563,13 +739,53 @@ public class frag_berita extends Fragment {
         call.enqueue(new Callback<JsonObject>() {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                Log.e("CEK","saveSchedule Respon Code : "+response.code());
                 if (response.isSuccessful() && response.body().size() > 0) {
+                    Log.e("CEK","saveSchedule Respon : "+response.body().toString());
+
+                    String dataS = response.body().toString();
+                    try {
+                        JSONObject dataObj = new JSONObject(dataS);
+                        int idSchedule = dataObj.getJSONObject("data").getInt("id");
+                        sessions.saveIDSchedule(idSchedule);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
+                    if (DipsWaitingRoom.channelCall != null) {
+                        try {
+                            Log.e("CEK","MASUK channelCall abort close");
+                            DipsWaitingRoom.channelCall.close();
+                        } catch (IOException | TimeoutException e) {
+                            e.printStackTrace();
+                        }
+                        if (DipsWaitingRoom.subscribeThreadCall != null) {
+                            Log.e("CEK","MASUK subscribeThreadCall interrupt");
+                            DipsWaitingRoom.subscribeThreadCall.interrupt();
+                        }
+                    }
+                    serviceOutbound();
+
+                    SweetAlertDialog sweetAlertDialog = new SweetAlertDialog(context, SweetAlertDialog.SUCCESS_TYPE);
+                    sweetAlertDialog.setContentText(getResources().getString(R.string.content_after_schedule));
+                    sweetAlertDialog.setConfirmText(getResources().getString(R.string.done));
+                    sweetAlertDialog.show();
+                    Button btnConfirm = (Button) sweetAlertDialog.findViewById(cn.pedant.SweetAlert.R.id.confirm_button);
+                    btnConfirm.setBackgroundTintList(context.getResources().getColorStateList(R.color.Blue));
+                    btnConfirm.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            sweetAlertDialog.dismiss();
+                            OutApps();
+
+                        }
+                    });
                 }
             }
 
             @Override
             public void onFailure(Call<JsonObject> call, Throwable t) {
-
+                Toast.makeText(context,t.getMessage(),Toast.LENGTH_SHORT).show();
             }
         });
 

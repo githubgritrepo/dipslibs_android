@@ -26,6 +26,7 @@ public class RabbitMirroring {
     private static Thread publishEndpointThread;
     private static Context mContext;
     private static SessionManager sessions;
+    private static String TAG = "RabbitMirroring";
 
     public RabbitMirroring(Context mContext) {
         this.mContext = mContext;
@@ -37,16 +38,18 @@ public class RabbitMirroring {
         sessions = new SessionManager(mContext);
 
         String uriRabbit = Server.BASE_URL_RABBITMQ;
+        Log.e(TAG,"MASUK setupConnectionFactory uriRabbit : "+uriRabbit);
         try {
             connectionFactory.setAutomaticRecoveryEnabled(false);
             connectionFactory.setUri(uriRabbit);
         } catch (URISyntaxException | NoSuchAlgorithmException | KeyManagementException e) {
+            Log.e(TAG,"ERROR setupConnectionFactory : "+e.getMessage());
             e.printStackTrace();
         }
     }
 
     public static void MirroringSendKey(JSONObject jsons) {
-        Log.e("CEK","MASUK MirroringSendKey : "+jsons.toString());
+        Log.e(TAG,"MASUK MirroringSendKey : "+jsons.toString());
         publishThread = new Thread(new Runnable() {
             @Override
             public void run() {
@@ -56,18 +59,18 @@ public class RabbitMirroring {
                     ch.confirmSelect();
 
                     String csID = sessions.getCSID();
-                    Log.e("CEK","csID : "+csID);
+                    Log.e(TAG,"csID : "+csID);
 
                     JSONObject datax = dataMirroring(jsons);
                     String dataxS = datax.toString();
 
-                    Log.e("CEK","dataxS : "+dataxS.toString());
+                    Log.e(TAG,"dataxS : "+dataxS.toString());
 
                     ch.basicPublish("dips361-cs-send-key","dips.direct.cs."+csID+".send.key",false,null,dataxS.getBytes());
                     ch.waitForConfirmsOrDie();
 
                 } catch (IOException | TimeoutException | InterruptedException e) {
-                    Log.e("CEK", "publishToAMQP Connection broken: " + e.getClass().getName());
+                    Log.e(TAG, "publishToAMQP Connection broken: " + e.getClass().getName());
                     try {
                         Thread.sleep(4000); //sleep and then try again
                         MirroringSendKey(jsons);
@@ -81,7 +84,7 @@ public class RabbitMirroring {
     }
 
     public static void MirroringSendEndpoint(int kodeEndPoint) {
-        Log.e("CEK","MASUK MirroringSendEndpoint");
+        Log.e(TAG,"MASUK MirroringSendEndpoint : "+kodeEndPoint);
         publishEndpointThread = new Thread(new Runnable() {
             @Override
             public void run() {
@@ -90,27 +93,34 @@ public class RabbitMirroring {
                     try {
                         jsons = new JSONObject();
                         jsons.put("endpoint",kodeEndPoint);
+                        if (kodeEndPoint == 99) {
+                            if (sessions.getKEY_IdDips() != null) {
+                                jsons.put("idDips",sessions.getKEY_IdDips());
+                            }
+                        }
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
+
+                    Log.e(TAG,"jsons : "+jsons.toString());
 
                     Connection connection = connectionFactory.newConnection();
                     Channel ch = connection.createChannel();
                     ch.confirmSelect();
 
                     String csID = sessions.getCSID();
-                    Log.e("CEK","csID : "+csID);
+                    Log.e(TAG,"csID : "+csID);
 
                     JSONObject datax = dataMirroring(jsons);
                     String dataxS = datax.toString();
 
-                    Log.e("CEK","dataxS : "+dataxS.toString());
+                    Log.e(TAG,"dataxS : "+dataxS.toString());
 
                     ch.basicPublish("dips361-cs-send-endpoint","dips.direct.cs."+csID+".send.endpoint",false,null,dataxS.getBytes());
                     ch.waitForConfirmsOrDie();
 
                 } catch (IOException | TimeoutException | InterruptedException e) {
-                    Log.e("CEK", "publishToAMQP Connection broken: " + e.getClass().getName());
+                    Log.e(TAG, "publishToAMQP Connection broken: " + e.getClass().getName());
                     try {
                         Thread.sleep(4000); //sleep and then try again
                     } catch (InterruptedException e1) {
