@@ -11,20 +11,27 @@
         android:layout_height="match_parent"
         android:layout_above="@id/btnNext">
 
-        <androidx.core.widget.NestedScrollView
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="match_parent">
 
-            <LinearLayout
-                android:id="@+id/llFormBuild"
+            <androidx.core.widget.NestedScrollView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:layout_marginStart="@dimen/dp_20"
-                android:layout_marginEnd="@dimen/dp_20"
-                android:layout_marginBottom="@dimen/dp_20"
-                android:layout_marginTop="20dp"/>
-        </androidx.core.widget.NestedScrollView>
+                android:layout_centerInParent="true">
+
+                <LinearLayout
+                    android:id="@+id/llFormBuild"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/dp_20"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginEnd="@dimen/dp_20"
+                    android:layout_marginBottom="@dimen/dp_20"
+                    android:orientation="vertical" />
+            </androidx.core.widget.NestedScrollView>
+
+        </RelativeLayout>
 
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
@@ -42,6 +49,6 @@
         android:textColor="@color/white"
         android:textSize="13dp"
         android:textStyle="bold"
-        app:backgroundTint="@color/Blue" />
+        app:backgroundTint="@color/zm_button" />
 
 </RelativeLayout>

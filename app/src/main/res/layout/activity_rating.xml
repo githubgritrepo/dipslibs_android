@@ -5,7 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FAF8F8"
+    android:background="#FFFFFF"
     tools:context=".ui.RatingActivity">
 <LinearLayout
     android:layout_width="match_parent"
@@ -13,11 +13,14 @@
     android:orientation="vertical">
 
     <ImageView
-        android:layout_marginTop="35dp"
+        android:layout_marginTop="30dp"
+        android:layout_marginStart="30dp"
+        android:layout_marginEnd="30dp"
         android:layout_gravity="center"
-        android:layout_width="90dp"
-        android:layout_height="90dp"
-        android:src="@mipmap/dips361_round"/>
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:src="@drawable/logo_bank_victoria"
+        android:scaleType="fitCenter"/>
     <TextView
         android:layout_marginStart="30dp"
         android:layout_marginEnd="30dp"
@@ -29,62 +32,103 @@
         android:textAlignment="center"
         android:textColor="@color/black"
         android:text="@string/headline_rating"/>
-    <TextView
+    <androidx.cardview.widget.CardView
+        android:layout_marginTop="20dp"
         android:layout_marginStart="30dp"
         android:layout_marginEnd="30dp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:layout_gravity="center"
-        android:textSize="16dp"
-        android:textAlignment="center"
-        android:textColor="@color/black"
-        android:text="@string/apakah_permasalahan_anda_n_selesai_dengan_baik"/>
-    <LinearLayout
-        android:gravity="center"
+        android:elevation="0dp"
+        android:backgroundTint="#F1F2F2"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:orientation="horizontal">
-        <ImageView
-            android:id="@+id/thumbs_up"
-            android:layout_gravity="center"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_marginEnd="20dp"
-            android:src="@drawable/thumbs_up"/>
-        <ImageView
-            android:id="@+id/thumbs_down"
-            android:layout_gravity="center"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:src="@drawable/thumbs_down"/>
-    </LinearLayout>
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        app:cardCornerRadius="10dp"
+        android:layout_gravity="center">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+            <TextView
+                android:layout_marginStart="10dp"
+                android:layout_marginEnd="10dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:layout_gravity="center"
+                android:textSize="16dp"
+                android:textAlignment="center"
+                android:textColor="@color/black"
+                android:text="@string/apakah_permasalahan_anda_n_selesai_dengan_baik"/>
+            <LinearLayout
+                android:gravity="center"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="20dp"
+                android:orientation="horizontal">
+                <ImageView
+                    android:id="@+id/thumbs_up"
+                    android:layout_gravity="center"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_marginEnd="20dp"
+                    android:src="@drawable/thumbs_up"/>
+                <ImageView
+                    android:id="@+id/thumbs_down"
+                    android:layout_gravity="center"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:src="@drawable/thumbs_down"/>
+            </LinearLayout>
+        </LinearLayout>
+
+    </androidx.cardview.widget.CardView>
+
+    <androidx.cardview.widget.CardView
         android:layout_marginTop="20dp"
         android:layout_marginStart="30dp"
         android:layout_marginEnd="30dp"
-        android:layout_gravity="center"
-        android:textSize="16dp"
-        android:textAlignment="center"
-        android:textColor="@color/black"
-        android:text="@string/mohon_berikan_penilaian_anda_atas_npelayanan_dips_hari_ini"/>
-    <RatingBar
-        android:clickable="false"
-        android:focusable="false"
-        android:progressTint="@color/ratingON"
-        android:layout_gravity="center"
-        android:id="@+id/ratingBar"
-        android:layout_width="wrap_content"
+        android:elevation="0dp"
+        android:backgroundTint="#F1F2F2"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp" />
+        app:cardCornerRadius="10dp"
+        android:layout_gravity="center">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:layout_marginStart="10dp"
+                android:layout_marginEnd="10dp"
+                android:layout_gravity="center"
+                android:textSize="16dp"
+                android:textAlignment="center"
+                android:textColor="@color/black"
+                android:text="@string/mohon_berikan_penilaian_anda_atas_npelayanan_dips_hari_ini"/>
+            <RatingBar
+                android:clickable="false"
+                android:focusable="false"
+                android:progressTint="@color/ratingON"
+                android:layout_gravity="center"
+                android:id="@+id/ratingBar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp" />
+
+        </LinearLayout>
+
+    </androidx.cardview.widget.CardView>
+
     <com.google.android.material.textfield.TextInputLayout
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="20dp"
         android:layout_marginStart="30dp"
         android:layout_marginEnd="30dp"
         android:layout_marginBottom="20dp"
@@ -101,7 +145,9 @@
             android:layout_width="match_parent"
             android:layout_height="100dp"
             android:background="@drawable/bg_textinput"
+            android:backgroundTint="#F1F2F2"
             android:inputType="textMultiLine"
+            android:hint="Tulis disini.."
             android:lines="8"
             android:maxLines="10"
             android:minLines="6"

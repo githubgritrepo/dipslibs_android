@@ -59,7 +59,7 @@ public class RatingActivity extends AppCompatActivity {
                 rating.setFocusable(false);
                 rating.setRating(0);
                 btnSend.setEnabled(true);
-                btnSend.setBackgroundTintList(RatingActivity.this.getResources().getColorStateList(R.color.Blue));
+                btnSend.setBackgroundTintList(RatingActivity.this.getResources().getColorStateList(R.color.zm_button));
                 thumbs_down.setImageResource(R.drawable.thumbs_down2);
                 thumbs_up.setImageResource(R.drawable.thumbs_up);
             }
@@ -100,7 +100,7 @@ public class RatingActivity extends AppCompatActivity {
         sweetAlertDialog.setConfirmText(getResources().getString(R.string.done));
         sweetAlertDialog.show();
         Button btnConfirm = (Button) sweetAlertDialog.findViewById(cn.pedant.SweetAlert.R.id.confirm_button);
-        btnConfirm.setBackgroundTintList(RatingActivity.this.getResources().getColorStateList(R.color.Blue));
+        btnConfirm.setBackgroundTintList(RatingActivity.this.getResources().getColorStateList(R.color.zm_button));
         sweetAlertDialog.setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
             @Override
             public void onClick(SweetAlertDialog sweetAlertDialog) {

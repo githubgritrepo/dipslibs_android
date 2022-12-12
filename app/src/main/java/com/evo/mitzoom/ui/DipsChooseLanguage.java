@@ -448,9 +448,16 @@ public class DipsChooseLanguage extends AppCompatActivity {
 
                         sessions.saveFLOW(1);
                         sessions.saveIdDips(idDips);
-                        Intent intent = new Intent(mContext, DipsSwafoto.class);
-                        intent.putExtra("RESULT_IMAGE_AI",bytePhoto);
-                        intent.putExtra("CUSTNAME",custName);
+
+                        Intent intent = null;
+                        if (!noCIF.isEmpty()) {
+                            intent = new Intent(mContext, DipsWaitingRoom.class);
+                            intent.putExtra("RESULT_IMAGE_AI",bytePhoto);
+                        } else {
+                            intent = new Intent(mContext, DipsSwafoto.class);
+                            intent.putExtra("RESULT_IMAGE_AI", bytePhoto);
+                            intent.putExtra("CUSTNAME", custName);
+                        }
                         startActivity(intent);
                         finishAffinity();
 

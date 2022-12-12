@@ -67,7 +67,7 @@ public class frag_new_account_cs_resi extends Fragment {
             @Override
             public void onClick(View view) {
                 session.clearCIF();
-                getFragmentPage(new frag_portfolio());
+                getFragmentPage(new frag_portfolio_new());
             }
         });
     }

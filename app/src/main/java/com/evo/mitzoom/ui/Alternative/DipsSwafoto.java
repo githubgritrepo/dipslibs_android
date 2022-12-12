@@ -97,8 +97,9 @@ public class DipsSwafoto extends AppCompatActivity {
         useFacing = intent.getIntExtra(KEY_USE_FACING, Camera.CameraInfo.CAMERA_FACING_FRONT);
 
         ViewGroup.LayoutParams lp = cardSurf.getLayoutParams();
-        lp.width = dyWidth;
-        cardSurf.setLayoutParams(lp);
+        Log.e("CEK","dyWidth : "+dyWidth);
+        /*lp.width = dyWidth;
+        cardSurf.setLayoutParams(lp);*/
 
         boolean cekConstain = getIntent().getExtras().containsKey("RESULT_IMAGE_AI");
         byte[] resultImage = new byte[0];

@@ -16,6 +16,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -208,6 +209,31 @@ public class AdapterCIF extends RecyclerView.Adapter<AdapterCIF.ViewHolder> {
                                         }
                                     });
                                     break;
+                                } else if (llFormBuild.getChildAt(i) instanceof RelativeLayout) {
+                                    RelativeLayout rl = (RelativeLayout) llFormBuild.getChildAt(i);
+                                    if (rl.getChildAt(0) instanceof Spinner) {
+                                        Spinner spin = (Spinner) rl.getChildAt(0);
+                                        spin.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                                            @Override
+                                            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                                                Log.e("CEK","getSelectedItem : "+spin.getSelectedItem().toString());
+                                                String results = spin.getSelectedItem().toString();
+                                                try {
+                                                    objEl.put(nameDataEl, results);
+                                                    dataFormCIF.put(nameForm,objEl);
+                                                    rabbitMirroring.MirroringSendKey(dataFormCIF);
+                                                } catch (JSONException e) {
+                                                    e.printStackTrace();
+                                                }
+                                            }
+
+                                            @Override
+                                            public void onNothingSelected(AdapterView<?> adapterView) {
+
+                                            }
+                                        });
+                                        break;
+                                    }
                                 } else if (llFormBuild.getChildAt(i) instanceof AutoCompleteTextView) {
                                     AutoCompleteTextView autoText = (AutoCompleteTextView) llFormBuild.getChildAt(i);
                                     autoText.setOnItemClickListener(new AdapterView.OnItemClickListener() {

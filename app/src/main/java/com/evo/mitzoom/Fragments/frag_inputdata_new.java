@@ -27,6 +27,7 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -310,7 +311,6 @@ public class frag_inputdata_new extends Fragment {
     }
 
     private void processValidationActionForm() {
-        Log.e("CEK","processValidationActionForm");
         int child = llFormBuild.getChildCount();
 
         if (child > 0 && idElement.length() > 0) {
@@ -381,7 +381,6 @@ public class frag_inputdata_new extends Fragment {
                                     spin.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                                         @Override
                                         public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                                            Log.e("CEK","onItemSelected : "+spin.isSelected());
                                             Log.e("CEK","getSelectedItem : "+spin.getSelectedItem().toString());
                                             String results = spin.getSelectedItem().toString();
                                             try {
@@ -397,6 +396,31 @@ public class frag_inputdata_new extends Fragment {
                                         }
                                     });
                                     break;
+                                } else if (llFormBuild.getChildAt(i) instanceof RelativeLayout) {
+                                    RelativeLayout rl = (RelativeLayout) llFormBuild.getChildAt(i);
+                                    if (rl.getChildAt(0) instanceof Spinner) {
+                                        Spinner spin = (Spinner) rl.getChildAt(0);
+
+                                        objEl.put(nameDataEl, "");
+                                        spin.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                                            @Override
+                                            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                                                Log.e("CEK","getSelectedItem : "+spin.getSelectedItem().toString());
+                                                String results = spin.getSelectedItem().toString();
+                                                try {
+                                                    objEl.put(nameDataEl, results);
+                                                } catch (JSONException e) {
+                                                    e.printStackTrace();
+                                                }
+                                            }
+
+                                            @Override
+                                            public void onNothingSelected(AdapterView<?> adapterView) {
+
+                                            }
+                                        });
+                                        break;
+                                    }
                                 } else if (llFormBuild.getChildAt(i) instanceof AutoCompleteTextView) {
                                     objEl.put(nameDataEl, "");
                                     break;

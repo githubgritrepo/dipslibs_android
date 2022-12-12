@@ -93,6 +93,7 @@ public class frag_cif_full extends Fragment {
     private RecyclerView.LayoutManager recylerViewLayoutManager;
     private BroadcastReceiver smsReceiver = null;
     private PinView otp;
+    private String no_handphone = "";
     private String numberOTP = "";
     private String newString = "";
     private Handler handler = null;
@@ -118,6 +119,8 @@ public class frag_cif_full extends Fragment {
         try {
             objValCIF = new JSONObject(valDataCIF);
             Log.e(TAG,"CIF FULL objValCIF : "+objValCIF.toString());
+            JSONObject objEl = objValCIF.getJSONObject("datadiri");
+            no_handphone = objEl.getString("noponsel");
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -379,8 +382,11 @@ public class frag_cif_full extends Fragment {
     }
 
     private void PopUpOTP(){
-        //String sub_no_handphone = no_handphone.substring(no_handphone.length() - 3);
-        String noHandphone = "089783434XXX";//no_handphone.replace(sub_no_handphone,"XXX");
+        String noHandphone = "089783434XXX";
+        if (!no_handphone.isEmpty()) {
+            String sub_no_handphone = no_handphone.substring(no_handphone.length() - 3);
+            noHandphone = no_handphone.replace(sub_no_handphone,"XXX");
+        }
 
         View dialogView = getLayoutInflater().inflate(R.layout.item_otp, null);
         SweetAlertDialog sweetAlertDialog = new SweetAlertDialog(mContext, SweetAlertDialog.NORMAL_TYPE);
@@ -471,7 +477,6 @@ public class frag_cif_full extends Fragment {
                 else {
                     handler.removeMessages(0);
                     handler.removeCallbacks(myRunnable);
-                    //MirroringOTP(otp.getText().toString(),true);
                     sweetAlertDialog.dismiss();
                     PopUpSuccesOtp();
                     //verifyOTP();
@@ -516,6 +521,7 @@ public class frag_cif_full extends Fragment {
             @Override
             public void run() {
                 sweetAlertDialog.dismiss();
+                rabbitMirroring.MirroringSendEndpoint(12);
                 PopUpSuccesRegistration();
             }
         },5000);
@@ -534,6 +540,7 @@ public class frag_cif_full extends Fragment {
             @Override
             public void onClick(SweetAlertDialog sweetAlertDialog) {
                 sweetAlertDialog.dismiss();
+                rabbitMirroring.MirroringSendEndpoint(361);
                 PopUpTnc();
             }
         });
@@ -552,7 +559,8 @@ public class frag_cif_full extends Fragment {
             @Override
             public void onClick(View v) {
                 sweetAlertDialog.dismiss();
-                getFragmentPage(new frag_aktivasi_berhasil());
+                rabbitMirroring.MirroringSendEndpoint(13);
+                getFragmentPage(new frag_cif_resi());
             }
         });
     }

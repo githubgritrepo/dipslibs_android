@@ -5,72 +5,17 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".ui.DipsChooseLanguage"
-    android:background="@color/gray_btn_bg_color">
+    android:background="@drawable/bg_splashscreen">
 
-    <LinearLayout
+    <ImageView
+        android:id="@+id/imgSplash"
+        android:layout_marginStart="30dp"
+        android:layout_marginEnd="30dp"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:layout_margin="50dp"
+        android:layout_height="100dp"
         android:layout_centerInParent="true"
-        android:background="@drawable/oval_background">
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/pilih_bahasa"
-            android:textStyle="bold"
-            android:textColor="@color/black"
-            android:textSize="15dp"
-            android:gravity="center"/>
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="2dp"
-            android:layout_marginTop="10dp"
-            android:layout_marginBottom="10dp"
-            android:background="#EDEDF4"/>
-
-        <RadioGroup
-            android:id="@+id/groupradio"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <RadioButton
-                android:textSize="14dp"
-                android:id="@+id/rbId"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/lan_id"
-                android:textStyle="bold"
-                android:onClick="onRadioButtonClicked"/>
-
-            <RadioButton
-                android:textSize="14dp"
-                android:id="@+id/rbEn"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/lan_en"
-                android:textStyle="bold"
-                android:onClick="onRadioButtonClicked"
-                android:layout_marginStart="@dimen/dp_20"
-                android:layout_gravity="right"/>
-
-        </RadioGroup>
-
-        <Button
-            android:textSize="14dp"
-            android:id="@+id/btnNext"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/lanjut_next"
-            android:textColor="@color/white"
-            android:background="@drawable/oval_background_10dp"
-            android:layout_gravity="center"
-            android:layout_marginTop="@dimen/dp_10"/>
-
-    </LinearLayout>
+        android:scaleType="fitCenter"
+        android:src="@drawable/logo_bank_victoria_white" />
 
     <TextView
         android:id="@+id/tvVersion"
@@ -81,16 +26,92 @@
         android:layout_marginBottom="60dp"
         android:text="V 1.1.6"
         android:textAlignment="center"
-        android:textColor="@color/black"
+        android:textColor="@color/white"
         android:textSize="17dp"
         android:textStyle="bold" />
 
     <RelativeLayout
-        android:id="@+id/rlload"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/transparentblack"
-        android:visibility="gone"
-        android:clickable="true"/>
+        android:background="@color/transparentblack">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:layout_marginStart="70dp"
+            android:layout_marginTop="50dp"
+            android:layout_marginEnd="70dp"
+            android:layout_marginBottom="50dp"
+            android:background="@drawable/oval_background"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="@string/pilih_bahasa"
+                android:textColor="@color/black"
+                android:textSize="15dp"
+                android:textStyle="bold" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp"
+                android:background="#EDEDF4" />
+
+            <RadioGroup
+                android:id="@+id/groupradio"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <RadioButton
+                    android:id="@+id/rbId"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:onClick="onRadioButtonClicked"
+                    android:text="@string/lan_id"
+                    android:textSize="14dp"
+                    android:textStyle="bold"
+                    android:layout_gravity="center_vertical|left"/>
+
+                <RadioButton
+                    android:id="@+id/rbEn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical|right"
+                    android:layout_marginStart="@dimen/dp_20"
+                    android:onClick="onRadioButtonClicked"
+                    android:text="@string/lan_en"
+                    android:textSize="14dp"
+                    android:textStyle="bold" />
+
+            </RadioGroup>
+
+            <Button
+                android:id="@+id/btnNext"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="@dimen/dp_10"
+                android:background="@drawable/oval_background_10dp"
+                android:text="@string/lanjut_next"
+                android:textColor="@color/white"
+                android:textSize="14dp" />
+
+        </LinearLayout>
+
+        <RelativeLayout
+            android:id="@+id/rlload"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/transparentblack"
+            android:visibility="gone"
+            android:clickable="true"/>
+
+    </RelativeLayout>
 
 </RelativeLayout>

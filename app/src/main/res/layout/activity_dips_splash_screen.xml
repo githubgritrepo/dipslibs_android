@@ -3,15 +3,18 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.DipsSplashScreen">
+    tools:context=".ui.DipsSplashScreen"
+    android:background="@drawable/bg_splashscreen">
 
     <ImageView
         android:id="@+id/imgSplash"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_marginStart="30dp"
+        android:layout_marginEnd="30dp"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
         android:layout_centerInParent="true"
         android:scaleType="fitCenter"
-        android:src="@drawable/company_logo" />
+        android:src="@drawable/logo_bank_victoria_white" />
 
     <TextView
         android:id="@+id/tvVersion"
@@ -22,7 +25,7 @@
         android:layout_marginBottom="60dp"
         android:text="V 1.1.6"
         android:textAlignment="center"
-        android:textColor="@color/black"
+        android:textColor="@color/white"
         android:textSize="17dp"
         android:textStyle="bold" />
 

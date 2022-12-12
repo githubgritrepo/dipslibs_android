@@ -28,6 +28,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -100,13 +101,15 @@ public class MyParserFormBuilder {
                                     llFormBuild.addView(tv);
                                 }
 
-                                int intAplhabet = alphabetToInt(compLabel);
+                                int intAplhabet = randomId();
 
                                 EditText ed = new EditText(mContext);
                                 ed.setId(intAplhabet);
                                 ed.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
                                 ed.setGravity(Gravity.CENTER_VERTICAL);
                                 ed.setIncludeFontPadding(false);
+                                ed.setBackground(mContext.getDrawable(R.drawable.bg_textinput));
+                                ed.setPadding(20,20,20,20);
                                 if (compType.equals("date")) {
                                     ed.setInputType(InputType.TYPE_DATETIME_VARIATION_DATE);
                                     ed.setClickable(false);
@@ -119,10 +122,16 @@ public class MyParserFormBuilder {
                                     DatePickerDialog.OnDateSetListener dateDialog = new DatePickerDialog.OnDateSetListener() {
                                         @Override
                                         public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+                                            Log.e("CEK","year : "+year+" | month : "+month+" | dayOfMonth : "+dayOfMonth);
                                             currentTime.set(Calendar.YEAR, year);
                                             currentTime.set(Calendar.MONTH, month);
                                             currentTime.set(Calendar.DAY_OF_MONTH, dayOfMonth);
-                                            String getDates = updateDates(currentTime);
+
+                                            String Tgl = String.format("%02d", dayOfMonth);
+                                            String bln = String.format("%02d", month+1);
+
+                                            //String getDates = updateDates(currentTime);
+                                            String getDates = Tgl+"-"+bln+"-"+year;
                                             ed.setText(getDates);
                                         }
                                     };
@@ -203,7 +212,7 @@ public class MyParserFormBuilder {
                                         }
                                     }
 
-                                    int intAplhabet = alphabetToInt("Radio"+compLabel);
+                                    int intAplhabet = randomId();
                                     radioGroup = new RadioGroup(mContext);
                                     radioGroup.setLayoutParams(lp);
                                     if (jkRad > 3) {
@@ -215,7 +224,7 @@ public class MyParserFormBuilder {
 
                                 }
 
-                                int intAplhabet = alphabetToInt(compPlaceholder);
+                                int intAplhabet = randomId();
 
                                 RadioButton rb = new RadioButton(mContext);
                                 rb.setLayoutParams(lp2);
@@ -243,7 +252,7 @@ public class MyParserFormBuilder {
                                 tv.setLayoutParams(lp);
                                 llFormBuild.addView(tv);
 
-                                int intAplhabet = alphabetToInt(compLabel);
+                                int intAplhabet = randomId();
 
                                 CheckBox chk = new CheckBox(mContext);
                                 chk.setId(intAplhabet);
@@ -261,7 +270,7 @@ public class MyParserFormBuilder {
                                 dataArrElement.put(dataObjEl);
 
                             } else if (compType.equals("file")) {
-                                int intAplhabet = alphabetToInt(compLabel);
+                                int intAplhabet = randomId();
 
                                 lp.setMargins(0,10,0,10);
                                 LinearLayout ln = new LinearLayout(mContext);
@@ -269,7 +278,7 @@ public class MyParserFormBuilder {
                                 ln.setLayoutParams(lp);
                                 ln.setOrientation(LinearLayout.VERTICAL);
 
-                                int intLinear = alphabetToInt(compLabel+"linear");
+                                int intLinear = randomId();
                                 LinearLayout ln2 = new LinearLayout(mContext);
                                 LinearLayout.LayoutParams lpLL = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,LinearLayout.LayoutParams.WRAP_CONTENT);;
                                 lpLL.setMargins(0,0,0,5);
@@ -297,7 +306,7 @@ public class MyParserFormBuilder {
                                 ln2.addView(tv);
                                 ln.addView(ln2);
 
-                                int inttvSaved = alphabetToInt("saved"+compLabel);
+                                int inttvSaved = randomId();
                                 LinearLayout.LayoutParams lptv = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,LinearLayout.LayoutParams.WRAP_CONTENT);;
                                 lptv.setMargins(0,0,0,10);
                                 TextView tvSaved = new TextView(mContext);
@@ -346,18 +355,49 @@ public class MyParserFormBuilder {
                             LinearLayout.LayoutParams lpSpin = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,50);
                             lpSpin.setMargins(0,0,0,10);
 
-                            int intAplhabet = alphabetToInt(compLabel);
+                            int intAplhabet = randomId();
 
-                            Spinner spinner = new Spinner(mContext);
+                            /*Spinner spinner = new Spinner(mContext);
                             spinner.setId(intAplhabet);
                             spinner.setLayoutParams(lpSpin);
                             spinner.setFocusable(false);
+                            spinner.setGravity(Gravity.CENTER_VERTICAL);
+                            spinner.setBackground(mContext.getDrawable(R.drawable.bg_textinput));
+                            spinner.setPadding(10,10,20,10);
                             ArrayAdapter<FormSpin> adapter = new ArrayAdapter<FormSpin>(mContext, android.R.layout.simple_spinner_dropdown_item, dataDropDown);
                             spinner.setAdapter(adapter);
 
-                            llFormBuild.addView(spinner);
+                            llFormBuild.addView(spinner);*/
 
-                            int ids = spinner.getId();
+                            RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                            layoutParams.addRule(RelativeLayout.CENTER_VERTICAL, RelativeLayout.TRUE);
+
+                            RelativeLayout relativeLayout = new RelativeLayout(mContext);
+                            relativeLayout.setLayoutParams(lp);
+                            relativeLayout.setId(intAplhabet);
+                            relativeLayout.setBackground(mContext.getDrawable(R.drawable.bg_textinput));
+
+                            int spinId = randomId();
+                            Spinner spinner = new Spinner(mContext);
+                            spinner.setId(spinId);
+                            spinner.setLayoutParams(layoutParams);
+                            spinner.setFocusable(false);
+                            spinner.setGravity(Gravity.CENTER_VERTICAL);
+                            spinner.setPadding(0,0,20,0);
+                            ArrayAdapter<FormSpin> adapter2 = new ArrayAdapter<FormSpin>(mContext, android.R.layout.simple_spinner_dropdown_item, dataDropDown);
+                            spinner.setAdapter(adapter2);
+                            relativeLayout.addView(spinner);
+
+                            RelativeLayout.LayoutParams layoutParams2 = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                            layoutParams2.addRule(RelativeLayout.CENTER_VERTICAL, RelativeLayout.TRUE);
+                            layoutParams2.addRule(RelativeLayout.RIGHT_OF,RelativeLayout.TRUE);
+
+                            ImageView imgSpin = new ImageView(mContext);
+                            imgSpin.setLayoutParams(layoutParams2);
+                            relativeLayout.addView(imgSpin);
+                            llFormBuild.addView(relativeLayout);
+
+                            int ids = relativeLayout.getId();
                             Log.e("CEK","compName : "+compPlaceholder+" | ids : "+ids);
                             String elName = compLabel.toLowerCase().replace(" ", "").replace("-", "").replace("/", "").replace(".", "");
                             JSONObject dataObjElOpt = new JSONObject();
@@ -386,16 +426,19 @@ public class MyParserFormBuilder {
                             LinearLayout.LayoutParams lpAutoList = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
                             lpAutoList.setMargins(0,0,0,10);
 
-                            int intAplhabetAuto = alphabetToInt(compLabel);
+                            int intAplhabetAuto = randomId();
                             Log.e("CEK","intAplhabetAuto : "+intAplhabetAuto);
                             AutoCompleteTextView autoText = new AutoCompleteTextView(mContext);
                             lp.setMargins(0,0,0,0);
                             autoText.setId(intAplhabetAuto);
+                            autoText.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
                             autoText.setLayoutParams(lp);
                             autoText.setDropDownHeight(200);
                             autoText.setGravity(Gravity.CENTER_VERTICAL);
                             autoText.setSingleLine(true);
                             autoText.setIncludeFontPadding(false);
+                            autoText.setBackground(mContext.getDrawable(R.drawable.bg_textinput));
+                            autoText.setPadding(20,20,20,20);
                             autoText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
                                 @Override
                                 public void onFocusChange(View view, boolean hasFocus) {
@@ -468,6 +511,12 @@ public class MyParserFormBuilder {
         }
 
         return dataArrElement;
+    }
+
+    private static int randomId() {
+        Random random=new Random();
+        int dataInt = random.nextInt(99999999);
+        return dataInt;
     }
 
     private static int alphabetToInt(String data) {

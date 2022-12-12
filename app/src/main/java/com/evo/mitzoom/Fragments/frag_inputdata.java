@@ -374,7 +374,7 @@ public class frag_inputdata extends Fragment {
                         } else {
                             Mirroring4(false);
                             session.clearCIF();
-                            getFragmentPage(new frag_portfolio());
+                            getFragmentPage(new frag_portfolio_new());
                         }
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -445,7 +445,7 @@ public class frag_inputdata extends Fragment {
                         else {
                             Mirroring4(false);
                             session.clearCIF();
-                            getFragmentPage(new frag_portfolio());
+                            getFragmentPage(new frag_portfolio_new());
                         }
 
                     } catch (JSONException e) {

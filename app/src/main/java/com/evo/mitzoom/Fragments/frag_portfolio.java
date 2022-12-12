@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -195,6 +196,7 @@ public class frag_portfolio extends Fragment {
         Server.getAPIService().GetPortofolio(idDips).enqueue(new Callback<JsonObject>() {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                Log.e("CEK","getPortofolio code : "+response.code());
                 if (response.isSuccessful()) {
                     String dataS = response.body().toString();
                     Log.e("CEK","response body getPortofolio : "+dataS);
@@ -218,12 +220,14 @@ public class frag_portfolio extends Fragment {
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
+                } else {
+                    Toast.makeText(context,getString(R.string.msg_error),Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
             public void onFailure(Call<JsonObject> call, Throwable t) {
-
+                Toast.makeText(context,t.getMessage(),Toast.LENGTH_SHORT).show();
             }
         });
     }

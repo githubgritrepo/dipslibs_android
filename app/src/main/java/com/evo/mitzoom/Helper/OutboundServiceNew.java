@@ -47,7 +47,7 @@ public class OutboundServiceNew extends Service {
     public static final int POST_CONNECTIVITY_CHANGE_PING_INTERVAL = 30;
     //RabitMQ
     static ConnectionFactory connectionFactory = new ConnectionFactory();
-    private Thread subscribeThreadCallOutbound;
+    private static Thread subscribeThreadCallOutbound;
     private static Thread publishCallAcceptThread;
     public static int IDSERVICES = 1001;
     public static int NOTIFICATION_IDOutbound = 101;
@@ -181,6 +181,7 @@ public class OutboundServiceNew extends Service {
                                 customerName = "Fulan";
                                 imagesAgent = "";
                                 nameAgent = "Ade";
+                                sessions.saveCSID(csId);
 
                                 Intent intent = new Intent(getApplicationContext(), MyBroadcastReceiver.class);
                                 intent.setAction("calloutbound");
@@ -297,6 +298,12 @@ public class OutboundServiceNew extends Service {
         Log.e("CEK","acceptCall : "+sessions.getIDSchedule());
         if (sessions.getIDSchedule() > 0) {
             publishCallAccept();
+            if (subscribeThreadCallOutbound != null) {
+                subscribeThreadCallOutbound.interrupt();
+            }
+            if (publishCallAcceptThread != null) {
+                publishCallAcceptThread.interrupt();
+            }
         } else {
             Toast.makeText(mContext,"Tidak berhasil Call",Toast.LENGTH_SHORT).show();
         }

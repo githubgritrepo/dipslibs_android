@@ -69,7 +69,7 @@ public class frag_service extends Fragment {
             @Override
             public void onClick(View v) {
                 Mirroring(14,true);
-                getFragmentPage(new frag_portfolio());
+                getFragmentPage(new frag_portfolio_new());
             }
         });
     }

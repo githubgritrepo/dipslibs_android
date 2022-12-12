@@ -37,6 +37,10 @@
     <color name="zm_toolbar_stopshare_focus">#ff7977</color>
     <color name="zm_notification_icon_bg">#9e9e9e</color>
 
+    <!--by bank victoria-->
+    <color name="zm_button">#E34243</color>
+    <color name="zm_bg">#FDE5D9</color>
+
     <color name="blue_normal">#0E71EB</color>
     <color name="dips_yellow">#FFF500</color>
     <color name="blue_btn_bg">#AEDEF4</color>

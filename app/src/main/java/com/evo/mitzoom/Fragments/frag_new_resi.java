@@ -108,7 +108,7 @@ public class frag_new_resi extends Fragment {
                 sessions.clearPartData();
                 String linkResi = "";
                 Mirroring(true,1,1, linkResi);
-                getFragmentPage(new frag_portfolio());
+                getFragmentPage(new frag_portfolio_new());
             }
         });
 

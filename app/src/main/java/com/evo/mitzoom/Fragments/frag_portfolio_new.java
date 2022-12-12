@@ -17,6 +17,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.evo.mitzoom.API.Server;
 import com.evo.mitzoom.Adapter.AdapterPortofolioNew;
@@ -68,6 +69,7 @@ public class frag_portfolio_new extends Fragment {
     private String customerName;
     private JSONArray listTypeProduk;
     private JSONArray typeProdukListArr;
+    private String noCif = "";
 
     private static int rgb(String hex) {
         int color = (int) Long.parseLong(hex.replace("#", ""), 16);
@@ -82,6 +84,13 @@ public class frag_portfolio_new extends Fragment {
         super.onCreate(savedInstanceState);
         mContext = getContext();
         sessionManager = new SessionManager(mContext);
+        if (getArguments() != null) {
+            noCif = getArguments().getString("noCif");
+        }
+
+        if (noCif.isEmpty()) {
+            noCif = "obnllnnxo";
+        }
     }
 
     @Override
@@ -126,7 +135,7 @@ public class frag_portfolio_new extends Fragment {
     private void getPortofolio() {
         JSONObject jsons = new JSONObject();
         try {
-            jsons.put("noCif","obnllnnxo");
+            jsons.put("noCif",noCif);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -137,8 +146,10 @@ public class frag_portfolio_new extends Fragment {
         Server.getAPIService().GetNewPortofolio(requestBody).enqueue(new Callback<JsonObject>() {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                Log.e("CEK","getPortofolio CODE: "+response.code());
                 if (response.isSuccessful()) {
                     String dataS = response.body().toString();
+                    Log.e("CEK","getPortofolio dataS: "+dataS);
                     try {
                         JSONObject dataObj = new JSONObject(dataS);
                         int errCode = dataObj.getInt("code");
@@ -154,12 +165,14 @@ public class frag_portfolio_new extends Fragment {
                         e.printStackTrace();
                     }
 
+                } else {
+                    Toast.makeText(mContext,getString(R.string.msg_error),Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
             public void onFailure(Call<JsonObject> call, Throwable t) {
-
+                Toast.makeText(mContext,t.getMessage(),Toast.LENGTH_SHORT).show();
             }
         });
     }

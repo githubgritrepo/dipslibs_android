@@ -133,7 +133,7 @@ public class frag_form_komplain extends Fragment {
                             return;
                         case 2:
                             Mirroring(perihal.getText().toString(),tanggal.getText().toString(), detailKomplain.getText().toString(),pernyataan_bool, true, false);
-                            getFragmentPage2(new frag_portfolio());
+                            getFragmentPage2(new frag_portfolio_new());
                             return;
                     }
                 }

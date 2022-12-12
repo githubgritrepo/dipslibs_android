@@ -142,15 +142,15 @@ public interface ApiService {
     );
 
     @Headers("Content-Type: "+ MyConstants.CONTENT_TYPE)
-    @POST("customer-portfolio")
+    @POST("customer-portfolio/portfolio-data")
     Call<JsonObject> AddDataSelf(@Body RequestBody body);
 
     @Headers("Content-Type: "+ MyConstants.CONTENT_TYPE)
-    @POST("employment-data")
+    @POST("customer-portfolio/employment-data/")
     Call<JsonObject> AddDataWork(@Body RequestBody body);
 
     @Headers("Content-Type: "+ MyConstants.CONTENT_TYPE)
-    @POST("financial-data")
+    @POST("customer-portfolio/financial-data")
     Call<JsonObject> AddDataFinance(@Body RequestBody body);
 
     @Headers("Content-Type: "+ MyConstants.CONTENT_TYPE)
@@ -214,5 +214,11 @@ public interface ApiService {
     @POST("form-data/data-diri")
     Call<JsonObject> formAttachment(@Header("Content-Type") String contentType,
                                     @Body RequestBody body);
+
+    @GET("tnc/list/{idTnc}")
+    Call<JsonObject> getTNC(@Path("idTnc") int idTnc);
+
+    @GET("form-generator/formcif")
+    Call<JsonObject> getResiCIF();
 
 }

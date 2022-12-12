@@ -11,6 +11,7 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
         <TextView
+            android:id="@+id/tvTitle"
             android:layout_margin="5dp"
             android:textAppearance="@style/TextAppearance.AppCompat.Headline"
             android:textStyle="bold"
@@ -21,6 +22,7 @@
             android:gravity="center|center_vertical"
             android:text="@string/resi"/>
         <TextView
+            android:id="@+id/tvSubTitle"
             android:textAppearance="@style/TextAppearance.AppCompat.Headline"
             android:textStyle="bold"
             android:layout_width="match_parent"
@@ -43,6 +45,7 @@
             android:layout_above="@id/llButton">
 
             <TextView
+                android:id="@+id/tvMsgThanks"
                 android:textColor="@color/black"
                 android:textStyle="bold"
                 android:layout_width="match_parent"
@@ -84,7 +87,7 @@
                 android:layout_marginEnd="10dp"
                 android:layout_height="40dp"
                 android:background="@drawable/oval_background_10dp"
-                android:backgroundTint="@color/bg_cif"
+                android:backgroundTint="@color/zm_button"
                 android:text="@string/unduh_formulir"
                 android:textColor="@color/white"
                 android:textStyle="bold"
@@ -96,7 +99,7 @@
                 android:layout_weight="1"
                 android:layout_height="40dp"
                 android:background="@drawable/oval_background_10dp"
-                android:backgroundTint="@color/bg_cif"
+                android:backgroundTint="@color/zm_button"
                 android:text="@string/selesai"
                 android:textColor="@color/white"
                 android:textStyle="bold" />

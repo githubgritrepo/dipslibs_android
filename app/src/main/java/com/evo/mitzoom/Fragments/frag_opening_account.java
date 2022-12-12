@@ -336,7 +336,7 @@ public class frag_opening_account extends Fragment {
                 } else {
                     if (isCust) {
                         session.clearCIF();
-                        getFragmentPage(new frag_portfolio());
+                        getFragmentPage(new frag_portfolio_new());
                     } else {
                         byte[] DataKTP = data.getExtras().getByteArray("DataKTP");
                         Bundle bundle = new Bundle();
@@ -529,7 +529,7 @@ public class frag_opening_account extends Fragment {
                         sendDataFragment(bundle, new frag_opening_account());
                     } else {
                         session.clearCIF();
-                        getFragmentPage(new frag_portfolio());
+                        getFragmentPage(new frag_portfolio_new());
                     }
                 } else {
                     if (!isSwafoto || isSessionZoom) {

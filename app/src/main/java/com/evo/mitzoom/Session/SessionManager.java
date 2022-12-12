@@ -42,7 +42,6 @@ public class SessionManager {
     public static final String KEY_FORMCODE = "FORMCODE";
     public static final String KEY_OCR = "OCR";
     public static final String KEY_IDSCHEDULE = "IDSCHEDULE";
-    public static final String KEY_IDCUST = "IDCUST";
     public static final String KEY_FORMREQ = "FORMREQ";
 
     // Constructor
@@ -151,10 +150,6 @@ public class SessionManager {
         editor.commit();
     }
 
-    public void saveIDCust(int data){
-        editor.putInt(KEY_IDCUST,data);
-        editor.commit();
-    }
     public void saveFormReq(String data) {
         editor.putString(KEY_FORMREQ,data);
         editor.commit();
@@ -169,11 +164,9 @@ public class SessionManager {
         editor.putString(KEY_TTD,null);
         editor.putBoolean(KEY_iSCust,false);
         editor.putBoolean(KEY_iSSwafoto,false);
-        editor.putString(KEY_CSID,null);
         editor.putString(KEY_OCR,null);
         editor.putInt(KEY_FORMCODE,0);
         editor.putInt(KEY_FLOW,0);
-        editor.putInt(KEY_IDCUST,0);
         editor.putString(KEY_FORMREQ,null);
         editor.commit();
     }
@@ -254,9 +247,6 @@ public class SessionManager {
     }
     public int getIDSchedule (){
         return pref.getInt(KEY_IDSCHEDULE,0);
-    }
-    public int getIDCust (){
-        return pref.getInt(KEY_IDCUST,0);
     }
     public String getFormReq() {
         return pref.getString(KEY_FORMREQ,null);

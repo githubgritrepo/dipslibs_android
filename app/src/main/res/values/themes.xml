@@ -2,7 +2,7 @@
     <!-- Base application theme. -->
     <style name="Theme.MITZoom" parent="Theme.MaterialComponents.Light.DarkActionBar">
         <!-- Primary brand color. -->
-        <item name="colorPrimary">@color/zm_v1_red_A100</item>
+        <item name="colorPrimary">@color/zm_button</item>
         <item name="colorPrimaryVariant">@color/zm_v1_red_A400</item>
         <item name="colorOnPrimary">@color/white</item>
         <!-- Secondary brand color. -->

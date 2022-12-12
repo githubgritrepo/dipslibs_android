@@ -72,22 +72,24 @@
                             android:layout_gravity="center"
                             android:orientation="horizontal">
 
-                            <com.google.android.material.button.MaterialButton
+                            <Button
                                 android:id="@+id/btnSchedule"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginEnd="20dp"
                                 android:textSize="12dp"
+                                android:background="@drawable/oval_background_10dp"
                                 android:backgroundTint="@color/button_schedule"
                                 android:text="@string/schedule_a_task"
                                 android:textAppearance="@style/TextAppearance.AppCompat.Button"
                                 tools:ignore="TextContrastCheck" />
 
-                            <com.google.android.material.button.MaterialButton
+                            <Button
                                 android:id="@+id/end_call"
                                 android:textSize="12dp"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
+                                android:background="@drawable/oval_background_10dp"
                                 android:backgroundTint="@color/button_end_call"
                                 android:text="@string/end_call"
                                 android:textAppearance="@style/TextAppearance.AppCompat.Button"

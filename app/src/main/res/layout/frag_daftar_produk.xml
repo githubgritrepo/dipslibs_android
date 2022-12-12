@@ -67,6 +67,32 @@
                     android:textStyle="bold" />
             </RelativeLayout>
 
+            <RelativeLayout
+                android:id="@+id/rlProduct1"
+                android:background="@color/white"
+                android:layout_height="50dp"
+                android:layout_width="match_parent"
+                android:paddingLeft="16dp"
+                android:paddingRight="16dp">
+
+                <ImageView
+                    android:layout_width="35dp"
+                    android:layout_height="match_parent"
+                    android:src="@drawable/tabungan" />
+
+                <TextView
+                    android:id="@+id/tvTitleList"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginStart="50dp"
+                    android:text="@string/savings"
+                    android:textColor="#3E3E3E"
+                    android:textSize="20dp"
+                    android:textStyle="bold" />
+
+            </RelativeLayout>
+
             <androidx.cardview.widget.CardView
                 app:cardElevation="0dp"
                 android:layout_width="match_parent"
@@ -77,7 +103,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     app:expansion_openOnlyOne="true"
-                    android:orientation="vertical">
+                    android:orientation="vertical"
+                    android:visibility="gone">
                     <include layout="@layout/item_tabungan" />
                     <include layout="@layout/item_giro" android:visibility="gone" />
                     <include layout="@layout/item_deposito" android:visibility="gone" />

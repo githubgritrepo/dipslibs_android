@@ -17,6 +17,7 @@ import androidx.fragment.app.Fragment;
 
 import com.evo.mitzoom.API.ApiService;
 import com.evo.mitzoom.API.Server;
+import com.evo.mitzoom.Helper.RabbitMirroring;
 import com.evo.mitzoom.R;
 import com.evo.mitzoom.Session.SessionManager;
 import com.evo.mitzoom.ui.RatingActivity;
@@ -31,6 +32,7 @@ import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+import us.zoom.sdk.ZoomVideoSDK;
 
 public class frag_aktivasi_berhasil extends Fragment {
     private Button btnSelesai;
@@ -40,6 +42,8 @@ public class frag_aktivasi_berhasil extends Fragment {
     private TextView nama;
     private String dataCIF;
     private JSONArray JsonCIF;
+    private boolean isSessionZoom;
+    private RabbitMirroring rabbitMirroring;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -48,6 +52,10 @@ public class frag_aktivasi_berhasil extends Fragment {
         session = new SessionManager(context);
         dataCIF = session.getCIF();
         Log.e("CEK","dataCIF : "+dataCIF);
+        isSessionZoom = ZoomVideoSDK.getInstance().isInSession();
+        if (isSessionZoom) {
+            rabbitMirroring = new RabbitMirroring(context);
+        }
     }
 
     @Nullable
@@ -65,8 +73,7 @@ public class frag_aktivasi_berhasil extends Fragment {
         if (dataCIF != null) {
             try {
                 JSONObject obj = new JSONObject(dataCIF);
-                JSONArray dataArrCIF = obj.getJSONArray("data");
-                namaRek = dataArrCIF.getString(0);
+                namaRek = obj.getJSONObject("datadiri").getString("namasesuaiidentitas");
                 nama.setText(namaRek);
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -81,11 +88,11 @@ public class frag_aktivasi_berhasil extends Fragment {
         btnSelesai.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //Mirroring(true);
+                rabbitMirroring.MirroringSendEndpoint(14);
                 session.clearCIF();
-                //getFragmentPage(new frag_portfolio());
-                startActivity(new Intent(context, RatingActivity.class));
-                ((Activity) context).finish();
+                getFragmentPage(new frag_portfolio_new());
+                /*startActivity(new Intent(context, RatingActivity.class));
+                ((Activity) context).finish();*/
             }
         });
     }

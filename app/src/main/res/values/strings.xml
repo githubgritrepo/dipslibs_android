@@ -66,9 +66,9 @@
     <string name="status">Status</string>
     <string name="content_form_bottom">Saya menyatakan bahwa seluruh data yang saya berikan di formulir pembukaan rekening ini benar.</string>
     <string name="process">Proses</string>
-    <string name="headline_rating">Terima kasih telah mempercayakan\n transaksi perbankan Anda pada\n bank xyz.</string>
-    <string name="apakah_permasalahan_anda_n_selesai_dengan_baik">Apakah agent melayani Anda dengan baik?</string>
-    <string name="mohon_berikan_penilaian_anda_atas_npelayanan_dips_hari_ini">Mohon berikan penilaian Anda atas\npelayanan Dips hari ini</string>
+    <string name="headline_rating">Terima kasih telah mempercayakan\n transaksi perbankan Anda pada\n Bank Victoria.</string>
+    <string name="apakah_permasalahan_anda_n_selesai_dengan_baik">Apakah agent bank melayani Anda dengan baik?</string>
+    <string name="mohon_berikan_penilaian_anda_atas_npelayanan_dips_hari_ini">Mohon berikan penilaian Anda atas\npelayanan Digital Operations hari ini</string>
     <string name="send">kirim</string>
     <string name="selamat_naktivasi_berhasil_rekening_n_tabungan_anda_sudah_aktif">Selamat!\nAktivasi Berhasil. Rekening\n Tabungan Anda sudah aktif.</string>
     <string name="nama">Nama</string>
@@ -268,6 +268,5 @@
     <string name="headline_close_conversation">Antrian Anda sudah terlewat. Silakan akhiri panggilan atau jadwalkan waktu terbaik bagi kami untuk menghubungi Anda kembali.</string>
     <string name="open_account">Buka Rekening</string>
     <string name="ktp_swafoto">Foto diri dengan KTP</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="typehere">Tulis disini..</string>
 </resources>

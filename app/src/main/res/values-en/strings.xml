@@ -268,4 +268,5 @@
     <string name="headline_close_conversation">Your queue has been missed. please end the call or schedule the best time for us to get back to you.</string>
     <string name="open_account">Open Account</string>
     <string name="ktp_swafoto">Self-portrait with ID card</string>
+    <string name="typehere">Write Here..</string>
 </resources>

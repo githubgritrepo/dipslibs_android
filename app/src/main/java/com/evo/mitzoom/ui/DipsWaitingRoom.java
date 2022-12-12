@@ -188,11 +188,11 @@ public class DipsWaitingRoom extends AppCompatActivity {
         setLocale(this,lang);
         setContentView(R.layout.activity_dips_waiting_room);
 
-        myTicket = findViewById(R.id.myticket2);
-        lastTicket = findViewById(R.id.last_ticket2);
+        myTicket = findViewById(R.id.myticket);
+        lastTicket = findViewById(R.id.last_ticket);
         AnimationCall = findViewById(R.id.AnimationCall);
         CardView cardSurf = (CardView) findViewById(R.id.cardSurf);
-        preview = (SurfaceView) findViewById(R.id.mySurface2);
+        preview = (SurfaceView) findViewById(R.id.mySurface);
 
         displayMetrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
@@ -202,9 +202,9 @@ public class DipsWaitingRoom extends AppCompatActivity {
         Intent intent = getIntent();
         useFacing = intent.getIntExtra(KEY_USE_FACING, Camera.CameraInfo.CAMERA_FACING_FRONT);
 
-        ViewGroup.LayoutParams lp = cardSurf.getLayoutParams();
+        /*ViewGroup.LayoutParams lp = cardSurf.getLayoutParams();
         lp.width = dyWidth;
-        cardSurf.setLayoutParams(lp);
+        cardSurf.setLayoutParams(lp);*/
 
         initializeSdk();
         AnimationCall();

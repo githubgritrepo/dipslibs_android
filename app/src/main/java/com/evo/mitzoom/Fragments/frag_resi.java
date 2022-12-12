@@ -88,7 +88,7 @@ public class frag_resi extends Fragment {
             public void onClick(View v) {
                 //sessions.saveIsCust(false);
                 Mirroring(true,1,1);
-                getFragmentPage(new frag_portfolio());
+                getFragmentPage(new frag_portfolio_new());
             }
         });
 
