@@ -86,7 +86,13 @@ public class MyParserFormBuilder {
                     String compName = compObj.getString("name");
                     String compPlaceholder = compObj.getString("placeholder");
                     String compLabel = compObj.getString("label");
-                    boolean compRequired = compObj.getBoolean("required");
+                    boolean compRequired = false;
+                    if (compObj.has("required")) {
+                        compRequired = compObj.getBoolean("required");
+                    } else if (compObj.has("props")) {
+                        compRequired = compObj.getJSONObject("props").getBoolean("required");
+                    }
+
                     String compType = compObj.getString("type");
                     String compTagHTML = compObj.getString("tagHTML");
 
@@ -149,6 +155,8 @@ public class MyParserFormBuilder {
                                     String lowLabel = compLabel.toLowerCase();
                                     if (lowLabel.equals("npwp")) {
                                         ed.setFilters(new InputFilter[] {new InputFilter.LengthFilter(20)});
+                                    } else if (lowLabel.equals("nik")) {
+                                        ed.setFilters(new InputFilter[] {new InputFilter.LengthFilter(16)});
                                     }
 
                                     if (lowLabel.equals("nik") || lowLabel.equals("npwp") || lowLabel.equals("rt") || lowLabel.equals("rw") || lowLabel.contains("kode") ||
@@ -213,8 +221,16 @@ public class MyParserFormBuilder {
                                     }
 
                                     int intAplhabet = randomId();
+
                                     radioGroup = new RadioGroup(mContext);
-                                    radioGroup.setLayoutParams(lp);
+
+                                    if (jkRad == 3){
+                                        LinearLayout.LayoutParams lpRG = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 70);
+                                        radioGroup.setLayoutParams(lpRG);
+                                    } else {
+                                        radioGroup.setLayoutParams(lp);
+                                    }
+
                                     if (jkRad > 3) {
                                         radioGroup.setOrientation(RadioGroup.VERTICAL);
                                     } else {
@@ -356,18 +372,6 @@ public class MyParserFormBuilder {
                             lpSpin.setMargins(0,0,0,10);
 
                             int intAplhabet = randomId();
-
-                            /*Spinner spinner = new Spinner(mContext);
-                            spinner.setId(intAplhabet);
-                            spinner.setLayoutParams(lpSpin);
-                            spinner.setFocusable(false);
-                            spinner.setGravity(Gravity.CENTER_VERTICAL);
-                            spinner.setBackground(mContext.getDrawable(R.drawable.bg_textinput));
-                            spinner.setPadding(10,10,20,10);
-                            ArrayAdapter<FormSpin> adapter = new ArrayAdapter<FormSpin>(mContext, android.R.layout.simple_spinner_dropdown_item, dataDropDown);
-                            spinner.setAdapter(adapter);
-
-                            llFormBuild.addView(spinner);*/
 
                             RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
                             layoutParams.addRule(RelativeLayout.CENTER_VERTICAL, RelativeLayout.TRUE);

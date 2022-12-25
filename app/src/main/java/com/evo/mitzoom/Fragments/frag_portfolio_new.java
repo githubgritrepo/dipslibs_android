@@ -21,6 +21,7 @@ import android.widget.Toast;
 
 import com.evo.mitzoom.API.Server;
 import com.evo.mitzoom.Adapter.AdapterPortofolioNew;
+import com.evo.mitzoom.Helper.RabbitMirroring;
 import com.evo.mitzoom.R;
 import com.evo.mitzoom.Session.SessionManager;
 import com.github.mikephil.charting.charts.PieChart;
@@ -47,13 +48,14 @@ import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+import us.zoom.sdk.ZoomVideoSDK;
 
 public class frag_portfolio_new extends Fragment {
 
     private Context mContext;
     PieChart pieChart;
     PieData pieData;
-    private SessionManager sessionManager;
+    private SessionManager sessions;
     private NestedScrollView nestedScrollView;
     private Button btnService;
     private TextView tvtanggal;
@@ -70,6 +72,8 @@ public class frag_portfolio_new extends Fragment {
     private JSONArray listTypeProduk;
     private JSONArray typeProdukListArr;
     private String noCif = "";
+    private RabbitMirroring rabbitMirroring;
+    private boolean isSessionZoom = false;
 
     private static int rgb(String hex) {
         int color = (int) Long.parseLong(hex.replace("#", ""), 16);
@@ -83,13 +87,19 @@ public class frag_portfolio_new extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mContext = getContext();
-        sessionManager = new SessionManager(mContext);
-        if (getArguments() != null) {
-            noCif = getArguments().getString("noCif");
+        sessions = new SessionManager(mContext);
+
+        if (sessions.getNoCIF() != null) {
+            noCif = sessions.getNoCIF();
         }
 
         if (noCif.isEmpty()) {
             noCif = "obnllnnxo";
+        }
+
+        isSessionZoom = ZoomVideoSDK.getInstance().isInSession();
+        if (isSessionZoom) {
+            rabbitMirroring = new RabbitMirroring(mContext);
         }
     }
 
@@ -104,8 +114,8 @@ public class frag_portfolio_new extends Fragment {
         tvtanggal = (TextView) views.findViewById(R.id.date);
         rv_item_expand = (RecyclerView) views.findViewById(R.id.rv_item_expand);
         
-        bahasa = sessionManager.getLANG();
-        cekCust = sessionManager.getKEY_iSCust();
+        bahasa = sessions.getLANG();
+        cekCust = sessions.getKEY_iSCust();
 
         return views;
     }
@@ -114,7 +124,7 @@ public class frag_portfolio_new extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        idDips = sessionManager.getKEY_IdDips();
+        idDips = sessions.getKEY_IdDips();
         Calendar c = Calendar.getInstance();
         String TanggalSekarang = "";
         if (bahasa.equalsIgnoreCase("en")){
@@ -128,8 +138,24 @@ public class frag_portfolio_new extends Fragment {
             tvtanggal.setText(TanggalSekarang);
         }
 
+        btnService.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                rabbitMirroring.MirroringSendEndpoint(15);
+                getFragmentPage(new frag_service_new());
+            }
+        });
+
         getPortofolio();
         
+    }
+
+    private void getFragmentPage(Fragment fragment){
+        getActivity().getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.layout_frame2, fragment)
+                .addToBackStack(null)
+                .commit();
     }
 
     private void getPortofolio() {

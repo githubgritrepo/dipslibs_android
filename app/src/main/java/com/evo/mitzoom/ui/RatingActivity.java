@@ -24,7 +24,7 @@ import cn.pedant.SweetAlert.SweetAlertDialog;
 
 public class RatingActivity extends AppCompatActivity {
     private ImageView thumbs_up, thumbs_down;
-    private MaterialButton btnSend;
+    private Button btnSend;
     private RatingBar rating;
     private EditText kritik;
     private Context mContext;
@@ -42,7 +42,7 @@ public class RatingActivity extends AppCompatActivity {
         setContentView(R.layout.activity_rating);
         //AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        getSupportActionBar().hide();
+        //getSupportActionBar().hide();
         rating = findViewById(R.id.ratingBar);
         rating.setClickable(false);
         rating.setFocusable(false);

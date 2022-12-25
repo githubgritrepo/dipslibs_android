@@ -79,7 +79,7 @@ public class DipsCameraSource extends AppCompatActivity implements CameraSource.
 
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        getSupportActionBar().hide();
+        //getSupportActionBar().hide();
 
         setContentView(R.layout.activity_dips_camera_source);
 
@@ -173,7 +173,7 @@ public class DipsCameraSource extends AppCompatActivity implements CameraSource.
 
         @Override
         public void surfaceChanged(@NonNull SurfaceHolder holder, int format, int width, int height) {
-            Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
+            /*Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
             paint.setColor(getResources().getColor(R.color.zm_v1_red_A100));
             paint.setAlpha(130);
             paint.setStyle(Paint.Style.STROKE);
@@ -209,7 +209,7 @@ public class DipsCameraSource extends AppCompatActivity implements CameraSource.
             Canvas canvas = transHolder.lockCanvas();
             canvas.drawRect(rect,paint);
 
-            transHolder.unlockCanvasAndPost(canvas);
+            transHolder.unlockCanvasAndPost(canvas);*/
         }
 
         @Override

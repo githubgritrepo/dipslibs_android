@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:gravity="center">
+
+    <ImageView
+        android:id="@+id/imgDialog"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:src="@drawable/v_dialog_success"
+        android:layout_centerHorizontal="true"/>
+
+    <TextView
+        android:id="@+id/tvTitleDialog"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/imgDialog"
+        android:textStyle="bold"
+        android:textColor="@color/black"
+        android:textSize="15dp"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="10dp"
+        android:gravity="center"
+        tools:text="Title"/>
+
+    <TextView
+        android:id="@+id/tvBodyDialog"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tvTitleDialog"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="10dp"
+        android:textColor="@color/zm_text"
+        android:textSize="15dp"
+        android:gravity="center"
+        tools:text="Body Message" />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:orientation="horizontal"
+        android:layout_below="@id/tvBodyDialog"
+        android:layout_centerHorizontal="true">
+
+        <Button
+            android:id="@+id/btnCancelDialog"
+            android:layout_width="wrap_content"
+            android:layout_height="35dp"
+            android:background="@drawable/oval_background_10dp"
+            android:text="@string/cancel"
+            android:textColor="@color/zm_button"
+            android:textSize="13dp"
+            android:layout_margin="10dp"
+            android:visibility="gone"/>
+        <Button
+            android:id="@+id/btnConfirmDialog"
+            android:layout_width="wrap_content"
+            android:layout_height="35dp"
+            android:text="OK"
+            android:background="@drawable/oval_background_10dp"
+            android:backgroundTint="@color/zm_button"
+            android:textColor="@color/white"
+            android:textSize="13dp"
+            android:layout_margin="10dp"/>
+    </LinearLayout>
+
+</RelativeLayout>

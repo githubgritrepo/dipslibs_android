@@ -5,6 +5,7 @@
     android:installLocation="auto">
 
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
@@ -48,11 +49,16 @@
         android:supportsRtl="true"
         android:usesCleartextTraffic="true">
         <activity
+            android:name=".ui.DipsLivenessResult"
+            android:exported="false"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.MITZoom" />
+        <activity
             android:name=".ui.Alternative.DipsSwafoto"
             android:exported="false"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.MITZoom"
-            android:windowSoftInputMode="adjustPan"/>
+            android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".ui.DipsCameraSource"
             android:exported="false"
@@ -89,13 +95,13 @@
             android:exported="false"
             android:screenOrientation="portrait"
             android:theme="@style/ZMTheme.SubWindow"
-            android:windowSoftInputMode="adjustPan" />
+            android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".ui.DipsWaitingRoom"
             android:exported="false"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.MITZoom"
-            android:windowSoftInputMode="adjustPan" />
+            android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".ui.DipsCapture"
             android:exported="false"
@@ -128,7 +134,6 @@
             android:enabled="true"
             android:exported="true"
             android:stopWithTask="false" />
-
         <service
             android:name=".Helper.OutboundServiceNew"
             android:enabled="true"

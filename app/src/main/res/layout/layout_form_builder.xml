@@ -2,14 +2,12 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:theme="@style/Theme.MaterialComponents.Light.DarkActionBar">
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:id="@+id/swipe"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_above="@id/btnNext">
+        android:layout_height="match_parent">
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -18,37 +16,53 @@
             <androidx.core.widget.NestedScrollView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_centerInParent="true">
+                android:layout_marginTop="30dp">
 
-                <LinearLayout
-                    android:id="@+id/llFormBuild"
+                <RelativeLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/dp_20"
-                    android:layout_marginTop="20dp"
-                    android:layout_marginEnd="@dimen/dp_20"
-                    android:layout_marginBottom="@dimen/dp_20"
-                    android:orientation="vertical" />
+                    android:layout_height="wrap_content">
+
+                    <LinearLayout
+                        android:id="@+id/llFormBuild"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/dp_20"
+                        android:layout_marginTop="20dp"
+                        android:layout_marginEnd="@dimen/dp_20"
+                        android:layout_marginBottom="@dimen/dp_20"
+                        android:orientation="vertical" />
+
+                    <Button
+                        android:id="@+id/btnNext"
+                        android:layout_width="wrap_content"
+                        android:layout_height="35dp"
+                        android:layout_centerHorizontal="true"
+                        android:layout_below="@id/llFormBuild"
+                        android:paddingStart="@dimen/dp_20"
+                        android:paddingEnd="@dimen/dp_20"
+                        android:layout_marginBottom="20dp"
+                        android:background="@drawable/oval_background_10dp"
+                        android:text="@string/btn_continue"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Button"
+                        android:textColor="@color/white"
+                        android:backgroundTint="@color/zm_button"
+                        android:textSize="13dp"
+                        android:textStyle="bold"
+                        />
+
+                </RelativeLayout>
             </androidx.core.widget.NestedScrollView>
 
         </RelativeLayout>
 
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/btnNext"
+    <ImageView
         android:layout_width="match_parent"
-        android:layout_height="35dp"
-        android:layout_alignParentBottom="true"
-        android:layout_marginStart="@dimen/dp_20"
-        android:layout_marginEnd="@dimen/dp_20"
-        android:layout_marginBottom="20dp"
-        android:background="@drawable/oval_background_10dp"
-        android:text="@string/btn_continue"
-        android:textAppearance="@style/TextAppearance.AppCompat.Button"
-        android:textColor="@color/white"
-        android:textSize="13dp"
-        android:textStyle="bold"
-        app:backgroundTint="@color/zm_button" />
+        android:layout_height="wrap_content"
+        android:src="@drawable/batik_bvic"
+        android:rotation="180"
+        android:scaleType="fitXY"
+        android:layout_alignParentBottom="true"/>
 
 </RelativeLayout>

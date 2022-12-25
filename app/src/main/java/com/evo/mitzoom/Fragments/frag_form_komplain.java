@@ -20,6 +20,7 @@ import androidx.fragment.app.Fragment;
 
 import com.evo.mitzoom.API.ApiService;
 import com.evo.mitzoom.API.Server;
+import com.evo.mitzoom.Helper.RabbitMirroring;
 import com.evo.mitzoom.R;
 import com.evo.mitzoom.Session.SessionManager;
 import com.google.gson.JsonObject;
@@ -36,6 +37,7 @@ import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+import us.zoom.sdk.ZoomVideoSDK;
 
 public class frag_form_komplain extends Fragment {
     private Context context;
@@ -47,12 +49,18 @@ public class frag_form_komplain extends Fragment {
     private int state;
     private SessionManager session;
     private Boolean pernyataan_bool = false;
+    private boolean isSessionZoom;
+    private RabbitMirroring rabbitMirroring;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         context = getContext();
         session = new SessionManager(context);
+        isSessionZoom = ZoomVideoSDK.getInstance().isInSession();
+        if (isSessionZoom) {
+            rabbitMirroring = new RabbitMirroring(context);
+        }
     }
     @Nullable
     @Override
@@ -84,7 +92,7 @@ public class frag_form_komplain extends Fragment {
                         getFragmentPage1(new frag_berita());
                         return;
                     case 2:Mirroring(perihal.getText().toString(),tanggal.getText().toString(), detailKomplain.getText().toString(),pernyataan_bool, false, true);
-                        getFragmentPage2(new frag_service());
+                        getFragmentPage2(new frag_service_new());
                         return;
                 }
             }

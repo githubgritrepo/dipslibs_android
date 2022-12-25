@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.text.Html;
 import android.util.Base64;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -101,8 +102,9 @@ public class frag_list_produk extends Fragment {
             @Override
             public void onClick(View view) {
                 //rabbitMirroring.MirroringSendEndpoint(0);
-                rabbitMirroring.MirroringSendEndpoint(361);
-                PopUpTnc();
+                /*rabbitMirroring.MirroringSendEndpoint(361);
+                PopUpTnc();*/
+                getFragmentPage(new frag_open_account_product());
             }
         });
         btnBack.setOnClickListener(new View.OnClickListener() {
@@ -147,7 +149,7 @@ public class frag_list_produk extends Fragment {
         @Override
         protected Void doInBackground(Void... voids) {
             processGetProduct();
-            processGetTNC();
+            //processGetTNC();
             return null;
         }
     }
@@ -238,14 +240,21 @@ public class frag_list_produk extends Fragment {
         }
         btn.setClickable(false);
 
+        int width = (int)(((Activity)context).getResources().getDisplayMetrics().widthPixels*0.60);
+        int height = (int)(((Activity)context).getResources().getDisplayMetrics().heightPixels*0.60);
+
+        sweetAlertDialogTNC.getWindow().setGravity(Gravity.CENTER_HORIZONTAL);
+        sweetAlertDialogTNC.getWindow().setLayout(width,height);
+
         sweetAlertDialogTNC.show();
         checkBox.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (checkBox.isChecked()){
                     Log.d("CHECK","TRUE");
-                    btn.setBackgroundTintList(context.getResources().getColorStateList(R.color.Blue));
+                    btn.setBackgroundTintList(context.getResources().getColorStateList(R.color.zm_button));
                     btn.setClickable(true);
+                    rabbitMirroring.MirroringSendEndpoint(363);
                 }
                 else {
                     Log.d("CHECK","FALSE");

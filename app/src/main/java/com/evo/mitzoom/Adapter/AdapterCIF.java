@@ -120,6 +120,8 @@ public class AdapterCIF extends RecyclerView.Adapter<AdapterCIF.ViewHolder> {
                                             try {
                                                 objEl.put(nameDataEl, charSequence);
                                                 dataFormCIF.put(nameForm,objEl);
+                                                objValCIF.put(nameForm,objEl);
+                                                sessions.saveCIF(objValCIF.toString());
                                             } catch (JSONException e) {
                                                 e.printStackTrace();
                                             }
@@ -160,6 +162,8 @@ public class AdapterCIF extends RecyclerView.Adapter<AdapterCIF.ViewHolder> {
                                                 try {
                                                     objEl.put(nameDataEl, results);
                                                     dataFormCIF.put(nameForm,objEl);
+                                                    objValCIF.put(nameForm,objEl);
+                                                    sessions.saveCIF(objValCIF.toString());
                                                     rabbitMirroring.MirroringSendKey(dataFormCIF);
                                                 } catch (JSONException e) {
                                                     e.printStackTrace();
@@ -179,6 +183,8 @@ public class AdapterCIF extends RecyclerView.Adapter<AdapterCIF.ViewHolder> {
                                                 try {
                                                     objEl.put(nameDataEl, isChk);
                                                     dataFormCIF.put(nameForm,objEl);
+                                                    objValCIF.put(nameForm,objEl);
+                                                    sessions.saveCIF(objValCIF.toString());
                                                     rabbitMirroring.MirroringSendKey(dataFormCIF);
                                                 } catch (JSONException e) {
                                                     e.printStackTrace();
@@ -197,6 +203,8 @@ public class AdapterCIF extends RecyclerView.Adapter<AdapterCIF.ViewHolder> {
                                             try {
                                                 objEl.put(nameDataEl, results);
                                                 dataFormCIF.put(nameForm,objEl);
+                                                objValCIF.put(nameForm,objEl);
+                                                sessions.saveCIF(objValCIF.toString());
                                                 rabbitMirroring.MirroringSendKey(dataFormCIF);
                                             } catch (JSONException e) {
                                                 e.printStackTrace();
@@ -221,6 +229,8 @@ public class AdapterCIF extends RecyclerView.Adapter<AdapterCIF.ViewHolder> {
                                                 try {
                                                     objEl.put(nameDataEl, results);
                                                     dataFormCIF.put(nameForm,objEl);
+                                                    objValCIF.put(nameForm,objEl);
+                                                    sessions.saveCIF(objValCIF.toString());
                                                     rabbitMirroring.MirroringSendKey(dataFormCIF);
                                                 } catch (JSONException e) {
                                                     e.printStackTrace();
@@ -243,6 +253,8 @@ public class AdapterCIF extends RecyclerView.Adapter<AdapterCIF.ViewHolder> {
                                             try {
                                                 objEl.put(nameDataEl, results);
                                                 dataFormCIF.put(nameForm,objEl);
+                                                objValCIF.put(nameForm,objEl);
+                                                sessions.saveCIF(objValCIF.toString());
                                                 rabbitMirroring.MirroringSendKey(dataFormCIF);
                                             } catch (JSONException e) {
                                                 e.printStackTrace();
@@ -256,6 +268,8 @@ public class AdapterCIF extends RecyclerView.Adapter<AdapterCIF.ViewHolder> {
                                             try {
                                                 objEl.put(nameDataEl, results);
                                                 dataFormCIF.put(nameForm,objEl);
+                                                objValCIF.put(nameForm,objEl);
+                                                sessions.saveCIF(objValCIF.toString());
                                                 rabbitMirroring.MirroringSendKey(dataFormCIF);
                                             } catch (JSONException e) {
                                                 e.printStackTrace();

@@ -23,6 +23,7 @@ public class SessionManager {
     public static final String KEY_RTGS = "RTGS";
     public static final String KEY_IdDips = "IdDips";
     public static final String KEY_KTP = "KTP";
+    public static final String KEY_SWAFOTO = "SWAFOTO";
     public static final String KEY_NPWP = "NPWP";
     public static final String KEY_TTD = "TTD";
     public static final String KEY_CHAT = "CHAT";
@@ -32,6 +33,7 @@ public class SessionManager {
     public static final String KEY_MEDIA = "MEDIA";
     public static final String KEY_CAMERA = "CAMERA";
     public static final String KEY_CIF = "CIF";
+    public static final String KEY_NOCIF = "NOCIF";
     public static final String KEY_CONF_AGREE = "CONF_AGREE";
     public static final String KEY_NASABAH = "NASABAH";
     public static final String KEY_ADVANCE_AI_LICENSE = "ADVANCE_AI_LICENSE";
@@ -72,6 +74,10 @@ public class SessionManager {
     }
     public void saveKTP(String data){
         editor.putString(KEY_KTP, data);
+        editor.commit();
+    }
+    public void saveSWAFOTO(String data){
+        editor.putString(KEY_SWAFOTO, data);
         editor.commit();
     }
     public void saveNPWP(String data){
@@ -155,11 +161,17 @@ public class SessionManager {
         editor.commit();
     }
 
+    public void saveNoCIF(String data) {
+        editor.putString(KEY_NOCIF,data);
+        editor.commit();
+    }
+
     public void clearPartData(){
         editor.putString(KEY_RTGS,null);
         editor.putString(KEY_CIF,null);
         editor.putString(KEY_CHAT,null);
         editor.putString(KEY_KTP,null);
+        editor.putString(KEY_SWAFOTO,null);
         editor.putString(KEY_NPWP,null);
         editor.putString(KEY_TTD,null);
         editor.putBoolean(KEY_iSCust,false);
@@ -173,6 +185,16 @@ public class SessionManager {
 
     public void clearCIF() {
         editor.putString(KEY_CIF,null);
+        editor.putString(KEY_KTP,null);
+        editor.putString(KEY_SWAFOTO,null);
+        editor.putString(KEY_NPWP,null);
+        editor.putString(KEY_TTD,null);
+        editor.putBoolean(KEY_iSCust,false);
+        editor.putString(KEY_OCR,null);
+        editor.putBoolean(KEY_iSSwafoto,false);
+        editor.putInt(KEY_FORMCODE,0);
+        editor.putInt(KEY_FLOW,0);
+        editor.putString(KEY_FORMREQ,null);
         editor.commit();
     }
 
@@ -198,6 +220,9 @@ public class SessionManager {
     }
     public String getKEY_KTP (){
         return pref.getString(KEY_KTP,null);
+    }
+    public String getKEY_SWAFOTO (){
+        return pref.getString(KEY_SWAFOTO,null);
     }
     public String getKEY_NPWP (){
         return pref.getString(KEY_NPWP,null);
@@ -250,6 +275,9 @@ public class SessionManager {
     }
     public String getFormReq() {
         return pref.getString(KEY_FORMREQ,null);
+    }
+    public String getNoCIF() {
+        return pref.getString(KEY_NOCIF,null);
     }
 
 }

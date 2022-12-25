@@ -8,8 +8,8 @@ android {
         applicationId "com.evo.mitzoom"
         minSdk 25
         targetSdk 33
-        versionCode 24
-        versionName "3.2.2"
+        versionCode 29
+        versionName "3.2.3"
         vectorDrawables.useSupportLibrary = true
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -60,13 +60,16 @@ dependencies {
     implementation 'com.github.chrisbanes:PhotoView:2.3.0'
     implementation 'com.facebook.shimmer:shimmer:0.5.0'
     implementation 'com.wdullaer:materialdatetimepicker:4.2.3'
+    implementation 'pl.droidsonroids.gif:android-gif-drawable:1.2.24'
     api 'io.jsonwebtoken:jjwt-api:0.11.2'
     runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.2'
     runtimeOnly('io.jsonwebtoken:jjwt-orgjson:0.11.2') {
         exclude group: 'org.json', module: 'json' //provided by Android natively
     }
-    implementation 'ai.advance.mobile-sdk.android:liveness-detection:1.3.9.1'
-    implementation 'ai.advance.mobile-sdk.android:liveness-detection-ui:1.0.0@aar'
+    /*implementation 'ai.advance.mobile-sdk.android:liveness-detection:1.3.9.5'
+    implementation 'ai.advance.mobile-sdk.android:liveness-detection-ui:1.0.0@aar'*/
+    implementation 'ai.advance.mobile-sdk.android:liveness-detection:2.0.1'
+    /*implementation 'ai.advance.mobile-sdk.android:liveness-detection-ui:2.0.0@aar'*/
     implementation ('io.socket:socket.io-client:2.0.1') {
         // excluding org.json which is provided by Android
         exclude group: 'org.json', module: 'json'
@@ -79,6 +82,7 @@ dependencies {
     implementation 'com.google.firebase:firebase-analytics'
     implementation 'com.google.firebase:firebase-perf'
     implementation project(':mobilertc')
+    implementation project(':liveness')
 }
 
 apply plugin: 'com.google.gms.google-services'

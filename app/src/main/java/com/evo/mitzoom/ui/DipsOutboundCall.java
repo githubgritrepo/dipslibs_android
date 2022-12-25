@@ -183,7 +183,7 @@ public class DipsOutboundCall extends AppCompatActivity implements DatePickerDia
         getPackageManager().getLaunchIntentForPackage("com.evo.mitzoom");
 
         //AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
-        getSupportActionBar().hide();
+        //getSupportActionBar().hide();
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
@@ -242,6 +242,12 @@ public class DipsOutboundCall extends AppCompatActivity implements DatePickerDia
             public void run() {
                 Log.d("TIDAK DIANGKAT","");
                 OutApps();
+                Intent serviceIntent = new Intent(mContext, OutboundServiceNew.class);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    startForegroundService(serviceIntent);
+                } else {
+                    startService(serviceIntent);
+                }
             }
         };
         handlerTimes.postDelayed(myRunnable, 30000);

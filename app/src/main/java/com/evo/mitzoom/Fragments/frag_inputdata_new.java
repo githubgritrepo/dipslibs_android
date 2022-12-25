@@ -9,12 +9,14 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.provider.OpenableColumns;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -59,6 +61,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -77,6 +80,7 @@ import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+import us.zoom.sdk.ZoomVideoSDK;
 
 public class frag_inputdata_new extends Fragment {
 
@@ -87,7 +91,7 @@ public class frag_inputdata_new extends Fragment {
     private SessionManager session;
     private SwipeRefreshLayout swipe;
     private LinearLayout llFormBuild;
-    private MaterialButton btnNext;
+    private Button btnNext;
     private LayoutInflater inflater;
     private View dialogView;
     private SweetAlertDialog sweetAlertDialogTNC;
@@ -100,27 +104,28 @@ public class frag_inputdata_new extends Fragment {
     private TextView tvSavedFile;
     JSONObject objEl = new JSONObject();
     private RabbitMirroring rabbitMirroring;
-    private byte[] bytePhoto = new byte[0];
     private int chkFlow;
     private int lasLenChar;
     private boolean backSpaceChar;
     private String custName = "";
+    private String imgBase64;
+    private byte[] imageBytes;
+    private boolean isSessionZoom;
+    private String keys = "";
+
+    final String STATE_CUSTNAME = "custName";
+    final String STATE_ELEMENTARRAY = "elementArray";
+    final String STATE_ELEMENTObj = "elementObj";
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mContext = getContext();
-        if (getArguments().containsKey("RESULT_IMAGE_AI")) {
-            bytePhoto = getArguments().getByteArray("RESULT_IMAGE_AI");
-        }
-        if (getArguments().containsKey("CUSTNAME")) {
-            custName = getArguments().getString("CUSTNAME");
-        }
         session = new SessionManager(mContext);
         isCust = session.getKEY_iSCust();
         chkFlow = session.getFLOW();
-
-        if (chkFlow == 0) {
+        isSessionZoom = ZoomVideoSDK.getInstance().isInSession();
+        if (isSessionZoom) {
             rabbitMirroring = new RabbitMirroring(mContext);
         }
     }
@@ -131,7 +136,7 @@ public class frag_inputdata_new extends Fragment {
         View view = inflater.inflate(R.layout.layout_form_builder, container, false);
         swipe = (SwipeRefreshLayout) view.findViewById(R.id.swipe);
         llFormBuild = (LinearLayout) view.findViewById(R.id.llFormBuild);
-        btnNext = (MaterialButton) view.findViewById(R.id.btnNext);
+        btnNext = (Button) view.findViewById(R.id.btnNext);
         return view;
     }
 
@@ -148,7 +153,25 @@ public class frag_inputdata_new extends Fragment {
             }
         });
 
-        processGetForm();
+        if (savedInstanceState == null) {
+            Log.e("CEK","MASUK NULL SAVED INSTANACE");
+            if (getArguments().containsKey("CUSTNAME")) {
+                custName = getArguments().getString("CUSTNAME");
+            }
+            processGetForm();
+        } else {
+            Log.e("CEK","MASUK SAVED INSTANACE");
+            custName = savedInstanceState.getString(STATE_CUSTNAME);
+            String getIdElement = savedInstanceState.getString(STATE_ELEMENTARRAY);
+            String getElementObj = savedInstanceState.getString(STATE_ELEMENTObj);
+
+            try {
+                idElement = new JSONArray(getIdElement);
+                objEl = new JSONObject(getElementObj);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
 
         btnNext.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -226,6 +249,17 @@ public class frag_inputdata_new extends Fragment {
                                         } else if (llFormBuild.getChildAt(i) instanceof LinearLayout) {
                                             Log.e("CEK", "MASUK LinearLayout ke-" + i);
                                             LinearLayout ll = (LinearLayout) llFormBuild.getChildAt(i);
+                                            Log.e("CEK", "LinearLayout getChildCount : " + ll.getChildCount());
+                                            if (ll.getChildCount() > 1) {
+                                                if (ll.getChildAt(0) instanceof LinearLayout) {
+                                                    LinearLayout ll2 = (LinearLayout) ll.getChildAt(0);
+                                                    TextView tvll = (TextView) ll2.getChildAt(1);
+                                                    String txt = tvll.getText().toString();
+                                                    Log.e("CEK", "tvll : " + txt);
+                                                    keys = nameDataEl;
+                                                    objEl.put(nameDataEl, imageBytes);
+                                                }
+                                            }
                                         }
                                     }
                                 } catch (JSONException e) {
@@ -260,6 +294,14 @@ public class frag_inputdata_new extends Fragment {
         }
     }
 
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putString(STATE_CUSTNAME,custName);
+        outState.putString(STATE_ELEMENTARRAY,idElement.toString());
+        outState.putString(STATE_ELEMENTObj,objEl.toString());
+    }
+
     private JSONObject dataMirroring(JSONObject dataObj) {
         long unixTime = System.currentTimeMillis() / 1000L;
 
@@ -284,6 +326,7 @@ public class frag_inputdata_new extends Fragment {
                 swipe.setRefreshing(false);
                 Log.e("CEK","response processGetForm : "+response.code());
                 if (response.isSuccessful()) {
+                    btnNext.setVisibility(View.VISIBLE);
                     String dataS = response.body().toString();
                     Log.e("CEK","response dataS : "+dataS);
                     llFormBuild.removeAllViewsInLayout();
@@ -435,7 +478,7 @@ public class frag_inputdata_new extends Fragment {
                                             TextView tvll = (TextView) ll2.getChildAt(1);
                                             String txt = tvll.getText().toString();
                                             Log.e("CEK", "tvll : " + txt);
-                                            if (txt.toLowerCase().indexOf("gambar") > 0 || txt.toLowerCase().indexOf("image") > 0) {
+                                            if (txt.toLowerCase().indexOf("gambar") > 0 || txt.toLowerCase().indexOf("image") > 0 || txt.toLowerCase().indexOf("tangan") > 0) {
                                                 tvSavedImg = (TextView) ll.getChildAt(1);
                                                 ll2.setOnClickListener(new View.OnClickListener() {
                                                     @Override
@@ -452,7 +495,7 @@ public class frag_inputdata_new extends Fragment {
                                                         intent.setType("*/*");
                                                         intent.setAction(Intent.ACTION_OPEN_DOCUMENT);
                                                         intent.addCategory(Intent.CATEGORY_OPENABLE);
-                                                        String[] mimetypes = { "application/pdf", "application/doc", "text/*" };
+                                                        String[] mimetypes = { "application/pdf", "application/doc", "text/*", "image/jpeg", "image/png" };
                                                     /*String[] mimeTypes =
                                                             {"application/msword", "application/vnd.openxmlformats-officedocument.wordprocessingml.document", // .doc & .docx
                                                                     "application/vnd.ms-powerpoint", "application/vnd.openxmlformats-officedocument.presentationml.presentation", // .ppt & .pptx
@@ -530,7 +573,6 @@ public class frag_inputdata_new extends Fragment {
                                         session.saveFormCOde(4);
                                         Fragment fragment = new frag_cif();
                                         Bundle bundle = new Bundle();
-                                        bundle.putByteArray("RESULT_IMAGE_AI",bytePhoto);
                                         fragment.setArguments(bundle);
                                         if (chkFlow == 0) {
                                             RabbitMirroring.MirroringSendEndpoint(3);
@@ -541,15 +583,12 @@ public class frag_inputdata_new extends Fragment {
                                     } else {
                                         if (chkFlow == 1) {
                                             Intent intent = new Intent(mContext, DipsWaitingRoom.class);
-                                            intent.putExtra("RESULT_IMAGE_AI",bytePhoto);
                                             intent.putExtra("CUSTNAME",custName);
                                             startActivity(intent);
                                             ((Activity) mContext).finishAffinity();
                                         } else {
                                             Fragment fragment = new frag_portfolio_new();
-                                            Bundle bundle = new Bundle();
-                                            bundle.putString("noCif",noCif);
-                                            fragment.setArguments(bundle);
+                                            session.saveNoCIF(noCif);
                                             session.clearCIF();
                                             getFragmentPage(fragment);
                                         }
@@ -557,7 +596,6 @@ public class frag_inputdata_new extends Fragment {
                                 } else {
                                     if (chkFlow == 1) {
                                         Intent intent = new Intent(mContext, DipsWaitingRoom.class);
-                                        intent.putExtra("RESULT_IMAGE_AI",bytePhoto);
                                         intent.putExtra("CUSTNAME",custName);
                                         startActivity(intent);
                                         ((Activity) mContext).finishAffinity();
@@ -586,7 +624,6 @@ public class frag_inputdata_new extends Fragment {
                 else {
                     if (response.code() == 404) {
                         Intent intent = new Intent(mContext, DipsWaitingRoom.class);
-                        intent.putExtra("RESULT_IMAGE_AI",bytePhoto);
                         intent.putExtra("CUSTNAME",custName);
                         startActivity(intent);
                         ((Activity) mContext).finishAffinity();
@@ -644,7 +681,6 @@ public class frag_inputdata_new extends Fragment {
                     session.saveFormCOde(4);
                     Fragment fragment = new frag_cif();
                     Bundle bundle = new Bundle();
-                    bundle.putByteArray("RESULT_IMAGE_AI",bytePhoto);
                     fragment.setArguments(bundle);
 
                     if (chkFlow == 0) {
@@ -701,7 +737,7 @@ public class frag_inputdata_new extends Fragment {
                 Log.e("CEK","RESULT files.getName : "+fileName);
                 tvSavedImg.setText("filename : "+fileName);
                 c.close();
-                Bitmap thumbnail = (BitmapFactory.decodeFile(picturePath));
+                prosesOptimalImage(picturePath);
             } else if (requestCode == 202) {
                 Log.e("CEK","RESULT FILE");
                 Uri uri = data.getData();
@@ -721,6 +757,63 @@ public class frag_inputdata_new extends Fragment {
             }
         } else if (resultCode == RESULT_CANCELED) {
             session.saveFlagUpDoc(true);
+        }
+    }
+
+    private void prosesOptimalImage(String picturePath) {
+        File mediaFile = new File(picturePath);
+        Bitmap thumbnail = (BitmapFactory.decodeFile(picturePath));
+        int file_size = Integer.parseInt(String.valueOf(mediaFile.length()/1024));
+        Log.d("CEK", "file_size : "+file_size);
+
+        int perDiff = 1;
+        if (file_size > 3072) {
+            perDiff = 8;
+        } else if (file_size > 2048) {
+            perDiff = 6;
+        } else if (file_size > 1024) {
+            perDiff = 4;
+        } else if (file_size > 550) {
+            perDiff = 2;
+        }
+
+        if (perDiff == 1) {
+            imgtoBase64(thumbnail);
+        } else {
+            getResizedBitmap(thumbnail, (thumbnail.getWidth() / perDiff), (thumbnail.getHeight() / perDiff));
+        }
+    }
+
+    private void getResizedBitmap(Bitmap bm, int newWidth, int newHeight) {
+        int width = bm.getWidth();
+        int height = bm.getHeight();
+        float scaleWidth = ((float) newWidth) / width;
+        float scaleHeight = ((float) newHeight) / height;
+
+        Matrix matrix = new Matrix();
+        // RESIZE THE BIT MAP
+        matrix.postScale(scaleWidth, scaleHeight);
+
+        // "RECREATE" THE NEW BITMAP
+        Bitmap resizedBitmap = Bitmap.createBitmap(
+                bm, 0, 0, width, height, matrix, false);
+        bm.recycle();
+        imgtoBase64(resizedBitmap);
+    }
+
+    private void imgtoBase64(Bitmap bitmap) {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.JPEG,100, baos);
+        imageBytes = baos.toByteArray();
+        imgBase64 = Base64.encodeToString(imageBytes, Base64.NO_WRAP);
+        if (isSessionZoom && !imgBase64.isEmpty()) {
+            JSONObject dataImg = new JSONObject();
+            try {
+                dataImg.put(keys,imgBase64);
+                RabbitMirroring.MirroringSendKey(dataImg);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
         }
     }
 

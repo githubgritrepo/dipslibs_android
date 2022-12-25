@@ -35,74 +35,7 @@
         android:layout_height="match_parent"
         android:background="@color/transparentblack">
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:layout_marginStart="70dp"
-            android:layout_marginTop="50dp"
-            android:layout_marginEnd="70dp"
-            android:layout_marginBottom="50dp"
-            android:background="@drawable/oval_background"
-            android:orientation="vertical">
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:text="@string/pilih_bahasa"
-                android:textColor="@color/black"
-                android:textSize="15dp"
-                android:textStyle="bold" />
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="2dp"
-                android:layout_marginTop="10dp"
-                android:layout_marginBottom="10dp"
-                android:background="#EDEDF4" />
-
-            <RadioGroup
-                android:id="@+id/groupradio"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-                <RadioButton
-                    android:id="@+id/rbId"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:onClick="onRadioButtonClicked"
-                    android:text="@string/lan_id"
-                    android:textSize="14dp"
-                    android:textStyle="bold"
-                    android:layout_gravity="center_vertical|left"/>
-
-                <RadioButton
-                    android:id="@+id/rbEn"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical|right"
-                    android:layout_marginStart="@dimen/dp_20"
-                    android:onClick="onRadioButtonClicked"
-                    android:text="@string/lan_en"
-                    android:textSize="14dp"
-                    android:textStyle="bold" />
-
-            </RadioGroup>
-
-            <Button
-                android:id="@+id/btnNext"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginTop="@dimen/dp_10"
-                android:background="@drawable/oval_background_10dp"
-                android:text="@string/lanjut_next"
-                android:textColor="@color/white"
-                android:textSize="14dp" />
-
-        </LinearLayout>
+        <include layout="@layout/dialog_dips_choose_language"/>
 
         <RelativeLayout
             android:id="@+id/rlload"

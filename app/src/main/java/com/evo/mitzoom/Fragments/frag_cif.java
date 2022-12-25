@@ -4,6 +4,7 @@ import static android.app.Activity.RESULT_OK;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -11,6 +12,8 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
+import android.hardware.Camera;
+import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Bundle;
 
@@ -33,6 +36,7 @@ import android.widget.AdapterView;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -64,6 +68,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -94,8 +99,9 @@ public class frag_cif extends Fragment {
     private ImageView btnCamera;
     private LinearLayout btnGallery;
     private Button btnNext;
-    private Button delete;
+    //private Button delete;
     private LinearLayout iconKtp;
+    private LinearLayout iconSwafoto;
     private LinearLayout iconNpwp;
     private LinearLayout iconSignature;
     private LinearLayout iconForm;
@@ -110,7 +116,6 @@ public class frag_cif extends Fragment {
     private boolean isCust;
     private boolean isSwafoto;
     private int chkFlow;
-    private byte[] bytePhoto;
     private byte[] KTP = new byte[0];
     private byte[] KTP_SWAFOTO = new byte[0];
     private byte[] NPWP = new byte[0];
@@ -131,13 +136,21 @@ public class frag_cif extends Fragment {
     private JSONObject datasReqOCR = null;
     private int lasLenChar;
     private boolean backSpaceChar;
-    private byte[] imageBytes;
+    private byte[] imageBytes = new byte[0];
     private String encodedImage;
     private String keysData = "";
     private JSONObject dataFormCIF = null;
     private String picturePath = "";
     private File mediaFilePhoto = null;
     private int getRequestCode = 0;
+    private TextView tvAlertDoc;
+
+    final String STATE_BYTEKTP = "byteKTP";
+    final String STATE_BYTESWAFOTO = "byteSwafoto";
+    final String STATE_BYTENPWP = "byteNPWP";
+    final String STATE_BYTETTD = "byteTTD";
+    final String STATE_FORMID = "formID";
+    private ImageView imgDelete;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -150,49 +163,31 @@ public class frag_cif extends Fragment {
         chkFlow = sessions.getFLOW();
         formCode = sessions.getFormCode();
         idDips = sessions.getKEY_IdDips();
-        if (getArguments() != null) {
-            if (getArguments().containsKey("RESULT_IMAGE_AI")) {
-                bytePhoto = getArguments().getByteArray("RESULT_IMAGE_AI");
-            }
-            if (getArguments().containsKey("ktp")) {
-                KTP = getArguments().getByteArray("ktp");
-            }
-            if (getArguments().containsKey("swafoto")) {
-                KTP_SWAFOTO = getArguments().getByteArray("swafoto");
-            }
-            if (getArguments().containsKey("npwp")) {
-                NPWP = getArguments().getByteArray("npwp");
-            }
-            if (getArguments().containsKey("ttd")) {
-                TTD = getArguments().getByteArray("ttd");
-            }
-            if (getArguments().containsKey("form_id")) {
-                form_id = getArguments().getInt("form_id");
-            }
-        }
-        Log.e("CEK",mContext+" isCust : "+isCust);
-        Log.e("CEK",mContext+" isSwafoto : "+isSwafoto);
-        Log.e("CEK",mContext+" chkFlow : "+chkFlow);
-        Log.e("CEK",mContext+" formCode : "+formCode);
-        Log.e("CEK",mContext+" idDips : "+idDips);
-        Log.e("CEK",mContext+" KTP : "+KTP.length);
-        Log.e("CEK",mContext+" KTP_SWAFOTO : "+KTP_SWAFOTO.length);
-        Log.e("CEK",mContext+" NPWP : "+NPWP.length);
-        Log.e("CEK",mContext+" TTD : "+TTD.length);
-        Log.e("CEK",mContext+" form_id : "+form_id);
+
         isSessionZoom = ZoomVideoSDK.getInstance().isInSession();
         Log.e("CEK",mContext+" isSessionZoom : "+isSessionZoom);
         if (isSessionZoom) {
             rabbitMirroring = new RabbitMirroring(mContext);
         }
-        if (formCode == 8) {
-            keysData = "datadiri";
-        } else if (formCode == 801) {
-            keysData = "alamatberbeda";
-        } else if (formCode == 802) {
-            keysData = "pekerjaan";
-        } else if (formCode == 803) {
-            keysData = "keuangan";
+
+        String base64KTP = sessions.getKEY_KTP();
+        if (base64KTP != null) {
+            KTP = Base64.decode(base64KTP, Base64.DEFAULT);
+        }
+
+        String base64SWAFOTO = sessions.getKEY_SWAFOTO();
+        if (base64SWAFOTO != null) {
+            KTP_SWAFOTO = Base64.decode(base64SWAFOTO, Base64.DEFAULT);
+        }
+
+        String base64NPWP = sessions.getKEY_NPWP();
+        if (base64NPWP != null) {
+            NPWP = Base64.decode(base64NPWP, Base64.DEFAULT);
+        }
+
+        String base64TTD = sessions.getKEY_TTD();
+        if (base64TTD != null) {
+            TTD = Base64.decode(base64TTD, Base64.DEFAULT);
         }
     }
 
@@ -204,8 +199,10 @@ public class frag_cif extends Fragment {
         inclHead = views.findViewById(R.id.inclHead);
         TopBar = (LinearLayout) views.findViewById(R.id.TopBar);
         ll_head = (LinearLayout) views.findViewById(R.id.ll_head);
+        tvAlertDoc = (TextView) views.findViewById(R.id.tvAlertDoc);
         tvFotoKTP = (TextView) views.findViewById(R.id.tvFotoKTP);
         iconKtp = (LinearLayout) views.findViewById(R.id.icon_ktp);
+        iconSwafoto = (LinearLayout) views.findViewById(R.id.icon_swafoto);
         iconNpwp = (LinearLayout) views.findViewById(R.id.icon_npwp);
         iconSignature = (LinearLayout) views.findViewById(R.id.icon_signature);
         iconForm = (LinearLayout) views.findViewById(R.id.icon_form);
@@ -216,7 +213,8 @@ public class frag_cif extends Fragment {
         btnCamera = (ImageView) views.findViewById(R.id.choose_camera);
         btnGallery = (LinearLayout) views.findViewById(R.id.choose_gallery);
         btnNext = (Button) views.findViewById(R.id.btnNext);
-        delete = (Button) views.findViewById(R.id.delete);
+        //delete = (Button) views.findViewById(R.id.delete);
+        imgDelete = (ImageView) views.findViewById(R.id.imgDelete);
         viewImage = (ImageView) views.findViewById(R.id.Imageview);
         LL = (LinearLayout) views.findViewById(R.id.BackgroundLL);
         chooseImage = (LinearLayout) views.findViewById(R.id.Choose_Image);
@@ -232,7 +230,33 @@ public class frag_cif extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        if (formCode > 7) {
+        if (getArguments() != null) {
+            if (getArguments().containsKey("form_id")) {
+                form_id = getArguments().getInt("form_id");
+            }
+        }
+        if (formCode == 8) {
+            keysData = "datadiri";
+        } else if (formCode == 801) {
+            keysData = "alamatberbeda";
+        } else if (formCode == 802) {
+            keysData = "pekerjaan";
+        } else if (formCode == 803) {
+            keysData = "keuangan";
+        }
+
+        Log.e("CEK",mContext+" isCust : "+isCust);
+        Log.e("CEK",mContext+" isSwafoto : "+isSwafoto);
+        Log.e("CEK",mContext+" chkFlow : "+chkFlow);
+        Log.e("CEK",mContext+" formCode : "+formCode);
+        Log.e("CEK",mContext+" idDips : "+idDips);
+        Log.e("CEK",mContext+" KTP : "+KTP.length);
+        Log.e("CEK",mContext+" KTP_SWAFOTO : "+KTP_SWAFOTO.length);
+        Log.e("CEK",mContext+" NPWP : "+NPWP.length);
+        Log.e("CEK",mContext+" TTD : "+TTD.length);
+        Log.e("CEK",mContext+" form_id : "+form_id);
+
+        if (formCode > 7 && formCode != 22) {
             dataFormCIF = new JSONObject();
             inclBodyUpload.setVisibility(View.GONE);
             llFormBuild.setVisibility(View.VISIBLE);
@@ -243,6 +267,9 @@ public class frag_cif extends Fragment {
             if (formCode == 8 || form_id == 9 || form_id == 5 || form_id == 14) {
                 if (KTP.length > 0) {
                     iconKtp.setBackgroundTintList(mContext.getResources().getColorStateList(R.color.bg_cif_success));
+                }
+                if (KTP_SWAFOTO.length > 0) {
+                    iconSwafoto.setBackgroundTintList(mContext.getResources().getColorStateList(R.color.bg_cif_success));
                 }
                 if (NPWP.length > 0) {
                     iconNpwp.setBackgroundTintList(mContext.getResources().getColorStateList(R.color.bg_cif_success));
@@ -256,6 +283,7 @@ public class frag_cif extends Fragment {
             swipe.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
                 @Override
                 public void onRefresh() {
+                    dataFormCIF = new JSONObject();
                     processGetForm(form_id);
                 }
             });
@@ -265,12 +293,15 @@ public class frag_cif extends Fragment {
             inclBodyUpload.setVisibility(View.VISIBLE);
             llFormBuild.setVisibility(View.GONE);
             btnProses.setVisibility(View.GONE);
+            imgDelete.setVisibility(View.GONE);
+            btnNext.setVisibility(View.GONE);
             btnNext.setClickable(false);
-            btnNext.setBackgroundTintList(mContext.getResources().getColorStateList(R.color.btnFalse));
+            //btnNext.setBackgroundTintList(mContext.getResources().getColorStateList(R.color.btnFalse));
         }
 
         if (KTP.length > 0 && KTP_SWAFOTO.length == 0) {
             tvFotoKTP.setText(R.string.ktp_swafoto);
+            tvAlertDoc.setText(getString(R.string.alert_swafoto));
         } else {
             tvFotoKTP.setText(getString(R.string.pembukaan_akun));
         }
@@ -288,21 +319,31 @@ public class frag_cif extends Fragment {
             sessions.saveOCR(null);
         }
 
-        if (formCode < 8) {
+        if (formCode < 8 || formCode == 22) {
             if (KTP.length == 0 && formCode == 4) {
                 iconKtp.setBackgroundTintList(mContext.getResources().getColorStateList(R.color.bg_cif));
+                tvAlertDoc.setText(getString(R.string.alert_ktp));
             }
             if (KTP.length > 0) {
                 iconKtp.setBackgroundTintList(mContext.getResources().getColorStateList(R.color.bg_cif_success));
             }
+            if (KTP_SWAFOTO.length == 0 && formCode == 22) {
+                iconSwafoto.setBackgroundTintList(mContext.getResources().getColorStateList(R.color.bg_cif));
+                tvAlertDoc.setText(getString(R.string.alert_swafoto));
+            }
+            if (KTP_SWAFOTO.length > 0) {
+                iconSwafoto.setBackgroundTintList(mContext.getResources().getColorStateList(R.color.bg_cif_success));
+            }
             if (NPWP.length == 0 && formCode == 6) {
                 iconNpwp.setBackgroundTintList(mContext.getResources().getColorStateList(R.color.bg_cif));
+                tvAlertDoc.setText(getString(R.string.alert_npwp));
             }
             if (NPWP.length > 0) {
                 iconNpwp.setBackgroundTintList(mContext.getResources().getColorStateList(R.color.bg_cif_success));
             }
             if (TTD.length == 0 && formCode == 7) {
                 iconSignature.setBackgroundTintList(mContext.getResources().getColorStateList(R.color.bg_cif));
+                tvAlertDoc.setText(getString(R.string.alert_ttd));
             }
             if (TTD.length > 0) {
                 iconSignature.setBackgroundTintList(mContext.getResources().getColorStateList(R.color.bg_cif_success));
@@ -330,22 +371,34 @@ public class frag_cif extends Fragment {
                     chooseFromSD();
                 }
             });
-            delete.setOnClickListener(new View.OnClickListener() {
+            imgDelete.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    LL.setBackground(mContext.getResources().getDrawable(R.drawable.bg));
+                    btnNext.setVisibility(View.GONE);
+                    btnNext.setClickable(false);
+                    viewImage.setVisibility(View.GONE);
+                    chooseImage.setVisibility(View.VISIBLE);
+                    imgDelete.setVisibility(View.GONE);
+                }
+            });
+            /*delete.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     LL.setBackground(mContext.getResources().getDrawable(R.drawable.bg));
+                    btnNext.setVisibility(View.GONE);
                     btnNext.setClickable(false);
                     btnNext.setBackgroundTintList(mContext.getResources().getColorStateList(R.color.btnFalse));
                     viewImage.setVisibility(View.GONE);
                     chooseImage.setVisibility(View.VISIBLE);
                     delete.setVisibility(View.GONE);
                 }
-            });
+            });*/
             btnNext.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     Log.e("CEK","btnNext formCode : "+formCode+" | KTP : "+KTP.length+" | KTP_SWAFOTO : "+KTP_SWAFOTO.length);
-                    if (formCode == 4) {
+                    if (formCode == 4 || formCode == 22) {
                         if (KTP.length > 0 && KTP_SWAFOTO.length == 0) {
                             KTP_SWAFOTO = imageBytes;
                             isSwafoto = true;
@@ -381,47 +434,22 @@ public class frag_cif extends Fragment {
                                 }
                             }
                         } else {
-                            //if (isSessionZoom) {
-                                //Bundle bundle = new Bundle();
-                                if (formCode == 4) {
-                                    /*bundle.putByteArray("ktp", KTP);
-                                    bundle.putByteArray("swafoto", KTP_SWAFOTO);
-                                    sessions.saveFormCOde(6);
-                                    rabbitMirroring.MirroringSendEndpoint(6);*/
-                                    if (!picturePath.isEmpty()) {
-                                        String fieldName = "foto";
-                                        processFormDataAttachment(fieldName,picturePath);
-                                    }
-                                } else if (formCode == 6) {
-                                    /*bundle.putByteArray("ktp",KTP);
-                                    bundle.putByteArray("swafoto", KTP_SWAFOTO);
-                                    bundle.putByteArray("npwp",NPWP);
-                                    sessions.saveFormCOde(7);
-                                    rabbitMirroring.MirroringSendEndpoint(7);*/
-                                    if (!picturePath.isEmpty()) {
-                                        String fieldName = "npwp";
-                                        processFormDataAttachment(fieldName,picturePath);
-                                    }
-                                } else if (formCode == 7) {
-                                    /*bundle.putByteArray("ktp",KTP);
-                                    bundle.putByteArray("swafoto", KTP_SWAFOTO);
-                                    bundle.putByteArray("npwp",NPWP);
-                                    bundle.putByteArray("ttd",TTD);
-                                    bundle.putInt("form_id",10);
-                                    sessions.saveFormCOde(8);
-                                    rabbitMirroring.MirroringSendEndpoint(8);*/
-                                    if (!picturePath.isEmpty()) {
-                                        String fieldName = "ttd";
-                                        processFormDataAttachment(fieldName,picturePath);
-                                    }
+                            if (formCode == 22) {
+                                if (!picturePath.isEmpty()) {
+                                    String fieldName = "foto";
+                                    processFormDataAttachment(fieldName,picturePath);
                                 }
-                                //sendDataFragment(bundle, new frag_cif());
-                            /*} else {
-                                Intent intent = new Intent(mContext, DipsWaitingRoom.class);
-                                intent.putExtra("RESULT_IMAGE_AI", bytePhoto);
-                                startActivity(intent);
-                                ((Activity) mContext).finishAffinity();
-                            }*/
+                            } else if (formCode == 6) {
+                                if (!picturePath.isEmpty()) {
+                                    String fieldName = "npwp";
+                                    processFormDataAttachment(fieldName,picturePath);
+                                }
+                            } else if (formCode == 7) {
+                                if (!picturePath.isEmpty()) {
+                                    String fieldName = "ttd";
+                                    processFormDataAttachment(fieldName,picturePath);
+                                }
+                            }
                         }
                     }
                 }
@@ -473,6 +501,8 @@ public class frag_cif extends Fragment {
                                                 boolean isChk = chk.isChecked();
                                                 if (isChk) {
                                                     objEl.put(nameDataEl, isChk);
+                                                } else {
+                                                    objEl.put(nameDataEl, false);
                                                 }
                                                 break;
                                             } else if (llFormBuild.getChildAt(i) instanceof Spinner) {
@@ -554,42 +584,12 @@ public class frag_cif extends Fragment {
                                         sendDataFragment(bundle, new frag_cif());
                                     } else {
                                         processSendFormCIF(reqFormSend);
-                                        /*int intLayoutWork = 802;
-                                        rabbitMirroring.MirroringSendKey(dataFormCIF);
-                                        rabbitMirroring.MirroringSendEndpoint(intLayoutWork);
-                                        bundle.putInt("form_id",5);
-                                        sessions.saveFormCOde(intLayoutWork);*/
-                                        //sendDataFragment(bundle, new frag_cif());
                                     }
                                 } catch (JSONException e) {
                                     e.printStackTrace();
                                 }
                             } else {
                                 processSendFormCIF(reqFormSend);
-                                /*Bundle bundle = new Bundle();
-                                int intLayoutWork = 0;
-                                if (formCode == 801) {
-                                    intLayoutWork = 802;
-                                    bundle.putInt("form_id",5);
-                                } else if (formCode == 802) {
-                                    intLayoutWork = 803;
-                                    bundle.putInt("form_id",14);
-                                } else if (formCode == 803) {
-                                    intLayoutWork = 804;
-                                }
-                                bundle.putByteArray("ktp",KTP);
-                                bundle.putByteArray("swafoto", KTP_SWAFOTO);
-                                bundle.putByteArray("npwp",NPWP);
-                                bundle.putByteArray("ttd",TTD);
-                                rabbitMirroring.MirroringSendKey(dataFormCIF);
-                                rabbitMirroring.MirroringSendEndpoint(intLayoutWork);
-                                sessions.saveFormCOde(intLayoutWork);
-                                Log.e("CEK","GET CIF : "+sessions.getCIF());*/
-                                /*if (intLayoutWork == 804 && sessions.getCIF() != null) {
-                                    sendDataFragment(bundle, new frag_cif_full());
-                                } else {
-                                    sendDataFragment(bundle, new frag_cif());
-                                }*/
                             }
                         }
                     }
@@ -606,6 +606,16 @@ public class frag_cif extends Fragment {
         if (isSessionZoom) {
             rabbitMirroring.closeThreadConnection();
         }
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        /*outState.putByteArray(STATE_BYTEKTP,KTP);
+        outState.putByteArray(STATE_BYTESWAFOTO,KTP_SWAFOTO);
+        outState.putByteArray(STATE_BYTENPWP,NPWP);
+        outState.putByteArray(STATE_BYTETTD,TTD);
+        outState.putInt(STATE_FORMID,form_id);*/
     }
 
     private JSONObject dataReqForm() {
@@ -743,6 +753,11 @@ public class frag_cif extends Fragment {
                             rabbitMirroring.MirroringSendEndpoint(intLayoutWork);
                             sessions.saveFormCOde(intLayoutWork);
                             if (intLayoutWork == 804 && sessions.getCIF() != null) {
+                                JSONObject dataFinance = dataObj.getJSONObject("data");
+                                if (dataFinance.has("noCif")) {
+                                    String noCif = dataFinance.getString("noCif");
+                                    sessions.saveNoCIF(noCif);
+                                }
                                 sendDataFragment(bundle, new frag_cif_full());
                             } else {
                                 sendDataFragment(bundle, new frag_cif());
@@ -897,22 +912,6 @@ public class frag_cif extends Fragment {
                 }
             }
         }
-
-        /*try {
-            for (int k = 0; k < idElement.length(); k++) {
-                int idEl = idElement.getJSONObject(k).getInt("id");
-                String nameEl = idElement.getJSONObject(k).getString("name");
-                for(Iterator<String> iter = objEl.keys(); iter.hasNext();) {
-                    String key = iter.next();
-                    if (nameEl.equals(key)) {
-                        String valEl = objEl.getString(key);
-                    }
-                }
-            }
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }*/
-
     }
 
     private void processMatchData() {
@@ -1125,6 +1124,12 @@ public class frag_cif extends Fragment {
                                                 } catch (JSONException e) {
                                                     e.printStackTrace();
                                                 }
+                                            } else {
+                                                try {
+                                                    objEl.put(nameDataEl, false);
+                                                } catch (JSONException e) {
+                                                    e.printStackTrace();
+                                                }
                                             }
                                         }
                                     });
@@ -1305,7 +1310,6 @@ public class frag_cif extends Fragment {
     }
 
     private void processFormDataAttachment(String fieldName, String filePath) {
-        Log.e("CEK","processFormDataAttachment fieldName : "+fieldName+" | "+filePath+" | idDips : "+idDips);
         File file = new File(filePath);
         RequestBody requestFile = RequestBody.create(MediaType.parse("image/jpeg"),file);
 
@@ -1325,7 +1329,6 @@ public class frag_cif extends Fragment {
         call = API.formAttachment(contentType,multipartBody);
 
         Log.e("CEK","processFormDataAttachment call url : "+call.request().url());
-        Log.e("CEK","processFormDataAttachment call body : "+call.request());
 
         call.enqueue(new Callback<JsonObject>() {
             @Override
@@ -1350,14 +1353,11 @@ public class frag_cif extends Fragment {
                                     }
                                     rabbitMirroring.MirroringSendKey(reqOCR);
                                     rabbitMirroring.MirroringSendEndpoint(22);
-                                } else if (formCode == 4 && KTP_SWAFOTO.length > 0) {
-                                    sessions.saveFormCOde(6);
+                                } else if (formCode == 22 && KTP_SWAFOTO.length > 0) {
                                     rabbitMirroring.MirroringSendEndpoint(6);
                                 } else if (formCode == 6) {
-                                    sessions.saveFormCOde(7);
                                     rabbitMirroring.MirroringSendEndpoint(7);
                                 } else if (formCode == 7) {
-                                    sessions.saveFormCOde(8);
                                     rabbitMirroring.MirroringSendEndpoint(8);
                                 }
                             }
@@ -1365,21 +1365,18 @@ public class frag_cif extends Fragment {
                             Bundle bundle = new Bundle();
                             if (formCode == 4 && flagOCR) {
                                 if (!isSwafoto) {
-                                    bundle.putByteArray("ktp", KTP);
-                                    bundle.putByteArray("RESULT_IMAGE_AI", bytePhoto);
+                                    sessions.saveKTP(encodedImage);
+                                    sessions.saveFormCOde(22);
                                 }
-                            } else if (formCode == 4 && KTP_SWAFOTO.length > 0) {
-                                bundle.putByteArray("ktp", KTP);
-                                bundle.putByteArray("swafoto", KTP_SWAFOTO);
+                            } else if (formCode == 22 && KTP_SWAFOTO.length > 0) {
+                                sessions.saveFormCOde(6);
+                                sessions.saveSWAFOTO(encodedImage);
                             } else if (formCode == 6) {
-                                bundle.putByteArray("ktp",KTP);
-                                bundle.putByteArray("swafoto", KTP_SWAFOTO);
-                                bundle.putByteArray("npwp",NPWP);
+                                sessions.saveFormCOde(7);
+                                sessions.saveNPWP(encodedImage);
                             } else if (formCode == 7) {
-                                bundle.putByteArray("ktp",KTP);
-                                bundle.putByteArray("swafoto", KTP_SWAFOTO);
-                                bundle.putByteArray("npwp",NPWP);
-                                bundle.putByteArray("ttd",TTD);
+                                sessions.saveFormCOde(8);
+                                sessions.saveTTD(encodedImage);
                                 bundle.putInt("form_id",10);
                             }
 
@@ -1396,9 +1393,8 @@ public class frag_cif extends Fragment {
                                 }
                             }
 
-                            if (!isSessionZoom && formCode == 4 && KTP.length > 0 && KTP_SWAFOTO.length > 0) {
+                            if (!isSessionZoom && formCode == 22 && KTP.length > 0 && KTP_SWAFOTO.length > 0) {
                                 Intent intent = new Intent(mContext, DipsWaitingRoom.class);
-                                intent.putExtra("RESULT_IMAGE_AI", bytePhoto);
                                 startActivity(intent);
                                 ((Activity) mContext).finishAffinity();
                             } else {
@@ -1461,13 +1457,46 @@ public class frag_cif extends Fragment {
         EditText TTL2 = (EditText) dialogView.findViewById(R.id.et_ttl2_ocr);
         Button btnOCRCancel = (Button) dialogView.findViewById(R.id.btncncl);
         Button btnOCRNext = (Button) dialogView.findViewById(R.id.btnlnjt);
+
+        String tglLahir = "-";
+        if (ttl.indexOf(",") > 0) {
+            String[] sp = ttl.split(",");
+            tglLahir = sp[1].toString().trim();
+        }
+
         NIK.setText(nik);
-        Nama.setText(nama);;
-        TTL.setText(ttl);
-        TTL2.setText(ttl);
+        Nama.setText(nama);
+        TTL.setText(tmptLahir);
+        TTL2.setText(tglLahir);
 
         btnOCRCancel.setBackgroundTintList(mContext.getColorStateList(R.color.button_end_call));
         btnOCRNext.setBackgroundTintList(mContext.getColorStateList(R.color.Blue));
+
+        Calendar currentTimeOCR = Calendar.getInstance();
+
+        DatePickerDialog.OnDateSetListener dateDialog = new DatePickerDialog.OnDateSetListener() {
+            @Override
+            public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+                currentTimeOCR.set(Calendar.YEAR, year);
+                currentTimeOCR.set(Calendar.MONTH, month);
+                currentTimeOCR.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+
+                String Tgl = String.format("%02d", dayOfMonth);
+                String bln = String.format("%02d", month+1);
+
+                String getDates = Tgl+"-"+bln+"-"+year;
+                TTL2.setText(getDates);
+            }
+        };
+
+        TTL2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                new DatePickerDialog(mContext, dateDialog, currentTimeOCR
+                        .get(Calendar.YEAR), currentTimeOCR.get(Calendar.MONTH),
+                        currentTimeOCR.get(Calendar.DAY_OF_MONTH)).show();
+            }
+        });
 
         //TextWatcher
         NIK.addTextChangedListener(new TextWatcher() {
@@ -1631,7 +1660,7 @@ public class frag_cif extends Fragment {
         sweetAlertDialog.setConfirmText(getResources().getString(R.string.btn_continue));
         sweetAlertDialog.show();
         Button btnConfirm = (Button) sweetAlertDialog.findViewById(cn.pedant.SweetAlert.R.id.confirm_button);
-        btnConfirm.setBackgroundTintList(mContext.getResources().getColorStateList(R.color.Blue));
+        btnConfirm.setBackgroundTintList(mContext.getResources().getColorStateList(R.color.zm_button));
     }
 
     @Override
@@ -1644,9 +1673,7 @@ public class frag_cif extends Fragment {
                 Log.e("CEK","RETURN CAMERA");
                 sessions.saveFlagUpDoc(true);
                 byte[] resultCamera = data.getByteArrayExtra("result_camera");
-                byte[] resultRealCamera = data.getByteArrayExtra("real");
                 Bitmap bitmap = BitmapFactory.decodeByteArray(resultCamera, 0, resultCamera.length);
-                Bitmap bitmap_real = BitmapFactory.decodeByteArray(resultRealCamera, 0, resultRealCamera.length);
 
                 try {
                     mediaFilePhoto = createTemporaryFile(resultCamera);
@@ -1656,24 +1683,18 @@ public class frag_cif extends Fragment {
                 picturePath = mediaFilePhoto.getAbsolutePath();
                 Log.e("CEK","onActivityResult picturePath : "+picturePath);
                 LL.setBackgroundResource(0);
-                btnNext.setBackgroundTintList(mContext.getResources().getColorStateList(R.color.bg_cif));
+                btnNext.setVisibility(View.VISIBLE);
+                //btnNext.setBackgroundTintList(mContext.getResources().getColorStateList(R.color.zm_button));
                 btnNext.setClickable(true);
-                delete.setBackgroundTintList(mContext.getResources().getColorStateList(R.color.red_btn_bg_pressed_color));
-                delete.setVisibility(View.VISIBLE);
+                imgDelete.setVisibility(View.VISIBLE);
+                /*delete.setBackgroundTintList(mContext.getResources().getColorStateList(R.color.red_btn_bg_pressed_color));
+                delete.setVisibility(View.VISIBLE);*/
                 viewImage.setVisibility(View.VISIBLE);
                 chooseImage.setVisibility(View.GONE);
                 viewImage.setImageBitmap(bitmap);
                 processSendImage(bitmap);
                 Log.e("CEK","IMAGE KTP : "+KTP.length);
                 Log.e("CEK","IMAGE KTP_SWAFOTO : "+KTP_SWAFOTO.length);
-                if (formCode == 4) {
-                    if (KTP.length == 0 && KTP_SWAFOTO.length == 0) {
-                        imgtoBase64OCR(bitmap_real);
-                    }
-                }
-                /*if (KTP.length > 0 && KTP_SWAFOTO.length == 0) {
-                    imgtoBase64OCR(bitmap_real);
-                }*/
             }
             else if (requestCode == REQUESTCODE_GALLERY){
                 Uri selectedImage = data.getData();
@@ -1684,6 +1705,18 @@ public class frag_cif extends Fragment {
                 picturePath = c.getString(columnIndex);
                 c.close();
 
+                Bitmap thumbnail = prosesOptimalImage(picturePath);
+
+                ExifInterface exif = null;
+                int rotation = 0;
+                try {
+                    exif = new ExifInterface(picturePath);
+                    rotation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+                Log.e("CEK","rotation : "+rotation);
                 Log.e("CEK","onActivityResult picturePath : "+picturePath);
                 Log.e("CEK","REQUESTCODE_GALLERY : "+REQUESTCODE_GALLERY);
                 Log.e("CEK","IMAGE KTP : "+KTP.length);
@@ -1694,13 +1727,20 @@ public class frag_cif extends Fragment {
                 } else {
                     sessions.saveFlagUpDoc(true);
                     LL.setBackgroundResource(0);
-                    btnNext.setBackgroundTintList(mContext.getResources().getColorStateList(R.color.bg_cif));
+                    btnNext.setVisibility(View.VISIBLE);
+                    //btnNext.setBackgroundTintList(mContext.getResources().getColorStateList(R.color.zm_button));
                     btnNext.setClickable(true);
-                    delete.setBackgroundTintList(mContext.getResources().getColorStateList(R.color.red_btn_bg_pressed_color));
-                    delete.setVisibility(View.VISIBLE);
+                    imgDelete.setVisibility(View.VISIBLE);
+                    /*delete.setBackgroundTintList(mContext.getResources().getColorStateList(R.color.red_btn_bg_pressed_color));
+                    delete.setVisibility(View.VISIBLE);*/
                     viewImage.setVisibility(View.VISIBLE);
                     chooseImage.setVisibility(View.GONE);
-                    prosesOptimalImage(picturePath);
+                    imgtoBase64(thumbnail);
+                    if (formCode == 4) {
+                        if (KTP.length == 0 && KTP_SWAFOTO.length == 0) {
+                            imgtoBase64OCR(thumbnail);
+                        }
+                    }
                 }
             } else if (requestCode == REQUESTCODE_SWAFOTO){
                 if (chkFlow == 1 || isSessionZoom) {
@@ -1717,10 +1757,12 @@ public class frag_cif extends Fragment {
                         picturePath = mediaFilePhoto.getAbsolutePath();
 
                         LL.setBackgroundResource(0);
-                        btnNext.setBackgroundTintList(mContext.getResources().getColorStateList(R.color.bg_cif));
+                        btnNext.setVisibility(View.VISIBLE);
+                        //btnNext.setBackgroundTintList(mContext.getResources().getColorStateList(R.color.zm_button));
                         btnNext.setClickable(true);
-                        delete.setBackgroundTintList(mContext.getResources().getColorStateList(R.color.red_btn_bg_pressed_color));
-                        delete.setVisibility(View.VISIBLE);
+                        imgDelete.setVisibility(View.VISIBLE);
+                        /*delete.setBackgroundTintList(mContext.getResources().getColorStateList(R.color.red_btn_bg_pressed_color));
+                        delete.setVisibility(View.VISIBLE);*/
                         viewImage.setVisibility(View.VISIBLE);
                         chooseImage.setVisibility(View.GONE);
                         viewImage.setImageBitmap(bitmap);
@@ -1743,7 +1785,18 @@ public class frag_cif extends Fragment {
         }
     }
 
-    private void prosesOptimalImage(String picturePath) {
+    /*private String imageRotateBase64(Bitmap bitmap, int rotation) {
+        int w = bitmap.getWidth();
+        int h = bitmap.getHeight();
+        Matrix matrix = new Matrix();
+        float rotationInDegree = exifToDegrees(rotation);
+        matrix.setRotate(rotationInDegree);
+        Bitmap rotBitmap = Bitmap.createBitmap(bitmap, 0, 0 , w, h, matrix, true);
+        String imgBase64 = imgtoBase64(rotBitmap);
+        return imgBase64;
+    }*/
+
+    private Bitmap prosesOptimalImage(String picturePath) {
         File mediaFile = new File(picturePath);
         Bitmap thumbnail = (BitmapFactory.decodeFile(picturePath));
         int file_size = Integer.parseInt(String.valueOf(mediaFile.length()/1024));
@@ -1762,18 +1815,11 @@ public class frag_cif extends Fragment {
 
         if (perDiff == 1) {
             viewImage.setImageBitmap(thumbnail);
-            imgtoBase64(thumbnail);
         } else {
-            getResizedBitmap(thumbnail, (thumbnail.getWidth() / perDiff), (thumbnail.getHeight() / perDiff));
+            thumbnail = getResizedBitmap(thumbnail, (thumbnail.getWidth() / perDiff), (thumbnail.getHeight() / perDiff));
         }
-        if (formCode == 4) {
-            if (KTP.length == 0 && KTP_SWAFOTO.length == 0) {
-                imgtoBase64OCR(thumbnail);
-            }
-        }
-        /*if (KTP.length > 0 && KTP_SWAFOTO.length == 0) {
-            imgtoBase64OCR(thumbnail);
-        }*/
+
+        return thumbnail;
     }
 
     private void processSendImage(Bitmap bitmap) {
@@ -1786,12 +1832,15 @@ public class frag_cif extends Fragment {
                         int onOfCamera = sessions.getCamera();
                         Log.d("CEK","onOfCamera loop-"+k+" : "+onOfCamera);
                         if (onOfCamera == 1) {
-                            Log.d("CEK","MASUK KIRIM IMAGE");
-                            imgtoBase64(bitmap);
+                            Log.d("CEK","MASUK CAMERA AKTIF");
+                            /*Log.d("CEK","MASUK KIRIM IMAGE");
+                            imgtoBase64(bitmap);*/
                             break;
                         }
                         Thread.sleep(500);
                     }
+                    Log.d("CEK","MASUK KIRIM IMAGE");
+                    imgtoBase64(bitmap);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -1799,7 +1848,7 @@ public class frag_cif extends Fragment {
         }).start();
     }
 
-    public void getResizedBitmap(Bitmap bm, int newWidth, int newHeight) {
+    public Bitmap getResizedBitmap(Bitmap bm, int newWidth, int newHeight) {
         int width = bm.getWidth();
         int height = bm.getHeight();
         float scaleWidth = ((float) newWidth) / width;
@@ -1814,7 +1863,13 @@ public class frag_cif extends Fragment {
                 bm, 0, 0, width, height, matrix, false);
         bm.recycle();
         viewImage.setImageBitmap(resizedBitmap);
-        imgtoBase64(resizedBitmap);
+        /*imgtoBase64(resizedBitmap);
+        if (formCode == 4) {
+            if (KTP.length == 0 && KTP_SWAFOTO.length == 0) {
+                imgtoBase64OCR(resizedBitmap);
+            }
+        }*/
+        return resizedBitmap;
     }
 
     private void imgtoBase64(Bitmap bitmap) {
@@ -1827,13 +1882,17 @@ public class frag_cif extends Fragment {
         Log.e("CEK", "formCode : "+formCode);
         Log.e("CEK", "KTP : "+KTP.length);
         Log.e("CEK", "KTP_SWAFOTO : "+KTP_SWAFOTO.length);
-        if (formCode == 4) {
+        if (formCode == 4 || formCode == 22) {
             if (KTP.length > 0 && KTP_SWAFOTO.length == 0) {
                 imgBase64 = encodedImage;
                 keys = "swafoto";
             } else {
                 imgBase64 = encodedImage;
                 keys = "ktp";
+            }
+            if (KTP.length == 0 && KTP_SWAFOTO.length == 0) {
+                Bitmap bitmapOptimal = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length);
+                imgtoBase64OCR(bitmapOptimal);
             }
         } else if (formCode == 6) {
             keys = "npwp";
@@ -1872,6 +1931,7 @@ public class frag_cif extends Fragment {
         RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), jsons.toString());
         ApiService API = Server.getAPIService();
         Call<JsonObject> call = API.ocrKtp(requestBody);
+        Log.e("CEK","url ocrKTP : "+call.request().url());
         call.enqueue(new Callback<JsonObject>() {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
@@ -1960,7 +2020,29 @@ public class frag_cif extends Fragment {
                 }
                 else {
                     flagOCR = false;
-                    Log.d("CEK","MASUK ELSE");
+                    String msg = "";
+                    if (response.errorBody().toString().isEmpty()) {
+                        String dataS = response.errorBody().toString();
+                        try {
+                            JSONObject dataObj = new JSONObject(dataS);
+                            msg = dataObj.getString("message");
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    } else {
+                        String dataS = null;
+                        try {
+                            dataS = response.errorBody().string();
+                            JSONObject dataObj = new JSONObject(dataS);
+                            if (dataObj.has("message")) {
+                                msg = dataObj.getString("message");
+                            }
+                        } catch (IOException | JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+
+                    Toast.makeText(mContext,msg,Toast.LENGTH_SHORT).show();
                 }
             }
             @Override

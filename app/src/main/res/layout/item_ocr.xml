@@ -122,7 +122,11 @@
                 android:layout_width="match_parent"
                 android:layout_height="35dp"
                 android:background="@drawable/bg_textinput"
-                android:inputType="text"
+                android:inputType="date"
+                android:clickable="false"
+                android:focusable="false"
+                android:focusableInTouchMode="false"
+                android:cursorVisible="false"
                 android:textSize="12dp"
                 tools:ignore="SpeakableTextPresentCheck" />
         </com.google.android.material.textfield.TextInputLayout>

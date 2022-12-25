@@ -37,7 +37,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="@drawable/oval_background_10dp"
-        android:backgroundTint="@color/bg_cif"
+        android:backgroundTint="@color/zm_button"
         android:text="@string/verifikasi"
         android:textColor="@color/white"
         android:textStyle="bold" />

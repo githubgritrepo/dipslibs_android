@@ -24,6 +24,7 @@ import android.util.Log;
 import android.view.Display;
 import android.view.Gravity;
 import android.view.KeyEvent;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
@@ -68,6 +69,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -75,6 +77,7 @@ import java.util.Locale;
 import cn.pedant.SweetAlert.SweetAlertDialog;
 import okhttp3.MediaType;
 import okhttp3.RequestBody;
+import pl.droidsonroids.gif.GifImageView;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -144,7 +147,6 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
     protected Display display;
     protected DisplayMetrics displayMetrics;
     protected boolean renderWithSurfaceView=true;
-    private RelativeLayout rlprogress;
     public static Button btnChat;
     public static Button btnFile;
     public int seconds = 0;
@@ -159,6 +161,9 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
     protected Handler handler = new Handler(Looper.getMainLooper());
     private boolean isSwafoto = false;
     private RabbitMirroring rabbitMirroring;
+    private GifImageView gifLoading;
+    private ImageView imgBatikVic;
+    private boolean flagClickEnd = false;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -209,10 +214,9 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
         initMeeting();
         updateSessionInfo();
         rabbitMirroring = new RabbitMirroring(mContext);
-        //showProgress(true);
         DipsVideoConfren.LogoCompany.setVisibility(View.VISIBLE);
         DipsVideoConfren.Zoom.setVisibility(View.VISIBLE);
-        getFragmentPage(new frag_conferee_agree());
+        //getFragmentPage(new frag_conferee_agree());
 
     }
 
@@ -558,7 +562,8 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
         int widthDisp = displayMetrics.widthPixels;
         int dyWidth = (int) Math.ceil(widthDisp / 2);
 
-        rlprogress = (RelativeLayout) findViewById(R.id.rlprogress);
+        gifLoading = (GifImageView) findViewById(R.id.gifLoading);
+        imgBatikVic = (ImageView) findViewById(R.id.imgBatikVic);
         llUsersVideo = (RelativeLayout) findViewById(R.id.llUsersVideo);
         offUsersVideo= (RelativeLayout) findViewById(R.id.offUsersVideo);
         ImageView video_off_tips2 = (ImageView) findViewById(R.id.video_off_tips2);
@@ -625,14 +630,7 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
             }
         });
     }
-    private void showProgress(Boolean bool){
 
-        if (bool){
-            rlprogress.setVisibility(View.VISIBLE);
-        }else {
-            rlprogress.setVisibility(View.GONE);
-        }
-    }
     public void onClickAudio(View view) {
         ZoomVideoSDKUser zoomSDKUserInfo = session.getMySelf();
         if (null == zoomSDKUserInfo)
@@ -680,15 +678,12 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
         }
     }
 
-    public void onClickEnd(View view) {
-        ZoomVideoSDKUser userInfo = session.getMySelf();
+    private void dialogAgentLeave() {
         SweetAlertDialog dialogEnd = new SweetAlertDialog(mContext,SweetAlertDialog.WARNING_TYPE);
-        dialogEnd.setContentText(getString(R.string.leave_message));
-        dialogEnd.setCancelable(true);
+        dialogEnd.setContentText(getString(R.string.agent_leave));
+        dialogEnd.setCancelable(false);
         dialogEnd.setConfirmText(getString(R.string.leave_leave_text));
-        dialogEnd.setConfirmButtonBackgroundColor(getColor(R.color.zm_v1_red_A100));
-        dialogEnd.setCancelText(getString(R.string.cancel));
-        dialogEnd.setCancelButtonBackgroundColor(getColor(R.color.Blue));
+        dialogEnd.setConfirmButtonBackgroundColor(getColor(R.color.zm_button));
         dialogEnd.setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
             @Override
             public void onClick(SweetAlertDialog sweetAlertDialog) {
@@ -697,17 +692,60 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
                 int ret = ZoomVideoSDK.getInstance().leaveSession(false);
                 sessions.clearPartData();
                 rabbitMirroring.MirroringSendEndpoint(99);
-                //MirroringEnd();
+                trimCache(mContext);
                 startActivity(new Intent(getApplicationContext(), RatingActivity.class));
                 finish();
             }
         });
-        dialogEnd.setCancelClickListener(new SweetAlertDialog.OnSweetClickListener() {
+        dialogEnd.show();
+    }
+
+    public void onClickEnd(View view) {
+        flagClickEnd = true;
+        ZoomVideoSDKUser userInfo = session.getMySelf();
+
+        LayoutInflater inflater = getLayoutInflater();
+        View dialogView = inflater.inflate(R.layout.layout_dialog_sweet, null);
+
+        ImageView imgDialog = (ImageView) dialogView.findViewById(R.id.imgDialog);
+        TextView tvTitleDialog = (TextView) dialogView.findViewById(R.id.tvTitleDialog);
+        TextView tvBodyDialog = (TextView) dialogView.findViewById(R.id.tvBodyDialog);
+        Button btnCancelDialog = (Button) dialogView.findViewById(R.id.btnCancelDialog);
+        Button btnConfirmDialog = (Button) dialogView.findViewById(R.id.btnConfirmDialog);
+
+        tvTitleDialog.setVisibility(View.GONE);
+        btnCancelDialog.setVisibility(View.VISIBLE);
+
+        imgDialog.setImageDrawable(getDrawable(R.drawable.v_dialog_info));
+        tvBodyDialog.setText(getString(R.string.leave_message));
+        btnCancelDialog.setText(getString(R.string.tidak_not));
+        btnConfirmDialog.setText(getString(R.string.label_ya));
+
+        SweetAlertDialog dialogEnd = new SweetAlertDialog(mContext,SweetAlertDialog.WARNING_TYPE);
+        dialogEnd.setContentText(getString(R.string.leave_message));
+        dialogEnd.setCancelable(true);
+        dialogEnd.hideConfirmButton();
+
+        btnConfirmDialog.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(SweetAlertDialog sweetAlertDialog) {
+            public void onClick(View view) {
+                dialogEnd.dismissWithAnimation();
+                releaseResource();
+                int ret = ZoomVideoSDK.getInstance().leaveSession(false);
+                sessions.clearPartData();
+                rabbitMirroring.MirroringSendEndpoint(99);
+                trimCache(mContext);
+                startActivity(new Intent(getApplicationContext(), RatingActivity.class));
+                finish();
+            }
+        });
+        btnCancelDialog.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
                 dialogEnd.dismissWithAnimation();
             }
         });
+
         dialogEnd.show();
     }
 
@@ -935,19 +973,48 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
         builder.show();
     }
 
+    public void trimCache(Context context) {
+        try {
+            File dir = context.getCacheDir();
+            if (dir != null && dir.isDirectory()) {
+                Log.e("CEK","trimCache : "+dir.getPath());
+                deleteDir(dir);
+            }
+        } catch (Exception e) {
+            // TODO: handle exception
+        }
+    }
+
+    public boolean deleteDir(File dir) {
+        if (dir != null && dir.isDirectory()) {
+            String[] children = dir.list();
+            for (int i = 0; i < children.length; i++) {
+                boolean success = deleteDir(new File(dir, children[i]));
+                Log.e("CEK","deleteDir ke-+"+i+" : "+success);
+                if (!success) {
+                    return false;
+                }
+            }
+        }
+
+        // The directory is now empty so delete it
+        return dir.delete();
+    }
+
     @Override
     public void onSessionJoin() {
         llUsersVideo.setVisibility(View.VISIBLE);
         offUsersVideo.setVisibility(View.INVISIBLE);
         btnFile.setBackgroundTintList(BaseMeetingActivity.this.getResources().getColorStateList(R.color.btnFalse));
         btnChat.setBackgroundTintList(BaseMeetingActivity.this.getResources().getColorStateList(R.color.btnFalse));
-        showProgress(false);
         btnFile.setClickable(false);
         btnChat.setClickable(false);
+        gifLoading.setVisibility(View.GONE);
+        imgBatikVic.setVisibility(View.GONE);
         /*DipsVideoConfren.LogoCompany.setVisibility(View.VISIBLE);
         DipsVideoConfren.Zoom.setVisibility(View.VISIBLE);*/
         updateSessionInfo();
-        //getFragmentPage(new frag_conferee_agree());
+        getFragmentPage(new frag_conferee_agree());
         sessions.saveFlagConfAgree(true);
         actionBar.setVisibility(View.VISIBLE);
         if (ZoomVideoSDK.getInstance().getShareHelper().isSharingOut()) {
@@ -989,6 +1056,7 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
 
     @Override
     public void onUserJoin(ZoomVideoSDKUserHelper zoomVideoSDKUserHelper, List<ZoomVideoSDKUser> userList) {
+        Log.e("CEK","onUserJoin userList.size : "+userList.size()+" | isActivityPaused : "+isActivityPaused);
         updateVideoListLayout();
         if (!isActivityPaused) {
             adapter.onUserJoin(userList);
@@ -999,17 +1067,22 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
 
     @Override
     public void onUserLeave(ZoomVideoSDKUserHelper zoomVideoSDKUserHelper, List<ZoomVideoSDKUser> userList) {
+        Log.e("CEK","onUserLeave userList.size : "+userList.size());
         updateVideoListLayout();
         adapter.onUserLeave(userList);
         if (adapter.getItemCount() == 0) {
             videoListContain.setVisibility(View.INVISIBLE);
         }
         updateSessionInfo();
+
+        if (userList.size() < 2 && flagClickEnd == false) {
+            dialogAgentLeave();
+        }
     }
 
     @Override
     public void onUserVideoStatusChanged(ZoomVideoSDKVideoHelper zoomVideoSDKVideoHelper, List<ZoomVideoSDKUser> userList) {
-        Log.d(TAG, "onUserVideoStatusChanged");
+        Log.d(TAG, "onUserVideoStatusChanged userList : "+userList.size());
         if (null == iconVideo) {
             return;
         }
@@ -1052,9 +1125,9 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
                 iconAudio.setImageResource(R.drawable.icon_join_audio);
             } else {
                 if (zoomSDKUserInfo.getAudioStatus().isMuted()) {
-                    iconAudio.setImageResource(R.drawable.icon_unmute);
+                    iconAudio.setImageResource(R.drawable.v_unmute);
                 } else {
-                    iconAudio.setImageResource(R.drawable.icon_mute);
+                    iconAudio.setImageResource(R.drawable.v_mic);
                 }
             }
             //checkMoreAction();

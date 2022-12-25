@@ -136,6 +136,14 @@ public interface ApiService {
     Call<JsonObject> ResendOTP(@Body RequestBody body);
 
     @Headers("Content-Type: "+ MyConstants.CONTENT_TYPE)
+    @POST("middleware/send-otp")
+    Call<JsonObject> SendOTP(@Body RequestBody body);
+
+    @Headers("Content-Type: "+ MyConstants.CONTENT_TYPE)
+    @POST("middleware/validate-otp")
+    Call<JsonObject> ValidateOTP(@Body RequestBody body);
+
+    @Headers("Content-Type: "+ MyConstants.CONTENT_TYPE)
     @GET("customer-portfolio/{NoCIF}")
     Call<JsonObject> GetPortofolio(
             @Path("NoCIF") String NoCIF
@@ -220,5 +228,9 @@ public interface ApiService {
 
     @GET("form-generator/formcif")
     Call<JsonObject> getResiCIF();
+
+    @POST("form-data/komplain")
+    Call<JsonObject> formComplaint(@Header("Content-Type") String contentType,
+                                    @Body RequestBody body);
 
 }

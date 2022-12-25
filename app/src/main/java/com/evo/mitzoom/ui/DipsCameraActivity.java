@@ -259,16 +259,25 @@ public class DipsCameraActivity extends AppCompatActivity {
         int file_size = Integer.parseInt(String.valueOf(mediaFile.length()/1024));
         Log.d("CEK", "file_size : "+file_size);
 
-        int perDiff = 1;
+        /*int perDiff = 1;
         if (file_size > 3072) {
             perDiff = 6;
         } else if (file_size > 2048) {
             perDiff = 4;
         } else if (file_size > 1024) {
             perDiff = 2;
-        }/* else if (file_size > 550) {
-            perDiff = 2;
         }*/
+
+        int perDiff = 1;
+        if (file_size > 3072) {
+            perDiff = 8;
+        } else if (file_size > 2048) {
+            perDiff = 6;
+        } else if (file_size > 1024) {
+            perDiff = 4;
+        } else if (file_size > 550) {
+            perDiff = 2;
+        }
 
         Bitmap bitmapCrop = getResizedBitmap(bitmap, (bitmap.getWidth() / perDiff), (bitmap.getHeight() / perDiff));
 

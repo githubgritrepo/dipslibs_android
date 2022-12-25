@@ -48,6 +48,33 @@
                 android:src="@drawable/ic_baseline_arrow_forward_24" />
 
             <LinearLayout
+                android:id="@+id/icon_swafoto"
+                android:layout_width="12dp"
+                android:layout_height="12dp"
+                android:layout_gravity="center_vertical"
+                android:layout_marginEnd="10dp"
+                android:background="@drawable/circle_icon"
+                android:backgroundTint="#C8CDD1"
+                android:orientation="horizontal" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="start|center_vertical"
+                android:text="@string/photo_swafoto"
+                android:textAlignment="textStart"
+                android:textColor="@color/black"
+                android:textSize="10dp" />
+
+            <ImageView
+                android:layout_width="12dp"
+                android:layout_height="12dp"
+                android:layout_gravity="center_vertical"
+                android:layout_marginStart="10dp"
+                android:layout_marginEnd="10dp"
+                android:src="@drawable/ic_baseline_arrow_forward_24" />
+
+            <LinearLayout
                 android:id="@+id/icon_npwp"
                 android:layout_width="12dp"
                 android:layout_height="12dp"

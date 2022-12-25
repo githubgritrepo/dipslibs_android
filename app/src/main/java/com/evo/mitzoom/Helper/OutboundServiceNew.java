@@ -82,13 +82,13 @@ public class OutboundServiceNew extends Service {
     public void onDestroy() {
         super.onDestroy();
         Log.e(TAG,"MASUK ONDESTROY");
-        if (subscribeThreadCallOutbound != null) {
+        /*if (subscribeThreadCallOutbound != null) {
             subscribeThreadCallOutbound.interrupt();
         }
         if (publishCallAcceptThread != null) {
             publishCallAcceptThread.interrupt();
         }
-        stopForeground(IDSERVICES);
+        stopForeground(IDSERVICES);*/
     }
 
     @Override
@@ -292,6 +292,15 @@ public class OutboundServiceNew extends Service {
             }
         });
         publishCallAcceptThread.start();
+    }
+
+    public static void stopServiceSocket() {
+        if (subscribeThreadCallOutbound != null) {
+            subscribeThreadCallOutbound.interrupt();
+        }
+        if (publishCallAcceptThread != null) {
+            publishCallAcceptThread.interrupt();
+        }
     }
 
     public static void acceptCall() {

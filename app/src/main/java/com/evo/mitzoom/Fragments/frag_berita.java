@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Rect;
 import android.media.MediaPlayer;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -23,6 +24,7 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
+import android.widget.Spinner;
 import android.widget.Toast;
 import android.widget.VideoView;
 
@@ -87,7 +89,7 @@ public class frag_berita extends Fragment implements com.wdullaer.materialdateti
     private ArrayList<Integer> imgArray = new ArrayList<Integer>();
     private CircleIndicator circleIndicator;
     private int currentPage;
-    private MaterialButton btnSchedule,btnSchedule2, btnEndCall;
+    private Button btnSchedule,btnSchedule2, btnEndCall;
     ArrayList<String> time = new ArrayList<>();
     List<Integer> periodeInt = new ArrayList<>();
     HashMap<Integer,String> dataPeriode = new HashMap<>();
@@ -106,7 +108,7 @@ public class frag_berita extends Fragment implements com.wdullaer.materialdateti
     private List<Integer> indeksNotFound;
     private DatePickerDialog dpd;
     private EditText et_Date;
-    private AutoCompleteTextView et_time;
+    private Spinner et_time;
     private JSONArray tanggalPenuh;
     private JSONArray periodePenuh;
 
@@ -132,8 +134,8 @@ public class frag_berita extends Fragment implements com.wdullaer.materialdateti
         rv_product = view.findViewById(R.id.rv_product);
         mPager = view.findViewById(R.id.pager);
         circleIndicator = view.findViewById(R.id.indicator);
-        btnSchedule = (MaterialButton) view.findViewById(R.id.btnSchedule);
-        btnEndCall = (MaterialButton) view.findViewById(R.id.end_call);
+        btnSchedule = (Button) view.findViewById(R.id.btnSchedule);
+        btnEndCall = (Button) view.findViewById(R.id.end_call);
 
         return view;
     }
@@ -271,6 +273,7 @@ public class frag_berita extends Fragment implements com.wdullaer.materialdateti
                         int errCode = dataObj.getInt("code");
                         if (errCode == 200) {
                             JSONArray dataArrTimes = dataObj.getJSONArray("data");
+                            Log.e("CEK","dataArrTimes : "+dataArrTimes);
                             for (int i = 0; i < dataArrTimes.length(); i++) {
                                 int periodeId = dataArrTimes.getJSONObject(i).getInt("id");
                                 String periode = dataArrTimes.getJSONObject(i).getString("periode");
@@ -496,7 +499,11 @@ public class frag_berita extends Fragment implements com.wdullaer.materialdateti
                                 }
                             }
 
-                            rv_product.setLayoutManager(new GridLayoutManager(context,2));
+                            int spanCount = 2; // columns
+                            int spacing = 10; // 20px
+                            boolean includeEdge = true;
+                            rv_product.setLayoutManager(new GridLayoutManager(context,spanCount));
+                            rv_product.addItemDecoration(new GridSpacingItemDecoration(spanCount, spacing, includeEdge));
                             gridAdapter = new GridProductAdapter(context,gambar,newDataProd);
                             rv_product.setAdapter(gridAdapter);
                         }
@@ -591,17 +598,17 @@ public class frag_berita extends Fragment implements com.wdullaer.materialdateti
 
         ImageView btnclose = (ImageView) dialogView.findViewById(R.id.btn_close_schedule);
         et_Date = (EditText) dialogView.findViewById(R.id.et_Date);
-        et_time = (AutoCompleteTextView) dialogView.findViewById(R.id.et_time);
+        et_time = (Spinner) dialogView.findViewById(R.id.et_time);
 
         ArrayAdapter<String> adapterTime = new ArrayAdapter<String>(context,R.layout.list_item, time);
 
         et_time.setAdapter(adapterTime);
-        et_time.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        /*et_time.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Savewaktu = position;
             }
-        });
+        });*/
         btnSchedule2 = dialogView.findViewById(R.id.btnSchedule2);
         et_Date.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -691,7 +698,7 @@ public class frag_berita extends Fragment implements com.wdullaer.materialdateti
             @Override
             public void onClick(View v) {
                 tanggal = et_Date.getText().toString().trim().trim();
-                waktu = et_time.getText().toString();
+                waktu = et_time.getSelectedItem().toString();
                 if (tanggal.trim().equals("")){
                     Toast.makeText(context.getApplicationContext(), R.string.notif_blank, Toast.LENGTH_SHORT).show();
                 }
@@ -709,7 +716,6 @@ public class frag_berita extends Fragment implements com.wdullaer.materialdateti
 
             }
         });
-        btnSchedule2.setBackgroundTintList(context.getResources().getColorStateList(R.color.Blue));
     }
 
     private void serviceOutbound() {
@@ -790,4 +796,40 @@ public class frag_berita extends Fragment implements com.wdullaer.materialdateti
         });
 
     }
+
+    public class GridSpacingItemDecoration extends RecyclerView.ItemDecoration {
+
+        private int spanCount;
+        private int spacing;
+        private boolean includeEdge;
+
+        public GridSpacingItemDecoration(int spanCount, int spacing, boolean includeEdge) {
+            this.spanCount = spanCount;
+            this.spacing = spacing;
+            this.includeEdge = includeEdge;
+        }
+
+        @Override
+        public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
+            int position = parent.getChildAdapterPosition(view); // item position
+            int column = position % spanCount; // item column
+
+            if (includeEdge) {
+                outRect.left = spacing - column * spacing / spanCount; // spacing - column * ((1f / spanCount) * spacing)
+                outRect.right = (column + 1) * spacing / spanCount; // (column + 1) * ((1f / spanCount) * spacing)
+
+                if (position < spanCount) { // top edge
+                    outRect.top = spacing;
+                }
+                outRect.bottom = spacing; // item bottom
+            } else {
+                outRect.left = column * spacing / spanCount; // column * ((1f / spanCount) * spacing)
+                outRect.right = spacing - (column + 1) * spacing / spanCount; // spacing - (column + 1) * ((1f /    spanCount) * spacing)
+                if (position >= spanCount) {
+                    outRect.top = spacing; // item top
+                }
+            }
+        }
+    }
+
 }

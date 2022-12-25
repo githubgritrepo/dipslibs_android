@@ -6,10 +6,13 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.ActivityManager;
+import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
@@ -20,6 +23,8 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.PowerManager;
+import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.util.Base64;
 import android.util.Log;
@@ -72,6 +77,7 @@ public class DipsChooseLanguage extends AppCompatActivity {
     private static final int MY_CAMERA_PERMISSION_CODE = 100;
     private static final int REQUEST_READ_PHONE_STATE = 787;
     private static final int ATTACHMENT_MANAGE_ALL_FILE = 308;
+    protected static final int REQUEST_BATTERY_OP = 0x49ff;
     private static final int REQUEST_ALL = 888;
     private SessionManager sessions;
     private Context mContext;
@@ -87,11 +93,15 @@ public class DipsChooseLanguage extends AppCompatActivity {
         setContentView(R.layout.activity_dips_choose_language);
 
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        getSupportActionBar().hide();
+        //getSupportActionBar().hide();
 
         mContext = this;
         sessions = new SessionManager(mContext);
         idDips = sessions.getKEY_IdDips();
+        sessions.saveKTP(null);
+        sessions.saveSWAFOTO(null);
+        sessions.saveNPWP(null);
+        sessions.saveTTD(null);
 
         if (idDips == null) {
             idDips = "";
@@ -131,7 +141,7 @@ public class DipsChooseLanguage extends AppCompatActivity {
         Log.e("CEK","MASUK onResume");
         reqPermission();
 
-        /*long unixTime = System.currentTimeMillis() / 1000L;
+        long unixTime = System.currentTimeMillis() / 1000L;
         long expiredTimesAuth = sessions.getExpiredTimeAdvanceAI();
         String cekExp = String.valueOf(expiredTimesAuth);
         if (cekExp.length() > 10) {
@@ -140,7 +150,22 @@ public class DipsChooseLanguage extends AppCompatActivity {
         if (expiredTimesAuth == 0 || expiredTimesAuth < unixTime) {
             sessions.saveAuthAdvanceAI(null,0);
             new AsyncAuth().execute();
-        }*/
+        }
+
+        Log.e("CEK","openBatteryOptimizationDialogIfNeeded");
+        Log.e("CEK","isOptimizingBattery : "+isOptimizingBattery());
+        Log.e("CEK","getBatteryOptimizationPreferenceKey : "+getPreferences().getBoolean(getBatteryOptimizationPreferenceKey(), true));
+
+        if (isOptimizingBattery() && getPreferences().getBoolean(getBatteryOptimizationPreferenceKey(), true)) {
+            Intent intent = new Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS);
+            Uri uri = Uri.parse("package:" + getPackageName());
+            intent.setData(uri);
+            try {
+                startActivityForResult(intent, REQUEST_BATTERY_OP);
+            } catch (ActivityNotFoundException e) {
+                Toast.makeText(this, "Your device does not support opting out of battery optimization", Toast.LENGTH_SHORT).show();
+            }
+        }
     }
 
     public boolean foregroundServiceRunning(){
@@ -200,18 +225,18 @@ public class DipsChooseLanguage extends AppCompatActivity {
     }
 
     private void startApp() {
-        Intent intent = new Intent(mContext,DipsCapture.class);
+        /*Intent intent = new Intent(mContext,DipsCapture.class);
         startActivity(intent);
-        finishAffinity();
+        finishAffinity();*/
 
-        /*String licenseAI = sessions.getAuthAdvanceAI();
+        String licenseAI = sessions.getAuthAdvanceAI();
         Log.e("CEK","licenseAI : "+licenseAI);
         if (licenseAI != null) {
             startLivenessDetection(licenseAI);
         } else {
             Toast.makeText(mContext,"Terjadi Kesalahan", Toast.LENGTH_LONG).show();
             onResume();
-        }*/
+        }
     }
 
     public static void setLocale(Activity activity, String languageCode) {
@@ -308,13 +333,13 @@ public class DipsChooseLanguage extends AppCompatActivity {
                 String imgBase64 = imgtoBase64(livenessBitmap);
                 byte[] bytePhoto = Base64.decode(imgBase64, Base64.NO_WRAP);
 
-                processCaptureIdentifyAuth(imgBase64);
+                //processCaptureIdentifyAuth(imgBase64);
 
-                /*Intent intent = new Intent(mContext, DipsWaitingRoom.class);
+                Intent intent = new Intent(mContext, DipsLivenessResult.class);
                 intent.putExtra("RESULT_IMAGE_AI",bytePhoto);
                 intent.putExtra("idDips", idDips);
                 startActivity(intent);
-                finishAffinity();*/
+                finishAffinity();
 
                 /*rlload.setVisibility(View.VISIBLE);
                 String livenessId = LivenessResult.getLivenessId();// livenessId
@@ -328,7 +353,32 @@ public class DipsChooseLanguage extends AppCompatActivity {
                     Toast.makeText(mContext, errorMsg, Toast.LENGTH_LONG).show();
                 }
             }
+        } else if (requestCode == REQUEST_BATTERY_OP) {
+
         }
+    }
+
+    protected boolean isOptimizingBattery() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            final PowerManager pm = (PowerManager) getSystemService(POWER_SERVICE);
+            return pm != null
+                    && !pm.isIgnoringBatteryOptimizations(getPackageName());
+        } else {
+            return false;
+        }
+    }
+
+    private String getBatteryOptimizationPreferenceKey() {
+        @SuppressLint("HardwareIds") String device = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
+        return "show_battery_optimization" + (device == null ? "" : device);
+    }
+
+    private void setNeverAskForBatteryOptimizationsAgain() {
+        getPreferences().edit().putBoolean(getBatteryOptimizationPreferenceKey(), false).apply();
+    }
+
+    protected SharedPreferences getPreferences() {
+        return PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
     }
 
     private class AsyncAuth extends AsyncTask<Void,Void,Void> {
@@ -466,27 +516,33 @@ public class DipsChooseLanguage extends AppCompatActivity {
                     }
                 }  else {
                     if (response.code() < 500) {
-                        String dataErr = null;
-                        try {
-                            dataErr = response.errorBody().string();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                        Log.e("CEK", "dataErr : " + dataErr);
-                        if (dataErr != null) {
+                        if (response.code() == 401) {
+                            Intent intent = new Intent(mContext, DipsSplashScreen.class);
+                            intent.putExtra("RESPONSECODE", response.code());
+                            startActivity(intent);
+                            finishAffinity();
+                        } else {
+                            String dataErr = null;
                             try {
-                                JSONObject dataObj = new JSONObject(dataErr);
-                                if (dataObj.has("message")) {
-                                    String message = dataObj.getString("message");
-                                    Toast.makeText(mContext, message, Toast.LENGTH_SHORT).show();
-                                }
-                            } catch (JSONException e) {
+                                dataErr = response.errorBody().string();
+                            } catch (IOException e) {
                                 e.printStackTrace();
                             }
-                        } else {
-                            Toast.makeText(mContext, R.string.msg_error, Toast.LENGTH_SHORT).show();
+                            Log.e("CEK", "dataErr : " + dataErr);
+                            if (dataErr != null) {
+                                try {
+                                    JSONObject dataObj = new JSONObject(dataErr);
+                                    if (dataObj.has("message")) {
+                                        String message = dataObj.getString("message");
+                                        Toast.makeText(mContext, message, Toast.LENGTH_SHORT).show();
+                                    }
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+                            } else {
+                                Toast.makeText(mContext, R.string.msg_error, Toast.LENGTH_SHORT).show();
+                            }
                         }
-                        //OutApps();
                     } else {
                         Toast.makeText(mContext, R.string.msg_error, Toast.LENGTH_SHORT).show();
                     }

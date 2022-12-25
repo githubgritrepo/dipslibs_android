@@ -1,0 +1,41 @@
+apply plugin: 'com.android.library'
+android {
+    compileSdkVersion 32
+
+    defaultConfig {
+        minSdkVersion 14
+        targetSdkVersion 32
+        vectorDrawables.useSupportLibrary = true
+
+    }
+
+    buildTypes {
+        debug {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+        release {
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+
+}
+
+rootProject.allprojects {
+    repositories {
+        maven {
+            url 'http://public-n3.advai.net/repository/maven-releases/'
+            // allowInsecureProtocol = true
+        }
+    }
+}
+
+dependencies {
+    implementation 'androidx.appcompat:appcompat:1.4.2'
+    // You can view the list of SDK versions for updating the SDK at this link
+    // https://public-n3.advai.net/repository/maven-releases/ai/advance/mobile-sdk/android/liveness-detection/maven-metadata.xml
+    implementation 'ai.advance.mobile-sdk.android:liveness-detection:2.0.0'
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
+    implementation 'pl.droidsonroids.gif:android-gif-drawable:1.2.24'
+}

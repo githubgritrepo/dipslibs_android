@@ -172,7 +172,7 @@ public class DipsWaitingRoom extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        getSupportActionBar().hide();
+        //getSupportActionBar().hide();
 
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
@@ -212,19 +212,7 @@ public class DipsWaitingRoom extends AppCompatActivity {
 
         custName = getIntent().getExtras().getString("CUSTNAME");
 
-        boolean cekConstain = getIntent().getExtras().containsKey("RESULT_IMAGE_AI");
-        if (cekConstain) {
-            byte[] resultImage = getIntent().getExtras().getByteArray("RESULT_IMAGE_AI");
-            String imgBase64 = Base64.encodeToString(resultImage, Base64.NO_WRAP);
-            //processCaptureIdentify(imgBase64);
-            //processCaptureIdentifyAuth(imgBase64);
-            initialWaitingRoom();
-        } else {
-            /*NameSession = getIntent().getExtras().getString("SessionName");
-            SessionPass = getIntent().getExtras().getString("SessionPass");*/
-
-            initialWaitingRoom();
-        }
+        initialWaitingRoom();
         getFragmentPage(new frag_berita());
 
     }
@@ -240,34 +228,7 @@ public class DipsWaitingRoom extends AppCompatActivity {
         cameraConfigured = false;
         previewHolder();
         stopPopSuccess = false;
-
-        /*ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkRequest networkRequest = new NetworkRequest.Builder().build();
-        connectivityManager.registerNetworkCallback(networkRequest, new ConnectivityManager.NetworkCallback() {
-            @Override
-            public void onAvailable(Network network) {
-                super.onAvailable(network);
-                Log.i("Tag", "active connection");
-            }
-
-            @Override
-            public void onLost(Network network) {
-                super.onLost(network);
-                Log.i("Tag", "losing active connection");
-                isNetworkConnected();
-            }
-        });*/
     }
-
-    /*private boolean isNetworkConnected() {
-        ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-        if (!(cm.getActiveNetworkInfo() != null && cm.getActiveNetworkInfo().isConnected())) {
-            //Do something
-            Log.e("CEK","isNetworkConnected MASUK IF");
-            return false;
-        }
-        return true;
-    }*/
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
@@ -352,117 +313,6 @@ public class DipsWaitingRoom extends AppCompatActivity {
         }
     }
 
-    private void processCaptureIdentifyAuth(String imgBase64) {
-        if (!NetworkUtil.hasDataNetwork(mContext)) {
-            Toast.makeText(this, "Connection Failed. Please check your network connection and try again.", Toast.LENGTH_LONG).show();
-            return;
-        }
-
-        JSONObject jsons = new JSONObject();
-        try {
-            jsons.put("idDips",idDips);
-            jsons.put("image",imgBase64);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        //String dataCapture = jsons.toString();
-
-        /*String filename = "Auth_Customer_Capture.txt";
-        try {
-            createTemporaryFile(dataCapture,filename);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        Log.e("CEK","processCaptureIdentifyAuth REQUEST json : "+jsons.toString());*/
-
-        RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), jsons.toString());
-
-        ApiService API = Server.getAPIService2();
-        Call<JsonObject> call = API.CaptureAuth(requestBody);
-        Log.e("CEK","REQUEST CALL : "+call.request().url());
-        call.enqueue(new Callback<JsonObject>() {
-            @Override
-            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
-                Log.e("CEK","RESPONSE CODE: "+response.code());
-                if (response.isSuccessful()) {
-                    String dataS = response.body().toString();
-                    Log.e("CEK","dataS: "+dataS);
-                    try {
-                        JSONObject dataObj = new JSONObject(dataS);
-                        JSONObject dataCustomer = dataObj.getJSONObject("data").getJSONObject("customer");
-                        JSONObject dataToken = dataObj.getJSONObject("data").getJSONObject("token");
-
-                        isSwafoto = dataCustomer.getBoolean("isSwafoto");
-
-                        String noCIF = "";
-                        if (dataCustomer.isNull("noCif")) {
-                            isCust = false;
-                        } else {
-                            isCust = true;
-                            noCIF = dataCustomer.getString("noCif");
-                        }
-                        custName = dataCustomer.getString("namaLengkap");
-                        String idDipsNew = dataCustomer.getString("idDips");
-                        Log.e("CEK","idDipsNew : "+idDipsNew+" | idDips : "+idDips);
-                        /*if (idDips != null && OutboundService.mSocket != null && idDipsNew != idDips) {
-                            OutboundService.leaveOutbound(idDips);
-                        }*/
-                        String accessToken = dataToken.getString("accessToken");
-
-                        sessions.saveIdDips(idDipsNew);
-                        sessions.saveIsCust(isCust);
-                        sessions.saveAuthToken(accessToken);
-
-                        idDips = idDipsNew;
-
-                        getIntent().getExtras().clear();
-                        getIntent().removeExtra("RESULT_IMAGE_AI");
-
-                        initialWaitingRoom();
-
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                }  else {
-                    if (response.code() < 500) {
-                        String dataErr = null;
-                        try {
-                            dataErr = response.errorBody().string();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                        Log.e("CEK", "dataErr : " + dataErr);
-                        if (dataErr != null) {
-                            try {
-                                JSONObject dataObj = new JSONObject(dataErr);
-                                if (dataObj.has("message")) {
-                                    String message = dataObj.getString("message");
-                                    Toast.makeText(mContext, message, Toast.LENGTH_SHORT).show();
-                                }
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            }
-                        } else {
-                            Toast.makeText(mContext, R.string.msg_error, Toast.LENGTH_SHORT).show();
-                        }
-                        //OutApps();
-                    } else {
-                        Toast.makeText(mContext, R.string.msg_error, Toast.LENGTH_SHORT).show();
-                    }
-                }
-            }
-
-            @Override
-            public void onFailure(Call<JsonObject> call, Throwable t) {
-                Log.e("CEK","onFailure MESSAGE : "+t.getMessage());
-                Toast.makeText(mContext, t.getMessage(), Toast.LENGTH_SHORT).show();
-                OutApps();
-            }
-        });
-    }
-
     private void OutApps(){
         Intent intent = new Intent(Intent.ACTION_MAIN);
         intent.addCategory(Intent.CATEGORY_HOME);
@@ -470,78 +320,6 @@ public class DipsWaitingRoom extends AppCompatActivity {
         startActivity(intent);
         overridePendingTransition(0,0);
         finish();
-    }
-
-    private void processCaptureIdentify(String imgBase64) {
-        if (!NetworkUtil.hasDataNetwork(mContext)) {
-            Toast.makeText(this, "Connection Failed. Please check your network connection and try again.", Toast.LENGTH_LONG).show();
-            return;
-        }
-
-        JsonCaptureIdentify jsons = new JsonCaptureIdentify();
-        jsons.setIdDips(idDips);
-        jsons.setImage(imgBase64);
-
-        Log.e("CEK","processCaptureIdentify REQUEST idDips : "+idDips);
-
-        ApiService API = Server.getAPIService();
-        //Call<CaptureIdentify> call = API.CaptureAdvanceAI(jsons);
-        Call<CaptureIdentify> call = API.CaptureIdentify(jsons);
-        Log.e("CEK","processCaptureIdentify URL CALL : "+call.request().url());
-        call.enqueue(new Callback<CaptureIdentify>() {
-            @Override
-            public void onResponse(Call<CaptureIdentify> call, Response<CaptureIdentify> response) {
-                Log.e("CEK","processCaptureIdentify RESPONSE CODE: "+response.code());
-                if (response.isSuccessful() && response.body() != null) {
-                    int errCode = response.body().getErr_code();
-                    if (errCode == 0) {
-                        SweetAlertDialog sweetDialog = new SweetAlertDialog(mContext,SweetAlertDialog.WARNING_TYPE);
-                        sweetDialog.setTitleText("Warning!!!");
-                        sweetDialog.setContentText(getResources().getString(R.string.not_using_dips));
-                        sweetDialog.setConfirmText("OK");
-                        sweetDialog.setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
-                            @Override
-                            public void onClick(SweetAlertDialog sweetAlertDialog) {
-                                sweetDialog.dismissWithAnimation();
-                                Intent intent = new Intent(Intent.ACTION_MAIN);
-                                intent.addCategory(Intent.CATEGORY_HOME);
-                                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);//***Change Here***
-                                startActivity(intent);
-                                finish();
-                            }
-                        });
-                        sweetDialog.show();
-                        return;
-                    }
-
-                    isCust = response.body().isCustomer();
-                    custName = response.body().getName();
-                    String idDipsNew = response.body().getIdDips();
-                    NameSession = response.body().getDataSession().getNameSession();
-                    //SessionPass = response.body().getDataSession().getPass();
-
-                    /*if (idDips != null && OutboundService.mSocket != null && idDipsNew != idDips) {
-                        OutboundService.leaveOutbound(idDips);
-                    }*/
-
-                    sessions.saveIdDips(idDipsNew);
-                    sessions.saveIsCust(isCust);
-
-                    getIntent().getExtras().clear();
-                    getIntent().removeExtra("RESULT_IMAGE_AI");
-
-                    initialWaitingRoom();
-                } else {
-                    Toast.makeText(mContext, R.string.msg_error,Toast.LENGTH_SHORT).show();
-                }
-            }
-
-            @Override
-            public void onFailure(Call<CaptureIdentify> call, Throwable t) {
-                Log.e("CEK","onFailure MESSAGE : "+t.getMessage());
-                Toast.makeText(mContext, t.getMessage(), Toast.LENGTH_SHORT).show();
-            }
-        });
     }
 
     private void setupConnectionFactory() {
@@ -711,7 +489,7 @@ public class DipsWaitingRoom extends AppCompatActivity {
                                 Log.e("CEK","subscribeThread myTicketInt : "+myTicketInt);
                                 myTicketNumber = String.format("%03d", myTicketInt).toString();
                                 Log.e("CEK","subscribeThread myTicketNumber : "+myTicketNumber);
-                                String myticketContent = "A" + myTicketNumber;
+                                String myticketContent = myTicketNumber;
                                 runOnUiThread(new Runnable() {
                                     @Override
                                     public void run() {
@@ -767,7 +545,7 @@ public class DipsWaitingRoom extends AppCompatActivity {
                                 Log.e("CEK", "subscribeReqTicket ticketLast : " +ticketLast);
                                 String lastQueue = String.format("%03d", ticketLastInt).toString();
                                 Log.e("CEK", "subscribeReqTicket lastQueue : " +lastQueue);
-                                String lastTicketContent = "A" + lastQueue;
+                                String lastTicketContent = lastQueue;
                                 runOnUiThread(new Runnable() {
                                     @Override
                                     public void run() {
@@ -827,7 +605,7 @@ public class DipsWaitingRoom extends AppCompatActivity {
                                 int getTicket = dataObj.getJSONObject("transaction").getInt("ticket");
                                 Log.e("CEK","subscribeCall getTicket : "+getTicket);
                                 String getQueue = String.format("%03d", getTicket);
-                                String lastTicketContent = "A" + getQueue;
+                                String lastTicketContent = getQueue;
                                 runOnUiThread(new Runnable() {
                                     @Override
                                     public void run() {
@@ -993,26 +771,6 @@ public class DipsWaitingRoom extends AppCompatActivity {
         };
         handler.postDelayed(runnable, 1000);
     }
-
-    /*@Override
-    public void onBackPressed() {
-
-        if (doubleBackToExitPressedOnce) {
-            this.moveTaskToBack(true);
-            stopPopSuccess = true;
-            return;
-        }
-
-        this.doubleBackToExitPressedOnce = true;
-        Toast.makeText(this,"Tekan sekali lagi untuk minimize", Toast.LENGTH_SHORT).show();
-
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                doubleBackToExitPressedOnce = false;
-            }
-        },2000);
-    }*/
 
     private void previewHolder(){
         previewHolder = preview.getHolder();
@@ -1231,6 +989,7 @@ public class DipsWaitingRoom extends AppCompatActivity {
             dialogWaiting = new SweetAlertDialog(DipsWaitingRoom.this, SweetAlertDialog.WARNING_TYPE);
             dialogWaiting.setContentText(getResources().getString(R.string.headline_waiting));
             dialogWaiting.setConfirmText(getResources().getString(R.string.waiting));
+            dialogWaiting.setCancelText(getString(R.string.schedule_a_task));
             dialogWaiting.setCancelable(false);
             dialogWaiting.show();
             dialogWaiting.setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
@@ -1241,7 +1000,10 @@ public class DipsWaitingRoom extends AppCompatActivity {
                 }
             });
             Button btnConfirm = (Button) dialogWaiting.findViewById(cn.pedant.SweetAlert.R.id.confirm_button);
-            btnConfirm.setBackgroundTintList(DipsWaitingRoom.this.getResources().getColorStateList(R.color.Blue));
+            btnConfirm.setBackgroundTintList(DipsWaitingRoom.this.getResources().getColorStateList(R.color.zm_button));
+            Button btnCancel = (Button) dialogSuccess.findViewById(cn.pedant.SweetAlert.R.id.cancel_button);
+            btnCancel.setBackground(getDrawable(R.drawable.oval_background_10dp));
+            btnCancel.setTextColor(getColor(R.color.zm_button));
         }
     }
 
@@ -1252,13 +1014,15 @@ public class DipsWaitingRoom extends AppCompatActivity {
         }
         dialogSuccess.setContentText(getResources().getString(R.string.headline_success));
         dialogSuccess.setConfirmText(getResources().getString(R.string.btn_continue));
-        dialogSuccess.setCancelText(getResources().getString(R.string.cancel));
+        dialogSuccess.setCancelText(getString(R.string.reject));
         dialogSuccess.setCancelable(false);
         dialogSuccess.show();
         Button btnConfirm = (Button) dialogSuccess.findViewById(cn.pedant.SweetAlert.R.id.confirm_button);
         Button btnCancel = (Button) dialogSuccess.findViewById(cn.pedant.SweetAlert.R.id.cancel_button);
-        btnConfirm.setBackgroundTintList(DipsWaitingRoom.this.getResources().getColorStateList(R.color.Blue));
-        btnCancel.setBackgroundTintList(DipsWaitingRoom.this.getResources().getColorStateList(R.color.button_end_call));
+        btnConfirm.setBackgroundTintList(DipsWaitingRoom.this.getResources().getColorStateList(R.color.zm_button));
+        //btnCancel.setBackgroundTintList(DipsWaitingRoom.this.getResources().getColorStateList(R.color.button_end_call));
+        btnCancel.setBackground(getDrawable(R.drawable.oval_background_10dp));
+        btnCancel.setTextColor(getColor(R.color.zm_button));
         dialogSuccess.setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
             @Override
             public void onClick(SweetAlertDialog sweetAlertDialog) {
@@ -1407,8 +1171,8 @@ public class DipsWaitingRoom extends AppCompatActivity {
                         String queueID = jsObj.getString("queueID").toString();
                         String lastQueueID = jsObj.getString("lastQueueID");
                         myTicketNumber = queueID;
-                        my_Ticket.setText("A"+queueID.substring(queueID.length()-3,queueID.length()));
-                        lastTicket.setText("A"+lastQueueID.substring(lastQueueID.length()-3,lastQueueID.length()));
+                        my_Ticket.setText(queueID.substring(queueID.length()-3,queueID.length()));
+                        lastTicket.setText(lastQueueID.substring(lastQueueID.length()-3,lastQueueID.length()));
 
                         JSONObject object = new JSONObject();
                         try {

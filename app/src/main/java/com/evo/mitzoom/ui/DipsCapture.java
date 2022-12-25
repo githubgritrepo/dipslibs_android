@@ -67,10 +67,10 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
-import ai.advance.liveness.lib.CameraType;
+/*import ai.advance.liveness.lib.CameraType;
 import ai.advance.liveness.lib.GuardianLivenessDetectionSDK;
 import ai.advance.liveness.lib.Market;
-import ai.advance.liveness.sdk.activity.LivenessActivity;
+import ai.advance.liveness.sdk.activity.LivenessActivity;*/
 import cn.pedant.SweetAlert.SweetAlertDialog;
 import okhttp3.MediaType;
 import okhttp3.RequestBody;
@@ -122,7 +122,7 @@ public class DipsCapture extends AppCompatActivity implements CameraSource.Pictu
         //AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        getSupportActionBar().hide();
+        //getSupportActionBar().hide();
 
         setContentView(R.layout.activity_dips_capture);
 
@@ -653,6 +653,8 @@ public class DipsCapture extends AppCompatActivity implements CameraSource.Pictu
                         e.printStackTrace();
                     }
                 }  else {
+                    startCamera();
+                    flagCapture = false;
                     if (response.code() < 500) {
                         String dataErr = null;
                         try {

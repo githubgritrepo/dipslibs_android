@@ -25,6 +25,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -71,6 +72,8 @@ public class DipsSplashScreen extends AppCompatActivity {
     private TextView tvVersion;
     private SessionManager sessions;
     private SweetAlertDialog sweetAlertDialog = null;
+    private RelativeLayout rlBGTransparant;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -78,9 +81,10 @@ public class DipsSplashScreen extends AppCompatActivity {
 
         imgSplash = (ImageView) findViewById(R.id.imgSplash);
         tvVersion = (TextView) findViewById(R.id.tvVersion);
+        rlBGTransparant = (RelativeLayout) findViewById(R.id.rlBGTransparant);
 
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        getSupportActionBar().hide();
+        //getSupportActionBar().hide();
 
         mContext = this;
 
@@ -95,8 +99,72 @@ public class DipsSplashScreen extends AppCompatActivity {
 
         sessions = new SessionManager(mContext);
 
-        processNext();
+        boolean cekConstain = getIntent().hasExtra("RESPONSECODE");
+        if (cekConstain) {
+            rlBGTransparant.setVisibility(View.VISIBLE);
+            dialogShowError();
+        } else {
+            processNext();
+        }
 
+    }
+
+    private void dialogShowError() {
+        String bankName = getString(R.string.bank_name);
+
+        LayoutInflater inflater = getLayoutInflater();
+        View dialogView = inflater.inflate(R.layout.layout_dialog_sweet, null);
+
+        ImageView imgDialog = (ImageView) dialogView.findViewById(R.id.imgDialog);
+        TextView tvTitleDialog = (TextView) dialogView.findViewById(R.id.tvTitleDialog);
+        TextView tvBodyDialog = (TextView) dialogView.findViewById(R.id.tvBodyDialog);
+        Button btnCancelDialog = (Button) dialogView.findViewById(R.id.btnCancelDialog);
+        Button btnConfirmDialog = (Button) dialogView.findViewById(R.id.btnConfirmDialog);
+
+        btnCancelDialog.setVisibility(View.VISIBLE);
+
+        String tvBody1 = getString(R.string.warn_not_use_app);
+        String tvBody2 = getString(R.string.warn_hub_calcenter);
+
+        String bodyGab = tvBody1 + "\n\n" + tvBody2;
+        bodyGab = bodyGab.replace("Bank XYZ",bankName).replace("XYZ Bank", bankName);
+
+        imgDialog.setImageDrawable(getDrawable(R.drawable.v_dialog_warning));
+        tvTitleDialog.setText(getString(R.string.failed));
+        tvBodyDialog.setText(bodyGab);
+        btnCancelDialog.setText(getString(R.string.call_center));
+        btnConfirmDialog.setText(getString(R.string.exit));
+
+        btnCancelDialog.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent dialPhoneIntent = new Intent(Intent.ACTION_DIAL, Uri.parse("tel:1500977"));
+                startActivity(dialPhoneIntent);
+                finishAffinity();
+            }
+        });
+
+        btnConfirmDialog.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                OutApps();
+            }
+        });
+
+        SweetAlertDialog sweetAlertDialog = new SweetAlertDialog(mContext, SweetAlertDialog.NORMAL_TYPE);
+        sweetAlertDialog.setCustomView(dialogView);
+        sweetAlertDialog.hideConfirmButton();
+        sweetAlertDialog.setCancelable(false);
+        sweetAlertDialog.show();
+    }
+
+    private void OutApps(){
+        Intent intent = new Intent(Intent.ACTION_MAIN);
+        intent.addCategory(Intent.CATEGORY_HOME);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(intent);
+        overridePendingTransition(0,0);
+        finish();
     }
 
     private void processNext() {
@@ -108,18 +176,6 @@ public class DipsSplashScreen extends AppCompatActivity {
 
             }
         },5000);
-        /*new Thread(new Runnable() {
-            @Override
-            public void run() {
-                doWork();
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        startApp();
-                    }
-                });
-            }
-        }).start();*/
     }
 
     private void startApp() {

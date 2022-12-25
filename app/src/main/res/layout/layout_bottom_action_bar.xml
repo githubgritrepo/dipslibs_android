@@ -24,8 +24,7 @@
                 app:tint="@color/bg_cif_success" />
             <ImageView
                 android:elevation="2dp"
-                android:background="@drawable/blue_button_background"
-                android:backgroundTint="#F0F3F8"
+                android:background="@drawable/oval_background_10dp"
                 android:layout_marginEnd="5dp"
                 android:layout_marginTop="10dp"
                 android:layout_marginBottom="10dp"
@@ -35,10 +34,8 @@
                 android:layout_height="35dp"
                 android:paddingTop="7dp"
                 android:paddingBottom="7dp"
-                android:paddingEnd="-7dp"
-                android:paddingStart="-7dp"
                 android:onClick="onClickAudio"
-                android:src="@drawable/icon_unmute" />
+                android:src="@drawable/v_unmute" />
             <Button
                 android:elevation="2dp"
                 android:textSize="12dp"
@@ -49,11 +46,10 @@
                 android:layout_marginTop="10dp"
                 android:layout_marginBottom="10dp"
                 android:background="@drawable/oval_background_10dp"
-                android:backgroundTint="@color/Blue"
-                android:drawableStart="@drawable/ic_file"
+                android:drawableStart="@drawable/v_file"
                 android:text="File"
                 android:onClick="onClickFile"
-                android:textColor="@color/white"
+                android:textColor="@color/zm_button"
                 android:textStyle="bold" />
             <Button
                 android:elevation="2dp"
@@ -65,11 +61,11 @@
                 android:layout_marginTop="10dp"
                 android:layout_marginBottom="10dp"
                 android:background="@drawable/oval_background_10dp"
-                android:backgroundTint="@color/Blue"
-                android:drawableStart="@drawable/ic_chat"
+                android:drawableStart="@drawable/v_chat"
+                android:drawablePadding="5dp"
                 android:text="@string/chat"
                 android:onClick="onClickChat"
-                android:textColor="@color/white"
+                android:textColor="@color/zm_button"
                 android:textStyle="bold" />
             <Button
                 android:elevation="2dp"

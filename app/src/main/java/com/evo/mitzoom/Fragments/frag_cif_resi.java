@@ -18,12 +18,14 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.evo.mitzoom.API.Server;
 import com.evo.mitzoom.Helper.RabbitMirroring;
 import com.evo.mitzoom.Helper.SingleMediaScanner;
 import com.evo.mitzoom.R;
 import com.evo.mitzoom.Session.SessionManager;
+import com.github.chrisbanes.photoview.PhotoView;
 import com.google.gson.JsonObject;
 
 import org.json.JSONArray;
@@ -45,11 +47,11 @@ import us.zoom.sdk.ZoomVideoSDK;
 public class frag_cif_resi extends Fragment {
 
     private Context mContext;
-    private ImageView imgResume;
     private SessionManager sessions;
+    private PhotoView imgResume;
     private Button btnOK;
     private String idDips;
-    private Button btnUnduhResi;
+    private Button btnUnduh;
     private TextView tvTitle;
     private TextView tvSubTitle;
     private TextView tvMsgThanks;
@@ -57,6 +59,9 @@ public class frag_cif_resi extends Fragment {
     private String dataCIF;
     private boolean isSessionZoom;
     private RabbitMirroring rabbitMirroring;
+    private SwipeRefreshLayout swipe;
+    private JSONObject objValCIF;
+    private String no_handphone;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -66,6 +71,14 @@ public class frag_cif_resi extends Fragment {
         sessions = new SessionManager(mContext);
         dataCIF = sessions.getCIF();
         Log.e("CEK","dataCIF : "+dataCIF);
+        try {
+            objValCIF = new JSONObject(dataCIF);
+            Log.e("CEK","CIF FULL objValCIF : "+objValCIF.toString());
+            JSONObject objEl = objValCIF.getJSONObject("datadiri");
+            no_handphone = objEl.getString("noponsel");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
         isSessionZoom = ZoomVideoSDK.getInstance().isInSession();
         if (isSessionZoom) {
             rabbitMirroring = new RabbitMirroring(mContext);
@@ -80,10 +93,11 @@ public class frag_cif_resi extends Fragment {
 
         tvTitle = (TextView) v.findViewById(R.id.tvTitle);
         tvSubTitle = (TextView) v.findViewById(R.id.tvSubTitle);
-        imgResume = v.findViewById(R.id.imgResume);
+        swipe = (SwipeRefreshLayout) v.findViewById(R.id.swipe);
+        imgResume = (PhotoView) v.findViewById(R.id.imgResume);
         tvMsgThanks = (TextView) v.findViewById(R.id.tvMsgThanks);
         btnOK = v.findViewById(R.id.btnSelesai);
-        btnUnduhResi = (Button) v.findViewById(R.id.btnUnduhResi);
+        btnUnduh = (Button) v.findViewById(R.id.btnUnduh);
 
         return v;
     }
@@ -92,9 +106,28 @@ public class frag_cif_resi extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        getResumeResi();
+        String titleSuccess = getString(R.string.selamat_npembukaan_akun_berhasil);
+        titleSuccess = titleSuccess.replace("Akun","Rekening");
+
+        String titleHeadline = getString(R.string.headline_cardless);
+        titleHeadline = titleHeadline.replace("Bank XYZ",getString(R.string.bank_name));
+        titleHeadline = titleHeadline.replace("Gunakan Aplikasi XYZ Mobile Banking untuk pengalaman transaksi penuh keuntungan.","");
+
+        tvTitle.setText(titleSuccess);
+        tvSubTitle.setVisibility(View.GONE);
+        tvMsgThanks.setText(titleHeadline);
 
         idDips = sessions.getKEY_IdDips();
+
+        btnUnduh.setEnabled(false);
+        btnUnduh.setBackgroundTintList(mContext.getResources().getColorStateList(R.color.btnFalse));
+
+        swipe.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                getResumeResi();
+            }
+        });
 
         btnOK.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -106,7 +139,7 @@ public class frag_cif_resi extends Fragment {
             }
         });
 
-        btnUnduhResi.setOnClickListener(new View.OnClickListener() {
+        btnUnduh.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Log.e("CEK","MASUK BUTTON UnduhResi");
@@ -118,6 +151,8 @@ public class frag_cif_resi extends Fragment {
                 processDownload();
             }
         });
+
+        getResumeResi();
 
     }
 
@@ -201,12 +236,16 @@ public class frag_cif_resi extends Fragment {
         Server.getAPIService().getResiCIF().enqueue(new Callback<JsonObject>() {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                swipe.setRefreshing(false);
+                Log.e("CEK","getResumeResi CODE : "+response.code());
                 if (response.isSuccessful()) {
+                    btnUnduh.setEnabled(true);
+                    btnUnduh.setBackgroundTintList(mContext.getResources().getColorStateList(R.color.zm_button));
                     String dataS = response.body().toString();
                     try {
                         JSONObject dataObj = new JSONObject(dataS);
                         String base64Image = dataObj.getJSONObject("data").getString("image");
-                        bytePhoto = Base64.decode(base64Image, Base64.NO_WRAP);
+                        bytePhoto = Base64.decode(base64Image, Base64.DEFAULT);
                         Bitmap bitmap = BitmapFactory.decodeByteArray(bytePhoto, 0, bytePhoto.length);
                         imgResume.setImageBitmap(bitmap);
                     } catch (JSONException e) {
@@ -220,6 +259,7 @@ public class frag_cif_resi extends Fragment {
 
             @Override
             public void onFailure(Call<JsonObject> call, Throwable t) {
+                swipe.setRefreshing(false);
                 Toast.makeText(mContext,t.getMessage(),Toast.LENGTH_SHORT).show();
             }
         });

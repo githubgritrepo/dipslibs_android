@@ -1,6 +1,6 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
-    <style name="Theme.MITZoom" parent="Theme.MaterialComponents.Light.DarkActionBar">
+    <style name="Theme.MITZoom" parent="Theme.AppCompat.Light.NoActionBar">
         <!-- Primary brand color. -->
         <item name="colorPrimary">@color/zm_button</item>
         <item name="colorPrimaryVariant">@color/zm_v1_red_A400</item>

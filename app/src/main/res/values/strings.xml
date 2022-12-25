@@ -10,7 +10,7 @@
     <string name="confirm_accept">Demi kenyamanan bersama, percakapan ini akan terekam secara otomatis.\nApakah Anda setuju untuk menggunakan Layanan DiPS361?</string>
     <string name="tidak_not">Tidak</string>
     <string name="setuju_accept">Setuju</string>
-    <string name="leave_message">Apakah Anda yakin ingin mengakhiri sesi?</string>
+    <string name="leave_message">Apakah Anda yakin ingin mengakhiri panggilan?</string>
     <string name="cancel">Batal</string>
     <string name="leave_leave_text">Tinggalkan Sesi</string>
     <string name="call_is_being_connected">Panggilan terhubung</string>
@@ -135,6 +135,9 @@
     <string name="currency">Dalam Rp</string>
     <string name="formulir_rtgs">Formulir Transfer</string>
     <string name="please_wait">Harap Menunggu</string>
+    <string name="please_wait1">Harap Menunggu .</string>
+    <string name="please_wait2">Harap Menunggu . .</string>
+    <string name="please_wait3">Harap Menunggu . . .</string>
     <string name="ocr_title">Apakah data anda sudah sesuai ?</string>
     <string name="ttl">Tempat</string>
     <string name="ttl2">Tanggal Lahir</string>
@@ -199,11 +202,11 @@
     <string name="selamat_npembukaan_akun_berhasil">Selamat!\nPembukaan Akun Berhasil</string>
     <string name="nomor_akun">Nomor Akun</string>
     <string name="unduh_formulir">Unduh Formulir</string>
-    <string name="formulir_komplain">Formulir Komplain</string>
-    <string name="silahkan_isi_formulir_berikut_dengan_keluhan_anda_kami_akan_menindaklanjuti_sesegera_mungkin">Silahkan isi formulir berikut dengan keluhan Anda. Kami akan menindaklanjuti sesegera mungkin.</string>
+    <string name="formulir_komplain">Form Keluhan</string>
+    <string name="silahkan_isi_formulir_berikut_dengan_keluhan_anda_kami_akan_menindaklanjuti_sesegera_mungkin">Silakan isi formulir berikut. Kami akan meninjau dan menindaklanjuti permintaan Anda sesegera mungkin.</string>
     <string name="perihal">Perihal</string>
     <string name="tanggal">Tanggal</string>
-    <string name="detail_komplain">Detail Komplain</string>
+    <string name="detail_komplain">Detail Keluhan</string>
     <string name="POWER_OF_ATTORNEY">Surat Kuasa</string>
     <string name="IBMB_REGISTRATION">Aktivasi IBMB</string>
     <string name="CREDIT_FORM">Formulir Kredit</string>
@@ -252,7 +255,7 @@
     <string name="cardless">Transaksi Tanpa Kartu</string>
     <string name="keterangan">Keterangan</string>
     <string name="body_resi_cardless">Gunakan kode dibawah ini untuk melakukan transaksi tanpa kartu pada ATM yang tersedia. Jangan bagikan nomor ini kepada orang lain.</string>
-    <string name="headline_cardless">Terima kasih telah mempercayakan transaksi perbankan Anda pada Bank XYZ. Gunakan Aplikasi XYZ Mobile Banking untuk pengalaman transaksi penuh keuntungan. <b>Resi Digital Form telah dikirimkan ke alamat email Anda.</b> Harap untuk periksa email Anda.</string>
+    <string name="headline_cardless">Terima kasih telah mempercayakan transaksi perbankan Anda pada Bank XYZ. Gunakan Aplikasi XYZ Mobile Banking untuk pengalaman transaksi penuh keuntungan. <b>Resi Digital Form telah dikirimkan ke alamat email Anda.</b> Harap untuk memeriksa email Anda.</string>
     <string name="unduh_resi">Unduh Resi</string>
     <string name="alamat_penerima">Alamat Penerima</string>
     <string name="no_cif">No. CIF</string>
@@ -261,12 +264,39 @@
     <string name="mengajukan_penggantian">Mengajukan Penggantian</string>
     <string name="no_surat_kepolisian">No. Surat Kepolisian</string>
     <string name="dengan_hormat">Dengan hormat,\nYang bertanda tangan dibawah ini:</string>
-    <!-- TODO: Remove or change this placeholder text -->
     <string name="success_create_card">SELAMAT!\nPermohonan Kartu Anda Berhasil</string>
     <string name="tnc_atm">Dengan ini Saya/Kami mengajukan permohonan Kartu ATM. Segala Resiko yang akan timbul adalah merupakan tanggung jawab Saya/Kami sepenuhnya dan dalam hal ini Saya/Kami membebaskan pihak Bank dari segala tuntutan.</string>
     <string name="prepare_id_card">Harap untuk menyiapkan Kartu Tanda Penduduk (KTP) Anda.</string>
     <string name="headline_close_conversation">Antrian Anda sudah terlewat. Silakan akhiri panggilan atau jadwalkan waktu terbaik bagi kami untuk menghubungi Anda kembali.</string>
     <string name="open_account">Buka Rekening</string>
     <string name="ktp_swafoto">Foto diri dengan KTP</string>
+    <string name="photo_swafoto">Foto Diri\nDengan\nKTP</string>
     <string name="typehere">Tulis disini..</string>
+    <string name="bank_name">Bank Victoria</string>
+    <string name="warn_not_use_app">Maaf Anda tidak dapat menggunakan layanan Digital Operations Bank XYZ</string>
+    <string name="warn_hub_calcenter">Untuk info lebih lanjut silakan menghubungi Call Center Bank XYZ</string>
+    <string name="failed">Gagal</string>
+    <string name="exit">Keluar</string>
+    <string name="call_center">Call Center</string>
+    <string name="inter_bank_transaction">Transaksi Inter Bank</string>
+    <string name="alert_ktp">Pastikan gambar atau foto KTP sudah jelas (tidak buram, rusak, atau tertutup jari/pantulan cahaya)</string>
+    <string name="alert_swafoto">Pastikan wajah dan KTP Anda terlihat jelas dan tidak buram.</string>
+    <string name="alert_npwp">Pastikan gambar atau foto NPWP sudah jelas dan tidak buram.</string>
+    <string name="alert_ttd">Pastikan gambar atau foto Tanda Tangan sudah jelas dan tidak buram.</string>
+    <string name="state_complaint">Saya menyatakan bahwa seluruh data yang saya berikan di formulir keluhan  ini benar.</string>
+    <string name="accept_state">Mohon untuk menyetujui pernyataan</string>
+    <string name="body_resi_komplain">Keluhan Anda berhasil tercatat &amp; akan segera kami tangani. Berikut ini adalah nomor tiket aduan Anda.</string>
+    <string name="title_safe_complaint">SELAMAT!\nKeluhan Anda Berhasil Tercatat.</string>
+    <string name="body_complaint">Keluhan Anda berhasil tercatat &amp; akan segera kami tangani. Berikut ini adalah nomor tiket aduan Anda.</string>
+    <string name="body2_complaint">Terima kasih telah mempercayakan transaksi perbankan Anda pada Bank XYZ. Resi ini telah dikirimkan ke alamat email Anda. Harap untuk memeriksa email Anda.</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="badan_usaha">Badan Usaha</string>
+    <string name="join_account">Rekening Gabungan</string>
+    <string name="join_account_and">Rekening Gabungan (AND)</string>
+    <string name="join_account_or">Rekening Gabungan (OR)</string>
+    <string name="tunggal_account">Rekening Tunggal</string>
+    <string name="agent_leave">Maaf, Agen sudah mengakhiri sesi.</string>
+    <string name="reject">Tolak</string>
+    <string name="label_ya">Ya</string>
 </resources>

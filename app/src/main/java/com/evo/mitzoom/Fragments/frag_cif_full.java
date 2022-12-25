@@ -18,6 +18,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import android.os.Handler;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -56,6 +57,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import cn.pedant.SweetAlert.SweetAlertDialog;
+import okhttp3.MediaType;
+import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -82,6 +85,7 @@ public class frag_cif_full extends Fragment {
     private LinearLayout ll_head;
     private TextView tvFotoKTP;
     private LinearLayout iconKtp;
+    private LinearLayout iconSwafoto;
     private LinearLayout iconNpwp;
     private LinearLayout iconSignature;
     private LinearLayout iconForm;
@@ -103,6 +107,8 @@ public class frag_cif_full extends Fragment {
     private boolean running = true;
     private boolean isSessionZoom;
     private RabbitMirroring rabbitMirroring;
+    private boolean isChk = false;
+    private String transactionId = "";
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -125,19 +131,30 @@ public class frag_cif_full extends Fragment {
             e.printStackTrace();
         }
 
-        if (getArguments() != null) {
-            if (getArguments().containsKey("ktp")) {
-                KTP = getArguments().getByteArray("ktp");
-            }
-            if (getArguments().containsKey("swafoto")) {
-                KTP_SWAFOTO = getArguments().getByteArray("swafoto");
-            }
-            if (getArguments().containsKey("npwp")) {
-                NPWP = getArguments().getByteArray("npwp");
-            }
-            if (getArguments().containsKey("ttd")) {
-                TTD = getArguments().getByteArray("ttd");
-            }
+        isSessionZoom = ZoomVideoSDK.getInstance().isInSession();
+        Log.e(TAG,mContext+" isSessionZoom : "+isSessionZoom);
+        if (isSessionZoom) {
+            rabbitMirroring = new RabbitMirroring(mContext);
+        }
+
+        String base64KTP = sessions.getKEY_KTP();
+        if (base64KTP != null) {
+            KTP = Base64.decode(base64KTP, Base64.DEFAULT);
+        }
+
+        String base64SWAFOTO = sessions.getKEY_SWAFOTO();
+        if (base64SWAFOTO != null) {
+            KTP_SWAFOTO = Base64.decode(base64SWAFOTO, Base64.DEFAULT);
+        }
+
+        String base64NPWP = sessions.getKEY_NPWP();
+        if (base64NPWP != null) {
+            NPWP = Base64.decode(base64NPWP, Base64.DEFAULT);
+        }
+
+        String base64TTD = sessions.getKEY_TTD();
+        if (base64TTD != null) {
+            TTD = Base64.decode(base64TTD, Base64.DEFAULT);
         }
 
         Log.e(TAG,mContext+" isCust : "+isCust);
@@ -149,11 +166,6 @@ public class frag_cif_full extends Fragment {
         Log.e(TAG,mContext+" KTP_SWAFOTO : "+KTP_SWAFOTO.length);
         Log.e(TAG,mContext+" NPWP : "+NPWP.length);
         Log.e(TAG,mContext+" TTD : "+TTD.length);
-        isSessionZoom = ZoomVideoSDK.getInstance().isInSession();
-        Log.e(TAG,mContext+" isSessionZoom : "+isSessionZoom);
-        if (isSessionZoom) {
-            rabbitMirroring = new RabbitMirroring(mContext);
-        }
     }
 
     @Override
@@ -195,6 +207,7 @@ public class frag_cif_full extends Fragment {
         ll_head = (LinearLayout) views.findViewById(R.id.ll_head);
         tvFotoKTP = (TextView) views.findViewById(R.id.tvFotoKTP);
         iconKtp = (LinearLayout) views.findViewById(R.id.icon_ktp);
+        iconSwafoto = (LinearLayout) views.findViewById(R.id.icon_swafoto);
         iconNpwp = (LinearLayout) views.findViewById(R.id.icon_npwp);
         iconSignature = (LinearLayout) views.findViewById(R.id.icon_signature);
         iconForm = (LinearLayout) views.findViewById(R.id.icon_form);
@@ -214,6 +227,9 @@ public class frag_cif_full extends Fragment {
 
         if (KTP.length > 0) {
             iconKtp.setBackgroundTintList(mContext.getResources().getColorStateList(R.color.bg_cif_success));
+        }
+        if (KTP_SWAFOTO.length > 0) {
+            iconSwafoto.setBackgroundTintList(mContext.getResources().getColorStateList(R.color.bg_cif_success));
         }
         if (NPWP.length > 0) {
             iconNpwp.setBackgroundTintList(mContext.getResources().getColorStateList(R.color.bg_cif_success));
@@ -282,10 +298,87 @@ public class frag_cif_full extends Fragment {
                     }
                 }
 
-                rabbitMirroring.MirroringSendEndpoint(11);
-                PopUpOTP();
+                APISaveForm();
             }
         });
+    }
+
+    private void processSendOTP() {
+        String noHp = no_handphone;
+        if (noHp.substring(0,1).equals("0")) {
+            noHp = "62"+no_handphone.substring(1);
+        }
+        JSONObject dataObjOTP = new JSONObject();
+        try {
+            dataObjOTP.put("msisdn",noHp);
+            dataObjOTP.put("idDips",idDips);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        Log.e("CEK","processSendOTP : "+dataObjOTP.toString());
+
+        RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), dataObjOTP.toString());
+
+        Server.getAPIService().SendOTP(requestBody).enqueue(new Callback<JsonObject>() {
+            @Override
+            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                Log.e("CEK","processSendOTP code : "+response.code());
+                if (response.isSuccessful()) {
+                    String dataS = response.body().toString();
+                    Log.e("CEK","processSendOTP : "+dataS);
+                    try {
+                        JSONObject dataObj = new JSONObject(dataS);
+                        transactionId = dataObj.getJSONObject("data").getString("transactionId");
+                        rabbitMirroring.MirroringSendEndpoint(11);
+                        PopUpOTP();
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                } else {
+                    Toast.makeText(mContext,getString(R.string.msg_error),Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<JsonObject> call, Throwable t) {
+                Toast.makeText(mContext,t.getMessage(),Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void processValidateOTP() {
+        JSONObject dataObjOTP = new JSONObject();
+        try {
+            dataObjOTP.put("transactionId", transactionId);
+            dataObjOTP.put("idDips", idDips);
+            dataObjOTP.put("token", numberOTP);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        Log.e("CEK","processValidateOTP : "+dataObjOTP.toString());
+
+        RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), dataObjOTP.toString());
+        Server.getAPIService().ValidateOTP(requestBody).enqueue(new Callback<JsonObject>() {
+            @Override
+            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                Log.e("CEK","processValidateOTP code : "+response.code());
+                if (response.isSuccessful()) {
+                    String dataS = response.body().toString();
+                    Log.e("CEK","processValidateOTP : "+dataS);
+                    PopUpSuccesOtp();
+                } else {
+                    Toast.makeText(mContext,getString(R.string.msg_error),Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<JsonObject> call, Throwable t) {
+                Toast.makeText(mContext,t.getMessage(),Toast.LENGTH_SHORT).show();
+            }
+        });
+
     }
 
     private void processGetCIFForm() {
@@ -478,8 +571,10 @@ public class frag_cif_full extends Fragment {
                     handler.removeMessages(0);
                     handler.removeCallbacks(myRunnable);
                     sweetAlertDialog.dismiss();
-                    PopUpSuccesOtp();
-                    //verifyOTP();
+                    //PopUpSuccesOtp();
+                    if (!transactionId.isEmpty()) {
+                        processValidateOTP();
+                    }
                 }
             }
         });
@@ -521,8 +616,10 @@ public class frag_cif_full extends Fragment {
             @Override
             public void run() {
                 sweetAlertDialog.dismiss();
-                rabbitMirroring.MirroringSendEndpoint(12);
-                PopUpSuccesRegistration();
+                //rabbitMirroring.MirroringSendEndpoint(12);
+                //PopUpSuccesRegistration();
+                rabbitMirroring.MirroringSendEndpoint(13);
+                getFragmentPage(new frag_cif_resi());
             }
         },5000);
     }
@@ -554,13 +651,75 @@ public class frag_cif_full extends Fragment {
         sweetAlertDialog.hideConfirmButton();
         sweetAlertDialog.setCancelable(false);
         sweetAlertDialog.show();
+
+        CheckBox checktnc = (CheckBox) dialogView.findViewById(R.id.checktnc);
         Button btn = dialogView.findViewById(R.id.btnnexttnc);
+
+        checktnc.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                isChk = checktnc.isChecked();
+                if (isChk) {
+                    btn.setBackgroundTintList(mContext.getResources().getColorStateList(R.color.zm_button));
+                } else {
+                    btn.setBackgroundTintList(mContext.getResources().getColorStateList(R.color.btnFalse));
+                }
+            }
+        });
+
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                sweetAlertDialog.dismiss();
-                rabbitMirroring.MirroringSendEndpoint(13);
-                getFragmentPage(new frag_cif_resi());
+                if (isChk) {
+                    sweetAlertDialog.dismiss();
+                    rabbitMirroring.MirroringSendEndpoint(13);
+                    getFragmentPage(new frag_cif_resi());
+                } else {
+                    Toast.makeText(mContext, R.string.accept_state,Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+    }
+
+
+    private void APISaveForm() {
+        String valDataCIF = sessions.getCIF();
+        JSONObject dataObjCIF = new JSONObject();
+        try {
+            JSONObject getObjValCIF = new JSONObject(valDataCIF);
+            Log.e(TAG,"APISaveForm CIF FULL objValCIF : "+getObjValCIF.toString());
+            dataObjCIF.put("formCode","Opening Cif");
+            dataObjCIF.put("idDips",idDips);
+            dataObjCIF.put("payload",getObjValCIF);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), dataObjCIF.toString());
+        Server.getAPIService().saveForm(requestBody).enqueue(new Callback<JsonObject>() {
+            @Override
+            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                Log.e("CEK","APISaveForm code : "+response.code());
+                if (response.isSuccessful()) {
+                    String dataS = response.body().toString();
+                    Log.e("CEK","APISaveForm dataS : "+dataS);
+                    try {
+                        JSONObject dataObj = new JSONObject(dataS);
+                        String idForm = dataObj.getJSONObject("data").getString("idForm");
+                        JSONObject idFormObj = new JSONObject();
+                        idFormObj.put("idForm",idForm);
+                        rabbitMirroring.MirroringSendKey(idFormObj);
+
+                        processSendOTP();
+
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<JsonObject> call, Throwable t) {
+                Toast.makeText(mContext, t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
     }

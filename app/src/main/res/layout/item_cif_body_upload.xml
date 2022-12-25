@@ -10,6 +10,7 @@
         android:orientation="vertical">
 
         <TextView
+            android:id="@+id/tvAlertDoc"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="20dp"
@@ -108,7 +109,34 @@
                 android:visibility="gone" />
         </LinearLayout>
 
-        <LinearLayout
+        <RelativeLayout
+            android:layout_width="250dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="20dp">
+
+            <ImageView
+                android:id="@+id/imgDelete"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:src="@drawable/v_camera"/>
+
+            <Button
+                android:id="@+id/btnNext"
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:background="@drawable/oval_background_10dp"
+                android:backgroundTint="@color/zm_button"
+                android:clickable="false"
+                android:text="@string/btn_continue"
+                android:textColor="@color/white"
+                android:textSize="14dp"
+                android:textStyle="bold"
+                android:layout_alignParentRight="true"/>
+
+        </RelativeLayout>
+
+        <!--<LinearLayout
             android:layout_width="250dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
@@ -142,13 +170,12 @@
                 android:layout_height="40dp"
                 android:layout_weight="1"
                 android:background="@drawable/oval_background_10dp"
-                android:backgroundTint="#C8CDD1"
                 android:clickable="false"
                 android:text="@string/btn_continue"
                 android:textColor="@color/white"
                 android:textSize="14dp"
                 android:textStyle="bold" />
-        </LinearLayout>
+        </LinearLayout>-->
     </LinearLayout>
 
 </LinearLayout>
