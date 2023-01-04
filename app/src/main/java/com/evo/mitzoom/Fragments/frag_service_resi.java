@@ -1,8 +1,14 @@
 package com.evo.mitzoom.Fragments;
 
+import android.app.Activity;
+import android.app.DownloadManager;
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,13 +19,17 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import com.evo.mitzoom.API.Server;
 import com.evo.mitzoom.Helper.RabbitMirroring;
 import com.evo.mitzoom.Helper.SingleMediaScanner;
 import com.evo.mitzoom.R;
 import com.evo.mitzoom.Session.SessionManager;
 import com.github.chrisbanes.photoview.PhotoView;
+import com.google.gson.JsonObject;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -32,6 +42,9 @@ import java.util.Locale;
 import java.util.Random;
 
 import cn.pedant.SweetAlert.SweetAlertDialog;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 import us.zoom.sdk.ZoomVideoSDK;
 
 public class frag_service_resi extends Fragment {
@@ -50,8 +63,11 @@ public class frag_service_resi extends Fragment {
     private byte[] bytePhoto = null;
     private boolean isSessionZoom;
     private RabbitMirroring rabbitMirroring;
-    private int form_id = 0;
     private String no_Form = "";
+    private String noPengaduan = "";
+    private SwipeRefreshLayout swipe;
+    private String pdfFile = "";
+    private DownloadManager manager;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -64,16 +80,13 @@ public class frag_service_resi extends Fragment {
             rabbitMirroring = new RabbitMirroring(mContext);
         }
 
-        if (getArguments() != null) {
-            if (getArguments().containsKey("form_id")) {
-                form_id = getArguments().getInt("form_id");
-            }
-        }
-
         Random random=new Random();
         int dataInt = random.nextInt(999999999);
 
         no_Form = String.valueOf(dataInt);
+        noPengaduan = sessions.getNoComplaint();
+
+        Log.e("CEK",this+" noPengaduan : "+noPengaduan);
 
     }
 
@@ -84,6 +97,7 @@ public class frag_service_resi extends Fragment {
 
         tvTitle = (TextView) v.findViewById(R.id.tvTitle);
         tvSubTitle = (TextView) v.findViewById(R.id.tvSubTitle);
+        swipe = (SwipeRefreshLayout) v.findViewById(R.id.swipe);
         imgResume = (PhotoView) v.findViewById(R.id.imgResume);
         tvMsgThanks = (TextView) v.findViewById(R.id.tvMsgThanks);
         tvMsgNum = (TextView) v.findViewById(R.id.tvMsgNum);
@@ -97,6 +111,15 @@ public class frag_service_resi extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        getResumeResi();
+
+        swipe.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                getResumeResi();
+            }
+        });
 
         String titleSuccess = getString(R.string.title_safe_complaint);
         String titleHeadline = getString(R.string.body_complaint);
@@ -137,44 +160,59 @@ public class frag_service_resi extends Fragment {
                     return;
                 }
 
+                if (pdfFile.isEmpty()) {
+                    Toast.makeText(mContext,"File Not Found",Toast.LENGTH_SHORT).show();
+                    return;
+                }
                 processDownload();
             }
         });
 
-        //getResumeResi();
+    }
 
+    private void getResumeResi() {
+        Log.e("CEK","getResumeResi");
+        Server.getAPIService().getResiComplaint(noPengaduan).enqueue(new Callback<JsonObject>() {
+            @Override
+            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                swipe.setRefreshing(false);
+                Log.e("CEK","getResumeResi CODE : "+response.code());
+                if (response.isSuccessful()) {
+                    btnUnduh.setEnabled(true);
+                    btnUnduh.setBackgroundTintList(ContextCompat.getColorStateList(mContext,R.color.zm_button));
+                    assert response.body() != null;
+                    String dataS = response.body().toString();
+                    try {
+                        JSONObject dataObj = new JSONObject(dataS);
+                        String base64Image = dataObj.getJSONObject("data").getString("image");
+                        pdfFile = dataObj.getJSONObject("data").getString("pdf");
+                        bytePhoto = Base64.decode(base64Image, Base64.DEFAULT);
+                        Bitmap bitmap = BitmapFactory.decodeByteArray(bytePhoto, 0, bytePhoto.length);
+                        imgResume.setImageBitmap(bitmap);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
+                } else {
+                    Toast.makeText(mContext,getString(R.string.msg_error),Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<JsonObject> call, Throwable t) {
+                swipe.setRefreshing(false);
+                Toast.makeText(mContext,t.getMessage(),Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     private void processDownload() {
-        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss",
-                Locale.getDefault()).format(new Date());
-
-        try {
-
-            String filename = "No_Formulir-"+no_Form +"-"+timeStamp+ ".jpg";
-            createTemporaryFile(bytePhoto, filename);
-
-            String appName = getString(R.string.app_name_dips);
-
-            String contents = "File disimpan di folder Phone/DCIM/" + appName + "/" + filename;
-
-            SweetAlertDialog sAW = new SweetAlertDialog(mContext, SweetAlertDialog.SUCCESS_TYPE);
-            sAW.setContentText(contents);
-            sAW.hideConfirmButton();
-            sAW.setCancelText("Tutup");
-            sAW.setCancelClickListener(new SweetAlertDialog.OnSweetClickListener() {
-                @Override
-                public void onClick(SweetAlertDialog sweetAlertDialog) {
-                    sAW.dismiss();
-                }
-            });
-            sAW.setCancelable(false);
-            sAW.show();
-        } catch (JSONException e) {
-            e.printStackTrace();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        Log.e("cEK","processDownload");
+        manager = (DownloadManager) ((Activity)mContext).getSystemService(Context.DOWNLOAD_SERVICE);
+        Uri uri = Uri.parse(pdfFile);
+        DownloadManager.Request request = new DownloadManager.Request(uri);
+        request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE);
+        long reference = manager.enqueue(request);
     }
 
     private File createTemporaryFile(byte[] byteImage, String filename) throws Exception {

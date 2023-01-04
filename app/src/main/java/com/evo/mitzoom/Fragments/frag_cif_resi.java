@@ -1,8 +1,11 @@
 package com.evo.mitzoom.Fragments;
 
+import android.app.Activity;
+import android.app.DownloadManager;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.Base64;
@@ -17,6 +20,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
@@ -62,6 +66,8 @@ public class frag_cif_resi extends Fragment {
     private SwipeRefreshLayout swipe;
     private JSONObject objValCIF;
     private String no_handphone;
+    private String pdfFile = "";
+    private DownloadManager manager;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -106,6 +112,8 @@ public class frag_cif_resi extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        getResumeResi();
+
         String titleSuccess = getString(R.string.selamat_npembukaan_akun_berhasil);
         titleSuccess = titleSuccess.replace("Akun","Rekening");
 
@@ -135,6 +143,8 @@ public class frag_cif_resi extends Fragment {
                 Log.e("CEK","MASUK BUTTON OK");
                 rabbitMirroring.MirroringSendEndpoint(14);
                 sessions.clearCIF();
+                sessions.clearPartData();
+                bytePhoto = null;
                 getFragmentPage(new frag_portfolio_new());
             }
         });
@@ -148,12 +158,19 @@ public class frag_cif_resi extends Fragment {
                     return;
                 }
 
-                processDownload();
+                //processDownload();
+                processDownloadbyUrl();
             }
         });
 
-        getResumeResi();
+    }
 
+    private void processDownloadbyUrl() {
+        manager = (DownloadManager) ((Activity)mContext).getSystemService(Context.DOWNLOAD_SERVICE);
+        Uri uri = Uri.parse("https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf");
+        DownloadManager.Request request = new DownloadManager.Request(uri);
+        request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE);
+        long reference = manager.enqueue(request);
     }
 
     private void processDownload() {
@@ -233,18 +250,20 @@ public class frag_cif_resi extends Fragment {
     }
 
     private void getResumeResi() {
-        Server.getAPIService().getResiCIF().enqueue(new Callback<JsonObject>() {
+        Server.getAPIService().getResiCIF(idDips).enqueue(new Callback<JsonObject>() {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
                 swipe.setRefreshing(false);
                 Log.e("CEK","getResumeResi CODE : "+response.code());
                 if (response.isSuccessful()) {
                     btnUnduh.setEnabled(true);
-                    btnUnduh.setBackgroundTintList(mContext.getResources().getColorStateList(R.color.zm_button));
+                    btnUnduh.setBackgroundTintList(ContextCompat.getColorStateList(mContext,R.color.zm_button));
+                    assert response.body() != null;
                     String dataS = response.body().toString();
                     try {
                         JSONObject dataObj = new JSONObject(dataS);
                         String base64Image = dataObj.getJSONObject("data").getString("image");
+                        pdfFile = dataObj.getJSONObject("data").getString("pdf");
                         bytePhoto = Base64.decode(base64Image, Base64.DEFAULT);
                         Bitmap bitmap = BitmapFactory.decodeByteArray(bytePhoto, 0, bytePhoto.length);
                         imgResume.setImageBitmap(bitmap);

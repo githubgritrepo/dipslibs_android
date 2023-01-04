@@ -4,6 +4,16 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
+
+    <ImageView
+        android:id="@+id/imgDialog"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_centerHorizontal="true"
+        android:src="@drawable/v_dialog_info"
+        android:layout_gravity="center"
+        android:layout_marginBottom="10dp"/>
+
     <TextView
         android:id="@+id/textIBMB"
         android:layout_width="match_parent"
@@ -45,26 +55,25 @@
         android:layout_marginTop="10dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
-        <TextView
-            android:clickable="false"
-            android:id="@+id/btn_resend_otp"
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:maxLines="2"
-            android:layout_height="wrap_content"
-            android:text="@string/kirim_ulang_kode_otp"
-            android:textSize="15dp"
-            android:textAlignment="textStart"
-            android:textColor="@color/btnFalse"/>
+        android:orientation="vertical">
         <TextView
             android:id="@+id/timer_otp"
-            android:layout_width="0dp"
-            android:layout_weight="0.4"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="00:00"
             android:textSize="18dp"
             android:textAlignment="center"
+            android:textColor="@color/zm_otp_time"/>
+        <TextView
+            android:clickable="false"
+            android:id="@+id/btn_resend_otp"
+            android:layout_width="match_parent"
+            android:maxLines="2"
+            android:layout_height="wrap_content"
+            android:text="@string/kirim_ulang_kode_otp"
+            android:textSize="15dp"
+            android:textAlignment="center"
             android:textColor="@color/Blue"/>
+
     </LinearLayout>
 </LinearLayout>

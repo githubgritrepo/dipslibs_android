@@ -45,6 +45,8 @@ public class SessionManager {
     public static final String KEY_OCR = "OCR";
     public static final String KEY_IDSCHEDULE = "IDSCHEDULE";
     public static final String KEY_FORMREQ = "FORMREQ";
+    public static final String KEY_FORMREQMIRRORING = "FORMREQMIRRORING";
+    public static final String KEY_noComplaint = "NOCOMPLAINT";
 
     // Constructor
     public SessionManager(Context context){
@@ -136,11 +138,6 @@ public class SessionManager {
         editor.commit();
     }
 
-    public void saveFLOW(int data) {
-        editor.putInt(KEY_FLOW,data);
-        editor.commit();
-    }
-
     public void saveFormCOde(int data){
         editor.putInt(KEY_FORMCODE,data);
         editor.commit();
@@ -161,8 +158,18 @@ public class SessionManager {
         editor.commit();
     }
 
+    public void saveFormReqMirroring(String data) {
+        editor.putString(KEY_FORMREQMIRRORING,data);
+        editor.commit();
+    }
+
     public void saveNoCIF(String data) {
         editor.putString(KEY_NOCIF,data);
+        editor.commit();
+    }
+
+    public void saveNoComplaint(String data) {
+        editor.putString(KEY_noComplaint,data);
         editor.commit();
     }
 
@@ -178,8 +185,10 @@ public class SessionManager {
         editor.putBoolean(KEY_iSSwafoto,false);
         editor.putString(KEY_OCR,null);
         editor.putInt(KEY_FORMCODE,0);
-        editor.putInt(KEY_FLOW,0);
         editor.putString(KEY_FORMREQ,null);
+        editor.putString(KEY_FORMREQMIRRORING,null);
+        editor.putString(KEY_NOCIF,null);
+        editor.putString(KEY_noComplaint,null);
         editor.commit();
     }
 
@@ -195,6 +204,9 @@ public class SessionManager {
         editor.putInt(KEY_FORMCODE,0);
         editor.putInt(KEY_FLOW,0);
         editor.putString(KEY_FORMREQ,null);
+        editor.putString(KEY_FORMREQMIRRORING,null);
+        editor.putString(KEY_NOCIF,null);
+        editor.putString(KEY_noComplaint,null);
         editor.commit();
     }
 
@@ -261,9 +273,6 @@ public class SessionManager {
     public String getCSID() {
         return pref.getString(KEY_CSID,null);
     }
-    public int getFLOW (){
-        return pref.getInt(KEY_FLOW,0);
-    }
     public int getFormCode (){
         return pref.getInt(KEY_FORMCODE,0);
     }
@@ -276,8 +285,14 @@ public class SessionManager {
     public String getFormReq() {
         return pref.getString(KEY_FORMREQ,null);
     }
+    public String getFormReqMirroring() {
+        return pref.getString(KEY_FORMREQMIRRORING,null);
+    }
     public String getNoCIF() {
         return pref.getString(KEY_NOCIF,null);
+    }
+    public String getNoComplaint() {
+        return pref.getString(KEY_noComplaint,null);
     }
 
 }

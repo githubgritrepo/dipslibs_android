@@ -55,11 +55,15 @@
     <string name="photo_nnpwp">NPWP\nPhoto</string>
     <string name="foto_ntanda_ntangan">Signature\nPhoto</string>
     <string name="formulir_npembukaan_nrekening">Account\nOpening\nForm</string>
+    <string name="info_first_data">Information\nData\nMain</string>
+    <string name="data_account_open">Account Data\nTo be\nOpened</string>
+    <string name="facilities_services">Facilities\nServices</string>
+    <string name="statement">Statement</string>
     <string name="pastikan_gambar_atau_foto_ktp_sudah_jelas_dan_tidak_buram">Make sure images or photo\n is clear and didn\'t blur</string>
     <string name="pilih_dari_galeri">Choose from gallery</string>
     <string name="email">Email</string>
     <string name="popupktp">Please prepared your personal documents like KTP, NPWP, and Signature images for uploaded</string>
-    <string name="content_after_schedule">Thank you for using Dips Services. Your called is scheduled. We will contact you soon.</string>
+    <string name="content_after_schedule">Thank you for using Digital Operations Victoria Bank Services. Your called is scheduled. We will contact you soon.</string>
     <string name="done">Done</string>
     <string name="content_input">For the sake of mutual convenience, this conversation will be recorded automatically.</string>
     <string name="address">Address</string>
@@ -84,7 +88,7 @@
     <string name="mpin">MPIN</string>
     <string name="konfirmasi_mpin">MPIN Confirmation</string>
     <string name="tanda_tangan">Signature</string>
-    <string name="content_otp">Enter One Time Password to verify your data. OTP code has been sent to +62812 3456 7XXX</string>
+    <string name="content_otp">Enter One Time Password (OTP) to verify your data. OTP code has been sent to +62812 3456 7XXX</string>
     <string name="kirim_ulang_kode_otp">Resend Code OTP</string>
     <string name="otp_title">OTP is Correct</string>
     <string name="otp_content">The form is in progress.\nPlease wait a while</string>
@@ -240,6 +244,7 @@
     <string name="jumlah_tanggungan">The Number of Dependents</string>
     <string name="nama_suami_istri_orang_tua">Name of Husband/Wife/Parents</string>
     <string name="jenis_kelamin">Gender</string>
+    <string name="goldar">Blood Type</string>
     <string name="pendidikan">Educational</string>
     <string name="jenis_bukti_identitas">Types of Proof of Identity</string>
     <string name="tanggal_terbit_identitas">ID Issue Date</string>
@@ -298,4 +303,11 @@
     <string name="agent_leave">Sorry, Agent has ended the session.</string>
     <string name="reject">Reject</string>
     <string name="label_ya">Yes</string>
+    <string name="caliing_comeback">Silakan jadwalkan waktu terbaik bagi kami untuk menghubungi Anda kembali.</string>
+    <string name="doesn_match">Data does not match</string>
+    <string name="rtrw">Rt/Rw</string>
+    <string name="kawin">Marital Status</string>
+    <string name="warganegara">Nationality</string>
+    <string name="job">Job</string>
+    <string name="titleWrongOTP">Incorrect OTP code.\nPlease double check the code sent.</string>
 </resources>

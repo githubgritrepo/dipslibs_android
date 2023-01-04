@@ -87,6 +87,30 @@
 
         </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
+        <androidx.core.widget.NestedScrollView
+            android:id="@+id/scrollOTP"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scrollbars="vertical"
+            android:layout_below="@id/TopBar"
+            android:visibility="gone">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="center">
+
+                <include
+                    android:id="@+id/inclOTP"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    layout="@layout/item_otp"
+                    android:layout_centerInParent="true" />
+
+            </RelativeLayout>
+
+        </androidx.core.widget.NestedScrollView>
+
     </RelativeLayout>
 
 </FrameLayout>

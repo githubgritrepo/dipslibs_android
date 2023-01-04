@@ -35,7 +35,7 @@
         android:layout_height="match_parent"
         android:background="@color/transparentblack">
 
-        <include layout="@layout/dialog_dips_choose_language"/>
+        <include layout="@layout/dialog_dips_choose_language" />
 
         <RelativeLayout
             android:id="@+id/rlload"

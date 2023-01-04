@@ -14,6 +14,7 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.evo.mitzoom.Fragments.frag_form_komplain;
+import com.evo.mitzoom.Fragments.frag_open_account_product;
 import com.evo.mitzoom.Fragments.frag_service_item;
 import com.evo.mitzoom.Helper.RabbitMirroring;
 import com.evo.mitzoom.Model.ItemModel;
@@ -55,6 +56,10 @@ public class ItemServiceGridAdapter extends RecyclerView.Adapter<ItemServiceGrid
 
         holder.ads.setOnClickListener(v -> {
             switch (dataList.get(position).getId()){
+                case "0" :
+                    fragment = new frag_open_account_product();
+                    getFragmentPage(fragment);
+                    break;
                 case "2" :/* SUDAH MIRRORING */
                     int intLayout = 35;
                     rabbitMirroring.MirroringSendEndpoint(intLayout);
@@ -65,7 +70,7 @@ public class ItemServiceGridAdapter extends RecyclerView.Adapter<ItemServiceGrid
                     sessions.saveFormCOde(intLayout);
                     fragment.setArguments(bundle);
                     getFragmentPage(fragment);
-                    return;
+                    break;
             }
         });
     }

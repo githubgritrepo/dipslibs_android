@@ -96,14 +96,16 @@ public class frag_service_new extends Fragment {
     }
 
     private void addData(){
+        String titleAcc = getResources().getString(R.string.pembukaan_akun);
+        titleAcc = titleAcc.replace("Rekening","Akun");
         dataItems = new ArrayList<>();
-        dataItems.add(new ItemModel("0",getResources().getString(R.string.pembukaan_akun),R.drawable.img_opening_account)); //Sudah
+        dataItems.add(new ItemModel("0",titleAcc,R.drawable.img_opening_account)); //Sudah
         dataItems.add(new ItemModel("1",getResources().getString(R.string.Formulir_Transfer),R.drawable.img_formulir_trf)); //Sudah
         dataItems.add(new ItemModel("2",getResources().getString(R.string.CUSTOMER_COMPLAIN),R.drawable.img_complaint)); //Sudah
         dataItems.add(new ItemModel("3",getResources().getString(R.string.INTERBANK_TRANSACTION),R.drawable.img_antarbank)); //Sudah
         dataItems.add(new ItemModel("4",getString(R.string.inter_bank_transaction),R.drawable.img_interbank)); //Sudah
         dataItems.add(new ItemModel("5",getResources().getString(R.string.KYC_UPDATING),R.drawable.img_perbarui_data)); //Sudah
-        dataItems.add(new ItemModel("6",getResources().getString(R.string.DORMANT_ACTIVATION),R.drawable.img_dormant)); //Sudah
+        dataItems.add(new ItemModel("6",getResources().getString(R.string.DORMANT_ACTIVATION),R.drawable.img_aktivasi_dormant)); //Sudah
         dataItems.add(new ItemModel("7",getResources().getString(R.string.FOREX),R.drawable.img_valas)); //Sudah
         dataItems.add(new ItemModel("8",getResources().getString(R.string.ATM_CARD),R.drawable.img_antarbank)); //Sudah
         dataItems.add(new ItemModel("9",getResources().getString(R.string.POWER_OF_ATTORNEY),R.drawable.img_interbank)); //Sudah

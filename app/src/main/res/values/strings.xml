@@ -54,11 +54,15 @@
     <string name="photo_nnpwp">Foto\nNPWP</string>
     <string name="foto_ntanda_ntangan">Foto\nTanda\nTangan</string>
     <string name="formulir_npembukaan_nrekening">Formulir\nPembukaan\nRekening</string>
+    <string name="info_first_data">Informasi\nData\nUtama</string>
+    <string name="data_account_open">Data Rekening\nYang Akan\nDibuka</string>
+    <string name="facilities_services">Fasilitas\nLayanan</string>
+    <string name="statement">Pernyataan</string>
     <string name="pastikan_gambar_atau_foto_ktp_sudah_jelas_dan_tidak_buram">Pastikan gambar atau foto\njelas dan tidak buram.</string>
     <string name="pilih_dari_galeri">Pilih Dari Galeri</string>
     <string name="email">Email</string>
     <string name="popupktp">Harap menyiapkan dokumen data diri berupa KTP, NPWP, dan foto tanda tangan untuk di upload</string>
-    <string name="content_after_schedule">Terima kasih telah menggunakan layanan DiPS. Panggilan Anda sudah terjadwalkan. kami akan segera menghubungi Anda</string>
+    <string name="content_after_schedule">Terima kasih telah menggunakan layanan Digital Operations Bank Victoria. Panggilan Anda sudah terjadwalkan. Kami akan segera menghubungi Anda</string>
     <string name="done">Selesai</string>
     <string name="content_input">Demi kenyamanan bersama, percakapan ini akan terekam secara otomatis.</string>
     <string name="address">Alamat</string>
@@ -83,7 +87,7 @@
     <string name="mpin">MPIN</string>
     <string name="konfirmasi_mpin">Konfirmasi MPIN</string>
     <string name="tanda_tangan">Tanda Tangan</string>
-    <string name="content_otp">Masukan One Time Password untuk verifikasi data Anda. Kode OTP telah dikirim ke +62812 3456 7XXX</string>
+    <string name="content_otp">Masukan One Time Password (OTP) untuk verifikasi data Anda. Kode OTP telah dikirim ke +62812 3456 7XXX</string>
     <string name="kirim_ulang_kode_otp">Kirim ulang kode OTP</string>
     <string name="otp_title">Kode OTP Sesuai</string>
     <string name="otp_content">Formulir sedang dalam proses.\nHarap menunggu beberapa saat</string>
@@ -139,8 +143,8 @@
     <string name="please_wait2">Harap Menunggu . .</string>
     <string name="please_wait3">Harap Menunggu . . .</string>
     <string name="ocr_title">Apakah data anda sudah sesuai ?</string>
-    <string name="ttl">Tempat</string>
-    <string name="ttl2">Tanggal Lahir</string>
+    <string name="ttl">Tempat Lahir</string>
+    <string name="ttl2">Tgl Lahir</string>
     <string name="dari">Dari</string>
     <string name="penerima">Penerima</string>
     <string name="biaya">Biaya</string>
@@ -239,6 +243,7 @@
     <string name="jumlah_tanggungan">Jumlah Tanggungan</string>
     <string name="nama_suami_istri_orang_tua">Nama Suami/Istri/Orang Tua</string>
     <string name="jenis_kelamin">Jenis Kelamin</string>
+    <string name="goldar">Golongan Darah</string>
     <string name="pendidikan">Pendidikan</string>
     <string name="jenis_bukti_identitas">Jenis Bukti Identitas</string>
     <string name="tanggal_terbit_identitas">Tanggal Terbit Identitas</string>
@@ -299,4 +304,11 @@
     <string name="agent_leave">Maaf, Agen sudah mengakhiri sesi.</string>
     <string name="reject">Tolak</string>
     <string name="label_ya">Ya</string>
+    <string name="caliing_comeback">Silakan jadwalkan waktu terbaik bagi kami untuk menghubungi Anda kembali.</string>
+    <string name="doesn_match">Data tidak sesuai</string>
+    <string name="rtrw">Rt/Rw</string>
+    <string name="kawin">Status Perkawinan</string>
+    <string name="warganegara">Kewarganegaraan</string>
+    <string name="job">Pekerjaan</string>
+    <string name="titleWrongOTP">Kode OTP Salah.\nHarap periksa kembali kode yang terkirim.</string>
 </resources>

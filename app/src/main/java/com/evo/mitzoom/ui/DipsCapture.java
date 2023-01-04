@@ -43,6 +43,7 @@ import androidx.core.content.ContextCompat;
 import com.evo.mitzoom.API.ApiService;
 import com.evo.mitzoom.API.Server;
 import com.evo.mitzoom.Helper.GraphicFaceTracker;
+import com.evo.mitzoom.Helper.LocaleHelper;
 import com.evo.mitzoom.Helper.OutboundService;
 import com.evo.mitzoom.Model.Request.JsonCaptureIdentify;
 import com.evo.mitzoom.Model.Response.CaptureIdentify;
@@ -109,7 +110,8 @@ public class DipsCapture extends AppCompatActivity implements CameraSource.Pictu
         mContext = this;
         sessions = new SessionManager(mContext);
         String lang = sessions.getLANG();
-        setLocale(this, lang);
+        //setLocale(this, lang);
+        LocaleHelper.setLocale(this,lang);
 
         idDips = sessions.getKEY_IdDips();
 
@@ -634,7 +636,6 @@ public class DipsCapture extends AppCompatActivity implements CameraSource.Pictu
 
                         idDips = idDipsNew;
 
-                        sessions.saveFLOW(1);
                         sessions.saveIdDips(idDips);
 
                         Intent intent = null;

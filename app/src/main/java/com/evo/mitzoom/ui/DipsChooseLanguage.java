@@ -39,6 +39,7 @@ import android.widget.Toast;
 
 import com.evo.mitzoom.API.ApiService;
 import com.evo.mitzoom.API.Server;
+import com.evo.mitzoom.Helper.LocaleHelper;
 import com.evo.mitzoom.Helper.OutboundService;
 import com.evo.mitzoom.Helper.OutboundServiceNew;
 import com.evo.mitzoom.Model.Request.JsonCaptureIdentify;
@@ -200,7 +201,8 @@ public class DipsChooseLanguage extends AppCompatActivity {
                                 public void run() {
                                     String langCode = "id";
                                     sessions.saveLANG(langCode);
-                                    setLocale(DipsChooseLanguage.this,langCode);
+                                    LocaleHelper.setLocale(DipsChooseLanguage.this,langCode);
+                                    //setLocale(DipsChooseLanguage.this,langCode);
                                     startApp();
                                     radioGroup.clearCheck();
                                 }
@@ -212,7 +214,8 @@ public class DipsChooseLanguage extends AppCompatActivity {
                                 public void run() {
                                     String langCode = "en";
                                     sessions.saveLANG(langCode);
-                                    setLocale(DipsChooseLanguage.this,langCode);
+                                    LocaleHelper.setLocale(DipsChooseLanguage.this,langCode);
+                                    //setLocale(DipsChooseLanguage.this,langCode);
                                     startApp();
                                     radioGroup.clearCheck();
                                 }
@@ -334,6 +337,7 @@ public class DipsChooseLanguage extends AppCompatActivity {
                 byte[] bytePhoto = Base64.decode(imgBase64, Base64.NO_WRAP);
 
                 //processCaptureIdentifyAuth(imgBase64);
+                sessions.saveNoCIF(null);
 
                 Intent intent = new Intent(mContext, DipsLivenessResult.class);
                 intent.putExtra("RESULT_IMAGE_AI",bytePhoto);
@@ -496,7 +500,6 @@ public class DipsChooseLanguage extends AppCompatActivity {
 
                         idDips = idDipsNew;
 
-                        sessions.saveFLOW(1);
                         sessions.saveIdDips(idDips);
 
                         Intent intent = null;

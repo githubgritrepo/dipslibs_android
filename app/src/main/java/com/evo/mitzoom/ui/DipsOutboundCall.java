@@ -49,6 +49,7 @@ import com.evo.mitzoom.BaseMeetingActivity;
 import com.evo.mitzoom.Constants.AuthConstants;
 import com.evo.mitzoom.Fragments.frag_berita;
 import com.evo.mitzoom.GlideApp;
+import com.evo.mitzoom.Helper.LocaleHelper;
 import com.evo.mitzoom.Helper.OutboundService;
 import com.evo.mitzoom.Helper.OutboundServiceNew;
 import com.evo.mitzoom.R;
@@ -178,7 +179,8 @@ public class DipsOutboundCall extends AppCompatActivity implements DatePickerDia
         idDips = sessions.getKEY_IdDips();
         isCust = sessions.getKEY_iSCust();
         String lang = sessions.getLANG();
-        setLocale(this,lang);
+        //setLocale(this,lang);
+        LocaleHelper.setLocale(this,lang);
 
         getPackageManager().getLaunchIntentForPackage("com.evo.mitzoom");
 
@@ -337,6 +339,10 @@ public class DipsOutboundCall extends AppCompatActivity implements DatePickerDia
     protected void onResume() {
         super.onResume();
         isConfigure = false;
+
+        String lang = sessions.getLANG();
+        //setLocale(this,lang);
+        LocaleHelper.setLocale(this,lang);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (checkSelfPermission(Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {

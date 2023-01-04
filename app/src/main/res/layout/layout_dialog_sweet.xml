@@ -9,8 +9,8 @@
         android:id="@+id/imgDialog"
         android:layout_width="50dp"
         android:layout_height="50dp"
-        android:src="@drawable/v_dialog_success"
-        android:layout_centerHorizontal="true"/>
+        android:layout_centerHorizontal="true"
+        android:src="@drawable/v_dialog_success" />
 
     <TextView
         android:id="@+id/tvTitleDialog"

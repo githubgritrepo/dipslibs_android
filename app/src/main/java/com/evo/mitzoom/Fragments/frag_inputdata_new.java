@@ -22,6 +22,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -41,8 +42,10 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.evo.mitzoom.API.ApiService;
 import com.evo.mitzoom.API.Server;
+import com.evo.mitzoom.BaseMeetingActivity;
 import com.evo.mitzoom.Helper.MyParserFormBuilder;
 import com.evo.mitzoom.Helper.RabbitMirroring;
+import com.evo.mitzoom.Model.FormSpin;
 import com.evo.mitzoom.R;
 import com.evo.mitzoom.Session.SessionManager;
 import com.evo.mitzoom.ui.Alternative.DipsSwafoto;
@@ -103,8 +106,8 @@ public class frag_inputdata_new extends Fragment {
     private TextView tvSavedImg;
     private TextView tvSavedFile;
     JSONObject objEl = new JSONObject();
+    JSONObject valSpin = new JSONObject();
     private RabbitMirroring rabbitMirroring;
-    private int chkFlow;
     private int lasLenChar;
     private boolean backSpaceChar;
     private String custName = "";
@@ -116,6 +119,7 @@ public class frag_inputdata_new extends Fragment {
     final String STATE_CUSTNAME = "custName";
     final String STATE_ELEMENTARRAY = "elementArray";
     final String STATE_ELEMENTObj = "elementObj";
+    private boolean flagStuckSpin = false;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -123,7 +127,6 @@ public class frag_inputdata_new extends Fragment {
         mContext = getContext();
         session = new SessionManager(mContext);
         isCust = session.getKEY_iSCust();
-        chkFlow = session.getFLOW();
         isSessionZoom = ZoomVideoSDK.getInstance().isInSession();
         if (isSessionZoom) {
             rabbitMirroring = new RabbitMirroring(mContext);
@@ -278,6 +281,24 @@ public class frag_inputdata_new extends Fragment {
 
                     if (flagNext) {
                         Log.e("CEL","REQUEST : "+objEl.toString());
+                        if (objEl.has("nik")) {
+                            String getNIK = "";
+                            try {
+                                getNIK = objEl.getString("nik");
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+
+                            if (!getNIK.isEmpty() && getNIK.length() < 16) {
+                                Toast.makeText(mContext, R.string.doesn_match, Toast.LENGTH_SHORT).show();
+                                return;
+                            }
+                        }
+                        if (isSessionZoom) {
+                            BaseMeetingActivity.showProgress(true);
+                        } else {
+                            DipsSwafoto.showProgress(true);
+                        }
                         CekDataByNIK(objEl);
                     }
                 }
@@ -289,7 +310,7 @@ public class frag_inputdata_new extends Fragment {
     public void onDestroy() {
         super.onDestroy();
 
-        if (chkFlow == 0) {
+        if (isSessionZoom) {
             rabbitMirroring.closeThreadConnection();
         }
     }
@@ -354,6 +375,7 @@ public class frag_inputdata_new extends Fragment {
     }
 
     private void processValidationActionForm() {
+        Log.e("CEK","MASUK processValidationActionForm");
         int child = llFormBuild.getChildCount();
 
         if (child > 0 && idElement.length() > 0) {
@@ -364,6 +386,10 @@ public class frag_inputdata_new extends Fragment {
                         try {
                             int idDataEl = idElement.getJSONObject(j).getInt("id");
                             String nameDataEl = idElement.getJSONObject(j).getString("name");
+                            String urlPath = "";
+                            if (idElement.getJSONObject(j).has("url")) {
+                                urlPath = idElement.getJSONObject(j).getString("url");
+                            }
                             if (idEl == idDataEl) {
 
                                 if (llFormBuild.getChildAt(i) instanceof EditText) {
@@ -384,9 +410,9 @@ public class frag_inputdata_new extends Fragment {
                                             } catch (JSONException e) {
                                                 e.printStackTrace();
                                             }
-                                            if (chkFlow == 0) {
+                                            /*if (isSessionZoom) {
                                                 rabbitMirroring.MirroringSendKey(objEl);
-                                            }
+                                            }*/
                                         }
 
                                         @Override
@@ -424,7 +450,6 @@ public class frag_inputdata_new extends Fragment {
                                     spin.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                                         @Override
                                         public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                                            Log.e("CEK","getSelectedItem : "+spin.getSelectedItem().toString());
                                             String results = spin.getSelectedItem().toString();
                                             try {
                                                 objEl.put(nameDataEl, results);
@@ -444,16 +469,42 @@ public class frag_inputdata_new extends Fragment {
                                     if (rl.getChildAt(0) instanceof Spinner) {
                                         Spinner spin = (Spinner) rl.getChildAt(0);
 
+                                        boolean flagDot = false;
+                                        if (!urlPath.isEmpty()) {
+                                            String[] spUrl = urlPath.split("/");
+                                            int indexs = spUrl.length - 1;
+                                            String check = spUrl[indexs];
+                                            if (check.isEmpty()) {
+                                                indexs = spUrl.length - 2;
+                                                check = spUrl[indexs];
+                                            }
+                                            if (check.contains(":")) {
+                                                flagDot = true;
+                                            }
+                                            if (!flagDot) {
+                                                processGetDynamicURL(spin, urlPath, nameDataEl);
+                                            }
+                                        }
+
                                         objEl.put(nameDataEl, "");
                                         spin.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                                             @Override
                                             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                                                 Log.e("CEK","getSelectedItem : "+spin.getSelectedItem().toString());
-                                                String results = spin.getSelectedItem().toString();
+                                                FormSpin dataSpin = (FormSpin) spin.getSelectedItem();
+                                                int idData = dataSpin.getId();
+                                                String results = dataSpin.getName();
+                                                Log.e("CEK","dataSpin.getId() : "+idData);
                                                 try {
                                                     objEl.put(nameDataEl, results);
+                                                    valSpin.put(nameDataEl,idData);
                                                 } catch (JSONException e) {
                                                     e.printStackTrace();
+                                                }
+
+                                                Log.e("CEK","flagStuckSpin : "+flagStuckSpin);
+                                                if (flagStuckSpin) {
+                                                    processGetSpinChild(nameDataEl);
                                                 }
                                             }
 
@@ -522,6 +573,137 @@ public class frag_inputdata_new extends Fragment {
         }
     }
 
+    private void processGetDynamicURL(Spinner spin, String urlPath, String nameDataEl) {
+        flagStuckSpin = false;
+        Log.e("CEK","processGetDynamicURL : "+urlPath);
+        Server.getAPIService().getDynamicUrl(urlPath).enqueue(new Callback<JsonObject>() {
+            @Override
+            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                Log.e("CEK","processGetDynamicURL code : "+response.code());
+                if (response.isSuccessful()) {
+                    String dataS = response.body().toString();
+                    Log.e("CEK","processGetDynamicURL dataS : "+dataS);
+                    try {
+                        JSONObject dataObj = new JSONObject(dataS);
+                        JSONArray dataArr = dataObj.getJSONArray("data");
+                        ArrayList<FormSpin> dataDropDown = new ArrayList<>();
+                        for (int i = 0; i < dataArr.length(); i++) {
+                            int idData = dataArr.getJSONObject(i).getInt("id");
+                            String labelIdn = dataArr.getJSONObject(i).getString("labelIdn");
+                            String labelEng = dataArr.getJSONObject(i).getString("labelEng");
+                            dataDropDown.add(new FormSpin(idData,labelIdn,labelIdn,labelEng));
+                            if (i == 0) {
+                                valSpin.put(nameDataEl,idData);
+                                processGetSpinChild(nameDataEl);
+                                if ((nameDataEl.contains("kelurahan") || nameDataEl.contains("desa"))) {
+                                    flagStuckSpin = true;
+                                }
+                            }
+                        }
+                        ArrayAdapter<FormSpin> adapter2 = new ArrayAdapter<FormSpin>(mContext, android.R.layout.simple_spinner_dropdown_item, dataDropDown);
+                        spin.setAdapter(adapter2);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                } else {
+                    Toast.makeText(mContext,R.string.msg_error,Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<JsonObject> call, Throwable t) {
+                Toast.makeText(mContext,t.getMessage(),Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void processGetSpinChild(String nameDataEl) {
+        Log.e("CEK","processGetSpinChild nameDataEl : "+nameDataEl);
+        int child = llFormBuild.getChildCount();
+        for (int i = 0; i < child; i++) {
+            int idEl = llFormBuild.getChildAt(i).getId();
+            for (int j = 0; j < idElement.length(); j++) {
+                try {
+                    int idDataEl = idElement.getJSONObject(j).getInt("id");
+                    String getnameDataEl = idElement.getJSONObject(j).getString("name");
+                    String urlPath = "";
+                    if (idElement.getJSONObject(j).has("url")) {
+                        urlPath = idElement.getJSONObject(j).getString("url");
+                    }
+
+                    if (idEl == idDataEl) {
+                        if (llFormBuild.getChildAt(i) instanceof RelativeLayout) {
+                            if (nameDataEl.contains("provinsi") && (getnameDataEl.contains("kabupaten") || getnameDataEl.contains("kota"))) {
+                                Log.e("CEK","processGetSpinChild getnameDataEl : "+getnameDataEl);
+                                if (!urlPath.isEmpty()) {
+                                    int idProv = valSpin.getInt("provinsi");
+                                    String idSpin = String.valueOf(idProv);
+                                    String urlNew = urlPath.replace(":id_provinsi",idSpin);
+
+                                    Log.e("CEK", "urlNew : "+urlNew);
+
+                                    RelativeLayout rl = (RelativeLayout) llFormBuild.getChildAt(i);
+                                    if (rl.getChildAt(0) instanceof Spinner) {
+                                        Spinner spin = (Spinner) rl.getChildAt(0);
+                                        processGetDynamicURL(spin, urlNew, getnameDataEl);
+                                    }
+                                }
+                            } else if ((nameDataEl.contains("kabupaten") || nameDataEl.contains("kota")) && getnameDataEl.contains("kecamatan")) {
+                                if (!urlPath.isEmpty()) {
+                                    int idProv = valSpin.getInt("provinsi");
+                                    int idKabKot = 0;
+                                    if (valSpin.has("kabupaten")) {
+                                        idKabKot = valSpin.getInt("kabupaten");
+                                    } else if (valSpin.has("kota")) {
+                                        idKabKot = valSpin.getInt("kota");
+                                    }
+                                    String idSpin = String.valueOf(idProv);
+                                    String idSpin2 = String.valueOf(idKabKot);
+                                    String urlNew = urlPath.replace(":id_provinsi",idSpin).replace(":id_kabupaten",idSpin2);
+
+                                    Log.e("CEK", "urlNew : "+urlNew);
+
+                                    RelativeLayout rl = (RelativeLayout) llFormBuild.getChildAt(i);
+                                    if (rl.getChildAt(0) instanceof Spinner) {
+                                        Spinner spin = (Spinner) rl.getChildAt(0);
+                                        processGetDynamicURL(spin, urlNew, getnameDataEl);
+                                    }
+                                }
+                            } else if (nameDataEl.contains("kecamatan") && (getnameDataEl.contains("kelurahan") || getnameDataEl.contains("desa"))) {
+                                if (!urlPath.isEmpty()) {
+                                    int idProv = valSpin.getInt("provinsi");
+                                    int idKec = valSpin.getInt("kecamatan");
+                                    int idKabKot = 0;
+                                    if (valSpin.has("kabupaten")) {
+                                        idKabKot = valSpin.getInt("kabupaten");
+                                    } else if (valSpin.has("kota")) {
+                                        idKabKot = valSpin.getInt("kota");
+                                    }
+                                    String idSpin = String.valueOf(idProv);
+                                    String idSpin2 = String.valueOf(idKabKot);
+                                    String idSpin3 = String.valueOf(idKec);
+                                    String urlNew = urlPath.replace(":id_provinsi",idSpin).replace(":id_kabupaten",idSpin2).replace(":id_kecamatan",idSpin3);
+
+                                    Log.e("CEK", "urlNew : "+urlNew);
+
+                                    RelativeLayout rl = (RelativeLayout) llFormBuild.getChildAt(i);
+                                    if (rl.getChildAt(0) instanceof Spinner) {
+                                        Spinner spin = (Spinner) rl.getChildAt(0);
+                                        processGetDynamicURL(spin, urlNew, getnameDataEl);
+                                    }
+                                }
+                            } else {
+                                flagStuckSpin = true;
+                            }
+                        }
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
     private void chooseFromSD() {
         Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
         intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -540,6 +722,11 @@ public class frag_inputdata_new extends Fragment {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
                 Log.e("CEK","RESPONSE CekDataByNIK  : "+response.code());
+                if (isSessionZoom) {
+                    BaseMeetingActivity.showProgress(false);
+                } else {
+                    DipsSwafoto.showProgress(false);
+                }
                 if (response.isSuccessful() && response.body().size() > 0) {
                     //Mirroring(true, Nama, NIK);
                     String dataS = response.body().toString();
@@ -559,7 +746,7 @@ public class frag_inputdata_new extends Fragment {
                                 } catch (JSONException e) {
                                     e.printStackTrace();
                                 }
-                                if (chkFlow == 0) {
+                                if (isSessionZoom) {
                                     rabbitMirroring.MirroringSendKey(jsons);
                                 }
                             }
@@ -567,41 +754,42 @@ public class frag_inputdata_new extends Fragment {
                             if (dataObj.has("noCif")) {
                                 if (!dataObj.isNull("noCif")) {
                                     String noCif = dataObj.getString("noCif");
+                                    session.saveNoCIF(noCif);
+                                    session.saveIsCust(true);
                                     if (!isSwafoto){
-                                        session.saveIsCust(true);
                                         session.saveIsSwafoto(isSwafoto);
                                         session.saveFormCOde(4);
-                                        Fragment fragment = new frag_cif();
+                                        Fragment fragment = new frag_cif_new();
                                         Bundle bundle = new Bundle();
                                         fragment.setArguments(bundle);
-                                        if (chkFlow == 0) {
+                                        if (isSessionZoom) {
                                             RabbitMirroring.MirroringSendEndpoint(3);
                                             getFragmentPage(fragment);
                                         } else {
                                             getFragmentPageDefault(fragment);
                                         }
                                     } else {
-                                        if (chkFlow == 1) {
+                                        //if (chkFlow == 1) {
                                             Intent intent = new Intent(mContext, DipsWaitingRoom.class);
                                             intent.putExtra("CUSTNAME",custName);
                                             startActivity(intent);
                                             ((Activity) mContext).finishAffinity();
-                                        } else {
+                                        /*} else {
                                             Fragment fragment = new frag_portfolio_new();
                                             session.saveNoCIF(noCif);
                                             session.clearCIF();
                                             getFragmentPage(fragment);
-                                        }
+                                        }*/
                                     }
                                 } else {
-                                    if (chkFlow == 1) {
+                                    //if (chkFlow == 1) {
                                         Intent intent = new Intent(mContext, DipsWaitingRoom.class);
                                         intent.putExtra("CUSTNAME",custName);
                                         startActivity(intent);
                                         ((Activity) mContext).finishAffinity();
-                                    } else {
+                                    /*} else {
                                         PopUpTnc();
-                                    }
+                                    }*/
                                 }
                             }
                         } else {
@@ -634,6 +822,11 @@ public class frag_inputdata_new extends Fragment {
 
             @Override
             public void onFailure(Call<JsonObject> call, Throwable t) {
+                if (isSessionZoom) {
+                    BaseMeetingActivity.showProgress(false);
+                } else {
+                    DipsSwafoto.showProgress(false);
+                }
                 Toast.makeText(mContext,t.getMessage(),Toast.LENGTH_SHORT).show();
             }
         });
@@ -672,18 +865,17 @@ public class frag_inputdata_new extends Fragment {
             @Override
             public void onClick(View v) {
                 if (checkBox.isChecked()){
-                    session.saveFLOW(0);
                     sweetAlertDialogTNC.dismiss();
                     sweetAlertDialogTNC.cancel();
 
                     session.saveIsCust(true);
                     session.saveIsSwafoto(isSwafoto);
                     session.saveFormCOde(4);
-                    Fragment fragment = new frag_cif();
+                    Fragment fragment = new frag_cif_new();
                     Bundle bundle = new Bundle();
                     fragment.setArguments(bundle);
 
-                    if (chkFlow == 0) {
+                    if (isSessionZoom) {
                         RabbitMirroring.MirroringSendEndpoint(3);
                         getFragmentPage(fragment);
                     } else {
@@ -715,7 +907,7 @@ public class frag_inputdata_new extends Fragment {
                     }
                     else {
                         session.clearCIF();
-                        if (chkFlow == 0) {
+                        if (isSessionZoom) {
                             RabbitMirroring.MirroringSendEndpoint(14);
                             getFragmentPage(new frag_portfolio_new());
                         } else {

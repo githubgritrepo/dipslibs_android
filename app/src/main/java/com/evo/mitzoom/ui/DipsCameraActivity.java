@@ -42,6 +42,7 @@ import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
+import com.evo.mitzoom.Helper.LocaleHelper;
 import com.evo.mitzoom.R;
 import com.evo.mitzoom.Session.SessionManager;
 import com.google.android.material.appbar.AppBarLayout;
@@ -104,7 +105,8 @@ public class DipsCameraActivity extends AppCompatActivity {
         mContext = this;
         sessions = new SessionManager(mContext);
         String lang = sessions.getLANG();
-        setLocale(this,lang);
+        //setLocale(this,lang);
+        LocaleHelper.setLocale(this,lang);
 
         setContentView(R.layout.activity_dips_camera);
 
@@ -167,14 +169,26 @@ public class DipsCameraActivity extends AppCompatActivity {
                                 try {
                                     File mediaFile = createTemporaryFile(dataImage);
                                     try {
-                                        //Image no compress
-                                        //String real_imgBase64 = imageRotateBase64(realBitmap, rotation);
-
                                         String pathFile = mediaFile.getAbsolutePath();
-                                        Bitmap bitmapCrop = prosesOptimalImage(realBitmap, mediaFile);
+                                        Bitmap bitmapCrop = prosesOptimalImage(realBitmap, mediaFile,1);
+
                                         ExifInterface exif = new ExifInterface(pathFile);
                                         rotation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL);
                                         Log.d("CEK", "rotation : " + rotation);
+
+                                        String imgBase64 = imageRotateBase64(bitmapCrop, rotation);
+                                        byte[] bytePhoto = Base64.decode(imgBase64, Base64.NO_WRAP);
+
+                                        File mediaFilesCrop = null;
+                                        try {
+                                            mediaFilesCrop = createTemporaryFile(bytePhoto);
+                                        } catch (Exception e) {
+                                            e.printStackTrace();
+                                        }
+                                        int file_mediaFilesCrop = Integer.parseInt(String.valueOf(mediaFilesCrop.length()/1024));
+
+                                        Log.e("CEK", "file_mediaFilesCrop :"+file_mediaFilesCrop+" | bitmapCrop.getWidth() : "+bitmapCrop.getWidth()+" | bitmapCrop.getHeight() : "+bitmapCrop.getHeight());
+
                                         if (mediaFile.exists()) {
                                             try {
                                                 mediaFile.getCanonicalFile().delete();
@@ -185,15 +199,20 @@ public class DipsCameraActivity extends AppCompatActivity {
                                                 e.printStackTrace();
                                             }
                                         }
-                                        String imgBase64 = imageRotateBase64(bitmapCrop, rotation);
-                                        //Image no compress
-                                        String real_imgBase64 = imageRotateBase64(bitmapCrop, rotation);
 
-                                        byte[] bytePhoto = Base64.decode(imgBase64, Base64.NO_WRAP);
-                                        byte[] real_bytePhoto = Base64.decode(real_imgBase64, Base64.NO_WRAP);
+                                        if (mediaFilesCrop.exists()) {
+                                            try {
+                                                mediaFilesCrop.getCanonicalFile().delete();
+                                                if (mediaFilesCrop.exists()) {
+                                                    getApplicationContext().deleteFile(mediaFilesCrop.getName());
+                                                }
+                                            } catch (IOException e) {
+                                                e.printStackTrace();
+                                            }
+                                        }
+
                                         Intent returnIntent = getIntent();
                                         returnIntent.putExtra("result_camera", bytePhoto);
-                                        returnIntent.putExtra("real",real_bytePhoto);
                                         setResult(Activity.RESULT_OK, returnIntent);
                                         finish();
 
@@ -255,33 +274,89 @@ public class DipsCameraActivity extends AppCompatActivity {
             }
         });
     }
-    private Bitmap prosesOptimalImage(Bitmap bitmap, File mediaFile) {
-        int file_size = Integer.parseInt(String.valueOf(mediaFile.length()/1024));
-        Log.d("CEK", "file_size : "+file_size);
 
-        /*int perDiff = 1;
-        if (file_size > 3072) {
-            perDiff = 6;
-        } else if (file_size > 2048) {
-            perDiff = 4;
-        } else if (file_size > 1024) {
-            perDiff = 2;
-        }*/
+    public byte[] getDownsizedImageBytes(Bitmap fullBitmap, int scaleWidth, int scaleHeight) throws IOException {
+        Bitmap resizedBitmap = null;
 
-        int perDiff = 1;
-        if (file_size > 3072) {
-            perDiff = 8;
-        } else if (file_size > 2048) {
-            perDiff = 6;
-        } else if (file_size > 1024) {
-            perDiff = 4;
-        } else if (file_size > 550) {
-            perDiff = 2;
+        if (cekSwafoto) {
+
+            Matrix matrix = new Matrix();
+            // RESIZE THE BIT MAP
+            matrix.postScale(scaleWidth, scaleHeight);
+
+            // "RECREATE" THE NEW BITMAP
+            resizedBitmap = Bitmap.createBitmap(
+                    fullBitmap, 0, 0, scaleWidth, scaleHeight, matrix, false);
+        } else {
+
+            float sx = 0;
+            float sy = 0;
+            if (useFacing == Camera.CameraInfo.CAMERA_FACING_FRONT) {
+                sx = (float) scaleWidth;
+                sy = (float) scaleHeight;
+            } else {
+                sx = (float) scaleHeight;
+                sy = (float) scaleWidth;
+            }
+
+            int cx = (int) (scaleWidth / 2.77);
+            int cy = (int) (scaleHeight / 5.2);
+            int diffH = cy * 2;
+
+            Matrix matrix = new Matrix();
+            // RESIZE THE BIT MAP
+            matrix.postScale(sx, sy);
+
+            // "RECREATE" THE NEW BITMAP
+            resizedBitmap = Bitmap.createBitmap(
+                    fullBitmap, cx, cy, (int) (scaleWidth * 0.3), (scaleHeight - diffH), matrix, false);
         }
 
-        Bitmap bitmapCrop = getResizedBitmap(bitmap, (bitmap.getWidth() / perDiff), (bitmap.getHeight() / perDiff));
+        Bitmap scaledBitmap = Bitmap.createScaledBitmap(resizedBitmap, resizedBitmap.getWidth(), resizedBitmap.getHeight(), true);
 
-        return bitmapCrop;
+        // 2. Instantiate the downsized image content as a byte[]
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        scaledBitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+        byte[] downsizedImageBytes = baos.toByteArray();
+
+        return downsizedImageBytes;
+    }
+
+    private Bitmap prosesOptimalImage(Bitmap bitmap, File mediaFile, int perDiff) {
+        int file_size = Integer.parseInt(String.valueOf(mediaFile.length()/1024));
+        Log.e("CEK", "file_size : "+file_size+" | bitmap.getWidth() : "+bitmap.getWidth()+" | bitmap.getHeight() : "+bitmap.getHeight());
+
+        if (perDiff == 1) {
+            if (file_size > 4096) {
+                perDiff = 8;
+            } else if (file_size > 3072) {
+                perDiff = 6;
+            } else if (file_size > 2048) {
+                perDiff = 4;
+            } else if (file_size > 1024) {
+                perDiff = 2;
+            }
+        }
+
+        Bitmap bitmapDownSize = null;
+        try {
+            byte[] downsizedImageBytes = getDownsizedImageBytes(bitmap, (bitmap.getWidth() / perDiff), (bitmap.getHeight() / perDiff));
+            bitmapDownSize = BitmapFactory.decodeByteArray(downsizedImageBytes, 0, downsizedImageBytes.length);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        //Bitmap bitmapCrop = getResizedBitmap(bitmapDownSize, bitmapDownSize.getWidth(), bitmapDownSize.getHeight());
+
+        if (bitmapDownSize.getWidth() < 256 || bitmapDownSize.getHeight() < 256) {
+            perDiff--;
+            bitmapDownSize = prosesOptimalImage(bitmap,mediaFile,perDiff);
+        }
+
+        return bitmapDownSize;
     }
     private void initialElements() {
         appbar = (AppBarLayout) findViewById(R.id.appbar);
@@ -299,6 +374,10 @@ public class DipsCameraActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+
+        String lang = sessions.getLANG();
+        //setLocale(this,lang);
+        LocaleHelper.setLocale(this,lang);
 
         isConfigure = false;
 

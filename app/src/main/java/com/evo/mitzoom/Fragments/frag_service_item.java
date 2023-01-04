@@ -17,6 +17,9 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.content.res.AppCompatResources;
+import androidx.core.content.ContextCompat;
+import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.Fragment;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
@@ -32,6 +35,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -48,10 +52,13 @@ import android.widget.Toast;
 import com.chaos.view.PinView;
 import com.evo.mitzoom.API.ApiService;
 import com.evo.mitzoom.API.Server;
+import com.evo.mitzoom.BaseMeetingActivity;
 import com.evo.mitzoom.Helper.MyParserFormBuilder;
 import com.evo.mitzoom.Helper.RabbitMirroring;
+import com.evo.mitzoom.Model.FormSpin;
 import com.evo.mitzoom.R;
 import com.evo.mitzoom.Session.SessionManager;
+import com.evo.mitzoom.ui.Alternative.DipsSwafoto;
 import com.google.gson.JsonObject;
 
 import org.json.JSONArray;
@@ -65,6 +72,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.ObjectOutputStream;
+import java.util.ArrayList;
 import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -80,6 +88,11 @@ import us.zoom.sdk.ZoomVideoSDK;
 
 public class frag_service_item extends Fragment {
 
+    private int REQUEST_WRITE_PERMISSION = 786;
+    private int REQUESTCODE_CAPTURE = 1;
+    private int REQUESTCODE_FILE = 202;
+    private int REQUESTCODE_SWAFOTO = 10;
+    private int REQUESTCODE_GALLERY = 2;
     private Context mContext;
     private SessionManager sessions;
     private String idDips;
@@ -114,6 +127,20 @@ public class frag_service_item extends Fragment {
     private boolean running = true;
     private String transactionId = "";
 
+    JSONObject valSpin = new JSONObject();
+    private boolean flagStuckSpin = false;
+    private String getCodeType = "";
+    private String FilePaths = "";
+
+    private NestedScrollView scrollOTP;
+    private View inclOTP;
+    private ImageView imgDialog;
+    private TextView textTitleOTP;
+    private Button btnVerifikasi;
+    private TextView TimerOTP;
+    private TextView Resend_Otp;
+    private String noPengaduan;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -123,7 +150,7 @@ public class frag_service_item extends Fragment {
         idDips = sessions.getKEY_IdDips();
         isSessionZoom = ZoomVideoSDK.getInstance().isInSession();
         formCode = sessions.getFormCode();
-        no_handphone = "087778297027";
+        no_handphone = "089637407882";
         Log.e("CEK",mContext+" isSessionZoom : "+isSessionZoom);
         if (isSessionZoom) {
             rabbitMirroring = new RabbitMirroring(mContext);
@@ -134,6 +161,7 @@ public class frag_service_item extends Fragment {
                 form_id = getArguments().getInt("form_id");
             }
         }
+        sessions.saveNoComplaint(null);
     }
 
     @Override
@@ -175,6 +203,15 @@ public class frag_service_item extends Fragment {
         swipe = (SwipeRefreshLayout) views.findViewById(R.id.swipe);
 
         llFormBuild = (LinearLayout) views.findViewById(R.id.llFormBuild);
+
+        scrollOTP = (NestedScrollView) views.findViewById(R.id.scrollOTP);
+        inclOTP = views.findViewById(R.id.inclOTP);
+        imgDialog = (ImageView) views.findViewById(R.id.imgDialog);
+        textTitleOTP = (TextView) views.findViewById(R.id.textIBMB);
+        btnVerifikasi = (Button) views.findViewById(R.id.btnVerifikasi);
+        TimerOTP = (TextView) views.findViewById(R.id.timer_otp);
+        Resend_Otp = (TextView) views.findViewById(R.id.btn_resend_otp);
+        otp = (PinView) views.findViewById(R.id.otp);
 
         btnProses = (Button) views.findViewById(R.id.btnProses);
         
@@ -316,27 +353,86 @@ public class frag_service_item extends Fragment {
                     }
 
                     if (flagNext) {
-                        processSendOTP();
+                        if (FilePaths.isEmpty()) {
+                            Toast.makeText(mContext,"Mohon untuk upload foto tanda tangan",Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+                        if (isSessionZoom) {
+                            BaseMeetingActivity.showProgress(true);
+                        } else {
+                            DipsSwafoto.showProgress(true);
+                        }
+                        processSendFormCompaint();
                     }
                 }
             }
         });
     }
 
-    private void processSendFormCompaint(String filePath) {
-        File file = new File(filePath);
+    private void processSendFormCompaint() {
+        File file = new File(FilePaths);
         RequestBody requestFile = RequestBody.create(MediaType.parse("image/jpeg"),file);
 
-        RequestBody requestidDips = RequestBody.create(MediaType.parse("text/plain"), String.valueOf(idDips));
+        RequestBody requestgetCodeType = RequestBody.create(MediaType.parse("text/plain"), getCodeType);
+
+        String tgl = "";
+        String keluhan = "";
+        try {
+            tgl = objEl.getString("tanggal");
+            keluhan = objEl.getString("keluhan");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        RequestBody requesttgl = RequestBody.create(MediaType.parse("text/plain"), tgl);
+        RequestBody requestPrihal = RequestBody.create(MediaType.parse("text/plain"), keluhan);
 
         MultipartBody multipartBody = new MultipartBody.Builder()
                 .addPart(MultipartBody.Part.createFormData("ttd", file.getName(), requestFile))
-                .addPart(MultipartBody.Part.createFormData("idDips", null, requestidDips))
+                .addPart(MultipartBody.Part.createFormData("idJenis", null, requestgetCodeType))
+                .addPart(MultipartBody.Part.createFormData("tanggal", null, requesttgl))
+                .addPart(MultipartBody.Part.createFormData("prihal", null, requestPrihal))
                 .build();
         String contentType = "multipart/form-data; charset=utf-8; boundary=" + multipartBody.boundary();
 
         ApiService API = Server.getAPIService2();
-        //Call<JsonObject> call = API.formComplaint()
+        Call<JsonObject> call = API.formComplaint(contentType,multipartBody);
+        Log.e("CEK","processSendFormCompaint call : "+call.request());
+        call.enqueue(new Callback<JsonObject>() {
+            @Override
+            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                Log.e("CEK","processSendFormCompaint code : "+response.code());
+                if (response.isSuccessful()) {
+                    String dataS = response.body().toString();
+                    Log.e("CEK","processSendFormCompaint dataS : "+dataS);
+                    try {
+                        JSONObject dataObj = new JSONObject(dataS);
+                        noPengaduan = dataObj.getJSONObject("data").getString("noPengaduan");
+                        sessions.saveNoComplaint(noPengaduan);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                    processSendOTP();
+                } else {
+                    if (isSessionZoom) {
+                        BaseMeetingActivity.showProgress(false);
+                    } else {
+                        DipsSwafoto.showProgress(false);
+                    }
+                    Toast.makeText(mContext,getString(R.string.msg_error),Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<JsonObject> call, Throwable t) {
+                if (isSessionZoom) {
+                    BaseMeetingActivity.showProgress(false);
+                } else {
+                    DipsSwafoto.showProgress(false);
+                }
+                Toast.makeText(mContext,t.getMessage(),Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     private void processGetForm(int formId) {
@@ -389,10 +485,23 @@ public class frag_service_item extends Fragment {
                         try {
                             int idDataEl = idElement.getJSONObject(j).getInt("id");
                             String nameDataEl = idElement.getJSONObject(j).getString("name");
+                            String urlPath = "";
+                            if (idElement.getJSONObject(j).has("url")) {
+                                urlPath = idElement.getJSONObject(j).getString("url");
+                            }
                             if (idEl == idDataEl) {
 
                                 if (llFormBuild.getChildAt(i) instanceof EditText) {
                                     EditText ed = (EditText) llFormBuild.getChildAt(i);
+                                    ed.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+                                        @Override
+                                        public void onFocusChange(View view, boolean b) {
+                                            Log.e("CEK","onFocusChange : "+b);
+                                            if (isSessionZoom) {
+                                                rabbitMirroring.MirroringSendKey(dataForms);
+                                            }
+                                        }
+                                    });
                                     ed.addTextChangedListener(new TextWatcher() {
                                         @Override
                                         public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
@@ -403,15 +512,16 @@ public class frag_service_item extends Fragment {
 
                                         @Override
                                         public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                                            Log.e("CEK",nameDataEl+" : "+charSequence);
                                             try {
                                                 objEl.put(nameDataEl, charSequence);
-                                                objEl.put("idDips",idDips);
+                                                dataForms.put(keys,objEl);
                                             } catch (JSONException e) {
                                                 e.printStackTrace();
                                             }
-                                            if (isSessionZoom) {
-                                                rabbitMirroring.MirroringSendKey(objEl);
-                                            }
+                                            /*if (isSessionZoom) {
+                                                rabbitMirroring.MirroringSendKey(dataFormCIF);
+                                            }*/
                                         }
 
                                         @Override
@@ -439,9 +549,62 @@ public class frag_service_item extends Fragment {
                                     objEl.put(nameDataEl, "");
                                 } else if (llFormBuild.getChildAt(i) instanceof RadioGroup) {
                                     objEl.put(nameDataEl, "");
+
+                                    RadioGroup rg = (RadioGroup) llFormBuild.getChildAt(i);
+                                    rg.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+                                        @Override
+                                        public void onCheckedChanged(RadioGroup radioGroup, int i) {
+                                            int selectedId = rg.getCheckedRadioButtonId();
+                                            if (selectedId > 0 || selectedId < -1) {
+                                                RadioButton rb = (RadioButton) rg.findViewById(selectedId);
+                                                String results = rb.getText().toString();
+                                                try {
+                                                    objEl.put(nameDataEl, results);
+                                                    dataForms.put(keys,objEl);
+                                                    if (isSessionZoom) {
+                                                        rabbitMirroring.MirroringSendKey(dataForms);
+                                                    }
+                                                } catch (JSONException e) {
+                                                    e.printStackTrace();
+                                                }
+                                            }
+                                        }
+                                    });
+
                                     break;
                                 } else if (llFormBuild.getChildAt(i) instanceof CheckBox) {
                                     objEl.put(nameDataEl, false);
+
+                                    CheckBox chk = (CheckBox) llFormBuild.getChildAt(i);
+                                    chk.setOnClickListener(new View.OnClickListener() {
+                                        @Override
+                                        public void onClick(View view) {
+                                            boolean isChk = chk.isChecked();
+                                            if (isChk) {
+                                                try {
+                                                    objEl.put(nameDataEl, isChk);
+                                                } catch (JSONException e) {
+                                                    e.printStackTrace();
+                                                }
+                                            } else {
+                                                try {
+                                                    objEl.put(nameDataEl, isChk);
+                                                } catch (JSONException e) {
+                                                    e.printStackTrace();
+                                                }
+                                            }
+
+                                            try {
+                                                dataForms.put(keys,objEl);
+                                            } catch (JSONException e) {
+                                                e.printStackTrace();
+                                            }
+                                            if (isSessionZoom) {
+                                                rabbitMirroring.MirroringSendKey(dataForms);
+                                            }
+                                        }
+                                    });
+
                                     break;
                                 } else if (llFormBuild.getChildAt(i) instanceof Spinner) {
                                     objEl.put(nameDataEl, "");
@@ -449,10 +612,13 @@ public class frag_service_item extends Fragment {
                                     spin.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                                         @Override
                                         public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                                            Log.e("CEK","getSelectedItem : "+spin.getSelectedItem().toString());
                                             String results = spin.getSelectedItem().toString();
                                             try {
                                                 objEl.put(nameDataEl, results);
+                                                dataForms.put(keys,objEl);
+                                                if (isSessionZoom) {
+                                                    rabbitMirroring.MirroringSendKey(dataForms);
+                                                }
                                             } catch (JSONException e) {
                                                 e.printStackTrace();
                                             }
@@ -467,16 +633,45 @@ public class frag_service_item extends Fragment {
                                 } else if (llFormBuild.getChildAt(i) instanceof RelativeLayout) {
                                     RelativeLayout rl = (RelativeLayout) llFormBuild.getChildAt(i);
                                     if (rl.getChildAt(0) instanceof Spinner) {
+                                        objEl.put(nameDataEl, "");
                                         Spinner spin = (Spinner) rl.getChildAt(0);
 
-                                        objEl.put(nameDataEl, "");
+                                        boolean flagDot = false;
+                                        if (!urlPath.isEmpty()) {
+                                            String[] spUrl = urlPath.split("/");
+                                            int indexs = spUrl.length - 1;
+                                            String check = spUrl[indexs];
+                                            if (check.isEmpty()) {
+                                                indexs = spUrl.length - 2;
+                                                check = spUrl[indexs];
+                                            }
+                                            if (check.contains(":")) {
+                                                flagDot = true;
+                                            }
+                                            if (!flagDot) {
+                                                processGetDynamicURL(spin, urlPath, nameDataEl);
+                                            }
+                                        }
+
                                         spin.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                                             @Override
                                             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                                                 Log.e("CEK","getSelectedItem : "+spin.getSelectedItem().toString());
-                                                String results = spin.getSelectedItem().toString();
+                                                FormSpin dataSpin = (FormSpin) spin.getSelectedItem();
+                                                int idData = dataSpin.getId();
+                                                getCodeType = dataSpin.getCode();
+                                                String results = dataSpin.getName();
                                                 try {
                                                     objEl.put(nameDataEl, results);
+                                                    dataForms.put(keys,objEl);
+                                                    valSpin.put(nameDataEl,idData);
+                                                    if (isSessionZoom) {
+                                                        rabbitMirroring.MirroringSendKey(dataForms);
+                                                    }
+                                                    Log.e("CEK","flagStuckSpin : "+flagStuckSpin);
+                                                    if (flagStuckSpin) {
+                                                        processGetSpinChild(nameDataEl);
+                                                    }
                                                 } catch (JSONException e) {
                                                     e.printStackTrace();
                                                 }
@@ -491,6 +686,39 @@ public class frag_service_item extends Fragment {
                                     }
                                 } else if (llFormBuild.getChildAt(i) instanceof AutoCompleteTextView) {
                                     objEl.put(nameDataEl, "");
+
+                                    AutoCompleteTextView autoText = (AutoCompleteTextView) llFormBuild.getChildAt(i);
+                                    autoText.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                                        @Override
+                                        public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                                            String results = autoText.getText().toString();
+                                            try {
+                                                objEl.put(nameDataEl, results);
+                                                dataForms.put(keys,objEl);
+                                                if (isSessionZoom) {
+                                                    rabbitMirroring.MirroringSendKey(dataForms);
+                                                }
+                                            } catch (JSONException e) {
+                                                e.printStackTrace();
+                                            }
+                                        }
+                                    });
+                                    autoText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+                                        @Override
+                                        public void onFocusChange(View view, boolean b) {
+                                            String results = autoText.getText().toString();
+                                            try {
+                                                objEl.put(nameDataEl, results);
+                                                dataForms.put(keys,objEl);
+                                                if (isSessionZoom) {
+                                                    rabbitMirroring.MirroringSendKey(dataForms);
+                                                }
+                                            } catch (JSONException e) {
+                                                e.printStackTrace();
+                                            }
+                                        }
+                                    });
+
                                     break;
                                 } else if (llFormBuild.getChildAt(i) instanceof LinearLayout) {
                                     LinearLayout ll = (LinearLayout) llFormBuild.getChildAt(i);
@@ -502,18 +730,13 @@ public class frag_service_item extends Fragment {
 
                                             TextView tvll = (TextView) ll2.getChildAt(1);
                                             String txt = tvll.getText().toString();
-                                            Log.e("CEK", "tvll : " + txt+" | nameDataEl : "+nameDataEl);
-                                            if(imageBytes.length == 0) {
-                                                objEl.put(nameDataEl, "");
-                                            } else {
-                                                objEl.put(nameDataEl, imageBytes);
-                                            }
+                                            Log.e("CEK", "tvll : " + txt);
                                             if (txt.toLowerCase().indexOf("gambar") > 0 || txt.toLowerCase().indexOf("image") > 0 || txt.toLowerCase().indexOf("tangan") > 0) {
                                                 tvSavedImg = (TextView) ll.getChildAt(1);
                                                 ll2.setOnClickListener(new View.OnClickListener() {
                                                     @Override
                                                     public void onClick(View view) {
-                                                        sessions.saveMedia(2);
+                                                        REQUESTCODE_GALLERY = 201;
                                                         chooseFromSD();
                                                     }
                                                 });
@@ -526,17 +749,10 @@ public class frag_service_item extends Fragment {
                                                         intent.setType("*/*");
                                                         intent.setAction(Intent.ACTION_OPEN_DOCUMENT);
                                                         intent.addCategory(Intent.CATEGORY_OPENABLE);
-                                                        String[] mimetypes = { "application/pdf", "application/doc", "text/*", "image/jpeg", "image/png" };
-                                                    /*String[] mimeTypes =
-                                                            {"application/msword", "application/vnd.openxmlformats-officedocument.wordprocessingml.document", // .doc & .docx
-                                                                    "application/vnd.ms-powerpoint", "application/vnd.openxmlformats-officedocument.presentationml.presentation", // .ppt & .pptx
-                                                                    "application/vnd.ms-excel", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", // .xls & .xlsx
-                                                                    "text/plain",
-                                                                    "application/pdf",
-                                                                    "application/zip", "application/vnd.android.package-archive"};*/
+                                                        String[] mimetypes = { "application/pdf", "application/doc", "text/*" };
 
                                                         intent.putExtra(Intent.EXTRA_MIME_TYPES, mimetypes);
-                                                        startActivityForResult(intent, 202);
+                                                        startActivityForResult(intent, REQUESTCODE_FILE);
                                                     }
                                                 });
                                             }
@@ -553,10 +769,154 @@ public class frag_service_item extends Fragment {
         }
     }
 
+    private void processGetDynamicURL(Spinner spin, String urlPath, String nameDataEl) {
+        flagStuckSpin = false;
+        Log.e("CEK","processGetDynamicURL : "+urlPath);
+        Server.getAPIService().getDynamicUrl(urlPath).enqueue(new Callback<JsonObject>() {
+            @Override
+            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                Log.e("CEK","processGetDynamicURL code : "+response.code());
+                if (response.isSuccessful()) {
+                    String dataS = response.body().toString();
+                    Log.e("CEK","processGetDynamicURL dataS : "+dataS);
+                    try {
+                        JSONObject dataObj = new JSONObject(dataS);
+                        String nameOpr = dataObj.getString("name");
+                        JSONArray dataArr = dataObj.getJSONArray("data");
+                        ArrayList<FormSpin> dataDropDown = new ArrayList<>();
+                        if (nameOpr.equals("GetList")) {
+                            for (int i = 0; i < dataArr.length(); i++) {
+                                int idData = dataArr.getJSONObject(i).getInt("id");
+                                String idJenis = dataArr.getJSONObject(i).getString("idJenis");
+                                JSONObject jenisObj = dataArr.getJSONObject(i).getJSONObject("jenis");
+                                String labelIdn = jenisObj.getString("labelIdn");
+                                String labelEng = jenisObj.getString("labelEng");
+                                dataDropDown.add(new FormSpin(idData, idJenis, labelIdn, labelEng));
+                            }
+                            flagStuckSpin = true;
+                        } else {
+                            for (int i = 0; i < dataArr.length(); i++) {
+                                int idData = dataArr.getJSONObject(i).getInt("id");
+                                String labelIdn = dataArr.getJSONObject(i).getString("labelIdn");
+                                String labelEng = dataArr.getJSONObject(i).getString("labelEng");
+                                dataDropDown.add(new FormSpin(idData, labelIdn, labelIdn, labelEng));
+                                if (i == 0) {
+                                    valSpin.put(nameDataEl, idData);
+                                    processGetSpinChild(nameDataEl);
+                                    if ((nameDataEl.contains("kelurahan") || nameDataEl.contains("desa"))) {
+                                        flagStuckSpin = true;
+                                    }
+                                }
+                            }
+                        }
+                        ArrayAdapter<FormSpin> adapter2 = new ArrayAdapter<FormSpin>(mContext, android.R.layout.simple_spinner_dropdown_item, dataDropDown);
+                        spin.setAdapter(adapter2);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                } else {
+                    Toast.makeText(mContext,R.string.msg_error,Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<JsonObject> call, Throwable t) {
+                Toast.makeText(mContext,t.getMessage(),Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void processGetSpinChild(String nameDataEl) {
+        Log.e("CEK","processGetSpinChild nameDataEl : "+nameDataEl);
+        int child = llFormBuild.getChildCount();
+        for (int i = 0; i < child; i++) {
+            int idEl = llFormBuild.getChildAt(i).getId();
+            for (int j = 0; j < idElement.length(); j++) {
+                try {
+                    int idDataEl = idElement.getJSONObject(j).getInt("id");
+                    String getnameDataEl = idElement.getJSONObject(j).getString("name");
+                    String urlPath = "";
+                    if (idElement.getJSONObject(j).has("url")) {
+                        urlPath = idElement.getJSONObject(j).getString("url");
+                    }
+
+                    if (idEl == idDataEl) {
+                        if (llFormBuild.getChildAt(i) instanceof RelativeLayout) {
+                            if (nameDataEl.contains("provinsi") && (getnameDataEl.contains("kabupaten") || getnameDataEl.contains("kota"))) {
+                                Log.e("CEK","processGetSpinChild getnameDataEl : "+getnameDataEl);
+                                if (!urlPath.isEmpty()) {
+                                    int idProv = valSpin.getInt("provinsi");
+                                    String idSpin = String.valueOf(idProv);
+                                    String urlNew = urlPath.replace(":id_provinsi",idSpin);
+
+                                    Log.e("CEK", "urlNew : "+urlNew);
+
+                                    RelativeLayout rl = (RelativeLayout) llFormBuild.getChildAt(i);
+                                    if (rl.getChildAt(0) instanceof Spinner) {
+                                        Spinner spin = (Spinner) rl.getChildAt(0);
+                                        processGetDynamicURL(spin, urlNew, getnameDataEl);
+                                    }
+                                }
+                            } else if ((nameDataEl.contains("kabupaten") || nameDataEl.contains("kota")) && getnameDataEl.contains("kecamatan")) {
+                                if (!urlPath.isEmpty()) {
+                                    int idProv = valSpin.getInt("provinsi");
+                                    int idKabKot = 0;
+                                    if (valSpin.has("kabupaten")) {
+                                        idKabKot = valSpin.getInt("kabupaten");
+                                    } else if (valSpin.has("kota")) {
+                                        idKabKot = valSpin.getInt("kota");
+                                    }
+                                    String idSpin = String.valueOf(idProv);
+                                    String idSpin2 = String.valueOf(idKabKot);
+                                    String urlNew = urlPath.replace(":id_provinsi",idSpin).replace(":id_kabupaten",idSpin2);
+
+                                    Log.e("CEK", "urlNew : "+urlNew);
+
+                                    RelativeLayout rl = (RelativeLayout) llFormBuild.getChildAt(i);
+                                    if (rl.getChildAt(0) instanceof Spinner) {
+                                        Spinner spin = (Spinner) rl.getChildAt(0);
+                                        processGetDynamicURL(spin, urlNew, getnameDataEl);
+                                    }
+                                }
+                            } else if (nameDataEl.contains("kecamatan") && (getnameDataEl.contains("kelurahan") || getnameDataEl.contains("desa"))) {
+                                if (!urlPath.isEmpty()) {
+                                    int idProv = valSpin.getInt("provinsi");
+                                    int idKec = valSpin.getInt("kecamatan");
+                                    int idKabKot = 0;
+                                    if (valSpin.has("kabupaten")) {
+                                        idKabKot = valSpin.getInt("kabupaten");
+                                    } else if (valSpin.has("kota")) {
+                                        idKabKot = valSpin.getInt("kota");
+                                    }
+                                    String idSpin = String.valueOf(idProv);
+                                    String idSpin2 = String.valueOf(idKabKot);
+                                    String idSpin3 = String.valueOf(idKec);
+                                    String urlNew = urlPath.replace(":id_provinsi",idSpin).replace(":id_kabupaten",idSpin2).replace(":id_kecamatan",idSpin3);
+
+                                    Log.e("CEK", "urlNew : "+urlNew);
+
+                                    RelativeLayout rl = (RelativeLayout) llFormBuild.getChildAt(i);
+                                    if (rl.getChildAt(0) instanceof Spinner) {
+                                        Spinner spin = (Spinner) rl.getChildAt(0);
+                                        processGetDynamicURL(spin, urlNew, getnameDataEl);
+                                    }
+                                }
+                            } else {
+                                flagStuckSpin = true;
+                            }
+                        }
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
     private void chooseFromSD() {
         Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
         intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        startActivityForResult(intent, 201);
+        startActivityForResult(intent, REQUESTCODE_GALLERY);
     }
 
     @Override
@@ -570,7 +930,7 @@ public class frag_service_item extends Fragment {
                 byte[] resultCamera = data.getByteArrayExtra("result_camera");
                 Bitmap bitmap = BitmapFactory.decodeByteArray(resultCamera, 0, resultCamera.length);
 
-            } else if (requestCode == 201) {
+            } else if (requestCode == REQUESTCODE_GALLERY) {
                 Log.e("CEK","RESULT GAMBAR");
                 sessions.saveFlagUpDoc(true);
                 Uri selectedImage = data.getData();
@@ -580,6 +940,8 @@ public class frag_service_item extends Fragment {
                 int columnIndex = c.getColumnIndex(filePath[0]);
                 String picturePath = c.getString(columnIndex);
 
+                FilePaths = picturePath;
+
                 File files = new File(picturePath);
                 String fileName = files.getName().toString();
                 Log.e("CEK","RESULT picturePath : "+picturePath);
@@ -587,10 +949,11 @@ public class frag_service_item extends Fragment {
                 tvSavedImg.setText("filename : "+fileName);
                 c.close();
                 prosesOptimalImage(picturePath);
-            } else if (requestCode == 202) {
+            } else if (requestCode == REQUESTCODE_FILE) {
                 Log.e("CEK","RESULT FILE");
                 Uri uri = data.getData();
                 if (uri != null) {
+                    FilePaths = uri.getPath();
                     Cursor c = mContext.getContentResolver().query(uri,null, null, null, null);
                     c.moveToFirst();
                     String fileName = c.getString(c.getColumnIndex(OpenableColumns.DISPLAY_NAME));
@@ -629,6 +992,11 @@ public class frag_service_item extends Fragment {
         Server.getAPIService().SendOTP(requestBody).enqueue(new Callback<JsonObject>() {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                if (isSessionZoom) {
+                    BaseMeetingActivity.showProgress(false);
+                } else {
+                    DipsSwafoto.showProgress(false);
+                }
                 Log.e("CEK","processSendOTP code : "+response.code());
                 if (response.isSuccessful()) {
                     String dataS = response.body().toString();
@@ -637,7 +1005,7 @@ public class frag_service_item extends Fragment {
                         JSONObject dataObj = new JSONObject(dataS);
                         transactionId = dataObj.getJSONObject("data").getString("transactionId");
                         rabbitMirroring.MirroringSendEndpoint(11);
-                        PopUpOTP();
+                        pageOTP();
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
@@ -648,6 +1016,11 @@ public class frag_service_item extends Fragment {
 
             @Override
             public void onFailure(Call<JsonObject> call, Throwable t) {
+                if (isSessionZoom) {
+                    BaseMeetingActivity.showProgress(false);
+                } else {
+                    DipsSwafoto.showProgress(false);
+                }
                 Toast.makeText(mContext,t.getMessage(),Toast.LENGTH_SHORT).show();
             }
         });
@@ -669,47 +1042,52 @@ public class frag_service_item extends Fragment {
         Server.getAPIService().ValidateOTP(requestBody).enqueue(new Callback<JsonObject>() {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                if (isSessionZoom) {
+                    BaseMeetingActivity.showProgress(false);
+                } else {
+                    DipsSwafoto.showProgress(false);
+                }
                 Log.e("CEK","processValidateOTP code : "+response.code());
                 if (response.isSuccessful()) {
                     String dataS = response.body().toString();
                     Log.e("CEK","processValidateOTP : "+dataS);
-                    PopUpSuccesOtp();
+                    getFragmentPage(new frag_service_resi());
                 } else {
-                    Toast.makeText(mContext,getString(R.string.msg_error),Toast.LENGTH_SHORT).show();
+                    imgDialog.setImageDrawable(AppCompatResources.getDrawable(mContext,R.drawable.v_dialog_failed));
+                    textTitleOTP.setText(R.string.titleWrongOTP);
+                    otp.setText("");
                 }
             }
 
             @Override
             public void onFailure(Call<JsonObject> call, Throwable t) {
+                if (isSessionZoom) {
+                    BaseMeetingActivity.showProgress(false);
+                } else {
+                    DipsSwafoto.showProgress(false);
+                }
                 Toast.makeText(mContext,t.getMessage(),Toast.LENGTH_SHORT).show();
             }
         });
 
     }
 
-    private void PopUpOTP(){
+    private void pageOTP() {
+        scrollOTP.setVisibility(View.VISIBLE);
+        swipe.setVisibility(View.GONE);
+
         String noHandphone = "089783434XXX";
         if (!no_handphone.isEmpty()) {
             String sub_no_handphone = no_handphone.substring(no_handphone.length() - 3);
             noHandphone = no_handphone.replace(sub_no_handphone,"XXX");
         }
 
-        View dialogView = getLayoutInflater().inflate(R.layout.item_otp, null);
-        SweetAlertDialog sweetAlertDialog = new SweetAlertDialog(mContext, SweetAlertDialog.NORMAL_TYPE);
-        sweetAlertDialog.setCustomView(dialogView);
-        sweetAlertDialog.hideConfirmButton();
-        sweetAlertDialog.setCancelable(false);
-        sweetAlertDialog.show();
-
-        TextView textIBMB = (TextView) dialogView.findViewById(R.id.textIBMB);
-        String contentText = textIBMB.getText().toString();
+        String contentText = textTitleOTP.getText().toString();
         contentText = contentText.replace("+62812 3456 7XXX",noHandphone);
-        textIBMB.setText(contentText);
+        textTitleOTP.setText(contentText);
 
-        Button btnVerifikasi = (Button) dialogView.findViewById(R.id.btnVerifikasi);
-        TextView Timer = (TextView) dialogView.findViewById(R.id.timer_otp);
-        TextView Resend_Otp = (TextView) dialogView.findViewById(R.id.btn_resend_otp);
-        otp = (PinView) dialogView.findViewById(R.id.otp);
+        tvTitleService.setText("One Time Password");
+
         otp.setAnimationEnable(true);
         otp.addTextChangedListener(new TextWatcher() {
             private boolean backSpaceOTP;
@@ -783,38 +1161,35 @@ public class frag_service_item extends Fragment {
                 else {
                     handler.removeMessages(0);
                     handler.removeCallbacks(myRunnable);
-                    sweetAlertDialog.dismiss();
-                    //PopUpSuccesOtp();
                     if (!transactionId.isEmpty()) {
+                        if (isSessionZoom) {
+                            BaseMeetingActivity.showProgress(true);
+                        } else {
+                            DipsSwafoto.showProgress(true);
+                        }
                         processValidateOTP();
                     }
                 }
             }
         });
-        runTimer(Timer, Resend_Otp);
+        runTimer(TimerOTP, Resend_Otp);
         Resend_Otp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (seconds==0){
-                    //resendOTP();
+                    resendOTP();
                 }
             }
         });
     }
 
-    private void PopUpSuccesOtp(){
-        SweetAlertDialog sweetAlertDialog = new SweetAlertDialog(mContext, SweetAlertDialog.SUCCESS_TYPE);
-        sweetAlertDialog.setTitleText(getResources().getString(R.string.otp_title));
-        sweetAlertDialog.setCancelable(false);
-        sweetAlertDialog.hideConfirmButton();
-        sweetAlertDialog.show();
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                sweetAlertDialog.dismiss();
-                getFragmentPage(new frag_service_resi());
-            }
-        },5000);
+    private void resendOTP() {
+        if (isSessionZoom) {
+            BaseMeetingActivity.showProgress(true);
+        } else {
+            DipsSwafoto.showProgress(true);
+        }
+        processSendOTP();
     }
 
     public String myFilter(String s) {

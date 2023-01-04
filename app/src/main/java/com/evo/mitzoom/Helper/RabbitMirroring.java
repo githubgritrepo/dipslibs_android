@@ -40,7 +40,7 @@ public class RabbitMirroring {
         String uriRabbit = Server.BASE_URL_RABBITMQ;
         Log.e(TAG,"MASUK setupConnectionFactory uriRabbit : "+uriRabbit);
         try {
-            connectionFactory.setAutomaticRecoveryEnabled(false);
+            connectionFactory.setAutomaticRecoveryEnabled(true);
             connectionFactory.setUri(uriRabbit);
         } catch (URISyntaxException | NoSuchAlgorithmException | KeyManagementException e) {
             Log.e(TAG,"ERROR setupConnectionFactory : "+e.getMessage());

@@ -2,34 +2,42 @@
     android:id="@+id/rlprogress"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/transparentblack"
+    android:background="@color/white_transparent"
     android:clickable="true"
     android:visibility="gone"
     xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <de.hdodenhof.circleimageview.CircleImageView
+    <pl.droidsonroids.gif.GifImageView
+        android:id="@+id/gifLoading"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:scaleType="fitCenter"
+        android:src="@drawable/anim_bvic"
+        android:layout_centerInParent="true"/>
+
+    <!--<de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/profileimage"
         android:layout_width="100dp"
         android:layout_height="100dp"
         android:layout_centerInParent="true"
-        android:src="@mipmap/dips361" />
+        android:src="@mipmap/dips361" />-->
 
-    <TextView
+    <!--<TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/profileimage"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="20dp"
         android:text="@string/please_wait"
-        android:textColor="@color/white" />
+        android:textColor="@color/white" />-->
 
 
-    <ProgressBar
+    <!--<ProgressBar
         android:layout_width="120dp"
         android:layout_height="120dp"
-        android:layout_centerInParent="true" />
+        android:layout_centerInParent="true"/>-->
 
-    <LinearLayout
+    <!--<LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
@@ -40,6 +48,7 @@
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:elevation="10dp" />
-    </LinearLayout>
+    </LinearLayout>-->
+
 
 </RelativeLayout>

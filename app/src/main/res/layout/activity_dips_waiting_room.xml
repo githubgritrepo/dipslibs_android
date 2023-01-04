@@ -202,4 +202,11 @@
         android:layout_height="match_parent"
         android:layout_below="@id/cardSurf" />
 
+    <include
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        layout="@layout/progress_loading"
+        android:layout_centerInParent="true"
+        android:layout_below="@id/cardSurf"/>
+
 </RelativeLayout>

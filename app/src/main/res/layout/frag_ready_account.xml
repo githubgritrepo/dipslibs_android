@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".Fragments.frag_ready_account"
+    android:background="@color/bg2">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <include
+            android:id="@+id/inclHead"
+            layout="@layout/item_ready_account_head" />
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:rotation="180"
+            android:scaleType="fitXY"
+            android:src="@drawable/batik_bvic" />
+
+        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+            android:id="@+id/swipe"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@id/inclHead">
+
+            <androidx.core.widget.NestedScrollView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:scrollbars="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:layout_marginStart="10dp">
+
+                        <ImageView
+                            android:layout_marginStart="5dp"
+                            android:layout_gravity="center_vertical"
+                            android:id="@+id/btn_back"
+                            android:layout_width="wrap_content"
+                            android:layout_height="30dp"
+                            android:src="@drawable/ic_baseline_arrow_back_24" />
+
+                        <TextView
+                            android:id="@+id/tvTitleReady"
+                            android:layout_width="match_parent"
+                            android:layout_height="30dp"
+                            tools:text="Data Utama"
+                            android:textColor="@color/black"
+                            android:textSize="14dp"
+                            android:textStyle="bold"
+                            android:gravity="center_vertical"
+                            android:layout_marginStart="10dp"/>
+
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/llFormBuild"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:layout_margin="@dimen/dp_20"/>
+
+                    <Button
+                        android:id="@+id/btnProses"
+                        android:layout_width="match_parent"
+                        android:layout_height="35dp"
+                        android:background="@drawable/oval_background_10dp"
+                        android:backgroundTint="@color/zm_button"
+                        android:text="@string/btn_continue"
+                        android:textColor="@color/white"
+                        android:textSize="14dp"
+                        android:textStyle="bold"
+                        android:layout_margin="@dimen/dp_20"/>
+
+                </LinearLayout>
+
+            </androidx.core.widget.NestedScrollView>
+
+        </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+        <include
+            android:id="@+id/inclOTP"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            layout="@layout/item_otp"
+            android:layout_centerInParent="true"
+            android:visibility="gone"/>
+
+    </RelativeLayout>
+
+</FrameLayout>

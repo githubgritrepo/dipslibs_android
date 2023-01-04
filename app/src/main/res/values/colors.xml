@@ -20,6 +20,7 @@
     <color name="black">#FF000000</color>
     <color name="selected_text">#8A8888</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="white_transparent">#CCFFFFFF</color>
     <color name="bg">#F3F1F1</color>
     <color name="input_chat">#EBEFF2</color>
     <color name="bg2">#F0F3F8</color>
@@ -42,6 +43,9 @@
     <color name="zm_bg">#FDE5D9</color>
     <color name="zm_bg2">#E4E4E4</color>
     <color name="zm_text">#333333</color>
+    <color name="zm_v_loading">#FCFCFF</color>
+    <color name="zm_outline">#C1BFC0</color>
+    <color name="zm_otp_time">#54575C</color>
 
     <color name="blue_normal">#0E71EB</color>
     <color name="dips_yellow">#FFF500</color>

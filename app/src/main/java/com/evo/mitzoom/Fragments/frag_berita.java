@@ -25,11 +25,13 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.VideoView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.content.res.AppCompatResources;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -130,7 +132,7 @@ public class frag_berita extends Fragment implements com.wdullaer.materialdateti
         View view = inflater.inflate(R.layout.frag_berita, container, false);
         swipe = (SwipeRefreshLayout) view.findViewById(R.id.swipe);
         rl_real = (RelativeLayout) view.findViewById(R.id.rl_real);
-        shimmer_view = (ShimmerFrameLayout) view.findViewById(R.id.shimmer_view);
+        //shimmer_view = (ShimmerFrameLayout) view.findViewById(R.id.shimmer_view);
         rv_product = view.findViewById(R.id.rv_product);
         mPager = view.findViewById(R.id.pager);
         circleIndicator = view.findViewById(R.id.indicator);
@@ -145,14 +147,16 @@ public class frag_berita extends Fragment implements com.wdullaer.materialdateti
         super.onViewCreated(view, savedInstanceState);
 
         rl_real.setVisibility(View.INVISIBLE);
-        shimmer_view.startShimmer();
+        DipsWaitingRoom.showProgress(true);
+        //shimmer_view.startShimmer();
 
         swipe.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
                 rl_real.setVisibility(View.INVISIBLE);
-                shimmer_view.setVisibility(View.VISIBLE);
-                shimmer_view.startShimmer();
+                /*shimmer_view.setVisibility(View.VISIBLE);
+                shimmer_view.startShimmer();*/
+                DipsWaitingRoom.showProgress(true);
                 new AsyncProcess().execute();
                 swipe.setRefreshing(false);
             }
@@ -163,7 +167,11 @@ public class frag_berita extends Fragment implements com.wdullaer.materialdateti
         btnSchedule.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                PopUpSchedule();
+                if (time.size() > 0) {
+                    PopUpSchedule();
+                } else {
+                    Toast.makeText(context,getString(R.string.please_wait),Toast.LENGTH_SHORT).show();
+                }
             }
         });
         btnEndCall.setOnClickListener(new View.OnClickListener() {
@@ -371,8 +379,9 @@ public class frag_berita extends Fragment implements com.wdullaer.materialdateti
 
                         if (indexs == dataArrSpanduk.length()-1) {
                             rl_real.setVisibility(View.VISIBLE);
-                            shimmer_view.stopShimmer();
-                            shimmer_view.setVisibility(View.INVISIBLE);
+                            DipsWaitingRoom.showProgress(false);
+                            /*shimmer_view.stopShimmer();
+                            shimmer_view.setVisibility(View.INVISIBLE);*/
 
                             mPager.setVisibility(View.VISIBLE);
                             circleIndicator.setVisibility(View.VISIBLE);
@@ -392,8 +401,9 @@ public class frag_berita extends Fragment implements com.wdullaer.materialdateti
 
                     if (indexs == dataArrSpanduk.length()-1) {
                         rl_real.setVisibility(View.VISIBLE);
-                        shimmer_view.stopShimmer();
-                        shimmer_view.setVisibility(View.INVISIBLE);
+                        DipsWaitingRoom.showProgress(false);
+                        /*shimmer_view.stopShimmer();
+                        shimmer_view.setVisibility(View.INVISIBLE);*/
 
                         mPager.setVisibility(View.VISIBLE);
                         circleIndicator.setVisibility(View.VISIBLE);
@@ -521,21 +531,45 @@ public class frag_berita extends Fragment implements com.wdullaer.materialdateti
     }
 
     private void EndCall(){
-        SweetAlertDialog sweetAlertDialog = new SweetAlertDialog(context, SweetAlertDialog.WARNING_TYPE);
-        sweetAlertDialog.setContentText(getResources().getString(R.string.headline_endcall));
-        sweetAlertDialog.setConfirmText(getResources().getString(R.string.end_call));
-        sweetAlertDialog.setCancelText(getResources().getString(R.string.no));
+
+        LayoutInflater inflater = getLayoutInflater();
+        View dialogView = inflater.inflate(R.layout.layout_dialog_sweet, null);
+
+        ImageView imgDialog = (ImageView) dialogView.findViewById(R.id.imgDialog);
+        TextView tvTitleDialog = (TextView) dialogView.findViewById(R.id.tvTitleDialog);
+        TextView tvBodyDialog = (TextView) dialogView.findViewById(R.id.tvBodyDialog);
+        Button btnCancelDialog = (Button) dialogView.findViewById(R.id.btnCancelDialog);
+        Button btnConfirmDialog = (Button) dialogView.findViewById(R.id.btnConfirmDialog);
+
+        tvTitleDialog.setVisibility(View.GONE);
+        btnCancelDialog.setVisibility(View.VISIBLE);
+
+        imgDialog.setImageDrawable(AppCompatResources.getDrawable(context,R.drawable.v_dialog_info));
+        tvBodyDialog.setText(getString(R.string.headline_endcall));
+        btnCancelDialog.setText(getString(R.string.no));
+        btnConfirmDialog.setText(getString(R.string.end_call));
+
+        SweetAlertDialog sweetAlertDialog = new SweetAlertDialog(context, SweetAlertDialog.NORMAL_TYPE);
+        sweetAlertDialog.setCustomView(dialogView);
+        sweetAlertDialog.hideConfirmButton();
+        sweetAlertDialog.setCancelable(false);
         sweetAlertDialog.show();
-        sweetAlertDialog.setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
+
+        btnConfirmDialog.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(SweetAlertDialog sweetAlertDialog) {
+            public void onClick(View view) {
                 sweetAlertDialog.dismissWithAnimation();
-                Toast.makeText(context,getResources().getString(R.string.end_call2), Toast.LENGTH_LONG);
+                //Toast.makeText(context,getResources().getString(R.string.end_call2), Toast.LENGTH_LONG).show();
                 OutApps();
             }
         });
-        Button btnCancel = (Button) sweetAlertDialog.findViewById(cn.pedant.SweetAlert.R.id.cancel_button);
-        btnCancel.setBackgroundTintList(context.getResources().getColorStateList(R.color.Blue));
+
+        btnCancelDialog.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                sweetAlertDialog.dismissWithAnimation();
+            }
+        });
     }
     private void OutApps(){
         Intent intent = new Intent(Intent.ACTION_MAIN);
@@ -603,12 +637,6 @@ public class frag_berita extends Fragment implements com.wdullaer.materialdateti
         ArrayAdapter<String> adapterTime = new ArrayAdapter<String>(context,R.layout.list_item, time);
 
         et_time.setAdapter(adapterTime);
-        /*et_time.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Savewaktu = position;
-            }
-        });*/
         btnSchedule2 = dialogView.findViewById(R.id.btnSchedule2);
         et_Date.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -772,18 +800,31 @@ public class frag_berita extends Fragment implements com.wdullaer.materialdateti
                     }
                     serviceOutbound();
 
-                    SweetAlertDialog sweetAlertDialog = new SweetAlertDialog(context, SweetAlertDialog.SUCCESS_TYPE);
-                    sweetAlertDialog.setContentText(getResources().getString(R.string.content_after_schedule));
-                    sweetAlertDialog.setConfirmText(getResources().getString(R.string.done));
+                    LayoutInflater inflater = getLayoutInflater();
+                    View dialogView = inflater.inflate(R.layout.layout_dialog_sweet, null);
+
+                    ImageView imgDialog = (ImageView) dialogView.findViewById(R.id.imgDialog);
+                    TextView tvTitleDialog = (TextView) dialogView.findViewById(R.id.tvTitleDialog);
+                    TextView tvBodyDialog = (TextView) dialogView.findViewById(R.id.tvBodyDialog);
+                    Button btnCancelDialog = (Button) dialogView.findViewById(R.id.btnCancelDialog);
+                    Button btnConfirmDialog = (Button) dialogView.findViewById(R.id.btnConfirmDialog);
+
+                    tvTitleDialog.setVisibility(View.GONE);
+
+                    imgDialog.setImageDrawable(AppCompatResources.getDrawable(context,R.drawable.v_dialog_success));
+                    tvBodyDialog.setText(getString(R.string.content_after_schedule));
+                    btnConfirmDialog.setText(getString(R.string.done));
+
+                    SweetAlertDialog sweetAlertDialog = new SweetAlertDialog(context, SweetAlertDialog.NORMAL_TYPE);
+                    sweetAlertDialog.setCustomView(dialogView);
+                    sweetAlertDialog.hideConfirmButton();
                     sweetAlertDialog.show();
-                    Button btnConfirm = (Button) sweetAlertDialog.findViewById(cn.pedant.SweetAlert.R.id.confirm_button);
-                    btnConfirm.setBackgroundTintList(context.getResources().getColorStateList(R.color.Blue));
-                    btnConfirm.setOnClickListener(new View.OnClickListener() {
+
+                    btnConfirmDialog.setOnClickListener(new View.OnClickListener() {
                         @Override
-                        public void onClick(View v) {
+                        public void onClick(View view) {
                             sweetAlertDialog.dismiss();
                             OutApps();
-
                         }
                     });
                 }

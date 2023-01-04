@@ -4,7 +4,6 @@ import static com.evo.mitzoom.ui.DipsChooseLanguage.setLocale;
 
 import android.Manifest;
 import android.app.ActivityManager;
-import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -14,6 +13,7 @@ import android.hardware.camera2.CameraManager;
 import android.net.ConnectivityManager;
 import android.net.Network;
 import android.net.NetworkRequest;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
@@ -35,8 +35,10 @@ import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.DatePicker;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -54,12 +56,14 @@ import com.evo.mitzoom.API.Server;
 import com.evo.mitzoom.BaseMeetingActivity;
 import com.evo.mitzoom.Constants.AuthConstants;
 import com.evo.mitzoom.Fragments.frag_berita;
+import com.evo.mitzoom.Helper.LocaleHelper;
 import com.evo.mitzoom.Helper.OutboundService;
 import com.evo.mitzoom.Helper.OutboundServiceNew;
 import com.evo.mitzoom.Model.Request.JsonCaptureIdentify;
 import com.evo.mitzoom.Model.Response.CaptureIdentify;
 import com.evo.mitzoom.R;
 import com.evo.mitzoom.Session.SessionManager;
+import com.evo.mitzoom.ui.Alternative.DipsSwafoto;
 import com.evo.mitzoom.util.ErrorMsgUtil;
 import com.evo.mitzoom.util.NetworkUtil;
 import com.google.android.material.button.MaterialButton;
@@ -71,6 +75,7 @@ import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.DeliverCallback;
 import com.rabbitmq.client.Delivery;
+import com.wdullaer.materialdatetimepicker.date.DatePickerDialog;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -82,7 +87,9 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeoutException;
@@ -105,7 +112,7 @@ import us.zoom.sdk.ZoomVideoSDKSession;
 import us.zoom.sdk.ZoomVideoSDKSessionContext;
 import us.zoom.sdk.ZoomVideoSDKVideoOption;
 
-public class DipsWaitingRoom extends AppCompatActivity {
+public class DipsWaitingRoom extends AppCompatActivity implements DatePickerDialog.OnDateSetListener {
 
     private Context mContext;
     protected final static int REQUEST_VIDEO_AUDIO_CODE = 1010;
@@ -120,15 +127,9 @@ public class DipsWaitingRoom extends AppCompatActivity {
     private SurfaceView preview = null;
     private SurfaceHolder previewHolder = null;
     private static int degreeFront = 0;
-    private MaterialButton btnSchedule,btnSchedule2, btnEndCall;
     private LayoutInflater inflater;
-    private View dialogView;
     private ImageView btnclose;
-    private TextView et_Date, AnimationCall;
-    private AutoCompleteTextView et_time;
-    private int year, month, day, waktu_tunggu = 6000;
-    private String tanggal, waktu;
-    String [] time = {"08.00 - 10.00", "10.00 - 12.00", "12.00 - 14.00", "14.00 - 16.00", "16.00 - 17.00"};
+    private TextView AnimationCall;
     String NameSession;
     String idDips;
     String SessionPass;
@@ -144,7 +145,6 @@ public class DipsWaitingRoom extends AppCompatActivity {
     private SweetAlertDialog dialogSuccess;
     private SweetAlertDialog dialogConfirm;
     private DisplayMetrics displayMetrics;
-    private String Savetanggal;
     private int Savewaktu;
     //RabitMQ
     ConnectionFactory connectionFactory = new ConnectionFactory();
@@ -157,8 +157,23 @@ public class DipsWaitingRoom extends AppCompatActivity {
     private Thread publishQSTicketThread;
     private Thread publishCallAcceptThread;
     private boolean isSwafoto = false;
-    private int chkFlow;
     public static Channel channelCall = null;
+
+    ArrayList<String> time = new ArrayList<>();
+    List<Integer> periodeInt = new ArrayList<>();
+    HashMap<Integer,String> dataPeriode = new HashMap<>();
+    HashMap<String,Integer> dataPeriodeId = new HashMap<>();
+    private int year, month, day, waktu_tunggu = 6000;
+    private String tanggal, waktu;
+    private String Savetanggal;
+    private List<Integer> indeksNotFound;
+    private DatePickerDialog dpd;
+    private EditText et_Date;
+    private Spinner et_time;
+    private JSONArray tanggalPenuh;
+    private JSONArray periodePenuh;
+    private Button btnSchedule2;
+    public static RelativeLayout rlprogress;
 
     {
         try {
@@ -183,9 +198,9 @@ public class DipsWaitingRoom extends AppCompatActivity {
         sessions.saveCSID(null);
         idDips = sessions.getKEY_IdDips();
         isCust = sessions.getKEY_iSCust();
-        chkFlow = sessions.getFLOW();
         String lang = sessions.getLANG();
-        setLocale(this,lang);
+        //setLocale(this,lang);
+        LocaleHelper.setLocale(this,lang);
         setContentView(R.layout.activity_dips_waiting_room);
 
         myTicket = findViewById(R.id.myticket);
@@ -193,6 +208,7 @@ public class DipsWaitingRoom extends AppCompatActivity {
         AnimationCall = findViewById(R.id.AnimationCall);
         CardView cardSurf = (CardView) findViewById(R.id.cardSurf);
         preview = (SurfaceView) findViewById(R.id.mySurface);
+        rlprogress = (RelativeLayout) findViewById(R.id.rlprogress);
 
         displayMetrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
@@ -205,6 +221,8 @@ public class DipsWaitingRoom extends AppCompatActivity {
         /*ViewGroup.LayoutParams lp = cardSurf.getLayoutParams();
         lp.width = dyWidth;
         cardSurf.setLayoutParams(lp);*/
+
+        new AsyncProcess().execute();
 
         initializeSdk();
         AnimationCall();
@@ -220,6 +238,10 @@ public class DipsWaitingRoom extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+
+        String lang = sessions.getLANG();
+        //setLocale(this,lang);
+        LocaleHelper.setLocale(this,lang);
 
         Log.d("CEK","MASUK onResume");
 
@@ -294,7 +316,6 @@ public class DipsWaitingRoom extends AppCompatActivity {
     private void initialWaitingRoom() {
         Log.d("CEK", "idDips : "+idDips);
         subscribeReqTicket();
-        //subscribeAllTicketInfo(); //RabbitMQ
 
         /*mSocket.on("waiting", waitingListener);
         mSocket.connect();*/
@@ -313,6 +334,15 @@ public class DipsWaitingRoom extends AppCompatActivity {
         }
     }
 
+    public static void showProgress(Boolean bool){
+
+        if (bool){
+            rlprogress.setVisibility(View.VISIBLE);
+        }else {
+            rlprogress.setVisibility(View.GONE);
+        }
+    }
+
     private void OutApps(){
         Intent intent = new Intent(Intent.ACTION_MAIN);
         intent.addCategory(Intent.CATEGORY_HOME);
@@ -323,13 +353,19 @@ public class DipsWaitingRoom extends AppCompatActivity {
     }
 
     private void setupConnectionFactory() {
-        String uriRabbit = Server.BASE_URL_RABBITMQ;
+        connectionFactory.setUsername(Server.RABBITMQ_USERNAME);
+        connectionFactory.setPassword(Server.RABBITMQ_PASSWORD);
+        connectionFactory.setHost(Server.RABBITMQ_IP);
+        connectionFactory.setPort(Server.RABBITMQ_PORT);
+        connectionFactory.setAutomaticRecoveryEnabled(true);
+
+        /*String uriRabbit = Server.BASE_URL_RABBITMQ;
         try {
-            connectionFactory.setAutomaticRecoveryEnabled(false);
+            connectionFactory.setAutomaticRecoveryEnabled(true);
             connectionFactory.setUri(uriRabbit);
         } catch (URISyntaxException | NoSuchAlgorithmException | KeyManagementException e) {
             e.printStackTrace();
-        }
+        }*/
     }
 
     private JSONObject dataGetTicket() {
@@ -558,6 +594,7 @@ public class DipsWaitingRoom extends AppCompatActivity {
 
                             subscribeCall(); //RabbitMQ
                             subscribe(); //RabbitMQ
+                            //subscribeAllTicketInfo(); //RabbitMQ
                         }
                     }, new CancelCallback() {
                         @Override
@@ -678,8 +715,8 @@ public class DipsWaitingRoom extends AppCompatActivity {
                     Channel channel = connection.createChannel();
                     channel.basicQos(1);
                     AMQP.Queue.DeclareOk q = channel.queueDeclare();
-                    channel.exchangeDeclare("", "broadcast", true);
-                    channel.queueBind(q.getQueue(), "", "dips.broadcast.all.ticket.info");
+                    channel.exchangeDeclare("dips.broadcast.all.ticket.info", "fanout", true);
+                    channel.queueBind(q.getQueue(), "dips.broadcast.all.ticket.info", "");
                     channel.basicConsume(q.getQueue(), true, new DeliverCallback() {
                         @Override
                         public void handle(String consumerTag, Delivery message) throws IOException {
@@ -727,6 +764,7 @@ public class DipsWaitingRoom extends AppCompatActivity {
                     Log.e("CEK", "publishCallAccept Connection broken: " + e.getClass().getName());
                     try {
                         Thread.sleep(4000); //sleep and then try again
+                        publishCallAccept(csId);
                     } catch (InterruptedException e1) {
 
                     }
@@ -985,50 +1023,291 @@ public class DipsWaitingRoom extends AppCompatActivity {
     }
 
     private void PopUpWaiting(){
+        LayoutInflater inflater = getLayoutInflater();
+        View dialogView = inflater.inflate(R.layout.layout_dialog_sweet, null);
+
+        ImageView imgDialog = (ImageView) dialogView.findViewById(R.id.imgDialog);
+        TextView tvTitleDialog = (TextView) dialogView.findViewById(R.id.tvTitleDialog);
+        TextView tvBodyDialog = (TextView) dialogView.findViewById(R.id.tvBodyDialog);
+        Button btnCancelDialog = (Button) dialogView.findViewById(R.id.btnCancelDialog);
+        Button btnConfirmDialog = (Button) dialogView.findViewById(R.id.btnConfirmDialog);
+
+        tvTitleDialog.setVisibility(View.GONE);
+        btnCancelDialog.setVisibility(View.VISIBLE);
+
+        imgDialog.setImageDrawable(getDrawable(R.drawable.v_dialog_info));
+        tvBodyDialog.setText(getString(R.string.headline_waiting));
+        btnCancelDialog.setText(getString(R.string.schedule_a_task));
+        btnConfirmDialog.setText(getString(R.string.waiting));
+
         if (dialogWaiting == null) {
-            dialogWaiting = new SweetAlertDialog(DipsWaitingRoom.this, SweetAlertDialog.WARNING_TYPE);
-            dialogWaiting.setContentText(getResources().getString(R.string.headline_waiting));
-            dialogWaiting.setConfirmText(getResources().getString(R.string.waiting));
-            dialogWaiting.setCancelText(getString(R.string.schedule_a_task));
+            dialogWaiting = new SweetAlertDialog(DipsWaitingRoom.this, SweetAlertDialog.NORMAL_TYPE);
+            dialogWaiting.setCustomView(dialogView);
+            dialogWaiting.hideConfirmButton();
             dialogWaiting.setCancelable(false);
-            dialogWaiting.show();
-            dialogWaiting.setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
-                @Override
-                public void onClick(SweetAlertDialog sweetAlertDialog) {
-                    sweetAlertDialog.dismissWithAnimation();
-                    dialogWaiting = null;
-                }
-            });
-            Button btnConfirm = (Button) dialogWaiting.findViewById(cn.pedant.SweetAlert.R.id.confirm_button);
-            btnConfirm.setBackgroundTintList(DipsWaitingRoom.this.getResources().getColorStateList(R.color.zm_button));
-            Button btnCancel = (Button) dialogSuccess.findViewById(cn.pedant.SweetAlert.R.id.cancel_button);
-            btnCancel.setBackground(getDrawable(R.drawable.oval_background_10dp));
-            btnCancel.setTextColor(getColor(R.color.zm_button));
         }
+
+        dialogWaiting.show();
+
+        btnConfirmDialog.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialogWaiting.dismissWithAnimation();
+            }
+        });
+        btnCancelDialog.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialogWaiting.dismissWithAnimation();
+                PopUpSchedule();
+            }
+        });
+    }
+
+    private void PopUpSchedule(){
+        LayoutInflater inflater = getLayoutInflater();
+        View dialogView = inflater.inflate(R.layout.item_schedule, null);
+        SweetAlertDialog sweetAlertDialog = new SweetAlertDialog(mContext, SweetAlertDialog.NORMAL_TYPE);
+        sweetAlertDialog.setCustomView(dialogView);
+        sweetAlertDialog.hideConfirmButton();
+        sweetAlertDialog.show();
+
+        ImageView btnclose = (ImageView) dialogView.findViewById(R.id.btn_close_schedule);
+        et_Date = (EditText) dialogView.findViewById(R.id.et_Date);
+        et_time = (Spinner) dialogView.findViewById(R.id.et_time);
+
+        ArrayAdapter<String> adapterTime = new ArrayAdapter<String>(mContext,R.layout.list_item, time);
+
+        et_time.setAdapter(adapterTime);
+        btnSchedule2 = dialogView.findViewById(R.id.btnSchedule2);
+        et_Date.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final Calendar c = Calendar.getInstance();
+                year = c.get(Calendar.YEAR);
+                month = c.get(Calendar.MONTH);
+                day = c.get(Calendar.DAY_OF_MONTH);
+                dpd = null;
+                if (dpd == null) {
+                    dpd = com.wdullaer.materialdatetimepicker.date.DatePickerDialog.newInstance(DipsWaitingRoom.this,
+                            c.get(Calendar.YEAR),
+                            c.get(Calendar.MONTH),
+                            c.get(Calendar.DAY_OF_MONTH)
+                    );
+                } else {
+                    dpd.initialize(
+                            DipsWaitingRoom.this,
+                            c.get(Calendar.YEAR),
+                            c.get(Calendar.MONTH),
+                            c.get(Calendar.DAY_OF_MONTH)
+                    );
+                }
+
+                // restrict to weekdays only
+                ArrayList<Calendar> weekdays = new ArrayList<Calendar>();
+                Calendar day = Calendar.getInstance();
+                int loopAdd = 0;
+                for (int i = 0; i < 30; i++) {
+                    if (day.get(Calendar.DAY_OF_WEEK) != Calendar.SATURDAY && day.get(Calendar.DAY_OF_WEEK) != Calendar.SUNDAY) {
+                        if (tanggalPenuh.length() > 0) {
+                            for (int tg = 0; tg < tanggalPenuh.length(); tg++) {
+                                try {
+                                    String tglFull = tanggalPenuh.getString(tg);
+                                    int yearChk = day.get(Calendar.YEAR);
+                                    int monthChk = day.get(Calendar.MONTH);
+                                    int dayChk = day.get(Calendar.DAY_OF_MONTH);
+
+                                    int addmonths = (monthChk + 1);
+                                    String months = String.valueOf(addmonths);
+                                    if (addmonths < 10) {
+                                        months = "0"+months;
+                                    }
+                                    String days = String.valueOf(dayChk);
+                                    if (dayChk < 10 ) {
+                                        days = "0"+days;
+                                    }
+
+                                    String tglChk = yearChk + "-" + months + "-" + days;
+                                    if (!tglFull.equals(tglChk)) {
+                                        Calendar d = (Calendar) day.clone();
+                                        weekdays.add(d);
+                                    }
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        } else {
+                            Calendar d = (Calendar) day.clone();
+                            weekdays.add(d);
+                        }
+                    } else {
+                        loopAdd++;
+                    }
+                    day.add(Calendar.DATE, 1);
+                }
+                Calendar[] weekdayDays = weekdays.toArray(new Calendar[weekdays.size()]);
+                dpd.setSelectableDays(weekdayDays);
+                //dpd.setMaxDate(day);
+
+                dpd.setOnCancelListener(dialog -> {
+                    Log.e("DatePickerDialog", "Dialog was cancelled");
+                    dpd = null;
+                });
+                dpd.show(getSupportFragmentManager(), "Datepickerdialog");
+
+            }
+        });
+        btnclose.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                sweetAlertDialog.dismiss();
+            }
+        });
+        btnSchedule2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                tanggal = et_Date.getText().toString().trim().trim();
+                waktu = et_time.getSelectedItem().toString();
+                if (tanggal.trim().equals("")){
+                    Toast.makeText(mContext.getApplicationContext(), R.string.notif_blank, Toast.LENGTH_SHORT).show();
+                }
+                else if (waktu.trim().equals("")){
+                    Toast.makeText(mContext.getApplicationContext(), R.string.notif_blank, Toast.LENGTH_SHORT).show();
+                }
+                else {
+                    if (idDips.isEmpty()) {
+                        idDips = sessions.getKEY_IdDips();
+                    }
+                    //Toast.makeText(context.getApplicationContext(), getResources().getString(R.string.schedule) + tanggal + " & " + getResources().getString(R.string.jam) + waktu, Toast.LENGTH_LONG).show();
+                    sweetAlertDialog.dismiss();
+                    saveSchedule();
+                }
+
+            }
+        });
+    }
+
+    private void saveSchedule(){
+        int periodeId = dataPeriodeId.get(waktu);
+        JSONObject jsons = new JSONObject();
+        try {
+            jsons.put("idDips",idDips);
+            jsons.put("tanggal",Savetanggal);
+            jsons.put("periodeId",periodeId);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        Log.e("CEK","PARAMS saveSchedule : "+jsons.toString());
+        Log.d("PARAMS JADWAL","idDips = "+idDips+", Tanggal = "+Savetanggal);
+        RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), jsons.toString());
+        ApiService API = Server.getAPIService();
+        Call<JsonObject> call = API.saveSchedule(requestBody);
+        call.enqueue(new Callback<JsonObject>() {
+            @Override
+            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                Log.e("CEK","saveSchedule Respon Code : "+response.code());
+                if (response.isSuccessful() && response.body().size() > 0) {
+                    Log.e("CEK","saveSchedule Respon : "+response.body().toString());
+
+                    String dataS = response.body().toString();
+                    try {
+                        JSONObject dataObj = new JSONObject(dataS);
+                        int idSchedule = dataObj.getJSONObject("data").getInt("id");
+                        sessions.saveIDSchedule(idSchedule);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
+                    if (DipsWaitingRoom.channelCall != null) {
+                        try {
+                            Log.e("CEK","MASUK channelCall abort close");
+                            DipsWaitingRoom.channelCall.close();
+                        } catch (IOException | TimeoutException e) {
+                            e.printStackTrace();
+                        }
+                        if (DipsWaitingRoom.subscribeThreadCall != null) {
+                            Log.e("CEK","MASUK subscribeThreadCall interrupt");
+                            DipsWaitingRoom.subscribeThreadCall.interrupt();
+                        }
+                    }
+                    serviceOutbound();
+
+                    PopUpEndSchedule();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<JsonObject> call, Throwable t) {
+                Toast.makeText(mContext,t.getMessage(),Toast.LENGTH_SHORT).show();
+            }
+        });
+
+    }
+
+    private void PopUpEndSchedule() {
+        LayoutInflater inflater = getLayoutInflater();
+        View dialogView = inflater.inflate(R.layout.layout_dialog_sweet, null);
+
+        ImageView imgDialog = (ImageView) dialogView.findViewById(R.id.imgDialog);
+        TextView tvTitleDialog = (TextView) dialogView.findViewById(R.id.tvTitleDialog);
+        TextView tvBodyDialog = (TextView) dialogView.findViewById(R.id.tvBodyDialog);
+        Button btnCancelDialog = (Button) dialogView.findViewById(R.id.btnCancelDialog);
+        Button btnConfirmDialog = (Button) dialogView.findViewById(R.id.btnConfirmDialog);
+
+        tvTitleDialog.setVisibility(View.GONE);
+
+        imgDialog.setImageDrawable(getDrawable(R.drawable.v_dialog_success));
+        tvBodyDialog.setText(getString(R.string.content_after_schedule));
+        btnConfirmDialog.setText(getString(R.string.done));
+
+        SweetAlertDialog sweetAlertDialog = new SweetAlertDialog(mContext, SweetAlertDialog.NORMAL_TYPE);
+        sweetAlertDialog.setCustomView(dialogView);
+        sweetAlertDialog.hideConfirmButton();
+        sweetAlertDialog.setCancelable(false);
+        sweetAlertDialog.show();
+
+        btnConfirmDialog.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                sweetAlertDialog.dismiss();
+                OutApps();
+            }
+        });
     }
 
     private void PopUpSucces(String csId){
+        LayoutInflater inflater = getLayoutInflater();
+        View dialogView = inflater.inflate(R.layout.layout_dialog_sweet, null);
+
+        ImageView imgDialog = (ImageView) dialogView.findViewById(R.id.imgDialog);
+        TextView tvTitleDialog = (TextView) dialogView.findViewById(R.id.tvTitleDialog);
+        TextView tvBodyDialog = (TextView) dialogView.findViewById(R.id.tvBodyDialog);
+        Button btnCancelDialog = (Button) dialogView.findViewById(R.id.btnCancelDialog);
+        Button btnConfirmDialog = (Button) dialogView.findViewById(R.id.btnConfirmDialog);
+
+        tvTitleDialog.setVisibility(View.GONE);
+        btnCancelDialog.setVisibility(View.VISIBLE);
+
+        imgDialog.setImageDrawable(getDrawable(R.drawable.v_dialog_success));
+        tvBodyDialog.setText(getString(R.string.headline_success));
+        btnCancelDialog.setText(getString(R.string.reject));
+        btnConfirmDialog.setText(getString(R.string.btn_continue));
+
         if (dialogSuccess == null) {
             Log.e("CEK","dialogSuccess");
-            dialogSuccess = new SweetAlertDialog(DipsWaitingRoom.this, SweetAlertDialog.SUCCESS_TYPE);
+            dialogSuccess = new SweetAlertDialog(DipsWaitingRoom.this, SweetAlertDialog.NORMAL_TYPE);
         }
-        dialogSuccess.setContentText(getResources().getString(R.string.headline_success));
-        dialogSuccess.setConfirmText(getResources().getString(R.string.btn_continue));
-        dialogSuccess.setCancelText(getString(R.string.reject));
+        dialogSuccess.setCustomView(dialogView);
         dialogSuccess.setCancelable(false);
+        dialogSuccess.hideConfirmButton();
         dialogSuccess.show();
-        Button btnConfirm = (Button) dialogSuccess.findViewById(cn.pedant.SweetAlert.R.id.confirm_button);
-        Button btnCancel = (Button) dialogSuccess.findViewById(cn.pedant.SweetAlert.R.id.cancel_button);
-        btnConfirm.setBackgroundTintList(DipsWaitingRoom.this.getResources().getColorStateList(R.color.zm_button));
-        //btnCancel.setBackgroundTintList(DipsWaitingRoom.this.getResources().getColorStateList(R.color.button_end_call));
-        btnCancel.setBackground(getDrawable(R.drawable.oval_background_10dp));
-        btnCancel.setTextColor(getColor(R.color.zm_button));
-        dialogSuccess.setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
+
+        btnConfirmDialog.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(SweetAlertDialog sweetAlertDialog) {
+            public void onClick(View view) {
                 if (!SessionPass.isEmpty()) {
-                    sweetAlertDialog.dismissWithAnimation();
-                    sweetAlertDialog.cancel();
+                    dialogSuccess.dismissWithAnimation();
+                    dialogSuccess.cancel();
                     dialogSuccess = null;
                     publishCallAccept(csId); //RabbitMQ
                     processJoinVideo();
@@ -1038,11 +1317,12 @@ public class DipsWaitingRoom extends AppCompatActivity {
                 }
             }
         });
-        dialogSuccess.setCancelClickListener(new SweetAlertDialog.OnSweetClickListener() {
+
+        btnCancelDialog.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(SweetAlertDialog sweetAlertDialog) {
-                sweetAlertDialog.dismissWithAnimation();
-                sweetAlertDialog.cancel();
+            public void onClick(View view) {
+                dialogSuccess.dismissWithAnimation();
+                dialogSuccess.cancel();
                 EndCall();
                 dialogSuccess = null;
             }
@@ -1050,30 +1330,30 @@ public class DipsWaitingRoom extends AppCompatActivity {
     }
 
     private void EndCall(){
-        SweetAlertDialog sweetAlertDialog = new SweetAlertDialog(mContext, SweetAlertDialog.WARNING_TYPE);
-        sweetAlertDialog.setContentText(getString(R.string.headline_close_conversation));
-        sweetAlertDialog.showCancelButton(false);
-        sweetAlertDialog.show();
-        Button btnConfirm = (Button) sweetAlertDialog.findViewById(cn.pedant.SweetAlert.R.id.confirm_button);
-        btnConfirm.setBackgroundTintList(mContext.getResources().getColorStateList(R.color.Blue));
-    }
+        LayoutInflater inflater = getLayoutInflater();
+        View dialogView = inflater.inflate(R.layout.layout_dialog_sweet, null);
 
-    private void Popup(){
-        if (dialogConfirm == null) {
-            dialogConfirm = new SweetAlertDialog(mContext, SweetAlertDialog.WARNING_TYPE);
-        }
-        dialogConfirm.setContentText(getResources().getString(R.string.content_input));
-        dialogConfirm.setConfirmText(getResources().getString(R.string.btn_continue));
-        dialogConfirm.show();
-        dialogConfirm.setCancelable(false);
-        Button btnConfirm = (Button) dialogConfirm.findViewById(cn.pedant.SweetAlert.R.id.confirm_button);
-        btnConfirm.setBackgroundTintList(mContext.getResources().getColorStateList(R.color.Blue));
-        btnConfirm.setOnClickListener(new View.OnClickListener() {
+        ImageView imgDialog = (ImageView) dialogView.findViewById(R.id.imgDialog);
+        TextView tvTitleDialog = (TextView) dialogView.findViewById(R.id.tvTitleDialog);
+        TextView tvBodyDialog = (TextView) dialogView.findViewById(R.id.tvBodyDialog);
+        Button btnCancelDialog = (Button) dialogView.findViewById(R.id.btnCancelDialog);
+        Button btnConfirmDialog = (Button) dialogView.findViewById(R.id.btnConfirmDialog);
+
+        tvTitleDialog.setVisibility(View.GONE);
+
+        imgDialog.setImageDrawable(getDrawable(R.drawable.v_dialog_info));
+        tvBodyDialog.setText(R.string.caliing_comeback);
+
+        SweetAlertDialog sweetAlertDialog = new SweetAlertDialog(mContext, SweetAlertDialog.NORMAL_TYPE);
+        sweetAlertDialog.setCustomView(dialogView);
+        sweetAlertDialog.showCancelButton(false);
+        sweetAlertDialog.hideConfirmButton();
+        sweetAlertDialog.show();
+
+        btnConfirmDialog.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
-                dialogConfirm.dismiss();
-                dialogConfirm.cancel();
-                processJoinVideo();
+            public void onClick(View view) {
+                sweetAlertDialog.dismissWithAnimation();
             }
         });
     }
@@ -1327,4 +1607,123 @@ public class DipsWaitingRoom extends AppCompatActivity {
         return false;
     }
 
+    private class AsyncProcess extends AsyncTask<Void,Void,Void> {
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            processGetCheckSchedule();
+            processGetScheduleTimes();
+            return null;
+        }
+    }
+
+    private void processGetCheckSchedule() {
+        Server.getAPIService().GetCheckSchedule().enqueue(new Callback<JsonObject>() {
+            @Override
+            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                if (response.isSuccessful()) {
+                    String dataS = response.body().toString();
+                    try {
+                        JSONObject dataObj = new JSONObject(dataS);
+                        int errCode = dataObj.getInt("code");
+                        if (errCode == 200) {
+                            tanggalPenuh = dataObj.getJSONObject("data").getJSONArray("tanggalPenuh");
+                            periodePenuh = dataObj.getJSONObject("data").getJSONArray("periodePenuh");
+
+                            Log.e("CEK","tanggalPenuh : "+tanggalPenuh.toString());
+                            Log.e("CEK","periodePenuh : "+periodePenuh.toString());
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<JsonObject> call, Throwable t) {
+
+            }
+        });
+    }
+
+    private void processGetScheduleTimes() {
+        Server.getAPIService().GetScheduleTimes().enqueue(new Callback<JsonObject>() {
+            @Override
+            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                if (response.isSuccessful()) {
+                    String dataS = response.body().toString();
+                    try {
+                        JSONObject dataObj = new JSONObject(dataS);
+                        int errCode = dataObj.getInt("code");
+                        if (errCode == 200) {
+                            JSONArray dataArrTimes = dataObj.getJSONArray("data");
+                            Log.e("CEK","dataArrTimes : "+dataArrTimes);
+                            for (int i = 0; i < dataArrTimes.length(); i++) {
+                                int periodeId = dataArrTimes.getJSONObject(i).getInt("id");
+                                String periode = dataArrTimes.getJSONObject(i).getString("periode");
+                                time.add(periode);
+                                periodeInt.add(periodeId);
+                                dataPeriode.put(periodeId,periode);
+                                dataPeriodeId.put(periode,periodeId);
+                            }
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
+                }
+            }
+
+            @Override
+            public void onFailure(Call<JsonObject> call, Throwable t) {
+
+            }
+        });
+    }
+
+    @Override
+    public void onDateSet(DatePickerDialog view, int year, int monthOfYear, int dayOfMonth) {
+        Log.e("CEK","onDateSet");
+        int addmonths = (month + 1);
+        String months = String.valueOf(addmonths);
+        if (addmonths < 10) {
+            months = "0"+months;
+        }
+        String days = String.valueOf(dayOfMonth);
+        if (dayOfMonth < 10 ) {
+            days = "0"+days;
+        }
+        tanggal = days+"/"+months+"/"+year;
+        Savetanggal = year + "-" + months + "-" + days;
+        et_Date.setText(tanggal);
+
+        if (periodePenuh.length() > 0) {
+            ArrayList<String> times_new = new ArrayList<>();
+            times_new.addAll(time);
+            for (int i = 0; i < periodePenuh.length(); i++) {
+                try {
+                    String tglFull = periodePenuh.getJSONObject(i).getString("tanggal");
+                    int periodeId = periodePenuh.getJSONObject(i).getInt("periodeId");
+                    if (tglFull.equals(Savetanggal)) {
+                        String valP = dataPeriode.get(periodeId);
+                        for (int j = 0; j < times_new.size(); j++) {
+                            String times = times_new.get(j);
+                            if (valP.equals(times)) {
+                                times_new.remove(j);
+                                break;
+                            }
+                        }
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            ArrayAdapter<String> adapterTime = new ArrayAdapter<String>(mContext,R.layout.list_item, times_new);
+            et_time.setAdapter(adapterTime);
+        } else {
+            ArrayAdapter<String> adapterTime = new ArrayAdapter<String>(mContext,R.layout.list_item, time);
+            et_time.setAdapter(adapterTime);
+        }
+    }
 }

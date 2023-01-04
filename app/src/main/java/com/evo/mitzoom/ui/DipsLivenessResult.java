@@ -1,5 +1,7 @@
 package com.evo.mitzoom.ui;
 
+import static com.evo.mitzoom.ui.DipsChooseLanguage.setLocale;
+
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.ActivityManager;
@@ -13,13 +15,16 @@ import android.os.StrictMode;
 import android.util.Base64;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.View;
 import android.view.WindowManager;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.evo.mitzoom.API.ApiService;
 import com.evo.mitzoom.API.Server;
+import com.evo.mitzoom.Helper.LocaleHelper;
 import com.evo.mitzoom.Helper.OutboundServiceNew;
 import com.evo.mitzoom.R;
 import com.evo.mitzoom.Session.SessionManager;
@@ -45,6 +50,7 @@ public class DipsLivenessResult extends AppCompatActivity {
     private ImageView mask_view;
     private String idDips;
     private TextView tip_text_view;
+    private RelativeLayout rlprogress;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,6 +66,9 @@ public class DipsLivenessResult extends AppCompatActivity {
         mContext = this;
         sessions = new SessionManager(mContext);
         idDips = sessions.getKEY_IdDips();
+        String lang = sessions.getLANG();
+        //setLocale(this, lang);
+        LocaleHelper.setLocale(this,lang);
 
         if (idDips == null) {
             idDips = "";
@@ -71,6 +80,9 @@ public class DipsLivenessResult extends AppCompatActivity {
 
         mask_view = (ImageView) findViewById(R.id.mask_view);
         tip_text_view = (TextView) findViewById(R.id.tip_text_view);
+        rlprogress = (RelativeLayout) findViewById(R.id.rlprogress);
+
+        rlprogress.setVisibility(View.GONE);
 
         AnimationCall();
 
@@ -80,6 +92,14 @@ public class DipsLivenessResult extends AppCompatActivity {
         mask_view.setImageBitmap(bitmap);
 
         processCaptureIdentifyAuth(imgBase64);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        String lang = sessions.getLANG();
+        //setLocale(this,lang);
+        LocaleHelper.setLocale(this,lang);
     }
 
     @Override
@@ -168,6 +188,7 @@ public class DipsLivenessResult extends AppCompatActivity {
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
                 Log.e("CEK","RESPONSE CODE: "+response.code());
                 if (response.isSuccessful()) {
+                    rlprogress.setVisibility(View.GONE);
                     String dataS = response.body().toString();
                     Log.e("CEK","dataS: "+dataS);
                     try {
@@ -199,7 +220,6 @@ public class DipsLivenessResult extends AppCompatActivity {
 
                         idDips = idDipsNew;
 
-                        sessions.saveFLOW(1);
                         sessions.saveIdDips(idDips);
 
                         Intent intent = null;

@@ -1,11 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout android:layout_height="wrap_content"
+<RelativeLayout android:layout_height="50dp"
     android:layout_width="match_parent"
-    android:orientation="vertical"
+    android:paddingLeft="16dp"
+    android:paddingRight="16dp"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <com.github.florent37.expansionpanel.ExpansionHeader
+    <LinearLayout
+        android:id="@+id/llProduct"
+        android:layout_height="50dp"
+        android:layout_width="match_parent"
+        android:orientation="horizontal"
+        android:layout_centerVertical="true">
+
+        <ImageView
+            android:id="@+id/imgProd"
+            android:layout_width="35dp"
+            android:layout_height="match_parent"
+            android:src="@drawable/ic_prod_saving" />
+
+        <TextView
+            android:id="@+id/tvTitleList"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_marginStart="10dp"
+            android:text="@string/savings"
+            android:textColor="#3E3E3E"
+            android:textSize="20dp"
+            android:textStyle="bold"
+            android:gravity="center"/>
+
+    </LinearLayout>
+
+    <!--<com.github.florent37.expansionpanel.ExpansionHeader
         android:layout_height="wrap_content"
         android:layout_width="match_parent"
         app:expansion_headerIndicator="@id/headerIndicator"
@@ -102,5 +129,5 @@
                     android:text="@string/new_account"/>
             </LinearLayout>
         </LinearLayout>
-    </com.github.florent37.expansionpanel.ExpansionLayout>
-</LinearLayout>
+    </com.github.florent37.expansionpanel.ExpansionLayout>-->
+</RelativeLayout>

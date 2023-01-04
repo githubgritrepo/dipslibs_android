@@ -81,7 +81,6 @@ public class frag_opening_account extends Fragment {
     private boolean isSwafoto = false;
     private TextView tvFotoKTP;
     private byte[] bytePhoto = new byte[0];
-    private int chkFlow;
     private boolean isSessionZoom = false;
     private LinearLayout ll_head;
 
@@ -92,7 +91,6 @@ public class frag_opening_account extends Fragment {
         session = new SessionManager(context);
         isCust = session.getKEY_iSCust();
         isSwafoto = session.getKEY_iSSwafoto();
-        chkFlow = session.getFLOW();
         if (getArguments() != null) {
             if (getArguments().containsKey("RESULT_IMAGE_AI")) {
                 bytePhoto = getArguments().getByteArray("RESULT_IMAGE_AI");
@@ -201,7 +199,7 @@ public class frag_opening_account extends Fragment {
                     //Mirroring(true,"");
                     //Mirroring2(true,"320124150585005","Andi Wijaya Lesmana","Bogor","13-03-1985");
                     //ocrKTP();
-                    if (KTP_SWAFOTO.length == 0 || chkFlow == 0) {
+                    if (KTP_SWAFOTO.length == 0) {
                         saveImage();
                         if (flagOCR) {
                             PopUpOCR(KTP);
@@ -235,7 +233,7 @@ public class frag_opening_account extends Fragment {
     }
     private void sendDataFragment(Bundle bundle, Fragment fragment){
         fragment.setArguments(bundle);
-        if (chkFlow == 0 || isSessionZoom) {
+        if (isSessionZoom) {
             getFragmentPage(fragment);
         } else {
             getFragmentPageDefault(fragment);
@@ -266,7 +264,7 @@ public class frag_opening_account extends Fragment {
         startActivityForResult(intent, 2);
     }
     private void chooseFromCamera() {
-        if (chkFlow == 1 && KTP.length > 0){
+        if (KTP.length > 0){
             Intent intent = new Intent(context, DipsCameraSource.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivityForResult(intent, 10);
@@ -319,7 +317,7 @@ public class frag_opening_account extends Fragment {
                 /*Bitmap thumbnail = (BitmapFactory.decodeFile(picturePath));
                 getResizedBitmap(thumbnail, (thumbnail.getWidth()/4), (thumbnail.getHeight()/4));*/
             } else if (requestCode == 10){
-                if (chkFlow == 1) {
+                //if (chkFlow == 1) {
                     if (KTP.length > 0) {
                         session.saveFlagUpDoc(true);
                         KTP_SWAFOTO = data.getByteArrayExtra("result_camera");
@@ -333,7 +331,7 @@ public class frag_opening_account extends Fragment {
                         chooseImage.setVisibility(View.GONE);
                         viewImage.setImageBitmap(bitmap);
                     }
-                } else {
+                /*} else {
                     if (isCust) {
                         session.clearCIF();
                         getFragmentPage(new frag_portfolio_new());
@@ -343,7 +341,7 @@ public class frag_opening_account extends Fragment {
                         bundle.putByteArray("ktp",DataKTP);
                         sendDataFragment(bundle, new frag_opening_account2());
                     }
-                }
+                }*/
             }
         }
     }

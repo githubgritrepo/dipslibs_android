@@ -226,11 +226,21 @@ public interface ApiService {
     @GET("tnc/list/{idTnc}")
     Call<JsonObject> getTNC(@Path("idTnc") int idTnc);
 
-    @GET("form-generator/formcif")
-    Call<JsonObject> getResiCIF();
+    @GET("form-generator/formcif/{idDips}")
+    Call<JsonObject> getResiCIF(@Path("idDips") String idDips);
+
+    @GET("form-generator/formkomplain/{noComplaint}")
+    Call<JsonObject> getResiComplaint(@Path("noComplaint") String noComplaint);
 
     @POST("form-data/komplain")
     Call<JsonObject> formComplaint(@Header("Content-Type") String contentType,
                                     @Body RequestBody body);
+
+    @Headers("Content-Type: "+ MyConstants.CONTENT_TYPE)
+    @GET("approval/status/{idForm}")
+    Call<JsonObject> ApprovalStatus(@Path("idForm") String idForm);
+
+    @GET
+    Call<JsonObject> getDynamicUrl(@Url String url);
 
 }

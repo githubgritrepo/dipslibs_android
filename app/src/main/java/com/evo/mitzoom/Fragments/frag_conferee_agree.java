@@ -13,6 +13,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
 
 import com.evo.mitzoom.API.ApiService;
@@ -152,7 +153,7 @@ public class frag_conferee_agree extends Fragment implements ZoomVideoSDKDelegat
                 /*BaseMeetingActivity.btnFile.setBackgroundTintList(context.getResources().getColorStateList(R.color.Blue));
                 BaseMeetingActivity.btnFile.setClickable(true);*/
 
-                BaseMeetingActivity.btnChat.setBackground(getResources().getDrawable(R.drawable.oval_background_10dp));
+                //BaseMeetingActivity.btnChat.setBackground(ResourcesCompat.getDrawable(getResources(),R.drawable.oval_background_10dp,null));
                 BaseMeetingActivity.btnChat.setClickable(true);
             }
         });

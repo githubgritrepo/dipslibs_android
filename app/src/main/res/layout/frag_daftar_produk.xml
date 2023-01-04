@@ -2,6 +2,7 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
     android:background="@color/white"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:theme="@style/Theme.MaterialComponents.Light.DarkActionBar">
@@ -38,7 +39,8 @@
             android:layout_below="@+id/TopBar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
-        <LinearLayout
+
+            <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
@@ -54,7 +56,7 @@
                 <ImageView
                     android:layout_width="35dp"
                     android:layout_height="match_parent"
-                    android:src="@drawable/insurance" />
+                    android:src="@drawable/ic_prod_open_account" />
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -67,7 +69,14 @@
                     android:textStyle="bold" />
             </RelativeLayout>
 
-            <RelativeLayout
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rv_itemProduct"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                tools:ignore="SpeakableTextPresentCheck"
+                tools:listitem="@layout/item_tabungan" />
+
+            <!--<RelativeLayout
                 android:id="@+id/rlProduct1"
                 android:background="@color/white"
                 android:layout_height="50dp"
@@ -78,7 +87,7 @@
                 <ImageView
                     android:layout_width="35dp"
                     android:layout_height="match_parent"
-                    android:src="@drawable/tabungan" />
+                    android:src="@drawable/ic_prod_saving" />
 
                 <TextView
                     android:id="@+id/tvTitleList"
@@ -91,7 +100,7 @@
                     android:textSize="20dp"
                     android:textStyle="bold" />
 
-            </RelativeLayout>
+            </RelativeLayout>-->
 
             <androidx.cardview.widget.CardView
                 app:cardElevation="0dp"

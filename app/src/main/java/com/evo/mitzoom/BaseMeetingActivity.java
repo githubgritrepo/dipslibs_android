@@ -8,6 +8,7 @@ import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.app.Service;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Rect;
@@ -40,6 +41,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -50,6 +52,7 @@ import com.evo.mitzoom.Adapter.UserVideoAdapter;
 import com.evo.mitzoom.Fragments.frag_chat;
 import com.evo.mitzoom.Fragments.frag_conferee_agree;
 import com.evo.mitzoom.Fragments.frag_file;
+import com.evo.mitzoom.Helper.LocaleHelper;
 import com.evo.mitzoom.Helper.NotificationMgr;
 import com.evo.mitzoom.Helper.NotificationService;
 import com.evo.mitzoom.Helper.OutboundService;
@@ -57,6 +60,7 @@ import com.evo.mitzoom.Helper.OutboundServiceNew;
 import com.evo.mitzoom.Helper.RabbitMirroring;
 import com.evo.mitzoom.Session.SessionManager;
 import com.evo.mitzoom.screenshare.ShareToolbar;
+import com.evo.mitzoom.ui.DipsChooseLanguage;
 import com.evo.mitzoom.ui.DipsVideoConfren;
 import com.evo.mitzoom.ui.RatingActivity;
 import com.evo.mitzoom.util.ErrorMsgUtil;
@@ -155,6 +159,7 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
     private int isOn = 0;
     private SessionManager sessions;
     private Context mContext;
+    private CardView cardSurf;
     private RelativeLayout llUsersVideo;
     private RelativeLayout offUsersVideo;
 
@@ -164,6 +169,8 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
     private GifImageView gifLoading;
     private ImageView imgBatikVic;
     private boolean flagClickEnd = false;
+    private boolean flagUserLeave = false;
+    public static RelativeLayout rlprogress;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -174,7 +181,8 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
 
         sessions = new SessionManager(mContext);
         String lang = sessions.getLANG();
-        setLocale(this,lang);
+        //setLocale(this,lang);
+        LocaleHelper.setLocale(this,lang);
         sessions.saveFlagUpDoc(false);
         sessions.saveFlagConfAgree(false);
         isCust = sessions.getKEY_iSCust();
@@ -263,6 +271,10 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
     protected void onResume() {
         super.onResume();
 
+        String lang = sessions.getLANG();
+        //setLocale(this,lang);
+        LocaleHelper.setLocale(this,lang);
+
         Log.d("CEK","onResume");
 
         if (isActivityPaused) {
@@ -270,7 +282,7 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
         }
         isActivityPaused = false;
         refreshRotation();
-        updateActionBarLayoutParams();
+        //updateActionBarLayoutParams();
 
         if (ZoomVideoSDK.getInstance().isInSession()) {
             int size = UserHelper.getAllUsers().size();
@@ -304,6 +316,15 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
                         | View.SYSTEM_UI_FLAG_FULLSCREEN
                         | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
                 );
+    }
+
+    public static void showProgress(Boolean bool){
+
+        if (bool){
+            rlprogress.setVisibility(View.VISIBLE);
+        }else {
+            rlprogress.setVisibility(View.GONE);
+        }
     }
 
     private void startVideoHandler() {
@@ -456,7 +477,7 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
         super.onConfigurationChanged(newConfig);
         //updateFpsOrientation();
         refreshRotation();
-        updateActionBarLayoutParams();
+        //updateActionBarLayoutParams();
         updateSmallVideoLayoutParams();
     }
 
@@ -563,8 +584,10 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
         int dyWidth = (int) Math.ceil(widthDisp / 2);
 
         gifLoading = (GifImageView) findViewById(R.id.gifLoading);
+        rlprogress = (RelativeLayout) findViewById(R.id.rlprogress);
         imgBatikVic = (ImageView) findViewById(R.id.imgBatikVic);
         llUsersVideo = (RelativeLayout) findViewById(R.id.llUsersVideo);
+        cardSurf = (CardView) findViewById(R.id.cardSurf);
         offUsersVideo= (RelativeLayout) findViewById(R.id.offUsersVideo);
         ImageView video_off_tips2 = (ImageView) findViewById(R.id.video_off_tips2);
         ImageView video_off_tips3 = (ImageView) findViewById(R.id.video_off_tips3);
@@ -583,7 +606,8 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
         btnChat = findViewById(R.id.icon_chat);
         btnFile = findViewById(R.id.icon_file);
 
-        llUsersVideo.setVisibility(View.INVISIBLE);
+        //llUsersVideo.setVisibility(View.INVISIBLE);
+        cardSurf.setVisibility(View.INVISIBLE);
         offUsersVideo.setVisibility(View.VISIBLE);
 
         final int margin = (int) (5 * displayMetrics.scaledDensity);
@@ -679,14 +703,29 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
     }
 
     private void dialogAgentLeave() {
-        SweetAlertDialog dialogEnd = new SweetAlertDialog(mContext,SweetAlertDialog.WARNING_TYPE);
-        dialogEnd.setContentText(getString(R.string.agent_leave));
+        LayoutInflater inflater = getLayoutInflater();
+        View dialogView = inflater.inflate(R.layout.layout_dialog_sweet, null);
+
+        ImageView imgDialog = (ImageView) dialogView.findViewById(R.id.imgDialog);
+        TextView tvTitleDialog = (TextView) dialogView.findViewById(R.id.tvTitleDialog);
+        TextView tvBodyDialog = (TextView) dialogView.findViewById(R.id.tvBodyDialog);
+        Button btnCancelDialog = (Button) dialogView.findViewById(R.id.btnCancelDialog);
+        Button btnConfirmDialog = (Button) dialogView.findViewById(R.id.btnConfirmDialog);
+
+        tvTitleDialog.setVisibility(View.GONE);
+
+        imgDialog.setImageDrawable(getDrawable(R.drawable.v_dialog_info));
+        tvBodyDialog.setText(getString(R.string.agent_leave));
+        btnConfirmDialog.setText(getString(R.string.leave_leave_text));
+
+        SweetAlertDialog dialogEnd = new SweetAlertDialog(mContext,SweetAlertDialog.NORMAL_TYPE);
+        dialogEnd.setCustomView(dialogView);
         dialogEnd.setCancelable(false);
-        dialogEnd.setConfirmText(getString(R.string.leave_leave_text));
-        dialogEnd.setConfirmButtonBackgroundColor(getColor(R.color.zm_button));
-        dialogEnd.setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
+        dialogEnd.hideConfirmButton();
+
+        btnConfirmDialog.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(SweetAlertDialog sweetAlertDialog) {
+            public void onClick(View view) {
                 dialogEnd.dismissWithAnimation();
                 releaseResource();
                 int ret = ZoomVideoSDK.getInstance().leaveSession(false);
@@ -721,9 +760,9 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
         btnCancelDialog.setText(getString(R.string.tidak_not));
         btnConfirmDialog.setText(getString(R.string.label_ya));
 
-        SweetAlertDialog dialogEnd = new SweetAlertDialog(mContext,SweetAlertDialog.WARNING_TYPE);
-        dialogEnd.setContentText(getString(R.string.leave_message));
-        dialogEnd.setCancelable(true);
+        SweetAlertDialog dialogEnd = new SweetAlertDialog(mContext,SweetAlertDialog.NORMAL_TYPE);
+        dialogEnd.setCustomView(dialogView);
+        dialogEnd.setCancelable(false);
         dialogEnd.hideConfirmButton();
 
         btnConfirmDialog.setOnClickListener(new View.OnClickListener() {
@@ -743,6 +782,13 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
             @Override
             public void onClick(View view) {
                 dialogEnd.dismissWithAnimation();
+            }
+        });
+
+        dialogEnd.setOnCancelListener(new DialogInterface.OnCancelListener() {
+            @Override
+            public void onCancel(DialogInterface dialogInterface) {
+                flagClickEnd = false;
             }
         });
 
@@ -1003,10 +1049,11 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
 
     @Override
     public void onSessionJoin() {
-        llUsersVideo.setVisibility(View.VISIBLE);
+        //llUsersVideo.setVisibility(View.VISIBLE);
+        cardSurf.setVisibility(View.VISIBLE);
         offUsersVideo.setVisibility(View.INVISIBLE);
-        btnFile.setBackgroundTintList(BaseMeetingActivity.this.getResources().getColorStateList(R.color.btnFalse));
-        btnChat.setBackgroundTintList(BaseMeetingActivity.this.getResources().getColorStateList(R.color.btnFalse));
+        //btnFile.setBackgroundTintList(BaseMeetingActivity.this.getResources().getColorStateList(R.color.btnFalse));
+        //btnChat.setBackgroundTintList(BaseMeetingActivity.this.getResources().getColorStateList(R.color.btnFalse));
         btnFile.setClickable(false);
         btnChat.setClickable(false);
         gifLoading.setVisibility(View.GONE);
@@ -1026,11 +1073,26 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
 
         timer.setVisibility(View.VISIBLE);
         runTimer(text_timer);
+
+        String idDips = sessions.getKEY_IdDips();
+
+        JSONObject idDipsObj = new JSONObject();
+        try {
+            idDipsObj.put("idDips",idDips);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        rabbitMirroring.MirroringSendKey(idDipsObj);
     }
 
     @Override
     public void onSessionLeave() {
-        finish();
+        Log.e("CEK","onSessionLeave");
+        if (flagUserLeave == false) {
+            dialogAgentLeave();
+        } else {
+            finish();
+        }
     }
 
     @Override
@@ -1074,6 +1136,8 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
             videoListContain.setVisibility(View.INVISIBLE);
         }
         updateSessionInfo();
+
+        flagUserLeave = true;
 
         if (userList.size() < 2 && flagClickEnd == false) {
             dialogAgentLeave();

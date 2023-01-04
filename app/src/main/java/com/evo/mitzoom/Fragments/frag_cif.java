@@ -5,8 +5,11 @@ import static android.app.Activity.RESULT_OK;
 import android.Manifest;
 import android.app.Activity;
 import android.app.DatePickerDialog;
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -19,11 +22,15 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.app.ActivityCompat;
+import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.Fragment;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.os.Environment;
+import android.os.Handler;
 import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -33,6 +40,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -47,12 +55,16 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.chaos.view.PinView;
 import com.evo.mitzoom.API.ApiService;
 import com.evo.mitzoom.API.Server;
+import com.evo.mitzoom.BaseMeetingActivity;
 import com.evo.mitzoom.Helper.MyParserFormBuilder;
 import com.evo.mitzoom.Helper.RabbitMirroring;
+import com.evo.mitzoom.Model.FormSpin;
 import com.evo.mitzoom.R;
 import com.evo.mitzoom.Session.SessionManager;
+import com.evo.mitzoom.ui.Alternative.DipsSwafoto;
 import com.evo.mitzoom.ui.DipsCameraActivity;
 import com.evo.mitzoom.ui.DipsCameraSource;
 import com.evo.mitzoom.ui.DipsWaitingRoom;
@@ -73,6 +85,8 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import cn.pedant.SweetAlert.SweetAlertDialog;
 import okhttp3.MediaType;
@@ -99,7 +113,6 @@ public class frag_cif extends Fragment {
     private ImageView btnCamera;
     private LinearLayout btnGallery;
     private Button btnNext;
-    //private Button delete;
     private LinearLayout iconKtp;
     private LinearLayout iconSwafoto;
     private LinearLayout iconNpwp;
@@ -115,7 +128,6 @@ public class frag_cif extends Fragment {
     private SessionManager sessions;
     private boolean isCust;
     private boolean isSwafoto;
-    private int chkFlow;
     private byte[] KTP = new byte[0];
     private byte[] KTP_SWAFOTO = new byte[0];
     private byte[] NPWP = new byte[0];
@@ -144,13 +156,38 @@ public class frag_cif extends Fragment {
     private File mediaFilePhoto = null;
     private int getRequestCode = 0;
     private TextView tvAlertDoc;
+    private ImageView imgDelete;
+    private LinearLayout llOR;
 
     final String STATE_BYTEKTP = "byteKTP";
     final String STATE_BYTESWAFOTO = "byteSwafoto";
     final String STATE_BYTENPWP = "byteNPWP";
     final String STATE_BYTETTD = "byteTTD";
     final String STATE_FORMID = "formID";
-    private ImageView imgDelete;
+    private NestedScrollView scrollOTP;
+    private View inclOTP;
+    private ImageView imgDialog;
+    private TextView textTitleOTP;
+    private Button btnVerifikasi;
+    private TextView TimerOTP;
+    private TextView Resend_Otp;
+    private BroadcastReceiver smsReceiver = null;
+    private PinView otp;
+    private JSONObject objValCIF;
+    private String no_handphone = "";
+    private String numberOTP = "";
+    private String newString = "";
+    private Handler handler = null;
+    private Runnable myRunnable = null;
+    private int getMinutes = 2;
+    private int seconds = 60;
+    private boolean running = true;
+    private String transactionId = "";
+    private JSONObject idFormObj;
+    JSONObject valSpin = new JSONObject();
+    private boolean flagStuckSpin = false;
+    private JSONObject reqFormMirroring;
+    private int loopStatus = 0;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -160,7 +197,6 @@ public class frag_cif extends Fragment {
         sessions = new SessionManager(mContext);
         isCust = sessions.getKEY_iSCust();
         isSwafoto = sessions.getKEY_iSSwafoto();
-        chkFlow = sessions.getFLOW();
         formCode = sessions.getFormCode();
         idDips = sessions.getKEY_IdDips();
 
@@ -213,13 +249,22 @@ public class frag_cif extends Fragment {
         btnCamera = (ImageView) views.findViewById(R.id.choose_camera);
         btnGallery = (LinearLayout) views.findViewById(R.id.choose_gallery);
         btnNext = (Button) views.findViewById(R.id.btnNext);
-        //delete = (Button) views.findViewById(R.id.delete);
         imgDelete = (ImageView) views.findViewById(R.id.imgDelete);
         viewImage = (ImageView) views.findViewById(R.id.Imageview);
         LL = (LinearLayout) views.findViewById(R.id.BackgroundLL);
+        llOR = (LinearLayout) views.findViewById(R.id.llOR);
         chooseImage = (LinearLayout) views.findViewById(R.id.Choose_Image);
 
         llFormBuild = (LinearLayout) views.findViewById(R.id.llFormBuild);
+
+        scrollOTP = (NestedScrollView) views.findViewById(R.id.scrollOTP);
+        inclOTP = views.findViewById(R.id.inclOTP);
+        imgDialog = (ImageView) views.findViewById(R.id.imgDialog);
+        textTitleOTP = (TextView) views.findViewById(R.id.textIBMB);
+        btnVerifikasi = (Button) views.findViewById(R.id.btnVerifikasi);
+        TimerOTP = (TextView) views.findViewById(R.id.timer_otp);
+        Resend_Otp = (TextView) views.findViewById(R.id.btn_resend_otp);
+        otp = (PinView) views.findViewById(R.id.otp);
 
         btnProses = (Button) views.findViewById(R.id.btnProses);
         
@@ -238,7 +283,7 @@ public class frag_cif extends Fragment {
         if (formCode == 8) {
             keysData = "datadiri";
         } else if (formCode == 801) {
-            keysData = "alamatberbeda";
+            keysData = "datatidaksesuai";
         } else if (formCode == 802) {
             keysData = "pekerjaan";
         } else if (formCode == 803) {
@@ -247,7 +292,6 @@ public class frag_cif extends Fragment {
 
         Log.e("CEK",mContext+" isCust : "+isCust);
         Log.e("CEK",mContext+" isSwafoto : "+isSwafoto);
-        Log.e("CEK",mContext+" chkFlow : "+chkFlow);
         Log.e("CEK",mContext+" formCode : "+formCode);
         Log.e("CEK",mContext+" idDips : "+idDips);
         Log.e("CEK",mContext+" KTP : "+KTP.length);
@@ -290,6 +334,10 @@ public class frag_cif extends Fragment {
 
             processGetForm(form_id);
         } else {
+            if (formCode == 22) {
+                llOR.setVisibility(View.GONE);
+                btnGallery.setVisibility(View.GONE);
+            }
             inclBodyUpload.setVisibility(View.VISIBLE);
             llFormBuild.setVisibility(View.GONE);
             btnProses.setVisibility(View.GONE);
@@ -379,21 +427,13 @@ public class frag_cif extends Fragment {
                     btnNext.setClickable(false);
                     viewImage.setVisibility(View.GONE);
                     chooseImage.setVisibility(View.VISIBLE);
+                    if (formCode == 22) {
+                        llOR.setVisibility(View.GONE);
+                        btnGallery.setVisibility(View.GONE);
+                    }
                     imgDelete.setVisibility(View.GONE);
                 }
             });
-            /*delete.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    LL.setBackground(mContext.getResources().getDrawable(R.drawable.bg));
-                    btnNext.setVisibility(View.GONE);
-                    btnNext.setClickable(false);
-                    btnNext.setBackgroundTintList(mContext.getResources().getColorStateList(R.color.btnFalse));
-                    viewImage.setVisibility(View.GONE);
-                    chooseImage.setVisibility(View.VISIBLE);
-                    delete.setVisibility(View.GONE);
-                }
-            });*/
             btnNext.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -416,7 +456,7 @@ public class frag_cif extends Fragment {
                         Toast.makeText(mContext, getResources().getString(R.string.error_image), Toast.LENGTH_SHORT).show();
                     }
                     else{
-                        if (KTP_SWAFOTO.length == 0 || chkFlow == 0) {
+                        if (KTP_SWAFOTO.length == 0) {
                             if (formCode == 4) {
                                 if (flagOCR) {
                                     if (KTP.length == 0) {
@@ -437,16 +477,46 @@ public class frag_cif extends Fragment {
                             if (formCode == 22) {
                                 if (!picturePath.isEmpty()) {
                                     String fieldName = "foto";
+                                    ((Activity)mContext).runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            if (isSessionZoom) {
+                                                BaseMeetingActivity.showProgress(true);
+                                            } else {
+                                                DipsSwafoto.showProgress(true);
+                                            }
+                                        }
+                                    });
                                     processFormDataAttachment(fieldName,picturePath);
                                 }
                             } else if (formCode == 6) {
                                 if (!picturePath.isEmpty()) {
                                     String fieldName = "npwp";
+                                    ((Activity)mContext).runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            if (isSessionZoom) {
+                                                BaseMeetingActivity.showProgress(true);
+                                            } else {
+                                                DipsSwafoto.showProgress(true);
+                                            }
+                                        }
+                                    });
                                     processFormDataAttachment(fieldName,picturePath);
                                 }
                             } else if (formCode == 7) {
                                 if (!picturePath.isEmpty()) {
                                     String fieldName = "ttd";
+                                    ((Activity)mContext).runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            if (isSessionZoom) {
+                                                BaseMeetingActivity.showProgress(true);
+                                            } else {
+                                                DipsSwafoto.showProgress(true);
+                                            }
+                                        }
+                                    });
                                     processFormDataAttachment(fieldName,picturePath);
                                 }
                             }
@@ -458,7 +528,6 @@ public class frag_cif extends Fragment {
             btnProses.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    Toast.makeText(mContext,"SEDANG DIPROSES...!!",Toast.LENGTH_SHORT).show();
                     int child = llFormBuild.getChildCount();
 
                     if (child > 0 && idElement.length() > 0) {
@@ -478,6 +547,9 @@ public class frag_cif extends Fragment {
                                                 EditText ed = (EditText) llFormBuild.getChildAt(i);
                                                 String results = ed.getText().toString();
                                                 if (requiredDataEl && results.isEmpty()) {
+                                                    Toast.makeText(mContext, nameDataEl + " harus diisi/dipilih", Toast.LENGTH_SHORT).show();
+                                                    checkEmpty = true;
+                                                } else if (nameDataEl.contains("noponsel") && results.isEmpty()) {
                                                     Toast.makeText(mContext, nameDataEl + " harus diisi/dipilih", Toast.LENGTH_SHORT).show();
                                                     checkEmpty = true;
                                                 }
@@ -547,56 +619,109 @@ public class frag_cif extends Fragment {
                         Log.e("CEK","flagNext : "+flagNext);
                         Log.e("CEK","objEl : "+objEl.toString());
                         if (flagNext) {
-                            Log.e("CEK","MASUK NEXT");
-                            String getCif = sessions.getCIF();
-                            try {
-                                JSONObject dataCIF = null;
-                                if (getCif != null) {
-                                    dataCIF = new JSONObject(getCif);
-                                } else {
-                                    dataCIF = new JSONObject();
-                                }
-                                dataCIF.put(keysData,objEl);
-                                dataFormCIF.put(keysData,objEl);
-                                sessions.saveCIF(dataCIF.toString());
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            }
-
-                            JSONObject reqFormSend = dataReqForm();
-
-                            if (objEl.has("pernyataan") && formCode == 8) {
-                                try {
-                                    boolean pernyataan = objEl.getBoolean("pernyataan");
-                                    Bundle bundle = new Bundle();
-                                    bundle.putByteArray("ktp",KTP);
-                                    bundle.putByteArray("swafoto", KTP_SWAFOTO);
-                                    bundle.putByteArray("npwp",NPWP);
-                                    bundle.putByteArray("ttd",TTD);
-
-                                    if (pernyataan) {
-                                        int intLayoutSelf = 801;
-                                        rabbitMirroring.MirroringSendKey(dataFormCIF);
-                                        rabbitMirroring.MirroringSendEndpoint(intLayoutSelf);
-                                        bundle.putInt("form_id",9);
-                                        sessions.saveFormCOde(intLayoutSelf);
-                                        sessions.saveFormReq(reqFormSend.toString());
-                                        sendDataFragment(bundle, new frag_cif());
-                                    } else {
-                                        processSendFormCIF(reqFormSend);
-                                    }
-                                } catch (JSONException e) {
-                                    e.printStackTrace();
-                                }
-                            } else {
-                                processSendFormCIF(reqFormSend);
-                            }
+                            processNext();
                         }
                     }
                 }
             });
         }
 
+    }
+
+    private void processNext() {
+        Log.e("CEK","MASUK NEXT");
+        String getCif = sessions.getCIF();
+        try {
+            JSONObject dataCIF = null;
+            if (getCif != null) {
+                dataCIF = new JSONObject(getCif);
+            } else {
+                dataCIF = new JSONObject();
+            }
+            dataCIF.put(keysData,objEl);
+            dataFormCIF.put(keysData,objEl);
+            sessions.saveCIF(dataCIF.toString());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        JSONObject reqFormSend = dataReqForm();
+
+        if (objEl.has("pernyataan") && formCode == 8) {
+            try {
+                boolean pernyataan = objEl.getBoolean("pernyataan");
+                Bundle bundle = new Bundle();
+                /*bundle.putByteArray("ktp",KTP);
+                bundle.putByteArray("swafoto", KTP_SWAFOTO);
+                bundle.putByteArray("npwp",NPWP);
+                bundle.putByteArray("ttd",TTD);*/
+
+                if (pernyataan) {
+                    int intLayoutSelf = 801;
+                    reqFormMirroring = dataReqFormMirroring();
+                    rabbitMirroring.MirroringSendKey(reqFormMirroring);
+                    rabbitMirroring.MirroringSendEndpoint(intLayoutSelf);
+                    bundle.putInt("form_id",9);
+                    sessions.saveFormCOde(intLayoutSelf);
+                    sessions.saveFormReq(reqFormSend.toString());
+                    sessions.saveFormReqMirroring(reqFormMirroring.toString());
+                    sendDataFragment(bundle, new frag_cif());
+                } else {
+                    ((Activity)mContext).runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (isSessionZoom) {
+                                BaseMeetingActivity.showProgress(true);
+                            } else {
+                                DipsSwafoto.showProgress(true);
+                            }
+                        }
+                    });
+                    processSendFormCIF(reqFormSend);
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        } else {
+            ((Activity)mContext).runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    if (isSessionZoom) {
+                        BaseMeetingActivity.showProgress(true);
+                    } else {
+                        DipsSwafoto.showProgress(true);
+                    }
+                }
+            });
+            processSendFormCIF(reqFormSend);
+        }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        smsReceiver = new BroadcastReceiver() {
+
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                numberOTP = "";
+                String dataSMS = intent.getExtras().getString("smsMessage");
+                Log.e("CEK","MASUK dataSMS : "+dataSMS);
+                String[] sp = dataSMS.split(" ");
+                for (int i = 0; i < sp.length; i++) {
+                    String word = sp[i].toString();
+                    if(word.matches("\\d+(?:\\.\\d+)?")) {
+                        numberOTP = word.replaceAll("[^0-9]", "");
+                        if (numberOTP.length() == 6) {
+                            otp.setText(numberOTP);
+                            newString = myFilter(numberOTP);
+                            otp.setText(newString);
+                        }
+                    }
+                }
+            }
+        };
+        LocalBroadcastManager.getInstance(getActivity()).registerReceiver(smsReceiver,new IntentFilter("getotp"));
     }
 
     @Override
@@ -611,11 +736,11 @@ public class frag_cif extends Fragment {
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
-        /*outState.putByteArray(STATE_BYTEKTP,KTP);
+        outState.putByteArray(STATE_BYTEKTP,KTP);
         outState.putByteArray(STATE_BYTESWAFOTO,KTP_SWAFOTO);
         outState.putByteArray(STATE_BYTENPWP,NPWP);
         outState.putByteArray(STATE_BYTETTD,TTD);
-        outState.putInt(STATE_FORMID,form_id);*/
+        outState.putInt(STATE_FORMID,form_id);
     }
 
     private JSONObject dataReqForm() {
@@ -698,6 +823,88 @@ public class frag_cif extends Fragment {
         return dataFormObj;
     }
 
+    private JSONObject dataReqFormMirroring() {
+        JSONObject dataFormObj = null;
+        try {
+            if (sessions.getFormReqMirroring() != null) {
+                String forms = sessions.getFormReqMirroring();
+                dataFormObj = new JSONObject(forms);
+            } else {
+                dataFormObj = new JSONObject();
+            }
+
+            JSONObject dataFormObj2 = new JSONObject(objEl.toString());
+
+            JSONObject dataSelfObj = new JSONObject();
+
+            if (formCode == 801) {
+
+                /*String alamat2 = dataFormObj2.getString("alamattempattinggalsaatini");
+                String rt2 = dataFormObj2.getString("rt");
+                String rw2 = dataFormObj2.getString("rw");
+                String kelurahandesa2 = dataFormObj2.getString("kelurahandesa");
+                String kecamatan2 = dataFormObj2.getString("kecamatan");
+                String kabupatenkota2 = dataFormObj2.getString("kabupatenkota");
+                String provinsi2 = dataFormObj2.getString("provinsi");
+                String kodepos2 = dataFormObj2.getString("kodepos");
+                String notelp2 = dataFormObj2.getString("notelp");
+
+                dataSelfObj.put("alamat",alamat2);
+                dataSelfObj.put("rt",rt2);
+                dataSelfObj.put("rw",rw2);
+                dataSelfObj.put("kelurahandesa",kelurahandesa2);
+                dataSelfObj.put("kecamatan",kecamatan2);
+                dataSelfObj.put("kabupatenkota",kabupatenkota2);
+                dataSelfObj.put("provinsi",provinsi2);
+                dataSelfObj.put("kodepos",kodepos2);
+                dataSelfObj.put("notelp",notelp2);
+
+                dataFormObj2.remove("alamattempattinggalsaatini");
+                dataFormObj2.remove("rt");
+                dataFormObj2.remove("rw");
+                dataFormObj2.remove("kelurahandesa");
+                dataFormObj2.remove("kecamatan");
+                dataFormObj2.remove("kabupatenkota");
+                dataFormObj2.remove("provinsi");
+                dataFormObj2.remove("kodepos");
+                dataFormObj2.remove("notelp");*/
+            }
+
+            if (dataFormObj2.has("idDips")) {
+                String getidDips = dataFormObj2.getString("idDips");
+                if (formCode != 801) {
+                    dataFormObj.put("idDips", getidDips);
+                }
+                dataFormObj2.remove("idDips");
+            }
+
+            /*if (dataFormObj2.has("pernyataan")) {
+                boolean pernyataan = dataFormObj2.getBoolean("pernyataan");
+                dataFormObj.put("datatidaksesuai",pernyataan);
+                dataFormObj2.remove("pernyataan");
+            }*/
+
+            if (formCode == 8 || formCode == 801) {
+                if (dataFormObj.has("datadiri")) {
+                    JSONObject selfObj = dataFormObj.getJSONObject("datadiri");
+                    selfObj.put("datatidaksesuai",dataFormObj2);
+                    dataFormObj.put("datadiri", selfObj);
+                } else {
+                    dataFormObj.put("datadiri", dataFormObj2);
+                }
+            } else if (formCode == 802) {
+                dataFormObj.put(keysData,dataFormObj2);
+            } else if (formCode == 803) {
+                dataFormObj.put(keysData,dataFormObj2);
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        Log.e("CEK","dataReqFormMirroring : "+dataFormObj);
+        return dataFormObj;
+    }
+
     private void processSendFormCIF(JSONObject jsons) {
         Log.e("CEK","processSendFormCIF : "+jsons.toString());
         RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), jsons.toString());
@@ -718,6 +925,16 @@ public class frag_cif extends Fragment {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
                 Log.e("CEK","processSendFormCIF code : "+response.code());
+                ((Activity)mContext).runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (isSessionZoom) {
+                            BaseMeetingActivity.showProgress(false);
+                        } else {
+                            DipsSwafoto.showProgress(false);
+                        }
+                    }
+                });
                 if (response.isSuccessful()) {
                     String dataS = response.body().toString();
                     Log.e("CEK","processSendFormCIF dataS : "+dataS);
@@ -726,14 +943,14 @@ public class frag_cif extends Fragment {
                         int errCode = dataObj.getInt("code");
                         String msg = dataObj.getString("message");
                         if (errCode >= 200 && errCode <= 300) {
-                            Toast.makeText(mContext,msg,Toast.LENGTH_SHORT).show();
                             sessions.saveFormReq(null);
+                            sessions.saveFormReqMirroring(null);
 
                             Bundle bundle = new Bundle();
-                            bundle.putByteArray("ktp",KTP);
+                            /*bundle.putByteArray("ktp",KTP);
                             bundle.putByteArray("swafoto", KTP_SWAFOTO);
                             bundle.putByteArray("npwp",NPWP);
-                            bundle.putByteArray("ttd",TTD);
+                            bundle.putByteArray("ttd",TTD);*/
 
                             int intLayoutWork = 0;
                             if (objEl.has("pernyataan") && formCode == 8) {
@@ -749,7 +966,8 @@ public class frag_cif extends Fragment {
                                 intLayoutWork = 804;
                             }
 
-                            rabbitMirroring.MirroringSendKey(dataFormCIF);
+                            reqFormMirroring = dataReqFormMirroring();
+                            rabbitMirroring.MirroringSendKey(reqFormMirroring);
                             rabbitMirroring.MirroringSendEndpoint(intLayoutWork);
                             sessions.saveFormCOde(intLayoutWork);
                             if (intLayoutWork == 804 && sessions.getCIF() != null) {
@@ -758,7 +976,27 @@ public class frag_cif extends Fragment {
                                     String noCif = dataFinance.getString("noCif");
                                     sessions.saveNoCIF(noCif);
                                 }
-                                sendDataFragment(bundle, new frag_cif_full());
+                                //sendDataFragment(bundle, new frag_cif_full());
+                                String valDataCIF = sessions.getCIF();
+                                try {
+                                    objValCIF = new JSONObject(valDataCIF);
+                                    Log.e("CEK","CIF FULL objValCIF : "+objValCIF.toString());
+                                    JSONObject objEl = objValCIF.getJSONObject("datadiri");
+                                    no_handphone = objEl.getString("noponsel");
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+                                ((Activity)mContext).runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        if (isSessionZoom) {
+                                            BaseMeetingActivity.showProgress(true);
+                                        } else {
+                                            DipsSwafoto.showProgress(true);
+                                        }
+                                    }
+                                });
+                                APISaveForm();
                             } else {
                                 sendDataFragment(bundle, new frag_cif());
                             }
@@ -781,9 +1019,435 @@ public class frag_cif extends Fragment {
 
             @Override
             public void onFailure(Call<JsonObject> call, Throwable t) {
+                ((Activity)mContext).runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (isSessionZoom) {
+                            BaseMeetingActivity.showProgress(false);
+                        } else {
+                            DipsSwafoto.showProgress(false);
+                        }
+                    }
+                });
                 Toast.makeText(mContext,t.getMessage(),Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    private void pageOTP() {
+        scrollOTP.setVisibility(View.VISIBLE);
+        swipe.setVisibility(View.GONE);
+        TopBar.setVisibility(View.GONE);
+        ll_head.setVisibility(View.VISIBLE);
+
+        String noHandphone = "089783434XXX";
+        if (!no_handphone.isEmpty()) {
+            String sub_no_handphone = no_handphone.substring(no_handphone.length() - 3);
+            noHandphone = no_handphone.replace(sub_no_handphone,"XXX");
+        }
+
+        String contentText = textTitleOTP.getText().toString();
+        contentText = contentText.replace("+62812 3456 7XXX",noHandphone);
+        textTitleOTP.setText(contentText);
+
+        tvFotoKTP.setText("One Time Password");
+
+        otp.setAnimationEnable(true);
+        otp.addTextChangedListener(new TextWatcher() {
+            private boolean backSpaceOTP;
+            private int lasLenOTP;
+
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                lasLenOTP = s.length();
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                String wordOTP = s.toString();
+                Log.e("CEK","wordOTP : "+wordOTP);
+                String patternStr = "[0-9]";
+                Pattern pattern = Pattern.compile(patternStr);
+                Matcher matcher = pattern.matcher(s);
+                if (matcher.find()) {
+                    String getNumberOTP=wordOTP.replaceAll("[^0-9]", "");
+                    if (getNumberOTP.length() > 1 && getNumberOTP.length() <= 6) {
+                        getNumberOTP = getNumberOTP.substring(getNumberOTP.length()-1,getNumberOTP.length());
+                    }
+                    if (numberOTP.length() < 6) {
+                        numberOTP += getNumberOTP;
+                    }
+                    JSONObject otpObj = new JSONObject();
+                    try {
+                        otpObj.put("otp",numberOTP);
+                        rabbitMirroring.MirroringSendKey(otpObj);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                backSpaceOTP = lasLenOTP > s.length();
+                Log.e("CEK", "backSpaceOTP : " + backSpaceOTP);
+                if (backSpaceOTP) {
+                    int lenOTP = numberOTP.length();
+                    if (lenOTP > 0) {
+                        numberOTP = numberOTP.substring(0, lenOTP - 1);
+                    }
+                }
+                newString = myFilter(s.toString());
+                otp.removeTextChangedListener(this);
+                handler = new Handler();
+                myRunnable = new Runnable() {
+                    @Override
+                    public void run() {
+                        otp.setText(newString);
+                    }
+                };
+                otp.addTextChangedListener(this);
+                handler.postDelayed(myRunnable, 1500);
+                if (otp.length() == 6 || otp.length() == 0){
+                    handler.removeMessages(0);
+                    handler.removeCallbacks(myRunnable);
+                    Log.d("TAG","STOP Loop");
+                }
+            }
+        });
+
+        btnVerifikasi.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (otp.getText().toString().equalsIgnoreCase("")){
+                    Toast.makeText(mContext, "Kode Otp masih kosong", Toast.LENGTH_SHORT).show();
+                }
+                else {
+                    handler.removeMessages(0);
+                    handler.removeCallbacks(myRunnable);
+                    if (!transactionId.isEmpty()) {
+                        ((Activity)mContext).runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                if (isSessionZoom) {
+                                    BaseMeetingActivity.showProgress(true);
+                                } else {
+                                    DipsSwafoto.showProgress(true);
+                                }
+                            }
+                        });
+                        processValidateOTP();
+                    }
+                }
+            }
+        });
+        runTimer(TimerOTP, Resend_Otp);
+        Resend_Otp.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (seconds==0){
+                    resendOTP();
+                }
+            }
+        });
+    }
+
+    private void resendOTP() {
+        ((Activity)mContext).runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (isSessionZoom) {
+                    BaseMeetingActivity.showProgress(true);
+                } else {
+                    DipsSwafoto.showProgress(true);
+                }
+            }
+        });
+        processSendOTP();
+    }
+
+    public void runTimer(TextView timer_run, TextView resend) {
+        Handler handlerTimer = new Handler();
+        handlerTimer.post(new Runnable() {
+            @Override
+            public void run() {
+                int minutes = getMinutes;
+                int secs = seconds % 60;
+                String time = String.format(Locale.getDefault(),"%02d:%02d", minutes, secs);
+                timer_run.setText(time);
+                if (running) {
+                    seconds--;
+                }
+                if (seconds == 0 && minutes == 0){
+                    running = false;
+                    resend.setClickable(true);
+                } else if (seconds == 0 && minutes > 0){
+                    seconds = 59;
+                }
+                if (seconds == 59) {
+                    getMinutes--;
+                }
+                handlerTimer.postDelayed(this,1000);
+            }
+        });
+    }
+
+    private void APISaveForm() {
+        String valDataCIF = sessions.getCIF();
+        JSONObject dataObjCIF = new JSONObject();
+        try {
+            JSONObject getObjValCIF = new JSONObject(valDataCIF);
+            Log.e("CEK","APISaveForm CIF FULL objValCIF : "+getObjValCIF.toString());
+            dataObjCIF.put("formCode","Opening Cif");
+            dataObjCIF.put("idDips",idDips);
+            dataObjCIF.put("payload",getObjValCIF);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), dataObjCIF.toString());
+        Server.getAPIService().saveForm(requestBody).enqueue(new Callback<JsonObject>() {
+            @Override
+            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                Log.e("CEK","APISaveForm code : "+response.code());
+                if (response.isSuccessful()) {
+                    String dataS = response.body().toString();
+                    Log.e("CEK","APISaveForm dataS : "+dataS);
+                    try {
+                        JSONObject dataObj = new JSONObject(dataS);
+                        String idForm = dataObj.getJSONObject("data").getString("idForm");
+                        idFormObj = new JSONObject();
+                        idFormObj.put("idForm",idForm);
+                        rabbitMirroring.MirroringSendKey(idFormObj);
+
+                        processSendOTP();
+
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                } else {
+                    ((Activity)mContext).runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (isSessionZoom) {
+                                BaseMeetingActivity.showProgress(false);
+                            } else {
+                                DipsSwafoto.showProgress(false);
+                            }
+                        }
+                    });
+                    Toast.makeText(mContext,R.string.msg_error,Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<JsonObject> call, Throwable t) {
+                ((Activity)mContext).runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (isSessionZoom) {
+                            BaseMeetingActivity.showProgress(false);
+                        } else {
+                            DipsSwafoto.showProgress(false);
+                        }
+                    }
+                });
+                Toast.makeText(mContext, t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void processValidateOTP() {
+        JSONObject dataObjOTP = new JSONObject();
+        try {
+            dataObjOTP.put("transactionId", transactionId);
+            dataObjOTP.put("idDips", idDips);
+            dataObjOTP.put("token", numberOTP);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        Log.e("CEK","processValidateOTP : "+dataObjOTP.toString());
+
+        RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), dataObjOTP.toString());
+        Server.getAPIService().ValidateOTP(requestBody).enqueue(new Callback<JsonObject>() {
+            @Override
+            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                Log.e("CEK","processValidateOTP code : "+response.code());
+                if (response.isSuccessful()) {
+                    String dataS = response.body().toString();
+                    Log.e("CEK","processValidateOTP : "+dataS);
+                    processApprovalStatus();
+                    /*rabbitMirroring.MirroringSendEndpoint(13);
+                    getFragmentPage(new frag_cif_resi());*/
+                } else {
+                    ((Activity)mContext).runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (isSessionZoom) {
+                                BaseMeetingActivity.showProgress(false);
+                            } else {
+                                DipsSwafoto.showProgress(false);
+                            }
+                        }
+                    });
+                    imgDialog.setImageDrawable(AppCompatResources.getDrawable(mContext,R.drawable.v_dialog_failed));
+                    textTitleOTP.setText(R.string.titleWrongOTP);
+                    otp.setText("");
+                }
+            }
+
+            @Override
+            public void onFailure(Call<JsonObject> call, Throwable t) {
+                ((Activity)mContext).runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (isSessionZoom) {
+                            BaseMeetingActivity.showProgress(false);
+                        } else {
+                            DipsSwafoto.showProgress(false);
+                        }
+                    }
+                });
+                Toast.makeText(mContext,t.getMessage(),Toast.LENGTH_SHORT).show();
+            }
+        });
+
+    }
+
+    private void processApprovalStatus() {
+        Log.e("CEK", this+" processApprovalStatus PARAMS : "+idFormObj.toString());
+        String idForm = "";
+        try {
+            idForm = idFormObj.getString("idForm");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        //RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), idFormObj.toString());
+
+        Server.getAPIService().ApprovalStatus(idForm).enqueue(new Callback<JsonObject>() {
+            @Override
+            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                Log.e("CEK", this+" processApprovalStatus code : "+response.code());
+                ((Activity)mContext).runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (isSessionZoom) {
+                            BaseMeetingActivity.showProgress(false);
+                        } else {
+                            DipsSwafoto.showProgress(false);
+                        }
+                    }
+                });
+                if (response.isSuccessful()) {
+                    String dataS = response.body().toString();
+                    Log.e("CEK","processApprovalStatus dataS : "+dataS);
+                    rabbitMirroring.MirroringSendEndpoint(13);
+                    getFragmentPage(new frag_cif_resi());
+                } else {
+                    Toast.makeText(mContext,getString(R.string.msg_error),Toast.LENGTH_SHORT).show();
+                    if (loopStatus < 10) {
+                        try {
+                            Thread.sleep(5000);
+                            processApprovalStatus();
+                            loopStatus++;
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<JsonObject> call, Throwable t) {
+                Log.e("CEK", this+" processApprovalStatus onFailure : "+t.getMessage());
+                /*if (isSessionZoom) {
+                    BaseMeetingActivity.showProgress(false);
+                } else {
+                    DipsSwafoto.showProgress(false);
+                }*/
+                Toast.makeText(mContext,t.getMessage(),Toast.LENGTH_SHORT).show();
+                if (loopStatus < 10) {
+                    try {
+                        Thread.sleep(5000);
+                        processApprovalStatus();
+                        loopStatus++;
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        });
+    }
+
+    private void processSendOTP() {
+        String noHp = no_handphone;
+        if (noHp.substring(0,1).equals("0")) {
+            noHp = "62"+no_handphone.substring(1);
+        }
+        JSONObject dataObjOTP = new JSONObject();
+        try {
+            dataObjOTP.put("msisdn",noHp);
+            dataObjOTP.put("idDips",idDips);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        Log.e("CEK","processSendOTP : "+dataObjOTP.toString());
+
+        RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), dataObjOTP.toString());
+
+        Server.getAPIService().SendOTP(requestBody).enqueue(new Callback<JsonObject>() {
+            @Override
+            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                ((Activity)mContext).runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (isSessionZoom) {
+                            BaseMeetingActivity.showProgress(false);
+                        } else {
+                            DipsSwafoto.showProgress(false);
+                        }
+                    }
+                });
+                Log.e("CEK","processSendOTP code : "+response.code());
+                if (response.isSuccessful()) {
+                    String dataS = response.body().toString();
+                    Log.e("CEK","processSendOTP : "+dataS);
+                    try {
+                        JSONObject dataObj = new JSONObject(dataS);
+                        transactionId = dataObj.getJSONObject("data").getString("transactionId");
+                        rabbitMirroring.MirroringSendEndpoint(11);
+                        pageOTP();
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                } else {
+                    Toast.makeText(mContext,getString(R.string.msg_error),Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<JsonObject> call, Throwable t) {
+                ((Activity)mContext).runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (isSessionZoom) {
+                            BaseMeetingActivity.showProgress(false);
+                        } else {
+                            DipsSwafoto.showProgress(false);
+                        }
+                    }
+                });
+                Toast.makeText(mContext,t.getMessage(),Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    public String myFilter(String s) {
+        String digits;
+        digits = s.replaceAll("[0-9]", "*");
+        if (s.equals("")) return "";
+        return digits;
     }
 
     private void processGetForm(int formId) {
@@ -809,8 +1473,10 @@ public class frag_cif extends Fragment {
                         Log.e("CEK","dataElement : "+idElement.toString());
                         processValidationActionForm();
                         dataFormCIF.put(keysData,objEl);
-                        Log.e("CEK","DATA FORM : "+dataFormCIF.toString());
-                        rabbitMirroring.MirroringSendKey(dataFormCIF);
+                        reqFormMirroring = dataReqFormMirroring();
+                        Log.e("CEK","DATA dataFormCIF : "+dataFormCIF.toString());
+                        Log.e("CEK","DATA reqFormMirroring : "+reqFormMirroring.toString());
+                        rabbitMirroring.MirroringSendKey(reqFormMirroring);
                         if (formCode == 8) {
                             if (sessions.getOCR() != null) {
                                 processMatchData();
@@ -939,13 +1605,8 @@ public class frag_cif extends Fragment {
             if (ttlOCR.contains(",")) {
                 String[] sp = ttlOCR.split(",");
                 tgllahirOCR = sp[1].trim();
-                /*String[] sp2 = tgllahirOCR.split("-");
-                String tglOCR = sp2[0];
-                String blnOCR = sp2[1];
-                String thnOCR = sp2[2];
-                int intBln = Integer.parseInt(blnOCR);
-                String labelBln = blnIndo(intBln);
-                tgllahirOCR = tglOCR+" "+labelBln+" "+thnOCR;*/
+            } else {
+                tgllahirOCR = ttlOCR;
             }
 
             String rtOCR = "";
@@ -990,6 +1651,10 @@ public class frag_cif extends Fragment {
                     objEl.put(key,kawinOCR);
                 } else if (key.contains("warganegara")) {
                     objEl.put(key,wargaOCR);
+                } else if (key.contains("jenisidentitas")) {
+                    objEl.put(key,"KTP");
+                } else if (key.contains("negara") && wargaOCR.equals("WNI")) {
+                    objEl.put(key,"Indonesia");
                 }
             }
         } catch (JSONException e) {
@@ -1032,10 +1697,24 @@ public class frag_cif extends Fragment {
                         try {
                             int idDataEl = idElement.getJSONObject(j).getInt("id");
                             String nameDataEl = idElement.getJSONObject(j).getString("name");
+                            String urlPath = "";
+                            if (idElement.getJSONObject(j).has("url")) {
+                                urlPath = idElement.getJSONObject(j).getString("url");
+                            }
                             if (idEl == idDataEl) {
 
                                 if (llFormBuild.getChildAt(i) instanceof EditText) {
                                     EditText ed = (EditText) llFormBuild.getChildAt(i);
+                                    ed.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+                                        @Override
+                                        public void onFocusChange(View view, boolean b) {
+                                            Log.e("CEK","onFocusChange : "+b);
+                                            if (isSessionZoom) {
+                                                reqFormMirroring = dataReqFormMirroring();
+                                                rabbitMirroring.MirroringSendKey(reqFormMirroring);
+                                            }
+                                        }
+                                    });
                                     ed.addTextChangedListener(new TextWatcher() {
                                         @Override
                                         public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
@@ -1053,9 +1732,9 @@ public class frag_cif extends Fragment {
                                             } catch (JSONException e) {
                                                 e.printStackTrace();
                                             }
-                                            if (chkFlow == 0 || isSessionZoom) {
+                                            /*if (isSessionZoom) {
                                                 rabbitMirroring.MirroringSendKey(dataFormCIF);
-                                            }
+                                            }*/
                                         }
 
                                         @Override
@@ -1096,7 +1775,8 @@ public class frag_cif extends Fragment {
                                                     objEl.put(nameDataEl, results);
                                                     dataFormCIF.put(keysData,objEl);
                                                     if (isSessionZoom) {
-                                                        rabbitMirroring.MirroringSendKey(dataFormCIF);
+                                                        reqFormMirroring = dataReqFormMirroring();
+                                                        rabbitMirroring.MirroringSendKey(reqFormMirroring);
                                                     }
                                                 } catch (JSONException e) {
                                                     e.printStackTrace();
@@ -1117,19 +1797,25 @@ public class frag_cif extends Fragment {
                                             if (isChk) {
                                                 try {
                                                     objEl.put(nameDataEl, isChk);
-                                                    dataFormCIF.put(keysData,objEl);
-                                                    if (isSessionZoom) {
-                                                        rabbitMirroring.MirroringSendKey(dataFormCIF);
-                                                    }
                                                 } catch (JSONException e) {
                                                     e.printStackTrace();
                                                 }
                                             } else {
                                                 try {
-                                                    objEl.put(nameDataEl, false);
+                                                    objEl.put(nameDataEl, isChk);
                                                 } catch (JSONException e) {
                                                     e.printStackTrace();
                                                 }
+                                            }
+
+                                            try {
+                                                dataFormCIF.put(keysData,objEl);
+                                            } catch (JSONException e) {
+                                                e.printStackTrace();
+                                            }
+                                            if (isSessionZoom) {
+                                                reqFormMirroring = dataReqFormMirroring();
+                                                rabbitMirroring.MirroringSendKey(reqFormMirroring);
                                             }
                                         }
                                     });
@@ -1146,7 +1832,8 @@ public class frag_cif extends Fragment {
                                                 objEl.put(nameDataEl, results);
                                                 dataFormCIF.put(keysData,objEl);
                                                 if (isSessionZoom) {
-                                                    rabbitMirroring.MirroringSendKey(dataFormCIF);
+                                                    reqFormMirroring = dataReqFormMirroring();
+                                                    rabbitMirroring.MirroringSendKey(reqFormMirroring);
                                                 }
                                             } catch (JSONException e) {
                                                 e.printStackTrace();
@@ -1164,16 +1851,42 @@ public class frag_cif extends Fragment {
                                     if (rl.getChildAt(0) instanceof Spinner) {
                                         objEl.put(nameDataEl, "");
                                         Spinner spin = (Spinner) rl.getChildAt(0);
+
+                                        boolean flagDot = false;
+                                        if (!urlPath.isEmpty()) {
+                                            String[] spUrl = urlPath.split("/");
+                                            int indexs = spUrl.length - 1;
+                                            String check = spUrl[indexs];
+                                            if (check.isEmpty()) {
+                                                indexs = spUrl.length - 2;
+                                                check = spUrl[indexs];
+                                            }
+                                            if (check.contains(":")) {
+                                                flagDot = true;
+                                            }
+                                            if (!flagDot) {
+                                                processGetDynamicURL(spin, urlPath, nameDataEl);
+                                            }
+                                        }
+
                                         spin.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                                             @Override
                                             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                                                 Log.e("CEK","getSelectedItem : "+spin.getSelectedItem().toString());
-                                                String results = spin.getSelectedItem().toString();
+                                                FormSpin dataSpin = (FormSpin) spin.getSelectedItem();
+                                                int idData = dataSpin.getId();
+                                                String results = dataSpin.getName();
                                                 try {
                                                     objEl.put(nameDataEl, results);
                                                     dataFormCIF.put(keysData,objEl);
+                                                    valSpin.put(nameDataEl,idData);
                                                     if (isSessionZoom) {
-                                                        rabbitMirroring.MirroringSendKey(dataFormCIF);
+                                                        reqFormMirroring = dataReqFormMirroring();
+                                                        rabbitMirroring.MirroringSendKey(reqFormMirroring);
+                                                    }
+                                                    Log.e("CEK","flagStuckSpin : "+flagStuckSpin);
+                                                    if (flagStuckSpin) {
+                                                        processGetSpinChild(nameDataEl);
                                                     }
                                                 } catch (JSONException e) {
                                                     e.printStackTrace();
@@ -1199,7 +1912,8 @@ public class frag_cif extends Fragment {
                                                 objEl.put(nameDataEl, results);
                                                 dataFormCIF.put(keysData,objEl);
                                                 if (isSessionZoom) {
-                                                    rabbitMirroring.MirroringSendKey(dataFormCIF);
+                                                    reqFormMirroring = dataReqFormMirroring();
+                                                    rabbitMirroring.MirroringSendKey(reqFormMirroring);
                                                 }
                                             } catch (JSONException e) {
                                                 e.printStackTrace();
@@ -1214,7 +1928,8 @@ public class frag_cif extends Fragment {
                                                 objEl.put(nameDataEl, results);
                                                 dataFormCIF.put(keysData,objEl);
                                                 if (isSessionZoom) {
-                                                    rabbitMirroring.MirroringSendKey(dataFormCIF);
+                                                    reqFormMirroring = dataReqFormMirroring();
+                                                    rabbitMirroring.MirroringSendKey(reqFormMirroring);
                                                 }
                                             } catch (JSONException e) {
                                                 e.printStackTrace();
@@ -1272,6 +1987,137 @@ public class frag_cif extends Fragment {
         }
     }
 
+    private void processGetDynamicURL(Spinner spin, String urlPath, String nameDataEl) {
+        flagStuckSpin = false;
+        Log.e("CEK","processGetDynamicURL : "+urlPath);
+        Server.getAPIService().getDynamicUrl(urlPath).enqueue(new Callback<JsonObject>() {
+            @Override
+            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                Log.e("CEK","processGetDynamicURL code : "+response.code());
+                if (response.isSuccessful()) {
+                    String dataS = response.body().toString();
+                    Log.e("CEK","processGetDynamicURL dataS : "+dataS);
+                    try {
+                        JSONObject dataObj = new JSONObject(dataS);
+                        JSONArray dataArr = dataObj.getJSONArray("data");
+                        ArrayList<FormSpin> dataDropDown = new ArrayList<>();
+                        for (int i = 0; i < dataArr.length(); i++) {
+                            int idData = dataArr.getJSONObject(i).getInt("id");
+                            String labelIdn = dataArr.getJSONObject(i).getString("labelIdn");
+                            String labelEng = dataArr.getJSONObject(i).getString("labelEng");
+                            dataDropDown.add(new FormSpin(idData,labelIdn,labelIdn,labelEng));
+                            if (i == 0) {
+                                valSpin.put(nameDataEl,idData);
+                                processGetSpinChild(nameDataEl);
+                                if ((nameDataEl.contains("kelurahan") || nameDataEl.contains("desa"))) {
+                                    flagStuckSpin = true;
+                                }
+                            }
+                        }
+                        ArrayAdapter<FormSpin> adapter2 = new ArrayAdapter<FormSpin>(mContext, android.R.layout.simple_spinner_dropdown_item, dataDropDown);
+                        spin.setAdapter(adapter2);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                } else {
+                    Toast.makeText(mContext,R.string.msg_error,Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<JsonObject> call, Throwable t) {
+                Toast.makeText(mContext,t.getMessage(),Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void processGetSpinChild(String nameDataEl) {
+        Log.e("CEK","processGetSpinChild nameDataEl : "+nameDataEl);
+        int child = llFormBuild.getChildCount();
+        for (int i = 0; i < child; i++) {
+            int idEl = llFormBuild.getChildAt(i).getId();
+            for (int j = 0; j < idElement.length(); j++) {
+                try {
+                    int idDataEl = idElement.getJSONObject(j).getInt("id");
+                    String getnameDataEl = idElement.getJSONObject(j).getString("name");
+                    String urlPath = "";
+                    if (idElement.getJSONObject(j).has("url")) {
+                        urlPath = idElement.getJSONObject(j).getString("url");
+                    }
+
+                    if (idEl == idDataEl) {
+                        if (llFormBuild.getChildAt(i) instanceof RelativeLayout) {
+                            if (nameDataEl.contains("provinsi") && (getnameDataEl.contains("kabupaten") || getnameDataEl.contains("kota"))) {
+                                Log.e("CEK","processGetSpinChild getnameDataEl : "+getnameDataEl);
+                                if (!urlPath.isEmpty()) {
+                                    int idProv = valSpin.getInt("provinsi");
+                                    String idSpin = String.valueOf(idProv);
+                                    String urlNew = urlPath.replace(":id_provinsi",idSpin);
+
+                                    Log.e("CEK", "urlNew : "+urlNew);
+
+                                    RelativeLayout rl = (RelativeLayout) llFormBuild.getChildAt(i);
+                                    if (rl.getChildAt(0) instanceof Spinner) {
+                                        Spinner spin = (Spinner) rl.getChildAt(0);
+                                        processGetDynamicURL(spin, urlNew, getnameDataEl);
+                                    }
+                                }
+                            } else if ((nameDataEl.contains("kabupaten") || nameDataEl.contains("kota")) && getnameDataEl.contains("kecamatan")) {
+                                if (!urlPath.isEmpty()) {
+                                    int idProv = valSpin.getInt("provinsi");
+                                    int idKabKot = 0;
+                                    if (valSpin.has("kabupaten")) {
+                                        idKabKot = valSpin.getInt("kabupaten");
+                                    } else if (valSpin.has("kota")) {
+                                        idKabKot = valSpin.getInt("kota");
+                                    }
+                                    String idSpin = String.valueOf(idProv);
+                                    String idSpin2 = String.valueOf(idKabKot);
+                                    String urlNew = urlPath.replace(":id_provinsi",idSpin).replace(":id_kabupaten",idSpin2);
+
+                                    Log.e("CEK", "urlNew : "+urlNew);
+
+                                    RelativeLayout rl = (RelativeLayout) llFormBuild.getChildAt(i);
+                                    if (rl.getChildAt(0) instanceof Spinner) {
+                                        Spinner spin = (Spinner) rl.getChildAt(0);
+                                        processGetDynamicURL(spin, urlNew, getnameDataEl);
+                                    }
+                                }
+                            } else if (nameDataEl.contains("kecamatan") && (getnameDataEl.contains("kelurahan") || getnameDataEl.contains("desa"))) {
+                                if (!urlPath.isEmpty()) {
+                                    int idProv = valSpin.getInt("provinsi");
+                                    int idKec = valSpin.getInt("kecamatan");
+                                    int idKabKot = 0;
+                                    if (valSpin.has("kabupaten")) {
+                                        idKabKot = valSpin.getInt("kabupaten");
+                                    } else if (valSpin.has("kota")) {
+                                        idKabKot = valSpin.getInt("kota");
+                                    }
+                                    String idSpin = String.valueOf(idProv);
+                                    String idSpin2 = String.valueOf(idKabKot);
+                                    String idSpin3 = String.valueOf(idKec);
+                                    String urlNew = urlPath.replace(":id_provinsi",idSpin).replace(":id_kabupaten",idSpin2).replace(":id_kecamatan",idSpin3);
+
+                                    Log.e("CEK", "urlNew : "+urlNew);
+
+                                    RelativeLayout rl = (RelativeLayout) llFormBuild.getChildAt(i);
+                                    if (rl.getChildAt(0) instanceof Spinner) {
+                                        Spinner spin = (Spinner) rl.getChildAt(0);
+                                        processGetDynamicURL(spin, urlNew, getnameDataEl);
+                                    }
+                                }
+                            } else {
+                                flagStuckSpin = true;
+                            }
+                        }
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
     private void chooseFromSD() {
         picturePath = "";
         Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
@@ -1281,7 +2127,7 @@ public class frag_cif extends Fragment {
 
     private void chooseFromCamera() {
         picturePath = "";
-        if ((chkFlow == 1 || isSessionZoom) && KTP.length > 0 && KTP_SWAFOTO.length == 0){
+        if (KTP.length > 0 && KTP_SWAFOTO.length == 0){
             Intent intent = new Intent(mContext, DipsCameraSource.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivityForResult(intent, REQUESTCODE_SWAFOTO);
@@ -1300,6 +2146,18 @@ public class frag_cif extends Fragment {
             datasReqOCR.put("ttl",ttl);
             datasReqOCR.put("idDips", idDips);
             datasReqOCR.put("code", 5);
+            datasReqOCR.put("provinsi",provinsi);
+            datasReqOCR.put("kotakabupaten",kota_kabupaten);
+            datasReqOCR.put("jeniskelamin",jeniskelamin);
+            datasReqOCR.put("golongandarah",golongan_darah);
+            datasReqOCR.put("alamat",alamat);
+            datasReqOCR.put("rtrw",rtrw);
+            datasReqOCR.put("desakelurahan",desa_kelurahan);
+            datasReqOCR.put("kecamatan",kecamatan);
+            datasReqOCR.put("agama",agama);
+            datasReqOCR.put("statusperkawinan",status_perkawinan);
+            datasReqOCR.put("kewarganegaraan",kewarganegaraan);
+            datasReqOCR.put("pekerjaan",pekerjaan);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -1334,6 +2192,16 @@ public class frag_cif extends Fragment {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
                 Log.e("CEK","processFormDataAttachment response code : "+response.code());
+                ((Activity)mContext).runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (isSessionZoom) {
+                            BaseMeetingActivity.showProgress(false);
+                        } else {
+                            DipsSwafoto.showProgress(false);
+                        }
+                    }
+                });
                 if (response.isSuccessful()) {
                     String dataS = response.body().toString();
                     Log.e("CEK","processFormDataAttachment : "+dataS);
@@ -1395,6 +2263,7 @@ public class frag_cif extends Fragment {
 
                             if (!isSessionZoom && formCode == 22 && KTP.length > 0 && KTP_SWAFOTO.length > 0) {
                                 Intent intent = new Intent(mContext, DipsWaitingRoom.class);
+                                intent.putExtra("CUSTNAME","Customer");
                                 startActivity(intent);
                                 ((Activity) mContext).finishAffinity();
                             } else {
@@ -1434,6 +2303,16 @@ public class frag_cif extends Fragment {
 
             @Override
             public void onFailure(Call<JsonObject> call, Throwable t) {
+                ((Activity)mContext).runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (isSessionZoom) {
+                            BaseMeetingActivity.showProgress(false);
+                        } else {
+                            DipsSwafoto.showProgress(false);
+                        }
+                    }
+                });
                 if (fieldName.equals("ktp")) {
                     KTP = new byte[0];
                     KTP_BASE64 = "";
@@ -1449,12 +2328,25 @@ public class frag_cif extends Fragment {
         SweetAlertDialog sweetAlertDialog = new SweetAlertDialog(mContext, SweetAlertDialog.NORMAL_TYPE);
         sweetAlertDialog.setCustomView(dialogView);
         sweetAlertDialog.hideConfirmButton();
+        sweetAlertDialog.setCancelable(false);
         sweetAlertDialog.show();
 
         EditText NIK = (EditText) dialogView.findViewById(R.id.et_nik_ocr);
         EditText Nama = (EditText) dialogView.findViewById(R.id.et_name_ocr);
         EditText TTL = (EditText) dialogView.findViewById(R.id.et_ttl_ocr);
         EditText TTL2 = (EditText) dialogView.findViewById(R.id.et_ttl2_ocr);
+        EditText et_gender= (EditText) dialogView.findViewById(R.id.et_gender);
+        EditText et_goldar= (EditText) dialogView.findViewById(R.id.et_goldar);
+        EditText et_address= (EditText) dialogView.findViewById(R.id.et_address);
+        EditText et_rtrw= (EditText) dialogView.findViewById(R.id.et_rtrw);
+        EditText et_provinsi= (EditText) dialogView.findViewById(R.id.et_provinsi);
+        EditText et_kabkot= (EditText) dialogView.findViewById(R.id.et_kabkot);
+        EditText et_kecamatan= (EditText) dialogView.findViewById(R.id.et_kecamatan);
+        EditText et_desa= (EditText) dialogView.findViewById(R.id.et_desa);
+        EditText et_religion= (EditText) dialogView.findViewById(R.id.et_religion);
+        EditText et_status_kawin= (EditText) dialogView.findViewById(R.id.et_status_kawin);
+        EditText et_warga= (EditText) dialogView.findViewById(R.id.et_warga);
+        EditText et_work= (EditText) dialogView.findViewById(R.id.et_work);
         Button btnOCRCancel = (Button) dialogView.findViewById(R.id.btncncl);
         Button btnOCRNext = (Button) dialogView.findViewById(R.id.btnlnjt);
 
@@ -1468,9 +2360,18 @@ public class frag_cif extends Fragment {
         Nama.setText(nama);
         TTL.setText(tmptLahir);
         TTL2.setText(tglLahir);
-
-        btnOCRCancel.setBackgroundTintList(mContext.getColorStateList(R.color.button_end_call));
-        btnOCRNext.setBackgroundTintList(mContext.getColorStateList(R.color.Blue));
+        et_gender.setText(jeniskelamin);
+        et_goldar.setText(golongan_darah);
+        et_address.setText(alamat);
+        et_rtrw.setText(rtrw);
+        et_provinsi.setText(provinsi);
+        et_kabkot.setText(kota_kabupaten);
+        et_kecamatan.setText(kecamatan);
+        et_desa.setText(desa_kelurahan);
+        et_religion.setText(agama);
+        et_status_kawin.setText(status_perkawinan);
+        et_warga.setText(kewarganegaraan);
+        et_work.setText(pekerjaan);
 
         Calendar currentTimeOCR = Calendar.getInstance();
 
@@ -1603,20 +2504,342 @@ public class frag_cif extends Fragment {
 
             }
         });
+        et_gender.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (isSessionZoom) {
+                    jeniskelamin = s.toString();
+                    JSONObject dataReq = dataReqOCR();
+                    JSONObject reqOCR = new JSONObject();
+                    try {
+                        reqOCR.put("ocr",dataReq);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                    rabbitMirroring.MirroringSendKey(reqOCR);
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
+        et_goldar.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (isSessionZoom) {
+                    golongan_darah = s.toString();
+                    JSONObject dataReq = dataReqOCR();
+                    JSONObject reqOCR = new JSONObject();
+                    try {
+                        reqOCR.put("ocr",dataReq);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                    rabbitMirroring.MirroringSendKey(reqOCR);
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
+        et_goldar.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (isSessionZoom) {
+                    golongan_darah = s.toString();
+                    JSONObject dataReq = dataReqOCR();
+                    JSONObject reqOCR = new JSONObject();
+                    try {
+                        reqOCR.put("ocr",dataReq);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                    rabbitMirroring.MirroringSendKey(reqOCR);
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
+        et_rtrw.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (isSessionZoom) {
+                    rtrw = s.toString();
+                    JSONObject dataReq = dataReqOCR();
+                    JSONObject reqOCR = new JSONObject();
+                    try {
+                        reqOCR.put("ocr",dataReq);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                    rabbitMirroring.MirroringSendKey(reqOCR);
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
+        et_provinsi.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (isSessionZoom) {
+                    provinsi = s.toString();
+                    JSONObject dataReq = dataReqOCR();
+                    JSONObject reqOCR = new JSONObject();
+                    try {
+                        reqOCR.put("ocr",dataReq);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                    rabbitMirroring.MirroringSendKey(reqOCR);
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
+        et_kabkot.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (isSessionZoom) {
+                    kota_kabupaten = s.toString();
+                    JSONObject dataReq = dataReqOCR();
+                    JSONObject reqOCR = new JSONObject();
+                    try {
+                        reqOCR.put("ocr",dataReq);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                    rabbitMirroring.MirroringSendKey(reqOCR);
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
+        et_kecamatan.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (isSessionZoom) {
+                    kecamatan = s.toString();
+                    JSONObject dataReq = dataReqOCR();
+                    JSONObject reqOCR = new JSONObject();
+                    try {
+                        reqOCR.put("ocr",dataReq);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                    rabbitMirroring.MirroringSendKey(reqOCR);
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
+        et_desa.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (isSessionZoom) {
+                    desa_kelurahan = s.toString();
+                    JSONObject dataReq = dataReqOCR();
+                    JSONObject reqOCR = new JSONObject();
+                    try {
+                        reqOCR.put("ocr",dataReq);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                    rabbitMirroring.MirroringSendKey(reqOCR);
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
+        et_religion.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (isSessionZoom) {
+                    agama = s.toString();
+                    JSONObject dataReq = dataReqOCR();
+                    JSONObject reqOCR = new JSONObject();
+                    try {
+                        reqOCR.put("ocr",dataReq);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                    rabbitMirroring.MirroringSendKey(reqOCR);
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
+        et_status_kawin.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (isSessionZoom) {
+                    status_perkawinan = s.toString();
+                    JSONObject dataReq = dataReqOCR();
+                    JSONObject reqOCR = new JSONObject();
+                    try {
+                        reqOCR.put("ocr",dataReq);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                    rabbitMirroring.MirroringSendKey(reqOCR);
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
+        et_warga.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (isSessionZoom) {
+                    kewarganegaraan = s.toString();
+                    JSONObject dataReq = dataReqOCR();
+                    JSONObject reqOCR = new JSONObject();
+                    try {
+                        reqOCR.put("ocr",dataReq);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                    rabbitMirroring.MirroringSendKey(reqOCR);
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
+        et_work.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (isSessionZoom) {
+                    pekerjaan = s.toString();
+                    JSONObject dataReq = dataReqOCR();
+                    JSONObject reqOCR = new JSONObject();
+                    try {
+                        reqOCR.put("ocr",dataReq);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                    rabbitMirroring.MirroringSendKey(reqOCR);
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
 
         btnOCRNext.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (isSessionZoom) {
+                //if (isSessionZoom) {
                     nik = NIK.getText().toString().trim();
                     nama = Nama.getText().toString().trim();
                     tmptLahir = TTL.getText().toString().trim();
                     ttl = TTL2.getText().toString().trim();
                     if (!picturePath.isEmpty()) {
                         String fieldName = "ktp";
+                        ((Activity)mContext).runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                if (isSessionZoom) {
+                                    BaseMeetingActivity.showProgress(true);
+                                } else {
+                                    DipsSwafoto.showProgress(true);
+                                }
+                            }
+                        });
                         processFormDataAttachment(fieldName,picturePath);
                     }
-                }
+                //}
                 sweetAlertDialog.dismiss();
             }
         });
@@ -1668,7 +2891,7 @@ public class frag_cif extends Fragment {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == RESULT_OK && data != null) {
             getRequestCode = requestCode;
-            Log.e("CEK","requestCode : "+requestCode+" | chkFlow : "+chkFlow+" | KTP : "+KTP.length+" | KTP_SWAFOTO : "+KTP_SWAFOTO.length+" | isCust : "+isCust);
+            Log.e("CEK","requestCode : "+requestCode+" | KTP : "+KTP.length+" | KTP_SWAFOTO : "+KTP_SWAFOTO.length+" | isCust : "+isCust);
             if (requestCode == REQUESTCODE_CAPTURE){
                 Log.e("CEK","RETURN CAMERA");
                 sessions.saveFlagUpDoc(true);
@@ -1687,8 +2910,6 @@ public class frag_cif extends Fragment {
                 //btnNext.setBackgroundTintList(mContext.getResources().getColorStateList(R.color.zm_button));
                 btnNext.setClickable(true);
                 imgDelete.setVisibility(View.VISIBLE);
-                /*delete.setBackgroundTintList(mContext.getResources().getColorStateList(R.color.red_btn_bg_pressed_color));
-                delete.setVisibility(View.VISIBLE);*/
                 viewImage.setVisibility(View.VISIBLE);
                 chooseImage.setVisibility(View.GONE);
                 viewImage.setImageBitmap(bitmap);
@@ -1705,7 +2926,7 @@ public class frag_cif extends Fragment {
                 picturePath = c.getString(columnIndex);
                 c.close();
 
-                Bitmap thumbnail = prosesOptimalImage(picturePath);
+                Bitmap thumbnail = prosesOptimalImage(picturePath,1);
 
                 ExifInterface exif = null;
                 int rotation = 0;
@@ -1731,8 +2952,6 @@ public class frag_cif extends Fragment {
                     //btnNext.setBackgroundTintList(mContext.getResources().getColorStateList(R.color.zm_button));
                     btnNext.setClickable(true);
                     imgDelete.setVisibility(View.VISIBLE);
-                    /*delete.setBackgroundTintList(mContext.getResources().getColorStateList(R.color.red_btn_bg_pressed_color));
-                    delete.setVisibility(View.VISIBLE);*/
                     viewImage.setVisibility(View.VISIBLE);
                     chooseImage.setVisibility(View.GONE);
                     imgtoBase64(thumbnail);
@@ -1743,8 +2962,8 @@ public class frag_cif extends Fragment {
                     }
                 }
             } else if (requestCode == REQUESTCODE_SWAFOTO){
-                if (chkFlow == 1 || isSessionZoom) {
-                    if (KTP.length > 0) {
+                /*if (chkFlow == 1 || isSessionZoom) {
+                    if (KTP.length > 0) {*/
                         sessions.saveFlagUpDoc(true);
                         byte[] resultCamera = data.getByteArrayExtra("result_camera");
                         Bitmap bitmap = BitmapFactory.decodeByteArray(resultCamera, 0, resultCamera.length);
@@ -1761,15 +2980,11 @@ public class frag_cif extends Fragment {
                         //btnNext.setBackgroundTintList(mContext.getResources().getColorStateList(R.color.zm_button));
                         btnNext.setClickable(true);
                         imgDelete.setVisibility(View.VISIBLE);
-                        /*delete.setBackgroundTintList(mContext.getResources().getColorStateList(R.color.red_btn_bg_pressed_color));
-                        delete.setVisibility(View.VISIBLE);*/
                         viewImage.setVisibility(View.VISIBLE);
                         chooseImage.setVisibility(View.GONE);
                         viewImage.setImageBitmap(bitmap);
-                        if (isSessionZoom) {
-                            processSendImage(bitmap);
-                        }
-                    }
+                        processSendImage(bitmap);
+                /*    }
                 } else {
                     if (isCust) {
                         sessions.clearCIF();
@@ -1780,7 +2995,7 @@ public class frag_cif extends Fragment {
                         bundle.putByteArray("ktp",DataKTP);
                         sendDataFragment(bundle, new frag_opening_account2());
                     }
-                }
+                }*/
             }
         }
     }
@@ -1796,27 +3011,34 @@ public class frag_cif extends Fragment {
         return imgBase64;
     }*/
 
-    private Bitmap prosesOptimalImage(String picturePath) {
+    private Bitmap prosesOptimalImage(String picturePath, int perDiff) {
         File mediaFile = new File(picturePath);
         Bitmap thumbnail = (BitmapFactory.decodeFile(picturePath));
         int file_size = Integer.parseInt(String.valueOf(mediaFile.length()/1024));
         Log.d("CEK", "file_size : "+file_size);
 
-        int perDiff = 1;
-        if (file_size > 3072) {
-            perDiff = 8;
-        } else if (file_size > 2048) {
-            perDiff = 6;
-        } else if (file_size > 1024) {
-            perDiff = 4;
-        } else if (file_size > 550) {
-            perDiff = 2;
+        if (perDiff == 1) {
+            if (file_size > 4096) {
+                perDiff = 8;
+            } else if (file_size > 3072) {
+                perDiff = 6;
+            } else if (file_size > 2048) {
+                perDiff = 4;
+            } else if (file_size > 1024) {
+                perDiff = 2;
+            }
         }
 
         if (perDiff == 1) {
             viewImage.setImageBitmap(thumbnail);
         } else {
             thumbnail = getResizedBitmap(thumbnail, (thumbnail.getWidth() / perDiff), (thumbnail.getHeight() / perDiff));
+        }
+
+        Log.e("CEK", "bitmapCrop.getWidth() : "+thumbnail.getWidth()+" | bitmapCrop.getHeight() : "+thumbnail.getHeight());
+        if (thumbnail.getWidth() < 256 || thumbnail.getHeight() < 256) {
+            perDiff--;
+            prosesOptimalImage(picturePath,perDiff);
         }
 
         return thumbnail;
@@ -1917,6 +3139,16 @@ public class frag_cif extends Fragment {
         bitmap.compress(Bitmap.CompressFormat.JPEG,100, baos);
         byte[] imageBytes = baos.toByteArray();
         String encodedImage = Base64.encodeToString(imageBytes, Base64.NO_WRAP);
+        ((Activity)mContext).runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (isSessionZoom) {
+                    BaseMeetingActivity.showProgress(true);
+                } else {
+                    DipsSwafoto.showProgress(true);
+                }
+            }
+        });
         ocrKTP(encodedImage);
     }
 
@@ -1936,6 +3168,16 @@ public class frag_cif extends Fragment {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
                 Log.d("Response OCR",""+response.code());
+                ((Activity)mContext).runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (isSessionZoom) {
+                            BaseMeetingActivity.showProgress(false);
+                        } else {
+                            DipsSwafoto.showProgress(false);
+                        }
+                    }
+                });
                 if (response.isSuccessful()) {
                     String dataS = response.body().toString();
                     Log.d("Response OCR",""+dataS);
@@ -2047,6 +3289,16 @@ public class frag_cif extends Fragment {
             }
             @Override
             public void onFailure(Call<JsonObject> call, Throwable t) {
+                ((Activity)mContext).runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (isSessionZoom) {
+                            BaseMeetingActivity.showProgress(false);
+                        } else {
+                            DipsSwafoto.showProgress(false);
+                        }
+                    }
+                });
                 flagOCR = false;
                 Toast.makeText(mContext,t.getMessage(),Toast.LENGTH_SHORT).show();
             }
@@ -2076,7 +3328,7 @@ public class frag_cif extends Fragment {
 
     private void sendDataFragment(Bundle bundle, Fragment fragment){
         fragment.setArguments(bundle);
-        if (chkFlow == 0 || isSessionZoom) {
+        if (isSessionZoom) {
             getFragmentPage(fragment);
         } else {
             getFragmentPageDefault(fragment);

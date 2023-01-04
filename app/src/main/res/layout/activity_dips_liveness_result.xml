@@ -8,12 +8,18 @@
     android:background="@color/white"
     android:orientation="vertical">
 
+    <ProgressBar
+        android:layout_width="380dp"
+        android:layout_height="380dp"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="30dp"/>
+
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/mask_view"
-        android:layout_width="320dp"
-        android:layout_height="320dp"
+        android:layout_width="300dp"
+        android:layout_height="300dp"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="70dp"/>
+        android:layout_marginTop="70dp" />
 
     <TextView
         android:id="@+id/tip_text_view"
@@ -27,5 +33,7 @@
         android:text="@string/please_wait"
         android:layout_below="@id/mask_view"
         android:layout_marginTop="50dp"/>
+
+    <include layout="@layout/progress_loading"/>
 
 </RelativeLayout>

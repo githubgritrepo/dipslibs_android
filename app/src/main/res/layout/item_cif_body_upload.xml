@@ -46,11 +46,11 @@
                     android:src="@drawable/kamera" />
 
                 <LinearLayout
+                    android:id="@+id/llOR"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="20dp"
                     android:layout_marginEnd="20dp"
-                    android:layout_marginBottom="15dp"
                     android:gravity="center"
                     android:orientation="horizontal">
 
@@ -83,7 +83,8 @@
                     android:layout_marginStart="20dp"
                     android:layout_marginEnd="20dp"
                     android:gravity="center"
-                    android:orientation="horizontal">
+                    android:orientation="horizontal"
+                    android:padding="10dp">
 
                     <ImageView
                         android:layout_width="20dp"
@@ -113,69 +114,29 @@
             android:layout_width="250dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:layout_marginTop="20dp">
+            android:layout_marginBottom="20dp">
 
             <ImageView
                 android:id="@+id/imgDelete"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
-                android:src="@drawable/v_camera"/>
+                android:src="@drawable/v_camera" />
 
             <Button
                 android:id="@+id/btnNext"
                 android:layout_width="wrap_content"
                 android:layout_height="40dp"
+                android:layout_alignParentRight="true"
                 android:background="@drawable/oval_background_10dp"
                 android:backgroundTint="@color/zm_button"
                 android:clickable="false"
                 android:text="@string/btn_continue"
                 android:textColor="@color/white"
                 android:textSize="14dp"
-                android:textStyle="bold"
-                android:layout_alignParentRight="true"/>
+                android:textStyle="bold" />
 
         </RelativeLayout>
 
-        <!--<LinearLayout
-            android:layout_width="250dp"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_marginStart="20dp"
-            android:layout_marginTop="20dp"
-            android:layout_marginEnd="20dp"
-            android:layout_marginBottom="20dp"
-            android:gravity="center"
-            android:orientation="horizontal">
-
-            <Button
-                android:id="@+id/delete"
-                android:layout_width="0dp"
-                android:layout_height="40dp"
-                android:layout_marginEnd="10dp"
-                android:layout_weight="1"
-                android:background="@drawable/oval_background_10dp"
-                android:backgroundTint="@color/red_btn_bg_pressed_color"
-                android:clickable="false"
-                android:drawableStart="@drawable/ic_delete"
-                android:drawableTint="@color/white"
-                android:text="@string/hapus"
-                android:textColor="@color/white"
-                android:textSize="14dp"
-                android:textStyle="bold"
-                android:visibility="gone" />
-
-            <Button
-                android:id="@+id/btnNext"
-                android:layout_width="0dp"
-                android:layout_height="40dp"
-                android:layout_weight="1"
-                android:background="@drawable/oval_background_10dp"
-                android:clickable="false"
-                android:text="@string/btn_continue"
-                android:textColor="@color/white"
-                android:textSize="14dp"
-                android:textStyle="bold" />
-        </LinearLayout>-->
     </LinearLayout>
 
 </LinearLayout>

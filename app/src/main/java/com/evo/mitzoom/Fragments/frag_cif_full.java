@@ -71,7 +71,6 @@ public class frag_cif_full extends Fragment {
     private SessionManager sessions;
     private boolean isCust;
     private boolean isSwafoto;
-    private int chkFlow;
     private byte[] bytePhoto;
     private byte[] KTP = new byte[0];
     private byte[] KTP_SWAFOTO = new byte[0];
@@ -118,7 +117,6 @@ public class frag_cif_full extends Fragment {
         sessions = new SessionManager(mContext);
         isCust = sessions.getKEY_iSCust();
         isSwafoto = sessions.getKEY_iSSwafoto();
-        chkFlow = sessions.getFLOW();
         formCode = sessions.getFormCode();
         idDips = sessions.getKEY_IdDips();
         String valDataCIF = sessions.getCIF();
@@ -159,7 +157,6 @@ public class frag_cif_full extends Fragment {
 
         Log.e(TAG,mContext+" isCust : "+isCust);
         Log.e(TAG,mContext+" isSwafoto : "+isSwafoto);
-        Log.e(TAG,mContext+" chkFlow : "+chkFlow);
         Log.e(TAG,mContext+" formCode : "+formCode);
         Log.e(TAG,mContext+" idDips : "+idDips);
         Log.e(TAG,mContext+" KTP : "+KTP.length);
@@ -738,6 +735,7 @@ public class frag_cif_full extends Fragment {
         if (s.equals("")) return "";
         return digits;
     }
+
     public void runTimer(TextView timer_run, TextView resend) {
         Handler handlerTimer = new Handler();
         handlerTimer.post(new Runnable() {

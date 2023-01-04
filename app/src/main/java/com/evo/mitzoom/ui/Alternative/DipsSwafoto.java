@@ -33,6 +33,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -42,6 +43,7 @@ import com.evo.mitzoom.API.Server;
 import com.evo.mitzoom.BaseMeetingActivity;
 import com.evo.mitzoom.Fragments.frag_berita;
 import com.evo.mitzoom.Fragments.frag_inputdata_new;
+import com.evo.mitzoom.Helper.LocaleHelper;
 import com.evo.mitzoom.Helper.OutboundServiceNew;
 import com.evo.mitzoom.R;
 import com.evo.mitzoom.Session.SessionManager;
@@ -99,6 +101,7 @@ public class DipsSwafoto extends AppCompatActivity implements com.wdullaer.mater
     private JSONArray tanggalPenuh;
     private JSONArray periodePenuh;
     private Button btnSchedule2;
+    public static RelativeLayout rlprogress;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -115,13 +118,15 @@ public class DipsSwafoto extends AppCompatActivity implements com.wdullaer.mater
         idDips = sessions.getKEY_IdDips();
         isCust = sessions.getKEY_iSCust();
         String lang = sessions.getLANG();
-        setLocale(this,lang);
+        //setLocale(this,lang);
+        LocaleHelper.setLocale(this,lang);
         setContentView(R.layout.activity_dips_swafoto);
 
         CardView cardSurf = (CardView) findViewById(R.id.cardSurf);
         preview = (SurfaceView) findViewById(R.id.mySurface);
         btnSchedule = (Button) findViewById(R.id.btnSchedule);
         btnEndCall = (Button) findViewById(R.id.end_call);
+        rlprogress = (RelativeLayout) findViewById(R.id.rlprogress);
 
         displayMetrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
@@ -192,12 +197,25 @@ public class DipsSwafoto extends AppCompatActivity implements com.wdullaer.mater
     protected void onResume() {
         super.onResume();
 
+        String lang = sessions.getLANG();
+        //setLocale(this,lang);
+        LocaleHelper.setLocale(this,lang);
+
         Log.d("CEK","MASUK onResume");
 
         camera = Camera.open(useFacing);
         //startPreview();
         cameraConfigured = false;
         previewHolder();
+    }
+
+    public static void showProgress(Boolean bool){
+
+        if (bool){
+            rlprogress.setVisibility(View.VISIBLE);
+        }else {
+            rlprogress.setVisibility(View.GONE);
+        }
     }
 
     @Override

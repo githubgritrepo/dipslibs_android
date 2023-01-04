@@ -1,5 +1,7 @@
 package com.evo.mitzoom.Model;
 
+import android.util.Log;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -8,11 +10,13 @@ public class FormSpin {
     private int id;
     private String code;
     private String name;
+    private String nameEng;
 
-    public FormSpin(int id, String code, String name) {
+    public FormSpin(int id, String code, String name, String nameEng) {
         this.id = id;
         this.code = code;
         this.name = name;
+        this.nameEng = nameEng;
     }
 
     public int getId() {
@@ -39,6 +43,14 @@ public class FormSpin {
         this.name = name;
     }
 
+    public String getNameEng() {
+        return nameEng;
+    }
+
+    public void setNameEng(String nameEng) {
+        this.nameEng = nameEng;
+    }
+
     @NonNull
     @Override
     public String toString() {
@@ -47,8 +59,11 @@ public class FormSpin {
 
     @Override
     public boolean equals(@Nullable Object obj) {
+        Log.e("CEK","FormSpin equals : "+obj.toString());
         if(obj instanceof FormSpin){
             FormSpin c = (FormSpin ) obj;
+            Log.e("CEK","FormSpin c.getName() : "+c.getName()+" | name : "+name);
+            Log.e("CEK","FormSpin c.getId() : "+c.getId()+" | name : "+id);
             if(c.getName().equals(name) && c.getId()==id ) return true;
         }
 

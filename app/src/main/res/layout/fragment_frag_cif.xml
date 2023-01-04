@@ -15,6 +15,14 @@
             android:id="@+id/inclHead"
             layout="@layout/item_cif_head_upload" />
 
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:rotation="180"
+            android:scaleType="fitXY"
+            android:src="@drawable/batik_bvic" />
+
         <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
             android:id="@+id/swipe"
             android:layout_width="match_parent"
@@ -70,13 +78,29 @@
 
         </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
-        <ImageView
+        <androidx.core.widget.NestedScrollView
+            android:id="@+id/scrollOTP"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:src="@drawable/batik_bvic"
-            android:rotation="180"
-            android:scaleType="fitXY"
-            android:layout_alignParentBottom="true"/>
+            android:layout_height="match_parent"
+            android:scrollbars="vertical"
+            android:layout_below="@id/inclHead"
+            android:visibility="gone">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="center">
+
+                <include
+                    android:id="@+id/inclOTP"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    layout="@layout/item_otp"
+                    android:layout_centerInParent="true" />
+
+            </RelativeLayout>
+
+        </androidx.core.widget.NestedScrollView>
 
     </RelativeLayout>
 

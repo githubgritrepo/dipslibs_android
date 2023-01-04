@@ -3,7 +3,6 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:theme="@style/Theme.MaterialComponents.Light.DarkActionBar"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
     <LinearLayout
@@ -25,26 +24,17 @@
             android:text="@string/nik"
             android:textAppearance="@style/TextAppearance.AppCompat.Body2"
             android:textSize="15dp" />
-        <com.google.android.material.textfield.TextInputLayout
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+
+        <EditText
+            android:padding="10dp"
+            android:id="@+id/et_nik_ocr"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:background="@drawable/bg_textinput"
+            android:inputType="number"
+            android:textSize="12dp"
             android:layout_marginBottom="10dp"
-            app:boxCornerRadiusBottomEnd="10dp"
-            app:boxCornerRadiusBottomStart="10dp"
-            app:boxCornerRadiusTopEnd="10dp"
-            app:boxCornerRadiusTopStart="10dp">
-
-            <EditText
-                android:padding="9dp"
-                android:id="@+id/et_nik_ocr"
-                android:layout_width="match_parent"
-                android:layout_height="35dp"
-                android:background="@drawable/bg_textinput"
-                android:inputType="number"
-                android:textSize="12dp"
-                tools:ignore="SpeakableTextPresentCheck" />
-        </com.google.android.material.textfield.TextInputLayout>
+            tools:ignore="SpeakableTextPresentCheck" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -52,26 +42,17 @@
             android:text="@string/name"
             android:textAppearance="@style/TextAppearance.AppCompat.Body2"
             android:textSize="15dp" />
-        <com.google.android.material.textfield.TextInputLayout
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+
+        <EditText
+            android:padding="10dp"
+            android:id="@+id/et_name_ocr"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:background="@drawable/bg_textinput"
+            android:inputType="text"
+            android:textSize="12dp"
             android:layout_marginBottom="10dp"
-            app:boxCornerRadiusBottomEnd="10dp"
-            app:boxCornerRadiusBottomStart="10dp"
-            app:boxCornerRadiusTopEnd="10dp"
-            app:boxCornerRadiusTopStart="10dp">
-
-            <EditText
-                android:padding="9dp"
-                android:id="@+id/et_name_ocr"
-                android:layout_width="match_parent"
-                android:layout_height="35dp"
-                android:background="@drawable/bg_textinput"
-                android:inputType="text"
-                android:textSize="12dp"
-                tools:ignore="SpeakableTextPresentCheck" />
-        </com.google.android.material.textfield.TextInputLayout>
+            tools:ignore="SpeakableTextPresentCheck" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -79,26 +60,17 @@
             android:text="@string/ttl"
             android:textAppearance="@style/TextAppearance.AppCompat.Body2"
             android:textSize="15dp" />
-        <com.google.android.material.textfield.TextInputLayout
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+
+        <EditText
+            android:padding="10dp"
+            android:id="@+id/et_ttl_ocr"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:background="@drawable/bg_textinput"
+            android:inputType="text"
+            android:textSize="12dp"
             android:layout_marginBottom="10dp"
-            app:boxCornerRadiusBottomEnd="10dp"
-            app:boxCornerRadiusBottomStart="10dp"
-            app:boxCornerRadiusTopEnd="10dp"
-            app:boxCornerRadiusTopStart="10dp">
-
-            <EditText
-                android:padding="9dp"
-                android:id="@+id/et_ttl_ocr"
-                android:layout_width="match_parent"
-                android:layout_height="35dp"
-                android:background="@drawable/bg_textinput"
-                android:inputType="text"
-                android:textSize="12dp"
-                tools:ignore="SpeakableTextPresentCheck" />
-        </com.google.android.material.textfield.TextInputLayout>
+            tools:ignore="SpeakableTextPresentCheck" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -106,33 +78,227 @@
             android:text="@string/ttl2"
             android:textAppearance="@style/TextAppearance.AppCompat.Body2"
             android:textSize="15dp" />
-        <com.google.android.material.textfield.TextInputLayout
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+
+        <EditText
+            android:padding="10dp"
+            android:id="@+id/et_ttl2_ocr"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:background="@drawable/bg_textinput"
+            android:clickable="false"
+            android:focusable="false"
+            android:focusableInTouchMode="false"
+            android:cursorVisible="false"
+            android:inputType="date"
+            android:textSize="12dp"
             android:layout_marginBottom="10dp"
-            app:boxCornerRadiusBottomEnd="10dp"
-            app:boxCornerRadiusBottomStart="10dp"
-            app:boxCornerRadiusTopEnd="10dp"
-            app:boxCornerRadiusTopStart="10dp">
+            tools:ignore="SpeakableTextPresentCheck" />
 
-            <EditText
-                android:padding="9dp"
-                android:id="@+id/et_ttl2_ocr"
-                android:layout_width="match_parent"
-                android:layout_height="35dp"
-                android:background="@drawable/bg_textinput"
-                android:inputType="date"
-                android:clickable="false"
-                android:focusable="false"
-                android:focusableInTouchMode="false"
-                android:cursorVisible="false"
-                android:textSize="12dp"
-                tools:ignore="SpeakableTextPresentCheck" />
-        </com.google.android.material.textfield.TextInputLayout>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/jenis_kelamin"
+            android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+            android:textSize="15dp" />
+        <EditText
+            android:padding="10dp"
+            android:id="@+id/et_gender"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_textinput"
+            android:inputType="text"
+            android:textSize="12dp"
+            android:layout_marginBottom="10dp"
+            tools:ignore="SpeakableTextPresentCheck" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/goldar"
+            android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+            android:textSize="15dp" />
+        <EditText
+            android:padding="10dp"
+            android:id="@+id/et_goldar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_textinput"
+            android:inputType="text"
+            android:textSize="12dp"
+            android:layout_marginBottom="10dp"
+            tools:ignore="SpeakableTextPresentCheck" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/address"
+            android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+            android:textSize="15dp" />
+        <EditText
+            android:padding="10dp"
+            android:id="@+id/et_address"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_textinput"
+            android:inputType="text"
+            android:textSize="12dp"
+            android:layout_marginBottom="10dp"
+            tools:ignore="SpeakableTextPresentCheck" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/rtrw"
+            android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+            android:textSize="15dp" />
+        <EditText
+            android:padding="10dp"
+            android:id="@+id/et_rtrw"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_textinput"
+            android:inputType="text"
+            android:textSize="12dp"
+            android:layout_marginBottom="10dp"
+            tools:ignore="SpeakableTextPresentCheck" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/provinsi"
+            android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+            android:textSize="15dp" />
+        <EditText
+            android:padding="10dp"
+            android:id="@+id/et_provinsi"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_textinput"
+            android:inputType="text"
+            android:textSize="12dp"
+            android:layout_marginBottom="10dp"
+            tools:ignore="SpeakableTextPresentCheck" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/kabupaten_kota"
+            android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+            android:textSize="15dp" />
+        <EditText
+            android:padding="10dp"
+            android:id="@+id/et_kabkot"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_textinput"
+            android:inputType="text"
+            android:textSize="12dp"
+            android:layout_marginBottom="10dp"
+            tools:ignore="SpeakableTextPresentCheck" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/kecamatan"
+            android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+            android:textSize="15dp" />
+        <EditText
+            android:padding="10dp"
+            android:id="@+id/et_kecamatan"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_textinput"
+            android:inputType="text"
+            android:textSize="12dp"
+            android:layout_marginBottom="10dp"
+            tools:ignore="SpeakableTextPresentCheck" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/kelurahan_desa"
+            android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+            android:textSize="15dp" />
+        <EditText
+            android:padding="10dp"
+            android:id="@+id/et_desa"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_textinput"
+            android:inputType="text"
+            android:textSize="12dp"
+            android:layout_marginBottom="10dp"
+            tools:ignore="SpeakableTextPresentCheck" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/religion"
+            android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+            android:textSize="15dp" />
+        <EditText
+            android:padding="10dp"
+            android:id="@+id/et_religion"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_textinput"
+            android:inputType="text"
+            android:textSize="12dp"
+            android:layout_marginBottom="10dp"
+            tools:ignore="SpeakableTextPresentCheck" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/kawin"
+            android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+            android:textSize="15dp" />
+        <EditText
+            android:padding="10dp"
+            android:id="@+id/et_status_kawin"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_textinput"
+            android:inputType="text"
+            android:textSize="12dp"
+            android:layout_marginBottom="10dp"
+            tools:ignore="SpeakableTextPresentCheck" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/warganegara"
+            android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+            android:textSize="15dp" />
+        <EditText
+            android:padding="10dp"
+            android:id="@+id/et_warga"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_textinput"
+            android:inputType="text"
+            android:textSize="12dp"
+            android:layout_marginBottom="10dp"
+            tools:ignore="SpeakableTextPresentCheck" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/job"
+            android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+            android:textSize="15dp" />
+        <EditText
+            android:padding="10dp"
+            android:id="@+id/et_work"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_textinput"
+            android:inputType="text"
+            android:textSize="12dp"
+            android:layout_marginBottom="10dp"
+            tools:ignore="SpeakableTextPresentCheck" />
 
         <LinearLayout
-            android:layout_marginTop="10dp"
+            android:layout_margin="10dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal">
@@ -144,9 +310,8 @@
                 android:layout_weight="1"
                 android:layout_height="40dp"
                 android:background="@drawable/oval_background_10dp"
-                android:backgroundTint="@color/button_end_call"
                 android:text="@string/cancel"
-                android:textColor="@color/white"
+                android:textColor="@color/zm_button"
                 android:textStyle="bold" />
 
             <Button
@@ -156,7 +321,7 @@
                 android:layout_height="40dp"
                 android:layout_weight="1"
                 android:background="@drawable/oval_background_10dp"
-                android:backgroundTint="@color/Blue"
+                android:backgroundTint="@color/zm_button"
                 android:clickable="false"
                 android:text="@string/btn_continue"
                 android:textColor="@color/white"

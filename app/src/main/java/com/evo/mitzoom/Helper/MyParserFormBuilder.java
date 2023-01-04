@@ -13,6 +13,7 @@ import android.text.Html;
 import android.text.InputFilter;
 import android.text.InputType;
 import android.text.method.LinkMovementMethod;
+import android.text.method.ScrollingMovementMethod;
 import android.util.Base64;
 import android.util.Log;
 import android.util.TypedValue;
@@ -29,11 +30,13 @@ import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
+import android.widget.Scroller;
 import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.evo.mitzoom.Model.FormSpin;
 import com.evo.mitzoom.R;
+import com.evo.mitzoom.Session.SessionManager;
 import com.google.android.material.textfield.TextInputLayout;
 
 import org.json.JSONArray;
@@ -52,11 +55,15 @@ public class MyParserFormBuilder {
     private static JSONArray dataArrObj;
     private static Context mContext;
     private static LinearLayout llFormBuild;
+    private static SessionManager sessions;
+    private static String language;
 
     public MyParserFormBuilder(Context mContext, String dataForm, LinearLayout llFormBuild) throws JSONException {
         this.dataArrObj = new JSONArray(dataForm);
         this.mContext = mContext;
         this.llFormBuild = llFormBuild;
+        this.sessions = new SessionManager(mContext);
+        this.language = sessions.getLANG();
     }
 
     public static JSONArray getForm() {
@@ -67,6 +74,8 @@ public class MyParserFormBuilder {
             try {
                 String dataS = dataArrObj.get(i).toString();
                 JSONObject dataObj = new JSONObject(dataS);
+                String compName = dataObj.getString("name");
+                compName = compName.toLowerCase();
                 JSONArray components = dataObj.getJSONArray("components");
                 RadioGroup radioGroup = null;
                 int compLen = components.length();
@@ -75,6 +84,7 @@ public class MyParserFormBuilder {
                 boolean finishRad = false;
                 int jkRad = 0;
                 int radB = 0;
+                String parentLabel = "";
                 for (int j = 0; j < compLen; j++) {
                     LinearLayout.LayoutParams lpLayout = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,LinearLayout.LayoutParams.WRAP_CONTENT);
                     lpLayout.setMargins(0,0,0,10);
@@ -83,14 +93,44 @@ public class MyParserFormBuilder {
 
                     String compS = components.get(j).toString();
                     JSONObject compObj = new JSONObject(compS);
-                    String compName = compObj.getString("name");
                     String compPlaceholder = compObj.getString("placeholder");
                     String compLabel = compObj.getString("label");
+                    
+                    if (compPlaceholder.contains("{")) {
+                        JSONObject placeholderObj = compObj.getJSONObject("placeholder");
+                        String pcIdn = placeholderObj.getString("placeholderIdn");
+                        String pcEng = placeholderObj.getString("placeholderEng");
+                        if (language.equals("id")) {
+                            compPlaceholder = pcIdn;
+                        } else {
+                            compPlaceholder = pcEng;
+                        }
+                    }
+
+                    if (compLabel.contains("{")) {
+                        JSONObject labelObj = compObj.getJSONObject("label");
+                        String pcIdn = labelObj.getString("labelIdn");
+                        String pcEng = labelObj.getString("labelEng");
+                        if (language.equals("id")) {
+                            compLabel = pcIdn;
+                        } else {
+                            compLabel = pcEng;
+                        }
+                    }
+                    
                     boolean compRequired = false;
                     if (compObj.has("required")) {
                         compRequired = compObj.getBoolean("required");
                     } else if (compObj.has("props")) {
-                        compRequired = compObj.getJSONObject("props").getBoolean("required");
+                        if (compObj.getJSONObject("props").has("required")) {
+                            compRequired = compObj.getJSONObject("props").getBoolean("required");
+                        }
+                    }
+                    String urlPath = "";
+                    if (compObj.has("url")) {
+                        if (!compObj.isNull("url") && !compObj.toString().isEmpty()) {
+                            urlPath = compObj.getString("url");
+                        }
                     }
 
                     String compType = compObj.getString("type");
@@ -101,9 +141,11 @@ public class MyParserFormBuilder {
                             JSONObject dataObjEl = new JSONObject();
                             if (compType.equals("text") || compType.equals("date")) {
                                 if (!compLabel.isEmpty()) {
+                                    LinearLayout.LayoutParams lpTv = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,LinearLayout.LayoutParams.WRAP_CONTENT);
+                                    lpTv.setMargins(0,15,0,0);
                                     TextView tv = new TextView(mContext);
                                     tv.setText(compLabel);
-                                    tv.setLayoutParams(lp);
+                                    tv.setLayoutParams(lpTv);
                                     llFormBuild.addView(tv);
                                 }
 
@@ -111,6 +153,7 @@ public class MyParserFormBuilder {
 
                                 EditText ed = new EditText(mContext);
                                 ed.setId(intAplhabet);
+                                ed.setHint(compPlaceholder);
                                 ed.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
                                 ed.setGravity(Gravity.CENTER_VERTICAL);
                                 ed.setIncludeFontPadding(false);
@@ -173,12 +216,50 @@ public class MyParserFormBuilder {
                                 llFormBuild.addView(ed);
 
                                 int ids = ed.getId();
+                                String elName = "";
+                                if (compName.equals("checkbox")) {
+                                    compLabel = parentLabel+compLabel;
+                                    elName = compLabel.toLowerCase().replace(" ", "").replace("-", "").replace("/", "").replace(".", "");
+                                } else {
+                                    elName = compLabel.toLowerCase().replace(" ", "").replace("-", "").replace("/", "").replace(".", "");
+                                }
+                                Log.e("CEK","compName : "+elName+" | ids : "+ids);
+                                dataObjEl.put("id",ids);
+                                dataObjEl.put("name",elName);
+                                dataObjEl.put("required",compRequired);
+                                dataArrElement.put(dataObjEl);
+                            } else if (compType.equals("number")) {
+                                if (!compLabel.isEmpty()) {
+                                    LinearLayout.LayoutParams lpTv = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,LinearLayout.LayoutParams.WRAP_CONTENT);
+                                    lpTv.setMargins(0,15,0,0);
+                                    TextView tv = new TextView(mContext);
+                                    tv.setText(compLabel);
+                                    tv.setLayoutParams(lpTv);
+                                    llFormBuild.addView(tv);
+                                }
+
+                                int intAplhabet = randomId();
+
+                                EditText ed = new EditText(mContext);
+                                ed.setId(intAplhabet);
+                                ed.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
+                                ed.setGravity(Gravity.CENTER_VERTICAL);
+                                ed.setIncludeFontPadding(false);
+                                ed.setBackground(mContext.getDrawable(R.drawable.bg_textinput));
+                                ed.setPadding(20,20,20,20);
+                                ed.setHint(compPlaceholder);
+                                ed.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_VARIATION_NORMAL);
+                                ed.setLayoutParams(lp);
+                                llFormBuild.addView(ed);
+
+                                int ids = ed.getId();
                                 String elName = compLabel.toLowerCase().replace(" ", "").replace("-", "").replace("/", "").replace(".", "");
                                 Log.e("CEK","compName : "+elName+" | ids : "+ids);
                                 dataObjEl.put("id",ids);
                                 dataObjEl.put("name",elName);
                                 dataObjEl.put("required",compRequired);
                                 dataArrElement.put(dataObjEl);
+
                             } else if (compType.equals("radio")) {
                                 if (!compLabel.isEmpty()) {
                                     finishRad = false;
@@ -263,10 +344,13 @@ public class MyParserFormBuilder {
                                 }
 
                             } else if (compType.equals("checkbox")) {
-                                TextView tv = new TextView(mContext);
-                                tv.setText(compLabel);
-                                tv.setLayoutParams(lp);
-                                llFormBuild.addView(tv);
+                                if (!compLabel.isEmpty()) {
+                                    parentLabel = compLabel;
+                                    TextView tv = new TextView(mContext);
+                                    tv.setText(compLabel);
+                                    tv.setLayoutParams(lp);
+                                    llFormBuild.addView(tv);
+                                }
 
                                 int intAplhabet = randomId();
 
@@ -278,7 +362,12 @@ public class MyParserFormBuilder {
                                 llFormBuild.addView(chk);
 
                                 int ids = chk.getId();
-                                String elName = compLabel.toLowerCase().replace(" ", "").replace("-", "").replace("/", "").replace(".", "");
+                                String elName = "";
+                                if (compLen == 1) {
+                                    elName = compLabel.toLowerCase().replace(" ", "").replace("-", "").replace("/", "").replace(".", "");
+                                } else {
+                                    elName = compPlaceholder.toLowerCase().replace(" ", "").replace("-", "").replace("/", "").replace(".", "");
+                                }
                                 Log.e("CEK","compName : "+elName+" | ids : "+ids);
                                 dataObjEl.put("id",ids);
                                 dataObjEl.put("name",elName);
@@ -323,7 +412,7 @@ public class MyParserFormBuilder {
                                 ln.addView(ln2);
 
                                 int inttvSaved = randomId();
-                                LinearLayout.LayoutParams lptv = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,LinearLayout.LayoutParams.WRAP_CONTENT);;
+                                LinearLayout.LayoutParams lptv = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,LinearLayout.LayoutParams.WRAP_CONTENT);
                                 lptv.setMargins(0,0,0,10);
                                 TextView tvSaved = new TextView(mContext);
                                 tvSaved.setId(inttvSaved);
@@ -343,12 +432,55 @@ public class MyParserFormBuilder {
                                 dataArrElement.put(dataObjEl);
                             }
                             break;
+                        case "textarea":
+                            TextView tvArea = new TextView(mContext);
+                            tvArea.setText(compLabel);
+                            tvArea.setLayoutParams(lp);
+                            llFormBuild.addView(tvArea);
+
+                            int idArea = randomId();
+
+                            LinearLayout.LayoutParams lpArea = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,200);
+
+                            EditText ed = new EditText(mContext);
+                            ed.setId(idArea);
+                            ed.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
+                            ed.setGravity(Gravity.CENTER_VERTICAL);
+                            ed.setBackground(mContext.getDrawable(R.drawable.bg_textinput));
+                            ed.setInputType(InputType.TYPE_TEXT_FLAG_MULTI_LINE);
+                            ed.setPadding(20,20,20,20);
+                            ed.setMaxLines(10);
+                            ed.setLines(3);
+                            ed.setMinLines(3);
+                            ed.setSingleLine(false);
+                            ed.setLayoutParams(lpArea);
+                            ed.setGravity(Gravity.TOP);
+                            ed.setVerticalScrollBarEnabled(true);
+                            ed.setScroller(new Scroller(((Activity)mContext).getBaseContext()));
+                            ed.setMovementMethod(new ScrollingMovementMethod());
+                            llFormBuild.addView(ed);
+
+                            int getIdArea = ed.getId();
+                            Log.e("CEK","compName : "+compPlaceholder+" | ids : "+getIdArea);
+                            String elNameArea = compLabel.toLowerCase().replace(" ", "").replace("-", "").replace("/", "").replace(".", "");
+                            JSONObject dataObjElArea= new JSONObject();
+                            dataObjElArea.put("id",getIdArea);
+                            dataObjElArea.put("name",elNameArea);
+                            dataObjElArea.put("required",compRequired);
+                            dataArrElement.put(dataObjElArea);
+
+                            break;
                         case "p":
-                            compLabel = "<p>"+compLabel+"</p>";
+
+                            LinearLayout.LayoutParams lpP = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,LinearLayout.LayoutParams.WRAP_CONTENT);
+                            lpP.setMargins(0,15,0,-30);
+                            if (!compLabel.contains("<p>")) {
+                                compLabel = "<p>" + compLabel + "</p>";
+                            }
 
                             TextView tv = new TextView(mContext);
                             tv.setText(Html.fromHtml(compLabel,Html.FROM_HTML_MODE_COMPACT));
-                            tv.setLayoutParams(lp);
+                            tv.setLayoutParams(lpP);
                             llFormBuild.addView(tv);
 
                             break;
@@ -365,11 +497,8 @@ public class MyParserFormBuilder {
                                 int idOpt = options.getJSONObject(jk).getInt("id");
                                 String kodeOpt = options.getJSONObject(jk).getString("kode");
                                 String labelOpt = options.getJSONObject(jk).getString("labelIdn");
-                                dataDropDown.add(new FormSpin(idOpt,kodeOpt,labelOpt));
+                                dataDropDown.add(new FormSpin(idOpt,kodeOpt,labelOpt,labelOpt));
                             }
-
-                            LinearLayout.LayoutParams lpSpin = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,50);
-                            lpSpin.setMargins(0,0,0,10);
 
                             int intAplhabet = randomId();
 
@@ -408,6 +537,7 @@ public class MyParserFormBuilder {
                             dataObjElOpt.put("id",ids);
                             dataObjElOpt.put("name",elName);
                             dataObjElOpt.put("required",compRequired);
+                            dataObjElOpt.put("url",urlPath);
                             dataArrElement.put(dataObjElOpt);
 
                             break;
@@ -424,11 +554,11 @@ public class MyParserFormBuilder {
                                 int idOpt = optionsAuto.getJSONObject(jk).getInt("id");
                                 String kodeOpt = optionsAuto.getJSONObject(jk).getString("kode");
                                 String labelOpt = optionsAuto.getJSONObject(jk).getString("labelIdn");
-                                dataAuto.add(new FormSpin(idOpt,kodeOpt,labelOpt));
+                                dataAuto.add(new FormSpin(idOpt,kodeOpt,labelOpt,labelOpt));
                             }
 
-                            LinearLayout.LayoutParams lpAutoList = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-                            lpAutoList.setMargins(0,0,0,10);
+                            /*LinearLayout.LayoutParams lpAutoList = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                            lpAutoList.setMargins(0,0,0,10);*/
 
                             int intAplhabetAuto = randomId();
                             Log.e("CEK","intAplhabetAuto : "+intAplhabetAuto);

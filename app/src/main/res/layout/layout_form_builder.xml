@@ -4,6 +4,14 @@
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:src="@drawable/batik_bvic"
+        android:rotation="180"
+        android:scaleType="fitXY"
+        android:layout_alignParentBottom="true"/>
+
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:id="@+id/swipe"
         android:layout_width="match_parent"
@@ -16,7 +24,7 @@
             <androidx.core.widget.NestedScrollView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="30dp">
+                android:layout_marginTop="20dp">
 
                 <RelativeLayout
                     android:layout_width="match_parent"
@@ -27,7 +35,6 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="@dimen/dp_20"
-                        android:layout_marginTop="20dp"
                         android:layout_marginEnd="@dimen/dp_20"
                         android:layout_marginBottom="@dimen/dp_20"
                         android:orientation="vertical" />
@@ -56,13 +63,5 @@
         </RelativeLayout>
 
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
-
-    <ImageView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:src="@drawable/batik_bvic"
-        android:rotation="180"
-        android:scaleType="fitXY"
-        android:layout_alignParentBottom="true"/>
 
 </RelativeLayout>

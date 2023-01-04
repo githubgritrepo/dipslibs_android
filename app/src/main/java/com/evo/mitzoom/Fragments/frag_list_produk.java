@@ -26,8 +26,12 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.evo.mitzoom.API.Server;
+import com.evo.mitzoom.Adapter.AdapterPortofolioNew;
+import com.evo.mitzoom.Adapter.ItemSavingAdapter;
 import com.evo.mitzoom.Helper.RabbitMirroring;
 import com.evo.mitzoom.R;
 import com.evo.mitzoom.Session.SessionManager;
@@ -49,7 +53,6 @@ import us.zoom.sdk.ZoomVideoSDK;
 public class frag_list_produk extends Fragment {
     private Context context;
     private NestedScrollView nested;
-    private TextView btn_tabungan_a, btn_tabungan_b;
     private ImageView btnBack;
     private RelativeLayout rlOpenAccount;
     private boolean isSessionZoom = false;
@@ -60,9 +63,11 @@ public class frag_list_produk extends Fragment {
     private SessionManager sessions;
     private RabbitMirroring rabbitMirroring;
     private String dataTnC = "";
-    private TextView tvTitleList;
-    private RelativeLayout rlProduct1;
+    /*private TextView tvTitleList;
+    private RelativeLayout rlProduct1;*/
     private String bodyProduk = "";
+    private JSONArray dataProduct;
+    private RecyclerView rv_itemProduct;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -81,10 +86,9 @@ public class frag_list_produk extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.frag_daftar_produk, container, false);
         rlOpenAccount = (RelativeLayout) view.findViewById(R.id.rlOpenAccount);
-        btn_tabungan_a = view.findViewById(R.id.btn_tabungan_a);
-        btn_tabungan_b = view.findViewById(R.id.btn_tabungan_b);
-        rlProduct1 = (RelativeLayout) view.findViewById(R.id.rlProduct1);
-        tvTitleList = (TextView) view.findViewById(R.id.tvTitleList);
+        /*rlProduct1 = (RelativeLayout) view.findViewById(R.id.rlProduct1);
+        tvTitleList = (TextView) view.findViewById(R.id.tvTitleList);*/
+        rv_itemProduct = (RecyclerView) view.findViewById(R.id.rv_itemProduct);
         btnBack = view.findViewById(R.id.btn_back6);
         nested = view.findViewById(R.id.nested);
         return view;
@@ -93,6 +97,7 @@ public class frag_list_produk extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        dataProduct = new JSONArray();
         new AsyncProcess().execute();
 
         if (isSessionZoom) {
@@ -104,6 +109,7 @@ public class frag_list_produk extends Fragment {
                 //rabbitMirroring.MirroringSendEndpoint(0);
                 /*rabbitMirroring.MirroringSendEndpoint(361);
                 PopUpTnc();*/
+                rabbitMirroring.MirroringSendEndpoint(201);
                 getFragmentPage(new frag_open_account_product());
             }
         });
@@ -113,26 +119,8 @@ public class frag_list_produk extends Fragment {
                 getFragmentPage(new frag_berita());
             }
         });
-        btn_tabungan_a.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String Tabungan = "Tabungan A";
-                Bundle bundle = new Bundle();
-                bundle.putString("headline",Tabungan);
-                sendDataFragment(bundle,new frag_tabungan());
-            }
-        });
-        btn_tabungan_b.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String Tabungan = "Tabungan B";
-                Bundle bundle = new Bundle();
-                bundle.putString("headline",Tabungan);
-                sendDataFragment(bundle,new frag_tabungan());
-            }
-        });
 
-        rlProduct1.setOnClickListener(new View.OnClickListener() {
+        /*rlProduct1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 String Tabungan = tvTitleList.getText().toString();
@@ -141,7 +129,7 @@ public class frag_list_produk extends Fragment {
                 bundle.putByteArray("body",bodyProduk.getBytes(StandardCharsets.UTF_8));
                 sendDataFragment(bundle,new frag_tabungan());
             }
-        });
+        });*/
     }
 
     private class AsyncProcess extends AsyncTask<Void,Void,Void> {
@@ -272,7 +260,7 @@ public class frag_list_produk extends Fragment {
                     sessions.saveIsCust(isCust);
                     sessions.saveIsSwafoto(isSwafoto);
                     sessions.saveFormCOde(4);
-                    Fragment fragment = new frag_cif();
+                    Fragment fragment = new frag_cif_new();
                     RabbitMirroring.MirroringSendEndpoint(4);
                     getFragmentPage(fragment);
                 }
@@ -294,14 +282,24 @@ public class frag_list_produk extends Fragment {
                         JSONArray dataRows = dataObj.getJSONArray("data");
                         for (int i = 0; i < dataRows.length(); i++) {
                             JSONObject produkId = dataRows.getJSONObject(i).getJSONObject("produkId");
+                            int idProduct = produkId.getInt("id");
                             String namaProduk = produkId.getString("namaProduk");
-                            bodyProduk = produkId.getString("body");
-                            String lownamaProduk = namaProduk.toLowerCase();
+                            JSONObject catgProd = produkId.getJSONObject("kategoriProduk");
+                            String labelIdn = catgProd.getString("labelIdn");
+
+                            String lownamaProduk = labelIdn.toLowerCase();
                             if (lownamaProduk.contains("tabungan")) {
-                                tvTitleList.setText(namaProduk);
-                                break;
+                                bodyProduk = produkId.getString("body");
+                                JSONObject prodArr = new JSONObject();
+                                prodArr.put("idProduct",idProduct);
+                                prodArr.put("name",namaProduk);
+                                prodArr.put("contents",bodyProduk);
+
+                                dataProduct.put(prodArr);
                             }
                         }
+
+                        setRecylerList();
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
@@ -344,6 +342,17 @@ public class frag_list_produk extends Fragment {
                 Toast.makeText(context,t.getMessage(),Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    private void setRecylerList() {
+        Log.e("CEK","MASUK setRecylerList");
+
+        ItemSavingAdapter dataList = new ItemSavingAdapter(context, dataProduct);
+
+        LinearLayoutManager recylerViewLayoutManager = new LinearLayoutManager(context);
+
+        rv_itemProduct.setLayoutManager(recylerViewLayoutManager);
+        rv_itemProduct.setAdapter(dataList);
     }
 
     private void getFragmentPage(Fragment fragment){

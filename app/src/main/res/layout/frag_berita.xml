@@ -103,12 +103,12 @@
 
         </RelativeLayout>
 
-        <com.facebook.shimmer.ShimmerFrameLayout
+        <!--<com.facebook.shimmer.ShimmerFrameLayout
             android:id="@+id/shimmer_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
             <include layout="@layout/frag_berita_shimmer"/>
-        </com.facebook.shimmer.ShimmerFrameLayout>
+        </com.facebook.shimmer.ShimmerFrameLayout>-->
 
         <ImageView
             android:layout_width="match_parent"

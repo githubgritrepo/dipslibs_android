@@ -95,7 +95,7 @@ public class frag_chat extends Fragment  implements ZoomVideoSDKDelegate {
         btnClose.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                BaseMeetingActivity.btnChat.setBackgroundTintList(context.getResources().getColorStateList(R.color.Blue));
+                //BaseMeetingActivity.btnChat.setBackgroundTintList(context.getResources().getColorStateList(R.color.Blue));
                 BaseMeetingActivity.btnChat.setClickable(true);
                 FragmentManager fragmentManager = getFragmentManager();
                 fragmentManager.popBackStack();

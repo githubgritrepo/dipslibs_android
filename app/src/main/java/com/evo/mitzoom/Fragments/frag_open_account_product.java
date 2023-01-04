@@ -133,6 +133,10 @@ public class frag_open_account_product extends Fragment {
         btnNext.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                if (dataTnC.isEmpty()) {
+                    Toast.makeText(mContext,getString(R.string.waiting),Toast.LENGTH_SHORT).show();
+                    return;
+                }
                 rabbitMirroring.MirroringSendEndpoint(361);
                 PopUpTnc();
             }
@@ -210,7 +214,7 @@ public class frag_open_account_product extends Fragment {
             sweetAlertDialogTNC = new SweetAlertDialog(mContext, SweetAlertDialog.NORMAL_TYPE);
             sweetAlertDialogTNC.setCustomView(dialogView);
             sweetAlertDialogTNC.hideConfirmButton();
-            sweetAlertDialogTNC.setCancelable(false);
+            sweetAlertDialogTNC.setCancelable(true);
         }
         TextView tvBody = (TextView) dialogView.findViewById(R.id.tvBody);
         CheckBox checkBox = dialogView.findViewById(R.id.checktnc);
@@ -249,12 +253,25 @@ public class frag_open_account_product extends Fragment {
                     Log.d("CHECK","TRUE");
                     btn.setBackgroundTintList(mContext.getResources().getColorStateList(R.color.zm_button));
                     btn.setClickable(true);
-                    rabbitMirroring.MirroringSendEndpoint(363);
+                    JSONObject tncCheckObj = new JSONObject();
+                    try {
+                        tncCheckObj.put("tnc1",true);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                    rabbitMirroring.MirroringSendKey(tncCheckObj);
                 }
                 else {
                     Log.d("CHECK","FALSE");
                     btn.setBackgroundTintList(mContext.getResources().getColorStateList(R.color.btnFalse));
                     btn.setClickable(false);
+                    JSONObject tncCheckObj = new JSONObject();
+                    try {
+                        tncCheckObj.put("tnc1",false);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                    rabbitMirroring.MirroringSendKey(tncCheckObj);
                 }
             }
         });
@@ -264,12 +281,20 @@ public class frag_open_account_product extends Fragment {
                 if (checkBox.isChecked()){
                     sweetAlertDialogTNC.dismiss();
                     sweetAlertDialogTNC.cancel();
-                    sessions.saveIsCust(isCust);
-                    sessions.saveIsSwafoto(isSwafoto);
-                    sessions.saveFormCOde(4);
-                    Fragment fragment = new frag_cif();
-                    RabbitMirroring.MirroringSendEndpoint(4);
-                    getFragmentPage(fragment);
+                    if (sessions.getNoCIF() == null) {
+                        sessions.saveIsCust(isCust);
+                        sessions.saveIsSwafoto(isSwafoto);
+                        sessions.saveFormCOde(4);
+                        Fragment fragment = new frag_cif_new();
+                        RabbitMirroring.MirroringSendEndpoint(4);
+                        getFragmentPage(fragment);
+                    } else {
+                        sessions.saveFormCOde(150);
+                        Fragment fragment = new frag_ready_account();
+                        RabbitMirroring.MirroringSendEndpoint(150);
+                        getFragmentPage(fragment);
+                        //Toast.makeText(mContext,"Halaman belum tersedia",Toast.LENGTH_SHORT).show();
+                    }
                 }
                 else {
                     btn.setClickable(false);

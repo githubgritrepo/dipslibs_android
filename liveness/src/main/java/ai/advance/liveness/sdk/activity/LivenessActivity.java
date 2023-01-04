@@ -9,6 +9,8 @@ import android.graphics.drawable.AnimationDrawable;
 import android.os.Bundle;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
+import androidx.constraintlayout.widget.ConstraintLayout;
+
 import android.util.SparseArray;
 import android.view.View;
 import android.widget.CheckBox;
@@ -80,6 +82,7 @@ public class LivenessActivity extends PermissionActivity implements LivenessCall
      */
     ProgressDialog mInitProgressDialog;
     private View gifLoading;
+    private ConstraintLayout clLiveness;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -108,6 +111,7 @@ public class LivenessActivity extends PermissionActivity implements LivenessCall
      * 初始化控件
      */
     protected void findViews() {
+        clLiveness = (ConstraintLayout) findViewById(R.id.clLiveness);
         mMaskImageView = findViewById(R.id.mask_view);
         mLivenessView = findViewById(R.id.liveness_view);
         mTipImageView = findViewById(R.id.tip_image_view);
@@ -365,6 +369,7 @@ public class LivenessActivity extends PermissionActivity implements LivenessCall
             @Override
             public void onGetFaceDataStart() {
                 //mProgressLayout.setVisibility(View.VISIBLE);
+                //clLiveness.setBackgroundColor(getColor(R.color.zm_v_loading));
                 gifLoading.setVisibility(View.VISIBLE);
                 mTimerView.setVisibility(View.INVISIBLE);
                 mLivenessView.setVisibility(View.INVISIBLE);

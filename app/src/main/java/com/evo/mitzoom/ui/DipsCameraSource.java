@@ -38,6 +38,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.evo.mitzoom.Helper.GraphicFaceTracker;
+import com.evo.mitzoom.Helper.LocaleHelper;
 import com.evo.mitzoom.R;
 import com.evo.mitzoom.Session.SessionManager;
 import com.google.android.gms.vision.CameraSource;
@@ -75,7 +76,8 @@ public class DipsCameraSource extends AppCompatActivity implements CameraSource.
         mContext = this;
         sessions = new SessionManager(mContext);
         String lang = sessions.getLANG();
-        setLocale(this, lang);
+        //setLocale(this, lang);
+        LocaleHelper.setLocale(this,lang);
 
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
@@ -97,6 +99,10 @@ public class DipsCameraSource extends AppCompatActivity implements CameraSource.
     @Override
     protected void onResume() {
         super.onResume();
+
+        String lang = sessions.getLANG();
+        //setLocale(this,lang);
+        LocaleHelper.setLocale(this,lang);
 
         detector = new FaceDetector.Builder(this)
                 .setProminentFaceOnly(true) // optimize for single, relatively large face

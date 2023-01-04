@@ -21,7 +21,8 @@
     android:layout_height="match_parent"
     android:background="@color/liveness_accent"
     android:orientation="vertical"
-    tools:ignore="MissingConstraints,ResourceName">
+    tools:ignore="MissingConstraints,ResourceName"
+    android:id="@+id/clLiveness">
     <!--titleBar-->
 
     <ImageView
@@ -124,8 +125,8 @@
 
     <pl.droidsonroids.gif.GifImageView
         android:id="@+id/gifLoading"
-        android:layout_width="200dp"
-        android:layout_height="200dp"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
         android:scaleType="fitCenter"
         android:src="@drawable/anim_bvic"
         android:visibility="invisible"
