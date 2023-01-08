@@ -30,7 +30,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.evo.mitzoom.API.Server;
-import com.evo.mitzoom.Adapter.AdapterPortofolioNew;
 import com.evo.mitzoom.Adapter.ItemSavingAdapter;
 import com.evo.mitzoom.Helper.RabbitMirroring;
 import com.evo.mitzoom.R;
@@ -42,7 +41,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 
 import cn.pedant.SweetAlert.SweetAlertDialog;
 import retrofit2.Call;
@@ -80,6 +78,7 @@ public class frag_list_produk extends Fragment {
         if (isSessionZoom) {
             rabbitMirroring = new RabbitMirroring(context);
         }
+        Log.e("CEK","getNoCIF : "+sessions.getNoCIF());
     }
     @Nullable
     @Override

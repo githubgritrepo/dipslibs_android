@@ -13,7 +13,6 @@ import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.evo.mitzoom.Fragments.frag_service_item;
 import com.evo.mitzoom.Helper.RabbitMirroring;
 import com.evo.mitzoom.Model.ItemModel;
 import com.evo.mitzoom.R;

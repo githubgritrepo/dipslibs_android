@@ -2,13 +2,14 @@ package com.evo.mitzoom.ui;
 
 import static com.evo.mitzoom.ui.DipsChooseLanguage.setLocale;
 
-import androidx.appcompat.app.AppCompatActivity;
-
+import android.app.Activity;
 import android.app.ActivityManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.StrictMode;
@@ -18,9 +19,13 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.evo.mitzoom.API.ApiService;
 import com.evo.mitzoom.API.Server;
@@ -35,8 +40,6 @@ import com.google.gson.JsonObject;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.IOException;
-
 import okhttp3.MediaType;
 import okhttp3.RequestBody;
 import retrofit2.Call;
@@ -45,15 +48,24 @@ import retrofit2.Response;
 
 public class DipsLivenessResult extends AppCompatActivity {
 
+    private static String TAG = "CEK_DipsLivenessResult";
     private Context mContext;
     private SessionManager sessions;
     private ImageView mask_view;
     private String idDips;
     private TextView tip_text_view;
-    private RelativeLayout rlprogress;
+    private RelativeLayout llCircle;
+    private ImageView imgCheck;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        mContext = this;
+        sessions = new SessionManager(mContext);
+        idDips = sessions.getKEY_IdDips();
+        String lang = sessions.getLANG();
+        setLocale(this, lang);
+        //LocaleHelper.setLocale(this,lang);
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dips_liveness_result);
 
@@ -62,13 +74,6 @@ public class DipsLivenessResult extends AppCompatActivity {
 
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
-
-        mContext = this;
-        sessions = new SessionManager(mContext);
-        idDips = sessions.getKEY_IdDips();
-        String lang = sessions.getLANG();
-        //setLocale(this, lang);
-        LocaleHelper.setLocale(this,lang);
 
         if (idDips == null) {
             idDips = "";
@@ -80,9 +85,8 @@ public class DipsLivenessResult extends AppCompatActivity {
 
         mask_view = (ImageView) findViewById(R.id.mask_view);
         tip_text_view = (TextView) findViewById(R.id.tip_text_view);
-        rlprogress = (RelativeLayout) findViewById(R.id.rlprogress);
-
-        rlprogress.setVisibility(View.GONE);
+        llCircle = (RelativeLayout) findViewById(R.id.llCircle);
+        imgCheck = (ImageView) findViewById(R.id.imgCheck);
 
         AnimationCall();
 
@@ -97,9 +101,10 @@ public class DipsLivenessResult extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        String lang = sessions.getLANG();
+        /*String lang = sessions.getLANG();
+        Log.e(TAG,"onResume : "+lang);
         //setLocale(this,lang);
-        LocaleHelper.setLocale(this,lang);
+        LocaleHelper.setLocale(this,lang);*/
     }
 
     @Override
@@ -128,19 +133,19 @@ public class DipsLivenessResult extends AppCompatActivity {
 
                 if (count == 1)
                 {
-                    tip_text_view.setText(getResources().getString(R.string.please_wait));
+                    tip_text_view.setText(getString(R.string.please_wait));
                 }
                 else if (count == 2)
                 {
-                    tip_text_view.setText(getResources().getString(R.string.please_wait1));
+                    tip_text_view.setText(getString(R.string.please_wait1));
                 }
                 else if (count == 3)
                 {
-                    tip_text_view.setText(getResources().getString(R.string.please_wait2));
+                    tip_text_view.setText(getString(R.string.please_wait2));
                 }
                 else if (count == 4)
                 {
-                    tip_text_view.setText(getResources().getString(R.string.please_wait3));
+                    tip_text_view.setText(getString(R.string.please_wait3));
                 }
 
                 if (count == 4)
@@ -188,7 +193,9 @@ public class DipsLivenessResult extends AppCompatActivity {
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
                 Log.e("CEK","RESPONSE CODE: "+response.code());
                 if (response.isSuccessful()) {
-                    rlprogress.setVisibility(View.GONE);
+                    llCircle.setVisibility(View.VISIBLE);
+                    imgCheck.setVisibility(View.VISIBLE);
+                    tip_text_view.setVisibility(View.GONE);
                     String dataS = response.body().toString();
                     Log.e("CEK","dataS: "+dataS);
                     try {
@@ -217,20 +224,36 @@ public class DipsLivenessResult extends AppCompatActivity {
                         sessions.saveIdDips(idDipsNew);
                         sessions.saveIsCust(isCust);
                         sessions.saveAuthToken(accessToken);
+                        sessions.saveNoCIF(noCIF);
+                        sessions.saveNasabahName(custName);
 
                         idDips = idDipsNew;
 
                         sessions.saveIdDips(idDips);
 
-                        Intent intent = null;
-                        if (!noCIF.isEmpty()) {
-                            intent = new Intent(mContext, DipsWaitingRoom.class);
-                        } else {
-                            intent = new Intent(mContext, DipsSwafoto.class);
-                            intent.putExtra("CUSTNAME", custName);
-                        }
-                        startActivity(intent);
-                        finishAffinity();
+                        String finalNoCIF = noCIF;
+                        new Handler().postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                //setelah loading maka akan langsung berpindah ke home activity
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        Intent intent = null;
+                                        if (!finalNoCIF.isEmpty()) {
+                                            intent = new Intent(mContext, DipsWaitingRoom.class);
+                                            intent.putExtra("CUSTNAME", custName);
+                                        } else {
+                                            intent = new Intent(mContext, DipsSwafoto.class);
+                                            intent.putExtra("CUSTNAME", custName);
+                                        }
+                                        startActivity(intent);
+                                        finishAffinity();
+                                    }
+                                });
+
+                            }
+                        },2000);
 
                     } catch (JSONException e) {
                         e.printStackTrace();

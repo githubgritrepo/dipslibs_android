@@ -49,15 +49,8 @@ import com.evo.mitzoom.Model.FormSpin;
 import com.evo.mitzoom.R;
 import com.evo.mitzoom.Session.SessionManager;
 import com.evo.mitzoom.ui.Alternative.DipsSwafoto;
-import com.evo.mitzoom.ui.DipsCameraActivity;
-import com.evo.mitzoom.ui.DipsCameraSource;
 import com.evo.mitzoom.ui.DipsWaitingRoom;
-import com.google.android.material.button.MaterialButton;
-import com.google.android.material.textfield.TextInputLayout;
 import com.google.gson.JsonObject;
-import com.rabbitmq.client.Channel;
-import com.rabbitmq.client.Connection;
-import com.rabbitmq.client.ConnectionFactory;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -67,19 +60,13 @@ import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.io.InputStreamReader;
-import java.net.URISyntaxException;
-import java.security.KeyManagementException;
-import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.TimeoutException;
+import java.util.Iterator;
 
 import cn.pedant.SweetAlert.SweetAlertDialog;
 import okhttp3.MediaType;
 import okhttp3.RequestBody;
-import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -106,6 +93,7 @@ public class frag_inputdata_new extends Fragment {
     private TextView tvSavedImg;
     private TextView tvSavedFile;
     JSONObject objEl = new JSONObject();
+    JSONObject valSpinProv = new JSONObject();
     JSONObject valSpin = new JSONObject();
     private RabbitMirroring rabbitMirroring;
     private int lasLenChar;
@@ -281,25 +269,59 @@ public class frag_inputdata_new extends Fragment {
 
                     if (flagNext) {
                         Log.e("CEL","REQUEST : "+objEl.toString());
-                        if (objEl.has("nik")) {
-                            String getNIK = "";
+                        for (int j = 0; j < idElement.length(); j++) {
                             try {
-                                getNIK = objEl.getString("nik");
+                                String nameDataEl = idElement.getJSONObject(j).getString("name");
+                                if (objEl.has(nameDataEl)) {
+                                    String keyIndoEl = idElement.getJSONObject(j).getString("keyIndo");
+                                    Object getObj = objEl.get(nameDataEl);
+                                    objEl.put(keyIndoEl,getObj);
+                                    if (session.getLANG().equals("en")) {
+                                        objEl.remove(nameDataEl);
+                                    }
+                                }
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             }
+                        }
+                        boolean validate = true;
+                        for(Iterator<String> iter = objEl.keys(); iter.hasNext();) {
+                            String key = iter.next();
+                            String valKurung = "";
+                            int indx = key.indexOf("(");
+                            if (indx >= 0) {
+                                valKurung = key.substring(indx);
+                            }
+                            if (key.contains("nik")) {
+                                if (objEl.has("nik"+valKurung)) {
+                                    String getNIK = "";
+                                    try {
+                                        getNIK = objEl.getString("nik");
+                                    } catch (JSONException e) {
+                                        e.printStackTrace();
+                                    }
 
-                            if (!getNIK.isEmpty() && getNIK.length() < 16) {
-                                Toast.makeText(mContext, R.string.doesn_match, Toast.LENGTH_SHORT).show();
-                                return;
+                                    if (!getNIK.isEmpty() && getNIK.length() < 16) {
+                                        validate = false;
+                                    }
+                                    break;
+                                }
                             }
                         }
-                        if (isSessionZoom) {
-                            BaseMeetingActivity.showProgress(true);
+
+                        Log.e("CEL","REQUEST SEND : "+objEl.toString());
+
+                        if (validate) {
+                            if (isSessionZoom) {
+                                BaseMeetingActivity.showProgress(true);
+                            } else {
+                                DipsSwafoto.showProgress(true);
+                            }
+                            CekDataByNIK(objEl);
                         } else {
-                            DipsSwafoto.showProgress(true);
+                            Log.e("CEK","ELSE : "+validate);
+                            Toast.makeText(mContext, R.string.doesn_match, Toast.LENGTH_SHORT).show();
                         }
-                        CekDataByNIK(objEl);
                     }
                 }
             }
@@ -386,18 +408,23 @@ public class frag_inputdata_new extends Fragment {
                         try {
                             int idDataEl = idElement.getJSONObject(j).getInt("id");
                             String nameDataEl = idElement.getJSONObject(j).getString("name");
+                            String valKurung = "";
+                            int indx = nameDataEl.indexOf("(");
+                            if (indx >= 0) {
+                                valKurung = nameDataEl.substring(indx);
+                            }
                             String urlPath = "";
                             if (idElement.getJSONObject(j).has("url")) {
                                 urlPath = idElement.getJSONObject(j).getString("url");
                             }
                             if (idEl == idDataEl) {
-
+                                String finalValKurung = valKurung;
                                 if (llFormBuild.getChildAt(i) instanceof EditText) {
                                     EditText ed = (EditText) llFormBuild.getChildAt(i);
                                     ed.addTextChangedListener(new TextWatcher() {
                                         @Override
                                         public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                                            if (nameDataEl.equals("npwp")) {
+                                            if (nameDataEl.equals("npwp"+ finalValKurung)) {
                                                 lasLenChar = charSequence.length();
                                             }
                                         }
@@ -417,7 +444,7 @@ public class frag_inputdata_new extends Fragment {
 
                                         @Override
                                         public void afterTextChanged(Editable s) {
-                                            if (nameDataEl.equals("npwp")) {
+                                            if (nameDataEl.equals("npwp"+ finalValKurung)) {
                                                 ed.removeTextChangedListener(this);
                                                 backSpaceChar = lasLenChar > s.length();
                                                 if (!backSpaceChar) {
@@ -497,7 +524,11 @@ public class frag_inputdata_new extends Fragment {
                                                 Log.e("CEK","dataSpin.getId() : "+idData);
                                                 try {
                                                     objEl.put(nameDataEl, results);
-                                                    valSpin.put(nameDataEl,idData);
+                                                    if (nameDataEl.contains("provinsi") || nameDataEl.contains("kabupaten") || nameDataEl.contains("kota") || nameDataEl.contains("kecamatan") || (nameDataEl.contains("kelurahan") || nameDataEl.contains("desa"))) {
+                                                        valSpinProv.put(nameDataEl,idData);
+                                                    } else {
+                                                        valSpin.put(nameDataEl, idData);
+                                                    }
                                                 } catch (JSONException e) {
                                                     e.printStackTrace();
                                                 }
@@ -593,7 +624,11 @@ public class frag_inputdata_new extends Fragment {
                             String labelEng = dataArr.getJSONObject(i).getString("labelEng");
                             dataDropDown.add(new FormSpin(idData,labelIdn,labelIdn,labelEng));
                             if (i == 0) {
-                                valSpin.put(nameDataEl,idData);
+                                if (nameDataEl.contains("provinsi") || nameDataEl.contains("kabupaten") || nameDataEl.contains("kota") || nameDataEl.contains("kecamatan") || (nameDataEl.contains("kelurahan") || nameDataEl.contains("desa"))) {
+                                    valSpinProv.put(nameDataEl,idData);
+                                } else {
+                                    valSpin.put(nameDataEl, idData);
+                                }
                                 processGetSpinChild(nameDataEl);
                                 if ((nameDataEl.contains("kelurahan") || nameDataEl.contains("desa"))) {
                                     flagStuckSpin = true;
@@ -636,7 +671,7 @@ public class frag_inputdata_new extends Fragment {
                             if (nameDataEl.contains("provinsi") && (getnameDataEl.contains("kabupaten") || getnameDataEl.contains("kota"))) {
                                 Log.e("CEK","processGetSpinChild getnameDataEl : "+getnameDataEl);
                                 if (!urlPath.isEmpty()) {
-                                    int idProv = valSpin.getInt("provinsi");
+                                    int idProv = valSpinProv.getInt("provinsi");
                                     String idSpin = String.valueOf(idProv);
                                     String urlNew = urlPath.replace(":id_provinsi",idSpin);
 
@@ -650,12 +685,12 @@ public class frag_inputdata_new extends Fragment {
                                 }
                             } else if ((nameDataEl.contains("kabupaten") || nameDataEl.contains("kota")) && getnameDataEl.contains("kecamatan")) {
                                 if (!urlPath.isEmpty()) {
-                                    int idProv = valSpin.getInt("provinsi");
+                                    int idProv = valSpinProv.getInt("provinsi");
                                     int idKabKot = 0;
                                     if (valSpin.has("kabupaten")) {
-                                        idKabKot = valSpin.getInt("kabupaten");
-                                    } else if (valSpin.has("kota")) {
-                                        idKabKot = valSpin.getInt("kota");
+                                        idKabKot = valSpinProv.getInt("kabupaten");
+                                    } else if (valSpinProv.has("kota")) {
+                                        idKabKot = valSpinProv.getInt("kota");
                                     }
                                     String idSpin = String.valueOf(idProv);
                                     String idSpin2 = String.valueOf(idKabKot);
@@ -671,13 +706,13 @@ public class frag_inputdata_new extends Fragment {
                                 }
                             } else if (nameDataEl.contains("kecamatan") && (getnameDataEl.contains("kelurahan") || getnameDataEl.contains("desa"))) {
                                 if (!urlPath.isEmpty()) {
-                                    int idProv = valSpin.getInt("provinsi");
-                                    int idKec = valSpin.getInt("kecamatan");
+                                    int idProv = valSpinProv.getInt("provinsi");
+                                    int idKec = valSpinProv.getInt("kecamatan");
                                     int idKabKot = 0;
-                                    if (valSpin.has("kabupaten")) {
-                                        idKabKot = valSpin.getInt("kabupaten");
-                                    } else if (valSpin.has("kota")) {
-                                        idKabKot = valSpin.getInt("kota");
+                                    if (valSpinProv.has("kabupaten")) {
+                                        idKabKot = valSpinProv.getInt("kabupaten");
+                                    } else if (valSpinProv.has("kota")) {
+                                        idKabKot = valSpinProv.getInt("kota");
                                     }
                                     String idSpin = String.valueOf(idProv);
                                     String idSpin2 = String.valueOf(idKabKot);
@@ -770,6 +805,7 @@ public class frag_inputdata_new extends Fragment {
                                         }
                                     } else {
                                         //if (chkFlow == 1) {
+                                        Log.e("CEK","getNoCIF : "+session.getNoCIF());
                                             Intent intent = new Intent(mContext, DipsWaitingRoom.class);
                                             intent.putExtra("CUSTNAME",custName);
                                             startActivity(intent);
@@ -783,6 +819,7 @@ public class frag_inputdata_new extends Fragment {
                                     }
                                 } else {
                                     //if (chkFlow == 1) {
+                                    Log.e("CEK","getNoCIF : "+session.getNoCIF());
                                         Intent intent = new Intent(mContext, DipsWaitingRoom.class);
                                         intent.putExtra("CUSTNAME",custName);
                                         startActivity(intent);

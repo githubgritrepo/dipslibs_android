@@ -1,13 +1,10 @@
 package com.evo.mitzoom.Fragments;
 
-import static com.evo.mitzoom.ui.DipsVideoConfren.text_timer;
-
 import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.Editable;
-import android.text.Html;
 import android.text.InputFilter;
 import android.text.Spanned;
 import android.text.TextWatcher;
@@ -33,14 +30,12 @@ import com.evo.mitzoom.API.ApiService;
 import com.evo.mitzoom.API.Server;
 import com.evo.mitzoom.R;
 import com.evo.mitzoom.Session.SessionManager;
-import com.evo.mitzoom.ui.DipsVideoConfren;
 import com.google.android.material.button.MaterialButton;
 import com.google.gson.JsonObject;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.xml.sax.XMLReader;
 
 import java.io.IOException;
 import java.util.Locale;

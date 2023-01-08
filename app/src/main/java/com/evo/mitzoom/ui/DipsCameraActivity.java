@@ -38,7 +38,6 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
@@ -105,8 +104,8 @@ public class DipsCameraActivity extends AppCompatActivity {
         mContext = this;
         sessions = new SessionManager(mContext);
         String lang = sessions.getLANG();
-        //setLocale(this,lang);
-        LocaleHelper.setLocale(this,lang);
+        setLocale(this,lang);
+        //LocaleHelper.setLocale(this,lang);
 
         setContentView(R.layout.activity_dips_camera);
 
@@ -276,43 +275,9 @@ public class DipsCameraActivity extends AppCompatActivity {
     }
 
     public byte[] getDownsizedImageBytes(Bitmap fullBitmap, int scaleWidth, int scaleHeight) throws IOException {
-        Bitmap resizedBitmap = null;
+        Bitmap scaledBitmap = Bitmap.createScaledBitmap(fullBitmap, scaleWidth, scaleHeight, true);
 
-        if (cekSwafoto) {
-
-            Matrix matrix = new Matrix();
-            // RESIZE THE BIT MAP
-            matrix.postScale(scaleWidth, scaleHeight);
-
-            // "RECREATE" THE NEW BITMAP
-            resizedBitmap = Bitmap.createBitmap(
-                    fullBitmap, 0, 0, scaleWidth, scaleHeight, matrix, false);
-        } else {
-
-            float sx = 0;
-            float sy = 0;
-            if (useFacing == Camera.CameraInfo.CAMERA_FACING_FRONT) {
-                sx = (float) scaleWidth;
-                sy = (float) scaleHeight;
-            } else {
-                sx = (float) scaleHeight;
-                sy = (float) scaleWidth;
-            }
-
-            int cx = (int) (scaleWidth / 2.77);
-            int cy = (int) (scaleHeight / 5.2);
-            int diffH = cy * 2;
-
-            Matrix matrix = new Matrix();
-            // RESIZE THE BIT MAP
-            matrix.postScale(sx, sy);
-
-            // "RECREATE" THE NEW BITMAP
-            resizedBitmap = Bitmap.createBitmap(
-                    fullBitmap, cx, cy, (int) (scaleWidth * 0.3), (scaleHeight - diffH), matrix, false);
-        }
-
-        Bitmap scaledBitmap = Bitmap.createScaledBitmap(resizedBitmap, resizedBitmap.getWidth(), resizedBitmap.getHeight(), true);
+        Log.e("CEK", "scaledBitmap.getWidth() : "+scaledBitmap.getWidth()+" | scaledBitmap.getHeight() : "+scaledBitmap.getHeight());
 
         // 2. Instantiate the downsized image content as a byte[]
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -349,14 +314,14 @@ public class DipsCameraActivity extends AppCompatActivity {
             e.printStackTrace();
         }
 
-        //Bitmap bitmapCrop = getResizedBitmap(bitmapDownSize, bitmapDownSize.getWidth(), bitmapDownSize.getHeight());
+        Bitmap bitmapCrop = getResizedBitmap(bitmapDownSize, bitmapDownSize.getWidth(), bitmapDownSize.getHeight());
 
-        if (bitmapDownSize.getWidth() < 256 || bitmapDownSize.getHeight() < 256) {
+        if (bitmapCrop.getWidth() < 256 || bitmapCrop.getHeight() < 256) {
             perDiff--;
-            bitmapDownSize = prosesOptimalImage(bitmap,mediaFile,perDiff);
+            bitmapCrop = prosesOptimalImage(bitmap,mediaFile,perDiff);
         }
 
-        return bitmapDownSize;
+        return bitmapCrop;
     }
     private void initialElements() {
         appbar = (AppBarLayout) findViewById(R.id.appbar);
@@ -376,8 +341,8 @@ public class DipsCameraActivity extends AppCompatActivity {
         super.onResume();
 
         String lang = sessions.getLANG();
-        //setLocale(this,lang);
-        LocaleHelper.setLocale(this,lang);
+        setLocale(this,lang);
+        //LocaleHelper.setLocale(this,lang);
 
         isConfigure = false;
 
@@ -774,6 +739,9 @@ public class DipsCameraActivity extends AppCompatActivity {
             Matrix matrix = new Matrix();
             // RESIZE THE BIT MAP
             matrix.postScale(sx, sy);
+
+            Log.e("CEK","diffH : "+diffH+" | sx : "+sx+" | sy : "+sy+" | cx : "+cx+" | cy : "+cy);
+            Log.e("CEK","Width Change : "+(width * 0.3)+" | Height Change : "+(height - diffH));
 
             // "RECREATE" THE NEW BITMAP
             resizedBitmap = Bitmap.createBitmap(

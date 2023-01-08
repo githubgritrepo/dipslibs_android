@@ -167,7 +167,6 @@
                     app:boxCornerRadiusTopStart="10dp">
 
                     <EditText
-                        android:id="@+id/et_no_account"
                         android:layout_width="match_parent"
                         android:layout_height="35dp"
                         android:gravity="center_vertical"
@@ -202,7 +201,6 @@
                         app:boxCornerRadiusTopStart="10dp">
 
                         <EditText
-                            android:id="@+id/et_no_ATM_card"
                             android:layout_width="match_parent"
                             android:layout_height="35dp"
                             android:gravity="center_vertical"

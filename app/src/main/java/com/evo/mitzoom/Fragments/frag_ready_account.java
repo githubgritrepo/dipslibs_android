@@ -2,16 +2,12 @@ package com.evo.mitzoom.Fragments;
 
 import static android.app.Activity.RESULT_OK;
 
+import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
-
 import android.os.Handler;
 import android.provider.MediaStore;
 import android.text.Editable;
@@ -35,6 +31,12 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+
 import com.chaos.view.PinView;
 import com.evo.mitzoom.API.Server;
 import com.evo.mitzoom.BaseMeetingActivity;
@@ -43,6 +45,7 @@ import com.evo.mitzoom.Helper.RabbitMirroring;
 import com.evo.mitzoom.Model.FormSpin;
 import com.evo.mitzoom.R;
 import com.evo.mitzoom.Session.SessionManager;
+import com.evo.mitzoom.ui.Alternative.DipsSwafoto;
 import com.google.gson.JsonObject;
 
 import org.json.JSONArray;
@@ -51,6 +54,8 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
+import okhttp3.MediaType;
+import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -81,7 +86,6 @@ public class frag_ready_account extends Fragment {
     private TextView Resend_Otp;
     private BroadcastReceiver smsReceiver = null;
     private PinView otp;
-    private JSONObject objValCIF;
     private String no_handphone = "";
     private String numberOTP = "";
     private String newString = "";
@@ -99,6 +103,7 @@ public class frag_ready_account extends Fragment {
     private String keysData = "";
     JSONObject objEl = new JSONObject();
     JSONObject valSpin = new JSONObject();
+    JSONObject valSpinProv = new JSONObject();
     private int lasLenChar;
     private boolean backSpaceChar;
     private TextView tvSavedImg;
@@ -107,6 +112,9 @@ public class frag_ready_account extends Fragment {
     private TextView tvTitleReady;
     private ImageView btn_back;
     private boolean flagStuckSpin = false;
+    private JSONObject idFormObj;
+    private LinearLayout ll_head;
+    private TextView tvFotoKTP;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -116,7 +124,7 @@ public class frag_ready_account extends Fragment {
         sessions = new SessionManager(mContext);
         formCode = sessions.getFormCode();
         idDips = sessions.getKEY_IdDips();
-
+        Log.e("CEK",mContext+" formCode : "+formCode);
         isSessionZoom = ZoomVideoSDK.getInstance().isInSession();
         Log.e("CEK",mContext+" isSessionZoom : "+isSessionZoom);
         if (isSessionZoom) {
@@ -126,9 +134,39 @@ public class frag_ready_account extends Fragment {
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+
+        smsReceiver = new BroadcastReceiver() {
+
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                numberOTP = "";
+                String dataSMS = intent.getExtras().getString("smsMessage");
+                Log.e("CEK","MASUK dataSMS : "+dataSMS);
+                String[] sp = dataSMS.split(" ");
+                for (int i = 0; i < sp.length; i++) {
+                    String word = sp[i].toString();
+                    if(word.matches("\\d+(?:\\.\\d+)?")) {
+                        numberOTP = word.replaceAll("[^0-9]", "");
+                        if (numberOTP.length() == 6) {
+                            otp.setText(numberOTP);
+                        }
+                    }
+                }
+            }
+        };
+        LocalBroadcastManager.getInstance(getActivity()).registerReceiver(smsReceiver,new IntentFilter("getotp"));
+
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View views = inflater.inflate(R.layout.frag_ready_account, container, false);
+
+        ll_head = (LinearLayout) views.findViewById(R.id.ll_head);
+        tvFotoKTP = (TextView) views.findViewById(R.id.tvFotoKTP);
 
         btn_back = (ImageView) views.findViewById(R.id.btn_back);
         tvTitleReady = (TextView) views.findViewById(R.id.tvTitleReady);
@@ -152,6 +190,9 @@ public class frag_ready_account extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        ll_head.setVisibility(View.VISIBLE);
+        tvFotoKTP.setText(getString(R.string.pembukaan_akun));
+
         form_id = 19;
         String label = getString(R.string.info_first_data);
         label = label.replaceAll("\n"," ");
@@ -163,26 +204,26 @@ public class frag_ready_account extends Fragment {
                 if (form_id == 29 || form_id == 20 || form_id == 21 || form_id == 22) {
                     label = getString(R.string.data_account_open);
                     label = label.replaceAll("\n","");
-                    tvTitleReady.setText(getString(R.string.data_account_open));
+                    tvTitleReady.setText(label);
                 } else if (form_id == 30) {
                     label = getString(R.string.facilities_services);
                     label = label.replaceAll("\n","");
-                    tvTitleReady.setText(getString(R.string.facilities_services));
+                    tvTitleReady.setText(label);
                 }
             }
         }
 
-        dataFormObj = new JSONObject();
-
-        if (form_id == 19) {
+        if (formCode == 150) {
             keysData = "datautama";
-        } else if (form_id == 20) {
+        } else if (formCode == 152) {
             keysData = "giro";
-        } else if (form_id == 22) {
+        } else if (formCode == 154) {
             keysData = "tabunganberjangka";
-        } else if (form_id == 30) {
+        } else if (formCode == 155) {
             keysData = "fasilitaslayanan";
         }
+
+        dataFormObj = dataReqForm();
 
         processGetForm(form_id);
 
@@ -191,23 +232,29 @@ public class frag_ready_account extends Fragment {
             public void onClick(View view) {
                 Bundle bundle = new Bundle();
                 Fragment fragment = new frag_cif_new();
-                if (form_id == 29) {
+                if (formCode == 151) {
                     bundle.putInt("form_id",19);
+                    sessions.saveFormCOde(150);
                     rabbitMirroring.MirroringSendEndpoint(150);
-                } else if (form_id == 20) {
+                } else if (formCode == 152) {
                     bundle.putInt("form_id",29);
+                    sessions.saveFormCOde(151);
                     rabbitMirroring.MirroringSendEndpoint(151);
-                } else if (form_id == 21) {
+                } else if (formCode == 153) {
                     bundle.putInt("form_id",20);
+                    sessions.saveFormCOde(152);
                     rabbitMirroring.MirroringSendEndpoint(152);
-                } else if (form_id == 22) {
+                } else if (formCode == 154) {
                     bundle.putInt("form_id",21);
+                    sessions.saveFormCOde(153);
                     rabbitMirroring.MirroringSendEndpoint(153);
-                } else if (form_id == 30) {
+                } else if (formCode == 155) {
                     bundle.putInt("form_id",22);
+                    sessions.saveFormCOde(154);
                     rabbitMirroring.MirroringSendEndpoint(154);
                 } else {
                     fragment = new frag_open_account_product();
+                    sessions.saveFormCOde(201);
                     rabbitMirroring.MirroringSendEndpoint(201);
                 }
 
@@ -309,12 +356,104 @@ public class frag_ready_account extends Fragment {
                     Log.e("CEK","flagNext : "+flagNext);
                     Log.e("CEK","objEl : "+objEl.toString());
                     if (flagNext) {
-                        //processNext();
+                        processNext();
                     }
                 }
             }
         });
 
+    }
+
+    private void processNext() {
+        JSONObject reqFormSend = dataReqForm();
+        Log.e("CEK","reqFormSend : "+reqFormSend.toString());
+        //APISaveForm();
+    }
+
+    private void APISaveForm() {
+        JSONObject reqFormSend = dataReqForm();
+        JSONObject dataObjCIF = new JSONObject();
+        try {
+            dataObjCIF.put("formCode","Create Account");
+            dataObjCIF.put("idDips",idDips);
+            dataObjCIF.put("payload",reqFormSend);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), dataObjCIF.toString());
+        Server.getAPIService().saveForm(requestBody).enqueue(new Callback<JsonObject>() {
+            @Override
+            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                Log.e("CEK","APISaveForm code : "+response.code());
+                if (response.isSuccessful()) {
+                    String dataS = response.body().toString();
+                    Log.e("CEK","APISaveForm dataS : "+dataS);
+                    try {
+                        JSONObject dataObj = new JSONObject(dataS);
+                        String idForm = dataObj.getJSONObject("data").getString("idForm");
+                        idFormObj = new JSONObject();
+                        idFormObj.put("idForm",idForm);
+                        rabbitMirroring.MirroringSendKey(idFormObj);
+
+                        //processSendOTP();
+
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                } else {
+                    ((Activity)mContext).runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (isSessionZoom) {
+                                BaseMeetingActivity.showProgress(false);
+                            } else {
+                                DipsSwafoto.showProgress(false);
+                            }
+                        }
+                    });
+                    Toast.makeText(mContext,R.string.msg_error,Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<JsonObject> call, Throwable t) {
+                ((Activity)mContext).runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (isSessionZoom) {
+                            BaseMeetingActivity.showProgress(false);
+                        } else {
+                            DipsSwafoto.showProgress(false);
+                        }
+                    }
+                });
+                Toast.makeText(mContext, t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private JSONObject dataReqForm() {
+        JSONObject reqFormSend = null;
+        try {
+            if (sessions.getFormReq() != null) {
+                String forms = sessions.getFormReq();
+                reqFormSend = new JSONObject(forms);
+            } else {
+                reqFormSend = new JSONObject();
+            }
+
+            if (formCode == 151 || formCode == 153) {
+                reqFormSend.put("pembukaanakun", objEl);
+            } else {
+                JSONObject ObjCif = new JSONObject();
+                ObjCif.put(keysData, objEl);
+                reqFormSend.put("pembukaanakun", ObjCif);
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        return reqFormSend;
     }
 
     private void processGetForm(int formId) {
@@ -340,9 +479,6 @@ public class frag_ready_account extends Fragment {
                         idElement = parseForm.getForm();
                         Log.e("CEK","dataElement : "+idElement.toString());
                         processValidationActionForm();
-                        JSONObject ObjCif = new JSONObject();
-                        ObjCif.put(keysData,objEl);
-                        dataFormObj.put("pembukaanakun",ObjCif);
                         Log.e("CEK","DATA FORM : "+dataFormObj.toString());
                         //rabbitMirroring.MirroringSendKey(dataFormObj);
                     } catch (JSONException e) {
@@ -371,12 +507,17 @@ public class frag_ready_account extends Fragment {
                         try {
                             int idDataEl = idElement.getJSONObject(j).getInt("id");
                             String nameDataEl = idElement.getJSONObject(j).getString("name");
+                            String valKurung = "";
+                            int indx = nameDataEl.indexOf("(");
+                            if (indx >= 0) {
+                                valKurung = nameDataEl.substring(indx);
+                            }
                             String urlPath = "";
                             if (idElement.getJSONObject(j).has("url")) {
                                 urlPath = idElement.getJSONObject(j).getString("url");
                             }
                             if (idEl == idDataEl) {
-
+                                String finalValKurung = valKurung;
                                 if (llFormBuild.getChildAt(i) instanceof EditText) {
                                     EditText ed = (EditText) llFormBuild.getChildAt(i);
                                     ed.setOnFocusChangeListener(new View.OnFocusChangeListener() {
@@ -391,7 +532,7 @@ public class frag_ready_account extends Fragment {
                                     ed.addTextChangedListener(new TextWatcher() {
                                         @Override
                                         public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                                            if (nameDataEl.equals("npwp")) {
+                                            if (nameDataEl.equals("npwp"+ finalValKurung)) {
                                                 lasLenChar = charSequence.length();
                                             }
                                         }
@@ -401,7 +542,7 @@ public class frag_ready_account extends Fragment {
                                             Log.e("CEK",nameDataEl+" : "+charSequence);
                                             try {
                                                 objEl.put(nameDataEl, charSequence);
-                                                dataFormObj.put(keysData,objEl);
+                                                dataFormObj = dataReqForm();
                                             } catch (JSONException e) {
                                                 e.printStackTrace();
                                             }
@@ -412,7 +553,7 @@ public class frag_ready_account extends Fragment {
 
                                         @Override
                                         public void afterTextChanged(Editable s) {
-                                            if (nameDataEl.equals("npwp")) {
+                                            if (nameDataEl.equals("npwp"+ finalValKurung)) {
                                                 ed.removeTextChangedListener(this);
                                                 backSpaceChar = lasLenChar > s.length();
                                                 if (!backSpaceChar) {
@@ -446,7 +587,7 @@ public class frag_ready_account extends Fragment {
                                                 String results = rb.getText().toString();
                                                 try {
                                                     objEl.put(nameDataEl, results);
-                                                    dataFormObj.put(keysData,objEl);
+                                                    dataFormObj = dataReqForm();
                                                     if (isSessionZoom) {
                                                         rabbitMirroring.MirroringSendKey(dataFormObj);
                                                     }
@@ -480,11 +621,8 @@ public class frag_ready_account extends Fragment {
                                                 }
                                             }
 
-                                            try {
-                                                dataFormObj.put(keysData,objEl);
-                                            } catch (JSONException e) {
-                                                e.printStackTrace();
-                                            }
+                                            dataFormObj = dataReqForm();
+
                                             if (isSessionZoom) {
                                                 rabbitMirroring.MirroringSendKey(dataFormObj);
                                             }
@@ -501,7 +639,7 @@ public class frag_ready_account extends Fragment {
                                             String results = spin.getSelectedItem().toString();
                                             try {
                                                 objEl.put(nameDataEl, results);
-                                                dataFormObj.put(keysData,objEl);
+                                                dataFormObj = dataReqForm();
                                                 if (isSessionZoom) {
                                                     rabbitMirroring.MirroringSendKey(dataFormObj);
                                                 }
@@ -549,8 +687,12 @@ public class frag_ready_account extends Fragment {
                                                 Log.e("CEK","dataSpin.getId() : "+idData);
                                                 try {
                                                     objEl.put(nameDataEl, results);
-                                                    dataFormObj.put(keysData,objEl);
-                                                    valSpin.put(nameDataEl,idData);
+                                                    dataFormObj = dataReqForm();
+                                                    if (nameDataEl.contains("provinsi") || nameDataEl.contains("kabupaten") || nameDataEl.contains("kota") || nameDataEl.contains("kecamatan") || (nameDataEl.contains("kelurahan") || nameDataEl.contains("desa"))) {
+                                                        valSpinProv.put(nameDataEl,idData);
+                                                    } else {
+                                                        valSpin.put(nameDataEl, idData);
+                                                    }
                                                     if (isSessionZoom) {
                                                         rabbitMirroring.MirroringSendKey(dataFormObj);
                                                     }
@@ -580,7 +722,7 @@ public class frag_ready_account extends Fragment {
                                             String results = autoText.getText().toString();
                                             try {
                                                 objEl.put(nameDataEl, results);
-                                                dataFormObj.put(keysData,objEl);
+                                                dataFormObj = dataReqForm();
                                                 if (isSessionZoom) {
                                                     rabbitMirroring.MirroringSendKey(dataFormObj);
                                                 }
@@ -595,7 +737,7 @@ public class frag_ready_account extends Fragment {
                                             String results = autoText.getText().toString();
                                             try {
                                                 objEl.put(nameDataEl, results);
-                                                dataFormObj.put(keysData,objEl);
+                                                dataFormObj = dataReqForm();
                                                 if (isSessionZoom) {
                                                     rabbitMirroring.MirroringSendKey(dataFormObj);
                                                 }
@@ -623,6 +765,7 @@ public class frag_ready_account extends Fragment {
                                                     @Override
                                                     public void onClick(View view) {
                                                         REQUESTCODE_GALLERY = 201;
+                                                        sessions.saveMedia(2);
                                                         chooseFromSD();
                                                     }
                                                 });
@@ -675,7 +818,11 @@ public class frag_ready_account extends Fragment {
                             String labelEng = dataArr.getJSONObject(i).getString("labelEng");
                             dataDropDown.add(new FormSpin(idData,labelIdn,labelIdn,labelEng));
                             if (i == 0) {
-                                valSpin.put(nameDataEl,idData);
+                                if (nameDataEl.contains("provinsi") || nameDataEl.contains("kabupaten") || nameDataEl.contains("kota") || nameDataEl.contains("kecamatan") || (nameDataEl.contains("kelurahan") || nameDataEl.contains("desa"))) {
+                                    valSpinProv.put(nameDataEl,idData);
+                                } else {
+                                    valSpin.put(nameDataEl, idData);
+                                }
                                 processGetSpinChild(nameDataEl);
                                 if ((nameDataEl.contains("kelurahan") || nameDataEl.contains("desa"))) {
                                     flagStuckSpin = true;
@@ -718,7 +865,7 @@ public class frag_ready_account extends Fragment {
                             if (nameDataEl.contains("provinsi") && (getnameDataEl.contains("kabupaten") || getnameDataEl.contains("kota"))) {
                                 Log.e("CEK","processGetSpinChild getnameDataEl : "+getnameDataEl);
                                 if (!urlPath.isEmpty()) {
-                                    int idProv = valSpin.getInt("provinsi");
+                                    int idProv = valSpinProv.getInt("provinsi");
                                     String idSpin = String.valueOf(idProv);
                                     String urlNew = urlPath.replace(":id_provinsi",idSpin);
 
@@ -732,12 +879,12 @@ public class frag_ready_account extends Fragment {
                                 }
                             } else if ((nameDataEl.contains("kabupaten") || nameDataEl.contains("kota")) && getnameDataEl.contains("kecamatan")) {
                                 if (!urlPath.isEmpty()) {
-                                    int idProv = valSpin.getInt("provinsi");
+                                    int idProv = valSpinProv.getInt("provinsi");
                                     int idKabKot = 0;
-                                    if (valSpin.has("kabupaten")) {
-                                        idKabKot = valSpin.getInt("kabupaten");
-                                    } else if (valSpin.has("kota")) {
-                                        idKabKot = valSpin.getInt("kota");
+                                    if (valSpinProv.has("kabupaten")) {
+                                        idKabKot = valSpinProv.getInt("kabupaten");
+                                    } else if (valSpinProv.has("kota")) {
+                                        idKabKot = valSpinProv.getInt("kota");
                                     }
                                     String idSpin = String.valueOf(idProv);
                                     String idSpin2 = String.valueOf(idKabKot);
@@ -753,13 +900,13 @@ public class frag_ready_account extends Fragment {
                                 }
                             } else if (nameDataEl.contains("kecamatan") && (getnameDataEl.contains("kelurahan") || getnameDataEl.contains("desa"))) {
                                 if (!urlPath.isEmpty()) {
-                                    int idProv = valSpin.getInt("provinsi");
-                                    int idKec = valSpin.getInt("kecamatan");
+                                    int idProv = valSpinProv.getInt("provinsi");
+                                    int idKec = valSpinProv.getInt("kecamatan");
                                     int idKabKot = 0;
-                                    if (valSpin.has("kabupaten")) {
-                                        idKabKot = valSpin.getInt("kabupaten");
-                                    } else if (valSpin.has("kota")) {
-                                        idKabKot = valSpin.getInt("kota");
+                                    if (valSpinProv.has("kabupaten")) {
+                                        idKabKot = valSpinProv.getInt("kabupaten");
+                                    } else if (valSpinProv.has("kota")) {
+                                        idKabKot = valSpinProv.getInt("kota");
                                     }
                                     String idSpin = String.valueOf(idProv);
                                     String idSpin2 = String.valueOf(idKabKot);

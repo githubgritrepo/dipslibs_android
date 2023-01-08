@@ -3,6 +3,10 @@ package com.evo.mitzoom.Fragments;
 import android.content.Context;
 import android.graphics.Rect;
 import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -10,13 +14,6 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ImageView;
-
-import com.evo.mitzoom.Adapter.GridProductAdapter;
-import com.evo.mitzoom.Adapter.ItemServiceAdapter;
 import com.evo.mitzoom.Adapter.ItemServiceGridAdapter;
 import com.evo.mitzoom.Helper.RabbitMirroring;
 import com.evo.mitzoom.Model.ItemModel;
@@ -69,7 +66,7 @@ public class frag_service_new extends Fragment {
 
         addData();
 
-        int spanCount = 4; // columns
+        int spanCount = 3; // columns
         int spacing = 20; // 20px
         boolean includeEdge = true;
         rv_item.setLayoutManager(new GridLayoutManager(mContext,spanCount));
@@ -99,18 +96,19 @@ public class frag_service_new extends Fragment {
         String titleAcc = getResources().getString(R.string.pembukaan_akun);
         titleAcc = titleAcc.replace("Rekening","Akun");
         dataItems = new ArrayList<>();
-        dataItems.add(new ItemModel("0",titleAcc,R.drawable.img_opening_account)); //Sudah
+        dataItems.add(new ItemModel("6",getResources().getString(R.string.DORMANT_ACTIVATION),R.drawable.img_aktivasi_dormant)); //Sudah
+        dataItems.add(new ItemModel("10",getResources().getString(R.string.IBMB_REGISTRATION),R.drawable.img_aktivasi_ibmb)); //Sudah
+        dataItems.add(new ItemModel("12",getResources().getString(R.string.block_account),R.drawable.img_blokir_rekening)); //Sudah
+        dataItems.add(new ItemModel("11",getResources().getString(R.string.CREDIT_FORM),R.drawable.img_formulir_kredit)); //Sudah
         dataItems.add(new ItemModel("1",getResources().getString(R.string.Formulir_Transfer),R.drawable.img_formulir_trf)); //Sudah
         dataItems.add(new ItemModel("2",getResources().getString(R.string.CUSTOMER_COMPLAIN),R.drawable.img_complaint)); //Sudah
+        dataItems.add(new ItemModel("0",titleAcc,R.drawable.img_opening_account)); //Sudah
         dataItems.add(new ItemModel("3",getResources().getString(R.string.INTERBANK_TRANSACTION),R.drawable.img_antarbank)); //Sudah
         dataItems.add(new ItemModel("4",getString(R.string.inter_bank_transaction),R.drawable.img_interbank)); //Sudah
         dataItems.add(new ItemModel("5",getResources().getString(R.string.KYC_UPDATING),R.drawable.img_perbarui_data)); //Sudah
-        dataItems.add(new ItemModel("6",getResources().getString(R.string.DORMANT_ACTIVATION),R.drawable.img_aktivasi_dormant)); //Sudah
         dataItems.add(new ItemModel("7",getResources().getString(R.string.FOREX),R.drawable.img_valas)); //Sudah
         dataItems.add(new ItemModel("8",getResources().getString(R.string.ATM_CARD),R.drawable.img_antarbank)); //Sudah
         dataItems.add(new ItemModel("9",getResources().getString(R.string.POWER_OF_ATTORNEY),R.drawable.img_interbank)); //Sudah
-        dataItems.add(new ItemModel("10",getResources().getString(R.string.IBMB_REGISTRATION),R.drawable.img_ibmb)); //Sudah
-        dataItems.add(new ItemModel("11",getResources().getString(R.string.CREDIT_FORM),R.drawable.img_kredit)); //Sudah
     }
 
     public class GridSpacingItemDecoration extends RecyclerView.ItemDecoration {

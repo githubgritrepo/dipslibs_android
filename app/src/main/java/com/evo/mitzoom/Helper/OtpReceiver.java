@@ -10,8 +10,6 @@ import android.util.Log;
 
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
-import com.evo.mitzoom.Fragments.frag_aktivasi_ibmb;
-
 public class OtpReceiver extends BroadcastReceiver {
     public OtpReceiver(){
 

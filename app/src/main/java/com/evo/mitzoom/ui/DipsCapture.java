@@ -24,19 +24,16 @@ import android.os.Looper;
 import android.telephony.TelephonyManager;
 import android.util.Base64;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
 import android.view.WindowManager;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
@@ -44,7 +41,6 @@ import com.evo.mitzoom.API.ApiService;
 import com.evo.mitzoom.API.Server;
 import com.evo.mitzoom.Helper.GraphicFaceTracker;
 import com.evo.mitzoom.Helper.LocaleHelper;
-import com.evo.mitzoom.Helper.OutboundService;
 import com.evo.mitzoom.Model.Request.JsonCaptureIdentify;
 import com.evo.mitzoom.Model.Response.CaptureIdentify;
 import com.evo.mitzoom.R;
@@ -68,10 +64,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
-/*import ai.advance.liveness.lib.CameraType;
-import ai.advance.liveness.lib.GuardianLivenessDetectionSDK;
-import ai.advance.liveness.lib.Market;
-import ai.advance.liveness.sdk.activity.LivenessActivity;*/
 import cn.pedant.SweetAlert.SweetAlertDialog;
 import okhttp3.MediaType;
 import okhttp3.RequestBody;
@@ -110,8 +102,8 @@ public class DipsCapture extends AppCompatActivity implements CameraSource.Pictu
         mContext = this;
         sessions = new SessionManager(mContext);
         String lang = sessions.getLANG();
-        //setLocale(this, lang);
-        LocaleHelper.setLocale(this,lang);
+        setLocale(this, lang);
+        //LocaleHelper.setLocale(this,lang);
 
         idDips = sessions.getKEY_IdDips();
 

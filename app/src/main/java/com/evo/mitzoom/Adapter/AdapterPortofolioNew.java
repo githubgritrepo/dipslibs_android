@@ -1,6 +1,5 @@
 package com.evo.mitzoom.Adapter;
 
-import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Typeface;
@@ -19,17 +18,14 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.evo.mitzoom.Fragments.frag_dialog_rtgs;
 import com.evo.mitzoom.GlideApp;
-import com.evo.mitzoom.Model.PortfolioModel;
 import com.evo.mitzoom.R;
 import com.github.florent37.expansionpanel.ExpansionLayout;
 import com.github.florent37.expansionpanel.viewgroup.ExpansionLayoutCollection;
 
 import org.json.JSONArray;
 import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
 
 public class AdapterPortofolioNew extends RecyclerView.Adapter<AdapterPortofolioNew.ViewHolder> {
 

@@ -2,7 +2,9 @@ package com.evo.mitzoom.Fragments;
 
 import android.app.Activity;
 import android.app.DownloadManager;
+import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
@@ -14,7 +16,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -25,6 +26,7 @@ import androidx.fragment.app.Fragment;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.evo.mitzoom.API.Server;
+import com.evo.mitzoom.Helper.DownloadTaskHelper;
 import com.evo.mitzoom.Helper.RabbitMirroring;
 import com.evo.mitzoom.Helper.SingleMediaScanner;
 import com.evo.mitzoom.R;
@@ -32,7 +34,6 @@ import com.evo.mitzoom.Session.SessionManager;
 import com.github.chrisbanes.photoview.PhotoView;
 import com.google.gson.JsonObject;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -80,8 +81,8 @@ public class frag_cif_resi extends Fragment {
         try {
             objValCIF = new JSONObject(dataCIF);
             Log.e("CEK","CIF FULL objValCIF : "+objValCIF.toString());
-            JSONObject objEl = objValCIF.getJSONObject("datadiri");
-            no_handphone = objEl.getString("noponsel");
+            /*JSONObject objEl = objValCIF.getJSONObject("datadiri");
+            no_handphone = objEl.getString("noponsel");*/
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -111,7 +112,9 @@ public class frag_cif_resi extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        idDips = sessions.getKEY_IdDips();
 
+        swipe.setRefreshing(true);
         getResumeResi();
 
         String titleSuccess = getString(R.string.selamat_npembukaan_akun_berhasil);
@@ -124,8 +127,6 @@ public class frag_cif_resi extends Fragment {
         tvTitle.setText(titleSuccess);
         tvSubTitle.setVisibility(View.GONE);
         tvMsgThanks.setText(titleHeadline);
-
-        idDips = sessions.getKEY_IdDips();
 
         btnUnduh.setEnabled(false);
         btnUnduh.setBackgroundTintList(mContext.getResources().getColorStateList(R.color.btnFalse));
@@ -166,11 +167,22 @@ public class frag_cif_resi extends Fragment {
     }
 
     private void processDownloadbyUrl() {
-        manager = (DownloadManager) ((Activity)mContext).getSystemService(Context.DOWNLOAD_SERVICE);
-        Uri uri = Uri.parse("https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf");
-        DownloadManager.Request request = new DownloadManager.Request(uri);
-        request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE);
-        long reference = manager.enqueue(request);
+        ProgressDialog mProgressDialog = new ProgressDialog(mContext);
+        mProgressDialog.setMessage(getString(R.string.label_downloaded));
+        mProgressDialog.setIndeterminate(true);
+        mProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+        mProgressDialog.setCancelable(true);
+
+        DownloadTaskHelper downloadTaskHelper = new DownloadTaskHelper(mContext, mProgressDialog);
+        downloadTaskHelper.execute(pdfFile);
+
+        mProgressDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
+
+            @Override
+            public void onCancel(DialogInterface dialog) {
+                downloadTaskHelper.cancel(true); //cancel the task
+            }
+        });
     }
 
     private void processDownload() {
@@ -250,6 +262,7 @@ public class frag_cif_resi extends Fragment {
     }
 
     private void getResumeResi() {
+        Log.e("CEK","getResumeResi");
         Server.getAPIService().getResiCIF(idDips).enqueue(new Callback<JsonObject>() {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {

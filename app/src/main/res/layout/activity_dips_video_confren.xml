@@ -159,10 +159,10 @@
             android:src="@drawable/batik_bvic" />
 
         <include
+            layout="@layout/layout_bottom_action_bar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            layout="@layout/layout_bottom_action_bar"
-            android:layout_alignParentBottom="true"/>
+            android:layout_alignParentBottom="true" />
         <include
             android:layout_width="match_parent"
             android:layout_height="match_parent"

@@ -9,13 +9,6 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.text.Html;
 import android.util.Base64;
 import android.util.Log;
@@ -29,14 +22,18 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.evo.mitzoom.API.Server;
 import com.evo.mitzoom.Adapter.ItemOpenAccount;
-import com.evo.mitzoom.Adapter.ItemServiceGridAdapter;
 import com.evo.mitzoom.Helper.RabbitMirroring;
 import com.evo.mitzoom.Model.ItemModel;
 import com.evo.mitzoom.R;
 import com.evo.mitzoom.Session.SessionManager;
-import com.google.android.material.button.MaterialButton;
 import com.google.gson.JsonObject;
 
 import org.json.JSONException;
@@ -86,6 +83,8 @@ public class frag_open_account_product extends Fragment {
             rabbitMirroring = new RabbitMirroring(mContext);
         }
 
+        Log.e("CEK","getNoCIF : "+sessions.getNoCIF());
+
     }
 
     @Override
@@ -125,8 +124,13 @@ public class frag_open_account_product extends Fragment {
         btnBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                rabbitMirroring.MirroringSendEndpoint(2);
-                getFragmentPage(new frag_list_produk());
+                if (sessions.getNoCIF() == null || sessions.getNoCIF().isEmpty()) {
+                    rabbitMirroring.MirroringSendEndpoint(2);
+                    getFragmentPage(new frag_list_produk());
+                } else {
+                    rabbitMirroring.MirroringSendEndpoint(15);
+                    getFragmentPage(new frag_service_new());
+                }
             }
         });
 
@@ -281,7 +285,7 @@ public class frag_open_account_product extends Fragment {
                 if (checkBox.isChecked()){
                     sweetAlertDialogTNC.dismiss();
                     sweetAlertDialogTNC.cancel();
-                    if (sessions.getNoCIF() == null) {
+                    if (sessions.getNoCIF() == null || sessions.getNoCIF().isEmpty()) {
                         sessions.saveIsCust(isCust);
                         sessions.saveIsSwafoto(isSwafoto);
                         sessions.saveFormCOde(4);

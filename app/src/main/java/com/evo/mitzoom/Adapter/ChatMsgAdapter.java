@@ -5,6 +5,7 @@ import android.graphics.Color;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.style.ForegroundColorSpan;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,6 +18,11 @@ import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.evo.mitzoom.R;
+import com.evo.mitzoom.Session.SessionManager;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.List;
 
@@ -31,11 +37,13 @@ public class ChatMsgAdapter extends RecyclerView.Adapter<ChatMsgAdapter.MsgHolde
     private List<Boolean> isSelf;
     private List<Boolean> isHost;
     protected ZoomVideoSDKSession session;
+    private SessionManager sessionManager;
     public ChatMsgAdapter(Context ctx, List<CharSequence> list, List<Boolean> isHost, List<Boolean> isSelf) {
         this.ctx = ctx;
         this.list = list;
         this.isSelf = isSelf;
         this.isHost = isHost;
+        this.sessionManager = new SessionManager(ctx);
     }
     public void onReceive(ZoomVideoSDKChatMessage item) {
         boolean isSelfval = item.isSelfSend();
@@ -50,6 +58,7 @@ public class ChatMsgAdapter extends RecyclerView.Adapter<ChatMsgAdapter.MsgHolde
         builder.setSpan(new ForegroundColorSpan(Color.parseColor("#FFFFFF")),SenderName.length(), builder.length(), Spannable.SPAN_EXCLUSIVE_INCLUSIVE); //设置前面的字体颜色
         list.add(builder);
         notifyItemInserted(list.size());
+        SavedInstanceChat();
 
     }
     @NonNull
@@ -88,6 +97,26 @@ public class ChatMsgAdapter extends RecyclerView.Adapter<ChatMsgAdapter.MsgHolde
             chatBubble = view.findViewById(R.id.chat_bubble);
             chatMsg = view.findViewById(R.id.chat_msg_text);
         }
+    }
+
+    private void SavedInstanceChat(){
+        JSONArray jsonArray = new JSONArray();
+        for (int i =0; i < list.size(); i++){
+            JSONObject jsons = new JSONObject();
+            try {
+                jsons.put("isSelf",isSelf.get(i));
+                jsons.put("isHost",isHost.get(i));
+                jsons.put("message",list.get(i));
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+            jsonArray.put(jsons);
+        }
+        String dataArr = jsonArray.toString();
+        sessionManager.saveChat(dataArr);
+        Log.d("CEK PESAN ARRAY",dataArr);
     }
 
 

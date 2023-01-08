@@ -16,12 +16,10 @@ import android.widget.RatingBar;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.app.AppCompatDelegate;
 
 import com.evo.mitzoom.Helper.LocaleHelper;
 import com.evo.mitzoom.R;
 import com.evo.mitzoom.Session.SessionManager;
-import com.google.android.material.button.MaterialButton;
 
 import cn.pedant.SweetAlert.SweetAlertDialog;
 
@@ -40,8 +38,8 @@ public class RatingActivity extends AppCompatActivity {
         mContext = this;
         sessions = new SessionManager(mContext);
         String lang = sessions.getLANG();
-        //setLocale(this, lang);
-        LocaleHelper.setLocale(this,lang);
+        setLocale(this, lang);
+        //LocaleHelper.setLocale(this,lang);
 
         setContentView(R.layout.activity_rating);
         //AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
@@ -93,8 +91,8 @@ public class RatingActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         String lang = sessions.getLANG();
-        //setLocale(this,lang);
-        LocaleHelper.setLocale(this,lang);
+        setLocale(this,lang);
+        //LocaleHelper.setLocale(this,lang);
     }
 
     @Override

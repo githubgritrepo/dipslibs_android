@@ -2,11 +2,6 @@ package com.evo.mitzoom.ui;
 
 import static com.evo.mitzoom.ui.DipsChooseLanguage.setLocale;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-
 import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
@@ -15,12 +10,12 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.DashPathEffect;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.PixelFormat;
 import android.graphics.RectF;
+import android.hardware.Camera;
 import android.media.ExifInterface;
 import android.os.Bundle;
 import android.os.Environment;
@@ -30,12 +25,14 @@ import android.util.Base64;
 import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
-import android.view.View;
 import android.view.WindowManager;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
 import com.evo.mitzoom.Helper.GraphicFaceTracker;
 import com.evo.mitzoom.Helper.LocaleHelper;
@@ -52,8 +49,6 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
-
-import cn.pedant.SweetAlert.SweetAlertDialog;
 
 public class DipsCameraSource extends AppCompatActivity implements CameraSource.PictureCallback {
 
@@ -76,8 +71,8 @@ public class DipsCameraSource extends AppCompatActivity implements CameraSource.
         mContext = this;
         sessions = new SessionManager(mContext);
         String lang = sessions.getLANG();
-        //setLocale(this, lang);
-        LocaleHelper.setLocale(this,lang);
+        setLocale(this, lang);
+        //LocaleHelper.setLocale(this,lang);
 
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
@@ -101,8 +96,8 @@ public class DipsCameraSource extends AppCompatActivity implements CameraSource.
         super.onResume();
 
         String lang = sessions.getLANG();
-        //setLocale(this,lang);
-        LocaleHelper.setLocale(this,lang);
+        setLocale(this,lang);
+        //LocaleHelper.setLocale(this,lang);
 
         detector = new FaceDetector.Builder(this)
                 .setProminentFaceOnly(true) // optimize for single, relatively large face
@@ -179,43 +174,46 @@ public class DipsCameraSource extends AppCompatActivity implements CameraSource.
 
         @Override
         public void surfaceChanged(@NonNull SurfaceHolder holder, int format, int width, int height) {
-            /*Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
+            float rad = (float) width / 2;
+
+            Log.e("CEK","rad : "+rad);
+
+            int NUM_DASHES = 20;
+            float DASH_PORTION = (float) 0.75;
+            float GAP_PORTION = (float) 0.25;
+            double circumference = 2 * Math.PI * rad;
+            float dashPlusGapSize = (float) (circumference / NUM_DASHES);
+            float[] intervals = new float[]{ 5, 5 };
+            intervals[0] = dashPlusGapSize * DASH_PORTION;
+            intervals[1] = dashPlusGapSize * GAP_PORTION;
+            DashPathEffect dashPath = new DashPathEffect(intervals, 0);
+
+            Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
             paint.setColor(getResources().getColor(R.color.zm_v1_red_A100));
             paint.setAlpha(130);
+            paint.setPathEffect(dashPath);
             paint.setStyle(Paint.Style.STROKE);
             paint.setStrokeWidth(10);
 
             Log.e("CEK","surfaceChanged width : "+width+" | height : "+height);
 
-            float diffH = (float) height / 8;
-            float diffw = (float) width / 2;
+            double diffH = Math.ceil(height / 1.7);
+            double diffw = Math.ceil(width / 14);
 
-            Log.e("CEK","diffH : "+diffH+" | diffw : "+diffw);
+            double surfRight = 0;
+            double surfBottom = 0;
 
-            int widthKTP = 1011; //pixel
-            int heightKTP = 638; //pixel
-            //resolusi 300dpi
+            surfRight = (width-diffw);
+            surfBottom = (height-(diffw+50));
 
-            int diffWidth = width - heightKTP;
+            Log.e("CEK","surfaceChanged diffw : "+diffw+" | diffH : "+diffH+" | surfRight : "+surfRight+" | surfBottom : "+surfBottom);
 
-            float scaleH = (float) height / heightKTP;
-            Log.e("CEK","scaleH : "+scaleH);
-            float left = diffw - diffWidth;
-            Log.e("CEK","left : "+left);
-
-            float surfRight = (float) width - left;
-            float surfBottom = (float) height - diffH;
-
-            float top = surfBottom - 100;
-
-            Log.e("CEK","LEFT : "+left+" | TOP : "+top+" | RIGHT : "+surfRight+" | BOTTOM : "+surfBottom);
-
-            RectF rect = new RectF(left, top, surfRight, surfBottom);
+            RectF rect = new RectF((float) diffw,(float) diffH,(float) surfRight,(float) surfBottom);
 
             Canvas canvas = transHolder.lockCanvas();
             canvas.drawRect(rect,paint);
 
-            transHolder.unlockCanvasAndPost(canvas);*/
+            transHolder.unlockCanvasAndPost(canvas);
         }
 
         @Override
@@ -283,33 +281,37 @@ public class DipsCameraSource extends AppCompatActivity implements CameraSource.
             File mediaFile = createTemporaryFile(dataPhoto);
             try {
                 String pathFile = mediaFile.getPath();
+                //Bitmap bitmapCropShape = getResizedBitmap(realBitmap, realBitmap.getWidth(), realBitmap.getHeight());
                 //Bitmap bitmapCrop = prosesOptimalImage(realBitmap, mediaFile);
                 ExifInterface exif = new ExifInterface(pathFile);
                 int rotation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL);
                 rotationInDegree = rotation;
                 rotationInDegree = exifToDegrees(rotationInDegree);
 
-                if (mediaFile.exists()) {
-                    try {
-                        mediaFile.getCanonicalFile().delete();
-                        if (mediaFile.exists()) {
-                            getApplicationContext().deleteFile(mediaFile.getName());
-                        }
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-
                 String imgBase64 = imageRotateBase64(bitmapCrop, rotationInDegree);
+
+                //String imgBase64Shape = imageRotateBase64(bitmapCropShape, rotationInDegree);
 
                 if (!imgBase64.isEmpty()) {
                     byte[] bytePhoto = Base64.decode(imgBase64, Base64.NO_WRAP);
                     Bitmap bitmap = BitmapFactory.decodeByteArray(bytePhoto, 0, bytePhoto.length);
 
-                    byte[] real_bytePhoto = Base64.decode(imgBase64, Base64.NO_WRAP);
+                    /*byte[] shape_bytePhoto = Base64.decode(imgBase64Shape, Base64.NO_WRAP);
+                    createTemporaryFile(shape_bytePhoto);*/
+
+                    if (mediaFile.exists()) {
+                        try {
+                            mediaFile.getCanonicalFile().delete();
+                            if (mediaFile.exists()) {
+                                getApplicationContext().deleteFile(mediaFile.getName());
+                            }
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+
                     Intent returnIntent = getIntent();
                     returnIntent.putExtra("result_camera", bytePhoto);
-                    returnIntent.putExtra("real",real_bytePhoto);
                     setResult(Activity.RESULT_OK, returnIntent);
                     finish();
 
@@ -343,6 +345,42 @@ public class DipsCameraSource extends AppCompatActivity implements CameraSource.
             e.printStackTrace();
         }
 
+    }
+
+    private Bitmap getResizedBitmap(Bitmap bm, int newWidth, int newHeight) {
+        int width = bm.getWidth();
+        int height = bm.getHeight();
+
+        Log.e("CEK","getResizedBitmap width : "+width+" | height : "+height+" | newWidth : "+newWidth+" | newHeight : "+newHeight);
+
+        float sx = 0;
+        float sy = 0;
+        if (useFacing == Camera.CameraInfo.CAMERA_FACING_FRONT) {
+            sx = ((float) newWidth) / width;
+            sy = ((float) newHeight) / height;
+        } else {
+            sx = ((float) newHeight) / height;
+            sy = ((float) newWidth) / width;
+        }
+
+        int cx = (int) (width / 14);
+        int cy = (int) (height / 1.7);
+        int diffH = cy;
+
+        Matrix matrix = new Matrix();
+        // RESIZE THE BIT MAP
+        matrix.postScale(sx, sy);
+
+        int widthChange = (int) width - cx;
+        int HeightChange = height-(cx+50);
+        HeightChange = HeightChange - diffH;
+        // "RECREATE" THE NEW BITMAP
+        Log.e("CEK","diffH : "+diffH+" | sx : "+sx+" | sy : "+sy+" | cx : "+cx+" | cy : "+cy);
+        Log.e("CEK","Width Change : "+widthChange+" | Height Change : "+HeightChange);
+        Bitmap resizedBitmap  = Bitmap.createBitmap(
+                bm, cx, cy, widthChange, HeightChange, matrix, false);
+
+        return resizedBitmap;
     }
 
     public static Bitmap resizeAndCropCenter(Bitmap bitmap, int size, boolean recycle) {
@@ -382,7 +420,7 @@ public class DipsCameraSource extends AppCompatActivity implements CameraSource.
                 return null;
             }
         }
-        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss",
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss_SSS",
                 Locale.getDefault()).format(new Date());
         File mediaFile;
         mediaFile = new File(mediaStorageDir.getPath() + File.separator +

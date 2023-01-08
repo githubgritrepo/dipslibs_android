@@ -8,7 +8,7 @@
     <string name="not_using_dips">Sorry You Cant Use DiPS361 Services</string>
     <string name="tutup">Close</string>
     <string name="chat">Chat</string>
-    <string name="confirm_accept">For the sake of mutual convenience, this conversation will be recorded automatically.\nDo you agree to use the DiPS361 Service?</string>
+    <string name="confirm_accept">For the sake of mutual convenience, this conversation will be recorded automatically.\nDo you agree to use the Digital Operations Victoria Bank Service?</string>
     <string name="tidak_not">Not</string>
     <string name="setuju_accept">Accept</string>
     <string name="leave_message">Are you sure you want to end the call?</string>
@@ -35,22 +35,17 @@
     <string name="nik">NIK</string>
     <string name="enter_your_message">Enter your message</string>
     <string name="create_new_account">Information &amp; Create Account</string>
-    <string name="credit_simulation">Credit Simulation</string>
     <string name="product_list">List Products</string>
     <string name="mutual_funds">Mutual Funds</string>
     <string name="insurance">Insurance</string>
     <string name="deposito">Deposit</string>
     <string name="giro">Bilyet Giro</string>
     <string name="savings">Savings</string>
-    <string name="new_account"><u>Saving Informastion</u></string>
-    <string name="u25cf_savings_a">● Savings A</string>
-    <string name="u25cf_savings_b">● Savings B</string>
     <string name="lorem">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</string>
     <string name="lorem2">\n1. Duis aute irure dolor in reprehenderit.\n2. In voluptate velit esse cillum dolore.\n3. Eu fugiat nulla pariatur.\n4. Excepteur sint occaecat cupidatat.\n5. non proident, suntin culpa qui officia.\n6. deserunt mollit anim.\n7. id est laborum.\n</string>
     <string name="terms_condition2"><![CDATA[Terms & Condition]]></string>
     <string name="checkbox_tnc">I agree to these terms &amp; condition</string>
     <string name="tnc_content">Syarat dan Ketentuan Umum PT Bank XYZ mengatur mengenai hubungan hukum antara PT XYZ dengan individu/korporasi yang menggunakan jasa/layanan PT Bank XYZ yang merupakan calon atau pemilik rekening di PT Bank XYZ sehubungan dengan segala produk, fasilitas dan/atau layanan yang tersedia bagi nasabah. Berikut ini merupakan poin - poin yang perlu diperhatikan sebelum melakukan pendaftaran ataupun transaksi.\n\n<ol><li><![CDATA[Hanya untuk nasabah perorangan Warga Negara Indonesia dan tidak berlaku Rekening Join]]></li>\n\n<li><![CDATA[Setoran awal pembukaan rekening Rp 20.000,-]]></li>\n\n<li><![CDATA[Setoran tunai selanjutnya Rp 10.000,-]]></li>\n\n<li><![CDATA[Saldo minimum rekening Rp 20.000,-]]></li>\n\n<li><![CDATA[Biaya apabila rekening tidak aktif Rp 2.000,- per bulan]]></li>\n\n<li><![CDATA[Apabila saldo rekening kurang dari Rp 20.000,- maka rekening akan ditutup secara otomatis oleh sistem]]></li>\n\n<li><![CDATA[Biaya penutupan rekening Rp 20.000,-]]></li>\n\n<li><![CDATA[Jumlah minimum penarikan di teller Rp 100.000,- kecuali pada saat nasabah ingin tutup rekening]]></li></ol></string>
-    <string name="Photo_ktp">KTP Photo</string>
     <string name="Photo_nktp">KTP\nPhoto</string>
     <string name="photo_nnpwp">NPWP\nPhoto</string>
     <string name="foto_ntanda_ntangan">Signature\nPhoto</string>
@@ -126,14 +121,9 @@
     <string name="penerima_manfaat">Benefit Recipients</string>
     <string name="submit">Submit</string>
     <string name="add">Add (+)</string>
-    <string name="GIRO_DIPS">Giro DiPS IDR - 022347001</string>
-    <string name="TABUNGAN_DIPS">Tabungan DiPS IDR - 011043021</string>
-    <string name="DEPOSITO_DIPS">Deposito DiPS IDR - 054999201</string>
     <string name="dana_pihak_ketiga">Third Fund</string>
     <string name="investasi">Investment</string>
     <string name="kredit">Credit</string>
-    <string name="DIPS_MODAL_KERJA">DiPS Work Capital Credit - 992101345</string>
-    <string name="DIPS_INVESTMENT">DiPS Kredit Investment - 992201209</string>
     <string name="antrian_saya">(Your number)</string>
     <string name="antrian_sekarang">(At the moment)</string>
     <string name="mata_uang">IDR</string>
@@ -171,10 +161,6 @@
     <string name="error_image">Please upload your photo</string>
     <string name="error_pass">Password is not same</string>
     <string name="error_mpin">MPIN is not same</string>
-    <string name="tabungan_a">Savings A</string>
-    <string name="tabungan_b">Savings B</string>
-    <string name="end_call2">Your calling is ended</string>
-    <string name="schedule">Your Scheduling Call in </string>
     <string name="alertRTGS">must be filled/selected on Form</string>
     <string name="label_first">Pertama</string>
     <string name="label_second">Second</string>
@@ -273,11 +259,9 @@
     <string name="success_create_card">CONGRATULATIONS!\nYour Card Application Successful</string>
     <string name="tnc_atm">Me/Us hereby apply for an ATM Card. All risks that will arise are the full responsibility of Me/Us and in this case Me/Us free the bank from all claims.</string>
     <string name="prepare_id_card">Please prepare your Identity Card (KTP).</string>
-    <string name="headline_close_conversation">Your queue has been missed. please end the call or schedule the best time for us to get back to you.</string>
     <string name="open_account">Open Account</string>
     <string name="ktp_swafoto">Self-portrait with ID card</string>
     <string name="photo_swafoto">Self-portrait\nwith\nID card</string>
-    <string name="typehere">Write Here..</string>
     <string name="bank_name">Victoria Bank</string>
     <string name="warn_not_use_app">Sorry, you cannot use XYZ Bank Digital Operations services</string>
     <string name="warn_hub_calcenter">For further information, please contact XYZ Bank Call Center</string>
@@ -291,7 +275,6 @@
     <string name="alert_ttd">Make sure the signature image or photo is clear and not blurry.</string>
     <string name="state_complaint">I certify that all the data I have provided in this complaint form is correct.</string>
     <string name="accept_state">Please agree with the statement</string>
-    <string name="body_resi_komplain">Your complaint was successfully recorded &amp; we will deal with it soon. The following is your complaint ticket number.</string>
     <string name="title_safe_complaint">SAFE!\nYour Complaint Was Successfully Recorded.</string>
     <string name="body_complaint">Your complaint has been successfully registered &amp; we will deal with it immediately. The following is your complaint ticket number.</string>
     <string name="body2_complaint">Thank you for entrusting your banking transactions to XYZ Bank. This receipt has been sent to your email address. Please check your email.</string>
@@ -310,4 +293,6 @@
     <string name="warganegara">Nationality</string>
     <string name="job">Job</string>
     <string name="titleWrongOTP">Incorrect OTP code.\nPlease double check the code sent.</string>
+    <string name="block_account">Block Account</string>
+    <string name="label_downloaded">Waiting for File to Download</string>
 </resources>

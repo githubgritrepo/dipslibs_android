@@ -2,7 +2,9 @@ package com.evo.mitzoom.Fragments;
 
 import android.app.Activity;
 import android.app.DownloadManager;
+import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
@@ -24,6 +26,7 @@ import androidx.fragment.app.Fragment;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.evo.mitzoom.API.Server;
+import com.evo.mitzoom.Helper.DownloadTaskHelper;
 import com.evo.mitzoom.Helper.RabbitMirroring;
 import com.evo.mitzoom.Helper.SingleMediaScanner;
 import com.evo.mitzoom.R;
@@ -36,12 +39,8 @@ import org.json.JSONObject;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
 import java.util.Random;
 
-import cn.pedant.SweetAlert.SweetAlertDialog;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -112,6 +111,7 @@ public class frag_service_resi extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        swipe.setRefreshing(true);
         getResumeResi();
 
         swipe.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
@@ -164,7 +164,7 @@ public class frag_service_resi extends Fragment {
                     Toast.makeText(mContext,"File Not Found",Toast.LENGTH_SHORT).show();
                     return;
                 }
-                processDownload();
+                processDownloadbyUrl();
             }
         });
 
@@ -206,13 +206,23 @@ public class frag_service_resi extends Fragment {
         });
     }
 
-    private void processDownload() {
-        Log.e("cEK","processDownload");
-        manager = (DownloadManager) ((Activity)mContext).getSystemService(Context.DOWNLOAD_SERVICE);
-        Uri uri = Uri.parse(pdfFile);
-        DownloadManager.Request request = new DownloadManager.Request(uri);
-        request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE);
-        long reference = manager.enqueue(request);
+    private void processDownloadbyUrl() {
+        ProgressDialog mProgressDialog = new ProgressDialog(mContext);
+        mProgressDialog.setMessage(getString(R.string.label_downloaded));
+        mProgressDialog.setIndeterminate(true);
+        mProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+        mProgressDialog.setCancelable(true);
+
+        DownloadTaskHelper downloadTaskHelper = new DownloadTaskHelper(mContext, mProgressDialog);
+        downloadTaskHelper.execute(pdfFile);
+
+        mProgressDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
+
+            @Override
+            public void onCancel(DialogInterface dialog) {
+                downloadTaskHelper.cancel(true); //cancel the task
+            }
+        });
     }
 
     private File createTemporaryFile(byte[] byteImage, String filename) throws Exception {

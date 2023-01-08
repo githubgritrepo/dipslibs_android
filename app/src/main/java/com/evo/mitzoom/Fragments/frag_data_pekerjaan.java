@@ -24,7 +24,6 @@ import com.evo.mitzoom.API.ApiService;
 import com.evo.mitzoom.API.Server;
 import com.evo.mitzoom.R;
 import com.evo.mitzoom.Session.SessionManager;
-import com.google.firebase.platforminfo.KotlinDetector;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 

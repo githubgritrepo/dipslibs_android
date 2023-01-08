@@ -13,7 +13,6 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.evo.mitzoom.Fragments.frag_form_komplain;
 import com.evo.mitzoom.Fragments.frag_open_account_product;
 import com.evo.mitzoom.Fragments.frag_service_item;
 import com.evo.mitzoom.Helper.RabbitMirroring;

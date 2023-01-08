@@ -1,7 +1,6 @@
 package com.evo.mitzoom.Adapter;
 
 import android.content.Context;
-import android.content.Intent;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;

@@ -71,7 +71,7 @@ public class frag_chat extends Fragment  implements ZoomVideoSDKDelegate {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         context = getContext();
-        BaseMeetingActivity.btnChat.setBackgroundTintList(context.getResources().getColorStateList(R.color.btnFalse));
+        //BaseMeetingActivity.btnChat.setBackgroundTintList(context.getResources().getColorStateList(R.color.btnFalse));
         BaseMeetingActivity.btnChat.setClickable(false);
         sessionManager = new SessionManager(context);
     }

@@ -2,15 +2,14 @@ package com.evo.mitzoom.Fragments;
 
 import android.content.Context;
 import android.os.Bundle;
-
-import androidx.fragment.app.Fragment;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import androidx.fragment.app.Fragment;
 
 import com.evo.mitzoom.R;
 import com.evo.mitzoom.Session.SessionManager;

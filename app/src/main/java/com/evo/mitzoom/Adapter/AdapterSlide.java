@@ -1,6 +1,5 @@
 package com.evo.mitzoom.Adapter;
 
-import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.media.MediaPlayer;
@@ -10,7 +9,6 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.MediaController;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.VideoView;
@@ -19,27 +17,16 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.viewpager.widget.PagerAdapter;
 
-import com.evo.mitzoom.API.Server;
 import com.evo.mitzoom.R;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
-
-import okhttp3.ResponseBody;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 public class AdapterSlide extends RecyclerView.Adapter<AdapterSlide.ViewHolder> {
 

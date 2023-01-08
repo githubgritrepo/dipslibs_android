@@ -30,13 +30,10 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
-import androidx.core.graphics.BitmapCompat;
 import androidx.fragment.app.Fragment;
 
 import com.evo.mitzoom.API.ApiService;
 import com.evo.mitzoom.API.Server;
-import com.evo.mitzoom.Constants.MyConstants;
-import com.evo.mitzoom.Helper.RabbitMirroring;
 import com.evo.mitzoom.R;
 import com.evo.mitzoom.Session.SessionManager;
 import com.evo.mitzoom.ui.DipsCameraActivity;

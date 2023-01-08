@@ -3,7 +3,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/ll_ATMCard"
     android:orientation="vertical"
     android:theme="@style/Theme.MaterialComponents.Light.DarkActionBar">
 
@@ -64,7 +63,6 @@
             app:boxCornerRadiusTopStart="10dp">
 
             <EditText
-                android:id="@+id/et_ATM_Engine"
                 android:layout_width="match_parent"
                 android:layout_height="35dp"
                 android:gravity="center_vertical"
@@ -135,7 +133,6 @@
             app:boxCornerRadiusTopStart="10dp">
 
             <EditText
-                android:id="@+id/et_no_surat_kepolisian"
                 android:layout_width="match_parent"
                 android:layout_height="35dp"
                 android:gravity="center_vertical"

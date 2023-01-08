@@ -49,7 +49,6 @@ import com.evo.mitzoom.API.Server;
 import com.evo.mitzoom.R;
 import com.evo.mitzoom.Session.SessionManager;
 import com.evo.mitzoom.ui.DipsCameraActivity;
-import com.evo.mitzoom.ui.DipsOutboundCall;
 import com.google.gson.JsonObject;
 
 import org.json.JSONArray;

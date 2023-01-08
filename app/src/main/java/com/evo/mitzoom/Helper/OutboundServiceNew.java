@@ -1,6 +1,5 @@
 package com.evo.mitzoom.Helper;
 
-import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.Notification;
 import android.app.NotificationChannel;
@@ -9,11 +8,9 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
-import android.net.ConnectivityManager;
 import android.os.IBinder;
 import android.os.PowerManager;
 import android.util.Log;
-import android.view.WindowManager;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
@@ -177,10 +174,22 @@ public class OutboundServiceNew extends Service {
                                 String getQueue = String.format("%03d", getTicket);
                                 Log.e(TAG,"subscribeCall getQueue : "+getQueue);
 
+                                String agentImage = "";
+                                String namaAgen = "Fulan";
+                                if (dataObj.getJSONObject("transaction").has("agentImage")) {
+                                    agentImage = dataObj.getJSONObject("transaction").getString("agentImage");
+                                }
+                                if (dataObj.getJSONObject("transaction").has("namaAgen")) {
+                                    namaAgen = dataObj.getJSONObject("transaction").getString("namaAgen");
+                                }
+
+                                Log.e(TAG,"subscribeCall agentImage : "+agentImage);
+                                Log.e(TAG,"subscribeCall namaAgen : "+namaAgen);
+
                                 password_session = password;
-                                customerName = "Fulan";
-                                imagesAgent = "";
-                                nameAgent = "Ade";
+                                customerName = sessions.getNasabahName();
+                                imagesAgent = agentImage;
+                                nameAgent = namaAgen;
                                 sessions.saveCSID(csId);
 
                                 Intent intent = new Intent(getApplicationContext(), MyBroadcastReceiver.class);
@@ -320,7 +329,7 @@ public class OutboundServiceNew extends Service {
 
     private void showNotificationOutbound() {
         Log.e(TAG,"showNotificationOutbound");
-        username_agent = "Ade";
+        username_agent = nameAgent;
         String CHANNEL_ID = "OutboundCall";
         String CHANNEL_NAME = "Outbound Call";
 

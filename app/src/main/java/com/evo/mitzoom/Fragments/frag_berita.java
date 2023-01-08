@@ -6,28 +6,22 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Rect;
-import android.media.MediaPlayer;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
 import android.os.StrictMode;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.AutoCompleteTextView;
 import android.widget.Button;
-import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.VideoView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -36,7 +30,6 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
-import androidx.viewpager.widget.ViewPager;
 import androidx.viewpager2.widget.CompositePageTransformer;
 import androidx.viewpager2.widget.MarginPageTransformer;
 import androidx.viewpager2.widget.ViewPager2;
@@ -50,7 +43,6 @@ import com.evo.mitzoom.R;
 import com.evo.mitzoom.Session.SessionManager;
 import com.evo.mitzoom.ui.DipsWaitingRoom;
 import com.facebook.shimmer.ShimmerFrameLayout;
-import com.google.android.material.button.MaterialButton;
 import com.google.gson.JsonObject;
 import com.wdullaer.materialdatetimepicker.date.DatePickerDialog;
 
@@ -68,8 +60,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
 import java.util.concurrent.TimeoutException;
 
 import cn.pedant.SweetAlert.SweetAlertDialog;
@@ -635,8 +625,8 @@ public class frag_berita extends Fragment implements com.wdullaer.materialdateti
         et_time = (Spinner) dialogView.findViewById(R.id.et_time);
 
         ArrayAdapter<String> adapterTime = new ArrayAdapter<String>(context,R.layout.list_item, time);
-
         et_time.setAdapter(adapterTime);
+
         btnSchedule2 = dialogView.findViewById(R.id.btnSchedule2);
         et_Date.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -667,7 +657,7 @@ public class frag_berita extends Fragment implements com.wdullaer.materialdateti
                 Calendar day = Calendar.getInstance();
                 int loopAdd = 0;
                 for (int i = 0; i < 30; i++) {
-                    if (day.get(Calendar.DAY_OF_WEEK) != Calendar.SATURDAY && day.get(Calendar.DAY_OF_WEEK) != Calendar.SUNDAY) {
+                    //if (day.get(Calendar.DAY_OF_WEEK) != Calendar.SATURDAY && day.get(Calendar.DAY_OF_WEEK) != Calendar.SUNDAY) {
                         if (tanggalPenuh.length() > 0) {
                             for (int tg = 0; tg < tanggalPenuh.length(); tg++) {
                                 try {
@@ -699,9 +689,9 @@ public class frag_berita extends Fragment implements com.wdullaer.materialdateti
                             Calendar d = (Calendar) day.clone();
                             weekdays.add(d);
                         }
-                    } else {
+                    /*} else {
                         loopAdd++;
-                    }
+                    }*/
                     day.add(Calendar.DATE, 1);
                 }
                 Calendar[] weekdayDays = weekdays.toArray(new Calendar[weekdays.size()]);

@@ -11,19 +11,8 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
-import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.content.res.AppCompatResources;
-import androidx.core.content.ContextCompat;
-import androidx.core.widget.NestedScrollView;
-import androidx.fragment.app.Fragment;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
-
 import android.os.Handler;
 import android.provider.MediaStore;
 import android.provider.OpenableColumns;
@@ -49,6 +38,14 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.content.res.AppCompatResources;
+import androidx.core.widget.NestedScrollView;
+import androidx.fragment.app.Fragment;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+
 import com.chaos.view.PinView;
 import com.evo.mitzoom.API.ApiService;
 import com.evo.mitzoom.API.Server;
@@ -69,15 +66,13 @@ import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.ObjectOutputStream;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import cn.pedant.SweetAlert.SweetAlertDialog;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
@@ -128,6 +123,7 @@ public class frag_service_item extends Fragment {
     private String transactionId = "";
 
     JSONObject valSpin = new JSONObject();
+    JSONObject valSpinProv = new JSONObject();
     private boolean flagStuckSpin = false;
     private String getCodeType = "";
     private String FilePaths = "";
@@ -140,6 +136,7 @@ public class frag_service_item extends Fragment {
     private TextView TimerOTP;
     private TextView Resend_Otp;
     private String noPengaduan;
+    private String keyUpload = "";
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -182,8 +179,8 @@ public class frag_service_item extends Fragment {
                         numberOTP = word.replaceAll("[^0-9]", "");
                         if (numberOTP.length() == 6) {
                             otp.setText(numberOTP);
-                            newString = myFilter(numberOTP);
-                            otp.setText(newString);
+                            /*newString = myFilter(numberOTP);
+                            otp.setText(newString);*/
                         }
                     }
                 }
@@ -378,11 +375,31 @@ public class frag_service_item extends Fragment {
         String tgl = "";
         String keluhan = "";
         try {
-            tgl = objEl.getString("tanggal");
-            keluhan = objEl.getString("keluhan");
+            String keyTanggal = "tanggal";
+            String keyKeluhan = "keluhan";
+            for(Iterator<String> iter = objEl.keys(); iter.hasNext();) {
+                String key = iter.next();
+                String valKurung = "";
+                int indx = key.indexOf("(");
+                if (indx >= 0) {
+                    valKurung = key.substring(indx);
+                }
+
+                if (key.equals(keyTanggal+valKurung)) {
+                    keyTanggal = key;
+                }
+
+                if (key.equals(keyKeluhan+valKurung)) {
+                    keyKeluhan = key;
+                }
+            }
+            tgl = objEl.getString(keyTanggal);
+            keluhan = objEl.getString(keyKeluhan);
         } catch (JSONException e) {
             e.printStackTrace();
         }
+
+        Log.e("CEK","processSendFormCompaint tgl : "+tgl+" | getCodeType : "+getCodeType);
 
         RequestBody requesttgl = RequestBody.create(MediaType.parse("text/plain"), tgl);
         RequestBody requestPrihal = RequestBody.create(MediaType.parse("text/plain"), keluhan);
@@ -457,6 +474,7 @@ public class frag_service_item extends Fragment {
                         MyParserFormBuilder parseForm = new MyParserFormBuilder(mContext, dataForm, llFormBuild);
                         idElement = parseForm.getForm();
                         Log.e("CEK","dataElement : "+idElement.toString());
+                        keyUpload = "";
                         processValidationActionForm();
                         dataForms.put(keys,objEl);
                         Log.e("CEK","DATA FORM : "+dataForms.toString());
@@ -485,12 +503,17 @@ public class frag_service_item extends Fragment {
                         try {
                             int idDataEl = idElement.getJSONObject(j).getInt("id");
                             String nameDataEl = idElement.getJSONObject(j).getString("name");
+                            String valKurung = "";
+                            int indx = nameDataEl.indexOf("(");
+                            if (indx >= 0) {
+                                valKurung = nameDataEl.substring(indx);
+                            }
                             String urlPath = "";
                             if (idElement.getJSONObject(j).has("url")) {
                                 urlPath = idElement.getJSONObject(j).getString("url");
                             }
                             if (idEl == idDataEl) {
-
+                                String finalValKurung = valKurung;
                                 if (llFormBuild.getChildAt(i) instanceof EditText) {
                                     EditText ed = (EditText) llFormBuild.getChildAt(i);
                                     ed.setOnFocusChangeListener(new View.OnFocusChangeListener() {
@@ -505,7 +528,7 @@ public class frag_service_item extends Fragment {
                                     ed.addTextChangedListener(new TextWatcher() {
                                         @Override
                                         public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                                            if (nameDataEl.equals("npwp")) {
+                                            if (nameDataEl.equals("npwp"+ finalValKurung)) {
                                                 lasLenChar = charSequence.length();
                                             }
                                         }
@@ -526,7 +549,7 @@ public class frag_service_item extends Fragment {
 
                                         @Override
                                         public void afterTextChanged(Editable s) {
-                                            if (nameDataEl.equals("npwp")) {
+                                            if (nameDataEl.equals("npwp"+ finalValKurung)) {
                                                 ed.removeTextChangedListener(this);
                                                 backSpaceChar = lasLenChar > s.length();
                                                 if (!backSpaceChar) {
@@ -664,7 +687,11 @@ public class frag_service_item extends Fragment {
                                                 try {
                                                     objEl.put(nameDataEl, results);
                                                     dataForms.put(keys,objEl);
-                                                    valSpin.put(nameDataEl,idData);
+                                                    if (nameDataEl.contains("provinsi") || nameDataEl.contains("kabupaten") || nameDataEl.contains("kota") || nameDataEl.contains("kecamatan") || (nameDataEl.contains("kelurahan") || nameDataEl.contains("desa"))) {
+                                                        valSpinProv.put(nameDataEl,idData);
+                                                    } else {
+                                                        valSpin.put(nameDataEl, idData);
+                                                    }
                                                     if (isSessionZoom) {
                                                         rabbitMirroring.MirroringSendKey(dataForms);
                                                     }
@@ -737,6 +764,8 @@ public class frag_service_item extends Fragment {
                                                     @Override
                                                     public void onClick(View view) {
                                                         REQUESTCODE_GALLERY = 201;
+                                                        keyUpload = nameDataEl;
+                                                        sessions.saveMedia(2);
                                                         chooseFromSD();
                                                     }
                                                 });
@@ -801,7 +830,11 @@ public class frag_service_item extends Fragment {
                                 String labelEng = dataArr.getJSONObject(i).getString("labelEng");
                                 dataDropDown.add(new FormSpin(idData, labelIdn, labelIdn, labelEng));
                                 if (i == 0) {
-                                    valSpin.put(nameDataEl, idData);
+                                    if (nameDataEl.contains("provinsi") || nameDataEl.contains("kabupaten") || nameDataEl.contains("kota") || nameDataEl.contains("kecamatan") || (nameDataEl.contains("kelurahan") || nameDataEl.contains("desa"))) {
+                                        valSpinProv.put(nameDataEl,idData);
+                                    } else {
+                                        valSpin.put(nameDataEl, idData);
+                                    }
                                     processGetSpinChild(nameDataEl);
                                     if ((nameDataEl.contains("kelurahan") || nameDataEl.contains("desa"))) {
                                         flagStuckSpin = true;
@@ -845,7 +878,7 @@ public class frag_service_item extends Fragment {
                             if (nameDataEl.contains("provinsi") && (getnameDataEl.contains("kabupaten") || getnameDataEl.contains("kota"))) {
                                 Log.e("CEK","processGetSpinChild getnameDataEl : "+getnameDataEl);
                                 if (!urlPath.isEmpty()) {
-                                    int idProv = valSpin.getInt("provinsi");
+                                    int idProv = valSpinProv.getInt("provinsi");
                                     String idSpin = String.valueOf(idProv);
                                     String urlNew = urlPath.replace(":id_provinsi",idSpin);
 
@@ -859,12 +892,12 @@ public class frag_service_item extends Fragment {
                                 }
                             } else if ((nameDataEl.contains("kabupaten") || nameDataEl.contains("kota")) && getnameDataEl.contains("kecamatan")) {
                                 if (!urlPath.isEmpty()) {
-                                    int idProv = valSpin.getInt("provinsi");
+                                    int idProv = valSpinProv.getInt("provinsi");
                                     int idKabKot = 0;
-                                    if (valSpin.has("kabupaten")) {
-                                        idKabKot = valSpin.getInt("kabupaten");
-                                    } else if (valSpin.has("kota")) {
-                                        idKabKot = valSpin.getInt("kota");
+                                    if (valSpinProv.has("kabupaten")) {
+                                        idKabKot = valSpinProv.getInt("kabupaten");
+                                    } else if (valSpinProv.has("kota")) {
+                                        idKabKot = valSpinProv.getInt("kota");
                                     }
                                     String idSpin = String.valueOf(idProv);
                                     String idSpin2 = String.valueOf(idKabKot);
@@ -880,13 +913,13 @@ public class frag_service_item extends Fragment {
                                 }
                             } else if (nameDataEl.contains("kecamatan") && (getnameDataEl.contains("kelurahan") || getnameDataEl.contains("desa"))) {
                                 if (!urlPath.isEmpty()) {
-                                    int idProv = valSpin.getInt("provinsi");
-                                    int idKec = valSpin.getInt("kecamatan");
+                                    int idProv = valSpinProv.getInt("provinsi");
+                                    int idKec = valSpinProv.getInt("kecamatan");
                                     int idKabKot = 0;
-                                    if (valSpin.has("kabupaten")) {
-                                        idKabKot = valSpin.getInt("kabupaten");
-                                    } else if (valSpin.has("kota")) {
-                                        idKabKot = valSpin.getInt("kota");
+                                    if (valSpinProv.has("kabupaten")) {
+                                        idKabKot = valSpinProv.getInt("kabupaten");
+                                    } else if (valSpinProv.has("kota")) {
+                                        idKabKot = valSpinProv.getInt("kota");
                                     }
                                     String idSpin = String.valueOf(idProv);
                                     String idSpin2 = String.valueOf(idKabKot);
@@ -1089,18 +1122,19 @@ public class frag_service_item extends Fragment {
         tvTitleService.setText("One Time Password");
 
         otp.setAnimationEnable(true);
+        otp.setPasswordHidden(true);
         otp.addTextChangedListener(new TextWatcher() {
-            private boolean backSpaceOTP;
-            private int lasLenOTP;
+            /*private boolean backSpaceOTP;
+            private int lasLenOTP;*/
 
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                lasLenOTP = s.length();
+                //lasLenOTP = s.length();
             }
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                String wordOTP = s.toString();
+                /*String wordOTP = s.toString();
                 Log.e("CEK","wordOTP : "+wordOTP);
                 String patternStr = "[0-9]";
                 Pattern pattern = Pattern.compile(patternStr);
@@ -1120,12 +1154,23 @@ public class frag_service_item extends Fragment {
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
-                }
+                }*/
             }
 
             @Override
             public void afterTextChanged(Editable s) {
-                backSpaceOTP = lasLenOTP > s.length();
+                if (otp.length() == 6) {
+                    numberOTP = otp.getText().toString();
+                    JSONObject otpObj = new JSONObject();
+                    try {
+                        Log.e("CEK","numberOTP : "+numberOTP);
+                        otpObj.put("otp",numberOTP);
+                        rabbitMirroring.MirroringSendKey(otpObj);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+                /*backSpaceOTP = lasLenOTP > s.length();
                 Log.e("CEK", "backSpaceOTP : " + backSpaceOTP);
                 if (backSpaceOTP) {
                     int lenOTP = numberOTP.length();
@@ -1148,7 +1193,7 @@ public class frag_service_item extends Fragment {
                     handler.removeMessages(0);
                     handler.removeCallbacks(myRunnable);
                     Log.d("TAG","STOP Loop");
-                }
+                }*/
             }
         });
 
@@ -1159,8 +1204,8 @@ public class frag_service_item extends Fragment {
                     Toast.makeText(mContext, "Kode Otp masih kosong", Toast.LENGTH_SHORT).show();
                 }
                 else {
-                    handler.removeMessages(0);
-                    handler.removeCallbacks(myRunnable);
+                    /*handler.removeMessages(0);
+                    handler.removeCallbacks(myRunnable);*/
                     if (!transactionId.isEmpty()) {
                         if (isSessionZoom) {
                             BaseMeetingActivity.showProgress(true);
@@ -1271,10 +1316,10 @@ public class frag_service_item extends Fragment {
         imageBytes = baos.toByteArray();
         imgBase64 = Base64.encodeToString(imageBytes, Base64.NO_WRAP);
         if (isSessionZoom && !imgBase64.isEmpty()) {
-            JSONObject dataImg = new JSONObject();
             try {
-                dataImg.put(keys,imgBase64);
-                RabbitMirroring.MirroringSendKey(dataImg);
+                objEl.put(keyUpload, imgBase64);
+                dataForms.put(keys,objEl);
+                RabbitMirroring.MirroringSendKey(dataForms);
             } catch (JSONException e) {
                 e.printStackTrace();
             }

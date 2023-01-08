@@ -29,7 +29,6 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
-import android.widget.DatePicker;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -37,7 +36,6 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
@@ -47,10 +45,8 @@ import com.evo.mitzoom.API.ApiService;
 import com.evo.mitzoom.API.Server;
 import com.evo.mitzoom.BaseMeetingActivity;
 import com.evo.mitzoom.Constants.AuthConstants;
-import com.evo.mitzoom.Fragments.frag_berita;
 import com.evo.mitzoom.GlideApp;
 import com.evo.mitzoom.Helper.LocaleHelper;
-import com.evo.mitzoom.Helper.OutboundService;
 import com.evo.mitzoom.Helper.OutboundServiceNew;
 import com.evo.mitzoom.R;
 import com.evo.mitzoom.Session.SessionManager;
@@ -179,8 +175,8 @@ public class DipsOutboundCall extends AppCompatActivity implements DatePickerDia
         idDips = sessions.getKEY_IdDips();
         isCust = sessions.getKEY_iSCust();
         String lang = sessions.getLANG();
-        //setLocale(this,lang);
-        LocaleHelper.setLocale(this,lang);
+        setLocale(this,lang);
+        //LocaleHelper.setLocale(this,lang);
 
         getPackageManager().getLaunchIntentForPackage("com.evo.mitzoom");
 
@@ -341,8 +337,8 @@ public class DipsOutboundCall extends AppCompatActivity implements DatePickerDia
         isConfigure = false;
 
         String lang = sessions.getLANG();
-        //setLocale(this,lang);
-        LocaleHelper.setLocale(this,lang);
+        setLocale(this,lang);
+        //LocaleHelper.setLocale(this,lang);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (checkSelfPermission(Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {

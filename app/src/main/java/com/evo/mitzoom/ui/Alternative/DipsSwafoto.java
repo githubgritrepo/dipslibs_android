@@ -2,14 +2,6 @@ package com.evo.mitzoom.ui.Alternative;
 
 import static com.evo.mitzoom.ui.DipsChooseLanguage.setLocale;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.cardview.widget.CardView;
-import androidx.core.content.ContextCompat;
-import androidx.core.content.res.ResourcesCompat;
-import androidx.fragment.app.Fragment;
-
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.hardware.Camera;
@@ -18,7 +10,6 @@ import android.hardware.camera2.CameraManager;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
-import android.util.Base64;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -38,10 +29,13 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.cardview.widget.CardView;
+import androidx.fragment.app.Fragment;
+
 import com.evo.mitzoom.API.ApiService;
 import com.evo.mitzoom.API.Server;
-import com.evo.mitzoom.BaseMeetingActivity;
-import com.evo.mitzoom.Fragments.frag_berita;
 import com.evo.mitzoom.Fragments.frag_inputdata_new;
 import com.evo.mitzoom.Helper.LocaleHelper;
 import com.evo.mitzoom.Helper.OutboundServiceNew;
@@ -105,22 +99,26 @@ public class DipsSwafoto extends AppCompatActivity implements com.wdullaer.mater
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+        mContext = this;
+        sessions = new SessionManager(mContext);
+
+        String lang = sessions.getLANG();
+        setLocale(this,lang);
+        //LocaleHelper.setLocale(this,lang);
+        setContentView(R.layout.activity_dips_swafoto);
+
         super.onCreate(savedInstanceState);
 
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
         //getSupportActionBar().hide();
 
-        mContext = this;
-        sessions = new SessionManager(mContext);
         sessions.saveRTGS(null);
         sessions.saveCSID(null);
         sessions.saveIsSwafoto(false);
         idDips = sessions.getKEY_IdDips();
         isCust = sessions.getKEY_iSCust();
-        String lang = sessions.getLANG();
-        //setLocale(this,lang);
-        LocaleHelper.setLocale(this,lang);
-        setContentView(R.layout.activity_dips_swafoto);
+
 
         CardView cardSurf = (CardView) findViewById(R.id.cardSurf);
         preview = (SurfaceView) findViewById(R.id.mySurface);
@@ -198,8 +196,8 @@ public class DipsSwafoto extends AppCompatActivity implements com.wdullaer.mater
         super.onResume();
 
         String lang = sessions.getLANG();
-        //setLocale(this,lang);
-        LocaleHelper.setLocale(this,lang);
+        setLocale(this,lang);
+        //LocaleHelper.setLocale(this,lang);
 
         Log.d("CEK","MASUK onResume");
 

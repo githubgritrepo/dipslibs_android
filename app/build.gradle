@@ -8,8 +8,8 @@ android {
         applicationId "com.evo.mitzoom"
         minSdk 25
         targetSdk 33
-        versionCode 30
-        versionName "3.2.3"
+        versionCode 32
+        versionName "3.2.4"
         vectorDrawables.useSupportLibrary = true
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }

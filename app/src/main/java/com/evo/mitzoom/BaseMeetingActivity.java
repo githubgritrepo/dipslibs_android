@@ -17,7 +17,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.os.StrictMode;
 import android.provider.Settings;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
@@ -55,12 +54,10 @@ import com.evo.mitzoom.Fragments.frag_file;
 import com.evo.mitzoom.Helper.LocaleHelper;
 import com.evo.mitzoom.Helper.NotificationMgr;
 import com.evo.mitzoom.Helper.NotificationService;
-import com.evo.mitzoom.Helper.OutboundService;
 import com.evo.mitzoom.Helper.OutboundServiceNew;
 import com.evo.mitzoom.Helper.RabbitMirroring;
 import com.evo.mitzoom.Session.SessionManager;
 import com.evo.mitzoom.screenshare.ShareToolbar;
-import com.evo.mitzoom.ui.DipsChooseLanguage;
 import com.evo.mitzoom.ui.DipsVideoConfren;
 import com.evo.mitzoom.ui.RatingActivity;
 import com.evo.mitzoom.util.ErrorMsgUtil;
@@ -171,20 +168,21 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
     private boolean flagClickEnd = false;
     private boolean flagUserLeave = false;
     public static RelativeLayout rlprogress;
+    private String lang = "";
+    private LinearLayout iconBubble;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
-
-        super.onCreate(savedInstanceState);
-
         mContext = this;
 
         sessions = new SessionManager(mContext);
-        String lang = sessions.getLANG();
-        //setLocale(this,lang);
-        LocaleHelper.setLocale(this,lang);
+        lang = sessions.getLANG();
+        setLocale(this,lang);
+        //LocaleHelper.setLocale(this,lang);
         sessions.saveFlagUpDoc(false);
         sessions.saveFlagConfAgree(false);
+
+        super.onCreate(savedInstanceState);
         isCust = sessions.getKEY_iSCust();
         isSwafoto = sessions.getKEY_iSSwafoto();
 
@@ -272,8 +270,8 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
         super.onResume();
 
         String lang = sessions.getLANG();
-        //setLocale(this,lang);
-        LocaleHelper.setLocale(this,lang);
+        setLocale(this,lang);
+        //LocaleHelper.setLocale(this,lang);
 
         Log.d("CEK","onResume");
 
@@ -603,6 +601,7 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
         iconAudio = findViewById(R.id.icon_audio);
         iconVideo = findViewById(R.id.icon_video);
         videoOffView = findViewById(R.id.video_off_tips);
+        iconBubble = (LinearLayout) findViewById(R.id.iconBubble);
         btnChat = findViewById(R.id.icon_chat);
         btnFile = findViewById(R.id.icon_file);
 
@@ -726,7 +725,11 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
         btnConfirmDialog.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                OutboundServiceNew.stopServiceSocket();
+                Intent intentOutbound = new Intent(mContext, OutboundServiceNew.class);
+                mContext.stopService(intentOutbound);
                 dialogEnd.dismissWithAnimation();
+                dialogEnd.cancel();
                 releaseResource();
                 int ret = ZoomVideoSDK.getInstance().leaveSession(false);
                 sessions.clearPartData();
@@ -768,6 +771,10 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
         btnConfirmDialog.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                OutboundServiceNew.stopServiceSocket();
+                Intent intentOutbound = new Intent(mContext, OutboundServiceNew.class);
+                mContext.stopService(intentOutbound);
+
                 dialogEnd.dismissWithAnimation();
                 releaseResource();
                 int ret = ZoomVideoSDK.getInstance().leaveSession(false);
@@ -827,6 +834,7 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
     
     public void onClickChat(View view) {
         btnChat.setFocusable(true);
+        iconBubble.setVisibility(View.GONE);
         getFragmentPage(new frag_chat());
     }
     public void onClickFile(View view) {
@@ -1079,6 +1087,7 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
         JSONObject idDipsObj = new JSONObject();
         try {
             idDipsObj.put("idDips",idDips);
+            idDipsObj.put("bahasa",lang);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -1091,6 +1100,10 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
         if (flagUserLeave == false) {
             dialogAgentLeave();
         } else {
+            OutboundServiceNew.stopServiceSocket();
+            Intent intentOutbound = new Intent(mContext, OutboundServiceNew.class);
+            mContext.stopService(intentOutbound);
+            sessions.clearPartData();
             finish();
         }
     }
@@ -1209,8 +1222,9 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
     }
 
     @Override
-    public void onChatNewMessageNotify(ZoomVideoSDKChatHelper zoomVideoSDKChatHelper, ZoomVideoSDKChatMessage zoomVideoSDKChatMessage) {
+    public void onChatNewMessageNotify(ZoomVideoSDKChatHelper zoomVideoSDKChatHelper, ZoomVideoSDKChatMessage messageItem) {
         Log.d(TAG, "onChatNewMessageNotify ");
+        iconBubble.setVisibility(View.VISIBLE);
     }
 
     @Override

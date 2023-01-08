@@ -7,7 +7,6 @@
     android:layout_marginBottom="@dimen/dp_10">
 
     <com.github.florent37.expansionpanel.ExpansionHeader
-        android:id="@+id/expansionHeader"
         android:layout_height="wrap_content"
         android:layout_width="match_parent"
         app:expansion_headerIndicator="@id/headerIndicator"

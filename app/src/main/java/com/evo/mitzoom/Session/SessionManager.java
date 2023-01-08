@@ -47,6 +47,7 @@ public class SessionManager {
     public static final String KEY_FORMREQ = "FORMREQ";
     public static final String KEY_FORMREQMIRRORING = "FORMREQMIRRORING";
     public static final String KEY_noComplaint = "NOCOMPLAINT";
+    public static final String KEY_NAMANASABAH = "NAMANASABAH";
 
     // Constructor
     public SessionManager(Context context){
@@ -173,6 +174,11 @@ public class SessionManager {
         editor.commit();
     }
 
+    public void saveNasabahName(String data) {
+        editor.putString(KEY_NAMANASABAH,data);
+        editor.commit();
+    }
+
     public void clearPartData(){
         editor.putString(KEY_RTGS,null);
         editor.putString(KEY_CIF,null);
@@ -187,7 +193,6 @@ public class SessionManager {
         editor.putInt(KEY_FORMCODE,0);
         editor.putString(KEY_FORMREQ,null);
         editor.putString(KEY_FORMREQMIRRORING,null);
-        editor.putString(KEY_NOCIF,null);
         editor.putString(KEY_noComplaint,null);
         editor.commit();
     }
@@ -205,7 +210,6 @@ public class SessionManager {
         editor.putInt(KEY_FLOW,0);
         editor.putString(KEY_FORMREQ,null);
         editor.putString(KEY_FORMREQMIRRORING,null);
-        editor.putString(KEY_NOCIF,null);
         editor.putString(KEY_noComplaint,null);
         editor.commit();
     }
@@ -293,6 +297,9 @@ public class SessionManager {
     }
     public String getNoComplaint() {
         return pref.getString(KEY_noComplaint,null);
+    }
+    public String getNasabahName() {
+        return pref.getString(KEY_NAMANASABAH,null);
     }
 
 }

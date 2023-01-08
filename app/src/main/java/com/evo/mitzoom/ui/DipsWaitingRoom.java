@@ -10,16 +10,12 @@ import android.content.pm.PackageManager;
 import android.hardware.Camera;
 import android.hardware.camera2.CameraAccessException;
 import android.hardware.camera2.CameraManager;
-import android.net.ConnectivityManager;
-import android.net.Network;
-import android.net.NetworkRequest;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.StrictMode;
-import android.util.Base64;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -28,13 +24,9 @@ import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.WindowManager;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.AutoCompleteTextView;
 import android.widget.Button;
-import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -57,16 +49,11 @@ import com.evo.mitzoom.BaseMeetingActivity;
 import com.evo.mitzoom.Constants.AuthConstants;
 import com.evo.mitzoom.Fragments.frag_berita;
 import com.evo.mitzoom.Helper.LocaleHelper;
-import com.evo.mitzoom.Helper.OutboundService;
 import com.evo.mitzoom.Helper.OutboundServiceNew;
-import com.evo.mitzoom.Model.Request.JsonCaptureIdentify;
-import com.evo.mitzoom.Model.Response.CaptureIdentify;
 import com.evo.mitzoom.R;
 import com.evo.mitzoom.Session.SessionManager;
-import com.evo.mitzoom.ui.Alternative.DipsSwafoto;
 import com.evo.mitzoom.util.ErrorMsgUtil;
 import com.evo.mitzoom.util.NetworkUtil;
-import com.google.android.material.button.MaterialButton;
 import com.google.gson.JsonObject;
 import com.rabbitmq.client.AMQP;
 import com.rabbitmq.client.CancelCallback;
@@ -85,8 +72,6 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.security.KeyManagementException;
-import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -199,8 +184,8 @@ public class DipsWaitingRoom extends AppCompatActivity implements DatePickerDial
         idDips = sessions.getKEY_IdDips();
         isCust = sessions.getKEY_iSCust();
         String lang = sessions.getLANG();
-        //setLocale(this,lang);
-        LocaleHelper.setLocale(this,lang);
+        setLocale(this,lang);
+        //LocaleHelper.setLocale(this,lang);
         setContentView(R.layout.activity_dips_waiting_room);
 
         myTicket = findViewById(R.id.myticket);
@@ -240,8 +225,8 @@ public class DipsWaitingRoom extends AppCompatActivity implements DatePickerDial
         super.onResume();
 
         String lang = sessions.getLANG();
-        //setLocale(this,lang);
-        LocaleHelper.setLocale(this,lang);
+        setLocale(this,lang);
+        //LocaleHelper.setLocale(this,lang);
 
         Log.d("CEK","MASUK onResume");
 
@@ -460,7 +445,7 @@ public class DipsWaitingRoom extends AppCompatActivity implements DatePickerDial
                     Log.e("CEK", "publishToAMQP Connection broken: " + e.getClass().getName());
                     try {
                         Thread.sleep(4000); //sleep and then try again
-                        publishToAMQP();
+                        //publishToAMQP();
                     } catch (InterruptedException e1) {
 
                     }
@@ -490,7 +475,7 @@ public class DipsWaitingRoom extends AppCompatActivity implements DatePickerDial
                     Log.e("CEK", "publishQSReqTicket Connection broken: " + e.getClass().getName());
                     try {
                         Thread.sleep(4000); //sleep and then try again
-                        publishQSReqTicket();
+                        //publishQSReqTicket();
                     } catch (InterruptedException e1) {
 
                     }

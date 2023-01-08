@@ -94,7 +94,6 @@
                                         android:padding="@dimen/dp_5">
 
                                         <TextView
-                                            android:id="@+id/last_ticket2"
                                             android:layout_width="wrap_content"
                                             android:layout_height="wrap_content"
                                             android:text="000"
@@ -102,6 +101,7 @@
                                             android:textStyle="bold"
                                             android:gravity="center_vertical"/>
                                         <TextView
+                                            android:id="@+id/tvNow"
                                             android:layout_width="wrap_content"
                                             android:layout_height="wrap_content"
                                             android:text="@string/antrian_sekarang"
@@ -143,7 +143,6 @@
                                     android:padding="@dimen/dp_5">
 
                                     <TextView
-                                        android:id="@+id/myticket2"
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
                                         android:text="000"

@@ -37,7 +37,6 @@ import android.widget.TextView;
 import com.evo.mitzoom.Model.FormSpin;
 import com.evo.mitzoom.R;
 import com.evo.mitzoom.Session.SessionManager;
-import com.google.android.material.textfield.TextInputLayout;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -45,9 +44,7 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Random;
 
 public class MyParserFormBuilder {
@@ -64,6 +61,7 @@ public class MyParserFormBuilder {
         this.llFormBuild = llFormBuild;
         this.sessions = new SessionManager(mContext);
         this.language = sessions.getLANG();
+        Log.e("CEK","language : "+language);
     }
 
     public static JSONArray getForm() {
@@ -80,12 +78,15 @@ public class MyParserFormBuilder {
                 RadioGroup radioGroup = null;
                 int compLen = components.length();
                 String elNameRad = "";
+                String keyLabelIndRad = "";
                 boolean radGroup = false;
                 boolean finishRad = false;
                 int jkRad = 0;
                 int radB = 0;
                 String parentLabel = "";
                 for (int j = 0; j < compLen; j++) {
+                    String pcPlaceIdn = "";
+                    String keyLabel = "";
                     LinearLayout.LayoutParams lpLayout = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,LinearLayout.LayoutParams.WRAP_CONTENT);
                     lpLayout.setMargins(0,0,0,10);
                     LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,LinearLayout.LayoutParams.WRAP_CONTENT);
@@ -98,10 +99,10 @@ public class MyParserFormBuilder {
                     
                     if (compPlaceholder.contains("{")) {
                         JSONObject placeholderObj = compObj.getJSONObject("placeholder");
-                        String pcIdn = placeholderObj.getString("placeholderIdn");
+                        pcPlaceIdn = placeholderObj.getString("placeholderIdn");
                         String pcEng = placeholderObj.getString("placeholderEng");
                         if (language.equals("id")) {
-                            compPlaceholder = pcIdn;
+                            compPlaceholder = pcPlaceIdn;
                         } else {
                             compPlaceholder = pcEng;
                         }
@@ -111,6 +112,7 @@ public class MyParserFormBuilder {
                         JSONObject labelObj = compObj.getJSONObject("label");
                         String pcIdn = labelObj.getString("labelIdn");
                         String pcEng = labelObj.getString("labelEng");
+                        keyLabel = pcIdn;
                         if (language.equals("id")) {
                             compLabel = pcIdn;
                         } else {
@@ -195,14 +197,22 @@ public class MyParserFormBuilder {
                                     });
                                 } else {
                                     ed.setHint(compPlaceholder);
-                                    String lowLabel = compLabel.toLowerCase();
-                                    if (lowLabel.equals("npwp")) {
+                                    String lowLabel = keyLabel.toLowerCase();
+                                    int indx = lowLabel.indexOf("(");
+                                    String valKurung = "";
+                                    if (indx >= 0) {
+                                        valKurung = " "+lowLabel.substring(indx);
+                                    }
+
+                                    Log.e("CEK","lowLabel : "+lowLabel+" | valKurung : "+valKurung);
+
+                                    if (lowLabel.equals("npwp"+valKurung)) {
                                         ed.setFilters(new InputFilter[] {new InputFilter.LengthFilter(20)});
-                                    } else if (lowLabel.equals("nik")) {
+                                    } else if (lowLabel.equals("nik"+valKurung)) {
                                         ed.setFilters(new InputFilter[] {new InputFilter.LengthFilter(16)});
                                     }
 
-                                    if (lowLabel.equals("nik") || lowLabel.equals("npwp") || lowLabel.equals("rt") || lowLabel.equals("rw") || lowLabel.contains("kode") ||
+                                    if (lowLabel.equals("nik"+valKurung) || lowLabel.equals("npwp"+valKurung) || lowLabel.equals("rt"+valKurung) || lowLabel.equals("rw"+valKurung) || lowLabel.contains("kode"+valKurung) ||
                                             lowLabel.contains("no.") || lowLabel.contains("nomor") || lowLabel.contains("telp") ||
                                             lowLabel.contains("telepon")) {
                                         ed.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_VARIATION_NORMAL);
@@ -218,14 +228,18 @@ public class MyParserFormBuilder {
                                 int ids = ed.getId();
                                 String elName = "";
                                 if (compName.equals("checkbox")) {
-                                    compLabel = parentLabel+compLabel;
-                                    elName = compLabel.toLowerCase().replace(" ", "").replace("-", "").replace("/", "").replace(".", "");
+                                    String compLabelGab = parentLabel+compLabel;
+                                    elName = compLabelGab.toLowerCase().replace(" ", "").replace("-", "").replace("/", "").replace(".", "");
                                 } else {
                                     elName = compLabel.toLowerCase().replace(" ", "").replace("-", "").replace("/", "").replace(".", "");
                                 }
+
+                                String keyLabelInd = keyLabel.toLowerCase().replace(" ", "").replace("-", "").replace("/", "").replace(".", "");
+
                                 Log.e("CEK","compName : "+elName+" | ids : "+ids);
                                 dataObjEl.put("id",ids);
                                 dataObjEl.put("name",elName);
+                                dataObjEl.put("keyIndo",keyLabelInd);
                                 dataObjEl.put("required",compRequired);
                                 dataArrElement.put(dataObjEl);
                             } else if (compType.equals("number")) {
@@ -258,6 +272,8 @@ public class MyParserFormBuilder {
                                 dataObjEl.put("id",ids);
                                 dataObjEl.put("name",elName);
                                 dataObjEl.put("required",compRequired);
+                                String keyLabelInd = keyLabel.toLowerCase().replace(" ", "").replace("-", "").replace("/", "").replace(".", "");
+                                dataObjEl.put("keyIndo",keyLabelInd);
                                 dataArrElement.put(dataObjEl);
 
                             } else if (compType.equals("radio")) {
@@ -277,6 +293,7 @@ public class MyParserFormBuilder {
                                     llFormBuild.addView(tv);
 
                                     elNameRad = compLabel.toLowerCase().replace(" ", "").replace("-", "").replace("/", "").replace(".", "");
+                                    keyLabelIndRad = keyLabel.toLowerCase().replace(" ", "").replace("-", "").replace("/", "").replace(".", "");
 
                                     Log.e("CEK","compLen Radio : "+compLen);
                                     for (int k = j; k < compLen; k++) {
@@ -291,6 +308,17 @@ public class MyParserFormBuilder {
                                         JSONObject compObjP = new JSONObject(compP);
                                         String compLabelP = compObjP.getString("label");
                                         String compTypeP = compObjP.getString("type");
+
+                                        if (compLabelP.contains("{")) {
+                                            JSONObject labelObj = compObjP.getJSONObject("label");
+                                            String radpcIdn = labelObj.getString("labelIdn");
+                                            String radpcEng = labelObj.getString("labelEng");
+                                            if (language.equals("id")) {
+                                                compLabelP = radpcIdn;
+                                            } else {
+                                                compLabelP = radpcEng;
+                                            }
+                                        }
 
                                         if (!compTypeP.equals("radio")) {
                                             finishRad = true;
@@ -340,6 +368,7 @@ public class MyParserFormBuilder {
                                     dataObjEl.put("id",ids);
                                     dataObjEl.put("name",elNameRad);
                                     dataObjEl.put("required",compRequired);
+                                    dataObjEl.put("keyIndo",keyLabelIndRad);
                                     dataArrElement.put(dataObjEl);
                                 }
 
@@ -363,15 +392,19 @@ public class MyParserFormBuilder {
 
                                 int ids = chk.getId();
                                 String elName = "";
+                                String keyLabelInd = "";
                                 if (compLen == 1) {
                                     elName = compLabel.toLowerCase().replace(" ", "").replace("-", "").replace("/", "").replace(".", "");
+                                    keyLabelInd = keyLabel.toLowerCase().replace(" ", "").replace("-", "").replace("/", "").replace(".", "");
                                 } else {
                                     elName = compPlaceholder.toLowerCase().replace(" ", "").replace("-", "").replace("/", "").replace(".", "");
+                                    keyLabelInd = pcPlaceIdn.toLowerCase().replace(" ", "").replace("-", "").replace("/", "").replace(".", "");
                                 }
                                 Log.e("CEK","compName : "+elName+" | ids : "+ids);
                                 dataObjEl.put("id",ids);
                                 dataObjEl.put("name",elName);
                                 dataObjEl.put("required",compRequired);
+                                dataObjEl.put("keyIndo",keyLabelInd);
                                 dataArrElement.put(dataObjEl);
 
                             } else if (compType.equals("file")) {
@@ -429,6 +462,8 @@ public class MyParserFormBuilder {
                                 dataObjEl.put("id",ids);
                                 dataObjEl.put("name",elName);
                                 dataObjEl.put("required",compRequired);
+                                String keyLabelInd = keyLabel.toLowerCase().replace(" ", "").replace("-", "").replace("/", "").replace(".", "");
+                                dataObjEl.put("keyIndo",keyLabelInd);
                                 dataArrElement.put(dataObjEl);
                             }
                             break;
@@ -467,6 +502,8 @@ public class MyParserFormBuilder {
                             dataObjElArea.put("id",getIdArea);
                             dataObjElArea.put("name",elNameArea);
                             dataObjElArea.put("required",compRequired);
+                            String keyLabelInd = keyLabel.toLowerCase().replace(" ", "").replace("-", "").replace("/", "").replace(".", "");
+                            dataObjElArea.put("keyIndo",keyLabelInd);
                             dataArrElement.put(dataObjElArea);
 
                             break;
@@ -538,6 +575,8 @@ public class MyParserFormBuilder {
                             dataObjElOpt.put("name",elName);
                             dataObjElOpt.put("required",compRequired);
                             dataObjElOpt.put("url",urlPath);
+                            String keyLabelIndOpt = keyLabel.toLowerCase().replace(" ", "").replace("-", "").replace("/", "").replace(".", "");
+                            dataObjElOpt.put("keyIndo",keyLabelIndOpt);
                             dataArrElement.put(dataObjElOpt);
 
                             break;
@@ -600,6 +639,8 @@ public class MyParserFormBuilder {
                             dataObjElAuto.put("id",idsAuto);
                             dataObjElAuto.put("name",elName2);
                             dataObjElAuto.put("required",compRequired);
+                            String keyLabelIndAuto = keyLabel.toLowerCase().replace(" ", "").replace("-", "").replace("/", "").replace(".", "");
+                            dataObjElAuto.put("keyIndo",keyLabelIndAuto);
                             dataArrElement.put(dataObjElAuto);
 
                             break;
@@ -653,82 +694,4 @@ public class MyParserFormBuilder {
         return dataInt;
     }
 
-    private static int alphabetToInt(String data) {
-        Random random=new Random();
-        int dataInt = random.nextInt(99999999);
-        /*String repl = data.replace("_", "").replace(" ","").replace("-","");
-        String lwS = repl.toLowerCase();
-        Map<Character, Integer> map = new HashMap<>(26);
-        map.put('a', 1);
-        map.put('i', 1);
-        map.put('j', 1);
-        map.put('q', 1);
-        map.put('y', 1);
-        map.put('b', 2);
-        map.put('k', 2);
-        map.put('r', 2);
-        map.put('c', 3);
-        map.put('g', 3);
-        map.put('l', 3);
-        map.put('s', 3);
-        map.put('d', 4);
-        map.put('m', 4);
-        map.put('t', 4);
-        map.put('e', 5);
-        map.put('h', 5);
-        map.put('n', 5);
-        map.put('x', 5);
-        map.put('u', 6);
-        map.put('v', 6);
-        map.put('w', 6);
-        map.put('o', 7);
-        map.put('z', 6);
-        map.put('f', 8);
-        map.put('p', 8);
-
-        char[]crt = lwS.trim().toCharArray();
-        String dataS = "";
-
-        for(int i = 0; i < crt.length; i ++){
-            int getInt = map.get(crt[i]);
-            dataS += String.valueOf(getInt);
-        }
-
-        int dataInt = (int) Long.parseLong(dataS);*/
-
-        return dataInt;
-    }
-
-    private static String updateDates(Calendar currentTime) {
-        int days = currentTime.get(Calendar.DAY_OF_WEEK);
-        int tgl = currentTime.get(Calendar.DAY_OF_MONTH);
-        int bln = currentTime.get(Calendar.MONTH);
-        int thn = currentTime.get(Calendar.YEAR);
-
-        String blnLabel = blnIndo(bln);
-
-        String Tgl = String.format("%02d", tgl);
-
-        String currentDate = Tgl + " " + blnLabel + " " + thn;
-
-        return currentDate;
-    }
-
-    private static String blnIndo(int bln) {
-        List<String> monthIn = new ArrayList<>();
-        monthIn.add("Januari");
-        monthIn.add("Februari");
-        monthIn.add("Maret");
-        monthIn.add("April");
-        monthIn.add("Mei");
-        monthIn.add("Juni");
-        monthIn.add("Juli");
-        monthIn.add("Agustus");
-        monthIn.add("September");
-        monthIn.add("Oktober");
-        monthIn.add("November");
-        monthIn.add("Desember");
-        return monthIn.get(bln);
-
-    }
 }
