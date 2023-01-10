@@ -101,10 +101,6 @@ public class DipsLivenessResult extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        /*String lang = sessions.getLANG();
-        Log.e(TAG,"onResume : "+lang);
-        //setLocale(this,lang);
-        LocaleHelper.setLocale(this,lang);*/
     }
 
     @Override
@@ -193,17 +189,55 @@ public class DipsLivenessResult extends AppCompatActivity {
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
                 Log.e("CEK","RESPONSE CODE: "+response.code());
                 if (response.isSuccessful()) {
-                    llCircle.setVisibility(View.VISIBLE);
-                    imgCheck.setVisibility(View.VISIBLE);
-                    tip_text_view.setVisibility(View.GONE);
+                    
                     String dataS = response.body().toString();
                     Log.e("CEK","dataS: "+dataS);
                     try {
                         JSONObject dataObj = new JSONObject(dataS);
+
+                        processH5Advance(imgBase64,dataObj);
+
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }  else {
+                    Intent intent = new Intent(mContext, DipsSplashScreen.class);
+                    intent.putExtra("RESPONSECODE", response.code());
+                    startActivity(intent);
+                    finishAffinity();
+
+                }
+            }
+
+            @Override
+            public void onFailure(Call<JsonObject> call, Throwable t) {
+                Log.e("CEK","onFailure MESSAGE : "+t.getMessage());
+                Toast.makeText(mContext, t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void processH5Advance(String imgBase64, JSONObject dataObj) {
+        JSONObject jsons = new JSONObject();
+        try {
+            jsons.put("image",imgBase64);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), jsons.toString());
+
+        Server.getAPIService().H5Advance(requestBody).enqueue(new Callback<JsonObject>() {
+            @Override
+            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                if (response.isSuccessful()) {
+                    llCircle.setVisibility(View.VISIBLE);
+                    imgCheck.setVisibility(View.VISIBLE);
+                    tip_text_view.setVisibility(View.GONE);
+
+                    try {
                         JSONObject dataCustomer = dataObj.getJSONObject("data").getJSONObject("customer");
                         JSONObject dataToken = dataObj.getJSONObject("data").getJSONObject("token");
-
-                        boolean isSwafoto = dataCustomer.getBoolean("isSwafoto");
 
                         String noCIF = "";
                         boolean isCust;
@@ -215,7 +249,7 @@ public class DipsLivenessResult extends AppCompatActivity {
                         }
                         String custName = dataCustomer.getString("namaLengkap");
                         String idDipsNew = dataCustomer.getString("idDips");
-                        Log.e("CEK","idDipsNew : "+idDipsNew+" | idDips : "+idDips);
+                        Log.e("CEK", "idDipsNew : " + idDipsNew + " | idDips : " + idDips);
                         /*if (idDips != null && OutboundService.mSocket != null && idDipsNew != idDips) {
                             OutboundService.leaveOutbound(idDips);
                         }*/
@@ -226,21 +260,21 @@ public class DipsLivenessResult extends AppCompatActivity {
                         sessions.saveAuthToken(accessToken);
                         sessions.saveNoCIF(noCIF);
                         sessions.saveNasabahName(custName);
+                        sessions.saveNasabah(dataCustomer.toString());
 
                         idDips = idDipsNew;
 
                         sessions.saveIdDips(idDips);
 
-                        String finalNoCIF = noCIF;
                         new Handler().postDelayed(new Runnable() {
                             @Override
                             public void run() {
-                                //setelah loading maka akan langsung berpindah ke home activity
                                 runOnUiThread(new Runnable() {
                                     @Override
                                     public void run() {
                                         Intent intent = null;
-                                        if (!finalNoCIF.isEmpty()) {
+                                        String noCif = sessions.getNoCIF();
+                                        if (!noCif.isEmpty()) {
                                             intent = new Intent(mContext, DipsWaitingRoom.class);
                                             intent.putExtra("CUSTNAME", custName);
                                         } else {
@@ -253,48 +287,15 @@ public class DipsLivenessResult extends AppCompatActivity {
                                 });
 
                             }
-                        },2000);
-
+                        }, 2000);
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
-                }  else {
+                } else {
                     Intent intent = new Intent(mContext, DipsSplashScreen.class);
                     intent.putExtra("RESPONSECODE", response.code());
                     startActivity(intent);
                     finishAffinity();
-
-                    /*if (response.code() < 500) {
-                        if (response.code() == 401) {
-                            Intent intent = new Intent(mContext, DipsSplashScreen.class);
-                            intent.putExtra("RESPONSECODE", response.code());
-                            startActivity(intent);
-                            finishAffinity();
-                        } else {
-                            String dataErr = null;
-                            try {
-                                dataErr = response.errorBody().string();
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
-                            Log.e("CEK", "dataErr : " + dataErr);
-                            if (dataErr != null) {
-                                try {
-                                    JSONObject dataObj = new JSONObject(dataErr);
-                                    if (dataObj.has("message")) {
-                                        String message = dataObj.getString("message");
-                                        Toast.makeText(mContext, message, Toast.LENGTH_SHORT).show();
-                                    }
-                                } catch (JSONException e) {
-                                    e.printStackTrace();
-                                }
-                            } else {
-                                Toast.makeText(mContext, R.string.msg_error, Toast.LENGTH_SHORT).show();
-                            }
-                        }
-                    } else {
-                        Toast.makeText(mContext, R.string.msg_error, Toast.LENGTH_SHORT).show();
-                    }*/
                 }
             }
 

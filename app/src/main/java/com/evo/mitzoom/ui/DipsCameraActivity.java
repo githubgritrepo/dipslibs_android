@@ -99,13 +99,13 @@ public class DipsCameraActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
         mContext = this;
         sessions = new SessionManager(mContext);
         String lang = sessions.getLANG();
         setLocale(this,lang);
         //LocaleHelper.setLocale(this,lang);
+
+        super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_dips_camera);
 
@@ -339,10 +339,6 @@ public class DipsCameraActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-
-        String lang = sessions.getLANG();
-        setLocale(this,lang);
-        //LocaleHelper.setLocale(this,lang);
 
         isConfigure = false;
 

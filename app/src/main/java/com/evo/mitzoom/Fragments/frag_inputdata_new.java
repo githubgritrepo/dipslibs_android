@@ -276,9 +276,9 @@ public class frag_inputdata_new extends Fragment {
                                     String keyIndoEl = idElement.getJSONObject(j).getString("keyIndo");
                                     Object getObj = objEl.get(nameDataEl);
                                     objEl.put(keyIndoEl,getObj);
-                                    if (session.getLANG().equals("en")) {
+                                    /*if (session.getLANG().equals("en")) {
                                         objEl.remove(nameDataEl);
-                                    }
+                                    }*/
                                 }
                             } catch (JSONException e) {
                                 e.printStackTrace();

@@ -20,9 +20,11 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.evo.mitzoom.API.Server;
 import com.evo.mitzoom.Adapter.AdapterPortofolioNew;
+import com.evo.mitzoom.BaseMeetingActivity;
 import com.evo.mitzoom.Helper.RabbitMirroring;
 import com.evo.mitzoom.R;
 import com.evo.mitzoom.Session.SessionManager;
+import com.evo.mitzoom.ui.Alternative.DipsSwafoto;
 import com.github.mikephil.charting.charts.PieChart;
 import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.data.PieData;
@@ -99,6 +101,13 @@ public class frag_portfolio_new extends Fragment {
         isSessionZoom = ZoomVideoSDK.getInstance().isInSession();
         if (isSessionZoom) {
             rabbitMirroring = new RabbitMirroring(mContext);
+            JSONObject dataCIF = new JSONObject();
+            try {
+                dataCIF.put("noCif",noCif);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            rabbitMirroring.MirroringSendKey(dataCIF);
         }
     }
 
@@ -122,6 +131,12 @@ public class frag_portfolio_new extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        if (isSessionZoom) {
+            BaseMeetingActivity.showProgress(true);
+        } else {
+            DipsSwafoto.showProgress(true);
+        }
 
         idDips = sessions.getKEY_IdDips();
         Calendar c = Calendar.getInstance();
@@ -172,6 +187,11 @@ public class frag_portfolio_new extends Fragment {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
                 Log.e("CEK","getPortofolio CODE: "+response.code());
+                if (isSessionZoom) {
+                    BaseMeetingActivity.showProgress(false);
+                } else {
+                    DipsSwafoto.showProgress(false);
+                }
                 if (response.isSuccessful()) {
                     String dataS = response.body().toString();
                     Log.e("CEK","getPortofolio dataS: "+dataS);
@@ -197,6 +217,11 @@ public class frag_portfolio_new extends Fragment {
 
             @Override
             public void onFailure(Call<JsonObject> call, Throwable t) {
+                if (isSessionZoom) {
+                    BaseMeetingActivity.showProgress(false);
+                } else {
+                    DipsSwafoto.showProgress(false);
+                }
                 Toast.makeText(mContext,t.getMessage(),Toast.LENGTH_SHORT).show();
             }
         });

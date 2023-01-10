@@ -98,12 +98,13 @@ public class DipsCapture extends AppCompatActivity implements CameraSource.Pictu
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
         mContext = this;
         sessions = new SessionManager(mContext);
         String lang = sessions.getLANG();
         setLocale(this, lang);
         //LocaleHelper.setLocale(this,lang);
+
+        super.onCreate(savedInstanceState);
 
         idDips = sessions.getKEY_IdDips();
 

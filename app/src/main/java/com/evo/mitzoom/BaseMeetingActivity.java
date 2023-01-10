@@ -268,11 +268,6 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
     @Override
     protected void onResume() {
         super.onResume();
-
-        String lang = sessions.getLANG();
-        setLocale(this,lang);
-        //LocaleHelper.setLocale(this,lang);
-
         Log.d("CEK","onResume");
 
         if (isActivityPaused) {
@@ -721,6 +716,7 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
         dialogEnd.setCustomView(dialogView);
         dialogEnd.setCancelable(false);
         dialogEnd.hideConfirmButton();
+        dialogEnd.show();
 
         btnConfirmDialog.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -739,7 +735,6 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
                 finish();
             }
         });
-        dialogEnd.show();
     }
 
     public void onClickEnd(View view) {

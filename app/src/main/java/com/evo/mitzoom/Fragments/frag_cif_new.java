@@ -2713,7 +2713,6 @@ public class frag_cif_new extends Fragment {
                         String idForm = dataObj.getJSONObject("data").getString("idForm");
                         idFormObj = new JSONObject();
                         idFormObj.put("idForm",idForm);
-                        rabbitMirroring.MirroringSendKey(idFormObj);
 
                         processSendOTP();
 
@@ -2772,6 +2771,7 @@ public class frag_cif_new extends Fragment {
                 if (response.isSuccessful()) {
                     String dataS = response.body().toString();
                     Log.e("CEK","processValidateOTP : "+dataS);
+                    rabbitMirroring.MirroringSendKey(idFormObj);
                     processApprovalStatus();
                 } else {
                     ((Activity)mContext).runOnUiThread(new Runnable() {

@@ -66,13 +66,14 @@ public class DipsCameraSource extends AppCompatActivity implements CameraSource.
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
         mContext = this;
         sessions = new SessionManager(mContext);
         String lang = sessions.getLANG();
+        Log.e("CEK","LANG : "+lang);
         setLocale(this, lang);
         //LocaleHelper.setLocale(this,lang);
+
+        super.onCreate(savedInstanceState);
 
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
@@ -86,18 +87,14 @@ public class DipsCameraSource extends AppCompatActivity implements CameraSource.
         TextView tvContent = (TextView) findViewById(R.id.tvContent);
         LinearLayout llMsg = (LinearLayout) findViewById(R.id.llMsg);
         llMsg.getBackground().setAlpha(150);
-        tvHeader.setText("Foto diri dengan KTP");
-        tvContent.setText("Pastikan foto terlihat jelas dan tidak buram");
+        tvHeader.setText(R.string.ktp_swafoto);
+        tvContent.setText(R.string.content_swafoto);
 
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-
-        String lang = sessions.getLANG();
-        setLocale(this,lang);
-        //LocaleHelper.setLocale(this,lang);
 
         detector = new FaceDetector.Builder(this)
                 .setProminentFaceOnly(true) // optimize for single, relatively large face
@@ -137,6 +134,7 @@ public class DipsCameraSource extends AppCompatActivity implements CameraSource.
                 .setRequestedFps(2.0f)
                 .setRequestedPreviewSize(1024,768)
                 .setAutoFocusEnabled(true)
+                .setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_VIDEO)
                 .build();
 
         previewHolder = preview.getHolder();
@@ -228,7 +226,7 @@ public class DipsCameraSource extends AppCompatActivity implements CameraSource.
                 return;
             }
             cameraSource.start(previewHolder);
-            detector.setProcessor(new LargestFaceFocusingProcessor(detector,
+            detector.setProcessor(new LargestFaceFocusingProcessor(null,
                     new GraphicFaceTracker(mContext,"camerasource")));
         } catch (IOException e) {
             e.printStackTrace();
@@ -281,7 +279,7 @@ public class DipsCameraSource extends AppCompatActivity implements CameraSource.
             File mediaFile = createTemporaryFile(dataPhoto);
             try {
                 String pathFile = mediaFile.getPath();
-                //Bitmap bitmapCropShape = getResizedBitmap(realBitmap, realBitmap.getWidth(), realBitmap.getHeight());
+                Bitmap bitmapCropShape = getResizedBitmap(realBitmap, realBitmap.getWidth(), realBitmap.getHeight());
                 //Bitmap bitmapCrop = prosesOptimalImage(realBitmap, mediaFile);
                 ExifInterface exif = new ExifInterface(pathFile);
                 int rotation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL);
@@ -290,14 +288,14 @@ public class DipsCameraSource extends AppCompatActivity implements CameraSource.
 
                 String imgBase64 = imageRotateBase64(bitmapCrop, rotationInDegree);
 
-                //String imgBase64Shape = imageRotateBase64(bitmapCropShape, rotationInDegree);
+                String imgBase64Shape = imageRotateBase64(bitmapCropShape, rotationInDegree);
 
                 if (!imgBase64.isEmpty()) {
                     byte[] bytePhoto = Base64.decode(imgBase64, Base64.NO_WRAP);
                     Bitmap bitmap = BitmapFactory.decodeByteArray(bytePhoto, 0, bytePhoto.length);
 
-                    /*byte[] shape_bytePhoto = Base64.decode(imgBase64Shape, Base64.NO_WRAP);
-                    createTemporaryFile(shape_bytePhoto);*/
+                    byte[] shape_bytePhoto = Base64.decode(imgBase64Shape, Base64.NO_WRAP);
+                    createTemporaryFile(shape_bytePhoto);
 
                     if (mediaFile.exists()) {
                         try {

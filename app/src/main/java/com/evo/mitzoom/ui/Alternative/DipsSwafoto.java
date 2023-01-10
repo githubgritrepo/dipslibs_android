@@ -102,13 +102,13 @@ public class DipsSwafoto extends AppCompatActivity implements com.wdullaer.mater
 
         mContext = this;
         sessions = new SessionManager(mContext);
-
         String lang = sessions.getLANG();
         setLocale(this,lang);
         //LocaleHelper.setLocale(this,lang);
-        setContentView(R.layout.activity_dips_swafoto);
 
         super.onCreate(savedInstanceState);
+
+        setContentView(R.layout.activity_dips_swafoto);
 
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
         //getSupportActionBar().hide();
@@ -194,10 +194,6 @@ public class DipsSwafoto extends AppCompatActivity implements com.wdullaer.mater
     @Override
     protected void onResume() {
         super.onResume();
-
-        String lang = sessions.getLANG();
-        setLocale(this,lang);
-        //LocaleHelper.setLocale(this,lang);
 
         Log.d("CEK","MASUK onResume");
 

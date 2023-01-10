@@ -758,7 +758,7 @@ public class frag_service_item extends Fragment {
                                             TextView tvll = (TextView) ll2.getChildAt(1);
                                             String txt = tvll.getText().toString();
                                             Log.e("CEK", "tvll : " + txt);
-                                            if (txt.toLowerCase().indexOf("gambar") > 0 || txt.toLowerCase().indexOf("image") > 0 || txt.toLowerCase().indexOf("tangan") > 0) {
+                                            if (nameDataEl.toLowerCase().indexOf("gambar") > 0 || nameDataEl.toLowerCase().indexOf("image") > 0 || nameDataEl.toLowerCase().indexOf("tangan") > 0) {
                                                 tvSavedImg = (TextView) ll.getChildAt(1);
                                                 ll2.setOnClickListener(new View.OnClickListener() {
                                                     @Override

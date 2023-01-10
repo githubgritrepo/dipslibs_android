@@ -135,7 +135,7 @@ public class OutboundServiceNew extends Service {
     private void setupConnectionFactory() {
         String uriRabbit = Server.BASE_URL_RABBITMQ;
         try {
-            connectionFactory.setAutomaticRecoveryEnabled(true);
+            connectionFactory.setAutomaticRecoveryEnabled(false);
             connectionFactory.setUri(uriRabbit);
             connectionFactory.setNetworkRecoveryInterval(10000);
         } catch (URISyntaxException | NoSuchAlgorithmException | KeyManagementException e) {

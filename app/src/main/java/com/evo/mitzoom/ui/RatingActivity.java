@@ -33,13 +33,13 @@ public class RatingActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
         mContext = this;
         sessions = new SessionManager(mContext);
         String lang = sessions.getLANG();
         setLocale(this, lang);
         //LocaleHelper.setLocale(this,lang);
+
+        super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_rating);
         //AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
@@ -90,9 +90,6 @@ public class RatingActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        String lang = sessions.getLANG();
-        setLocale(this,lang);
-        //LocaleHelper.setLocale(this,lang);
     }
 
     @Override

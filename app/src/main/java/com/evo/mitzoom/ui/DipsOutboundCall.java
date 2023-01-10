@@ -161,6 +161,14 @@ public class DipsOutboundCall extends AppCompatActivity implements DatePickerDia
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        mContext = this;
+        sessions = new SessionManager(mContext);
+        idDips = sessions.getKEY_IdDips();
+        isCust = sessions.getKEY_iSCust();
+        String lang = sessions.getLANG();
+        setLocale(this,lang);
+        //LocaleHelper.setLocale(this,lang);
+
         super.onCreate(savedInstanceState);
         Log.e(TAG,"MASUK onCreate DipsOutboundCall");
         if (getIntent().getAction() != null) {
@@ -169,14 +177,6 @@ public class DipsOutboundCall extends AppCompatActivity implements DatePickerDia
         } else {
             playNotificationSound();
         }
-
-        mContext = this;
-        sessions = new SessionManager(mContext);
-        idDips = sessions.getKEY_IdDips();
-        isCust = sessions.getKEY_iSCust();
-        String lang = sessions.getLANG();
-        setLocale(this,lang);
-        //LocaleHelper.setLocale(this,lang);
 
         getPackageManager().getLaunchIntentForPackage("com.evo.mitzoom");
 
@@ -335,10 +335,6 @@ public class DipsOutboundCall extends AppCompatActivity implements DatePickerDia
     protected void onResume() {
         super.onResume();
         isConfigure = false;
-
-        String lang = sessions.getLANG();
-        setLocale(this,lang);
-        //LocaleHelper.setLocale(this,lang);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (checkSelfPermission(Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {

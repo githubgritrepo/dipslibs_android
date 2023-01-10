@@ -239,4 +239,8 @@ public interface ApiService {
     @GET
     Call<JsonObject> getDynamicUrl(@Url String url);
 
+    @Headers("Content-Type: "+ MyConstants.CONTENT_TYPE)
+    @POST("digitech/h5-advance")
+    Call<JsonObject> H5Advance(@Body RequestBody body);
+
 }

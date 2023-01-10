@@ -33,6 +33,8 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.content.res.AppCompatResources;
+import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.Fragment;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
@@ -52,7 +54,11 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.Locale;
 
 import okhttp3.MediaType;
 import okhttp3.RequestBody;
@@ -78,6 +84,7 @@ public class frag_ready_account extends Fragment {
     private LinearLayout llFormBuild;
     private Button btnProses;
 
+    private NestedScrollView scrollOTP;
     private View inclOTP;
     private ImageView imgDialog;
     private TextView textTitleOTP;
@@ -113,8 +120,18 @@ public class frag_ready_account extends Fragment {
     private ImageView btn_back;
     private boolean flagStuckSpin = false;
     private JSONObject idFormObj;
+    private LinearLayout TopBar;
     private LinearLayout ll_head;
     private TextView tvFotoKTP;
+    private String transactionId = "";
+    private int loopStatus = 0;
+    private JSONObject dataNasabahObj = null;
+    String namaLengkap = "";
+    String alamat = "";
+    String noHp = "";
+    String nik = "";
+    private String branchCode = "";
+    private String NoCIF;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -124,9 +141,36 @@ public class frag_ready_account extends Fragment {
         sessions = new SessionManager(mContext);
         formCode = sessions.getFormCode();
         idDips = sessions.getKEY_IdDips();
-        Log.e("CEK",mContext+" formCode : "+formCode);
+        NoCIF = sessions.getNoCIF();
+        String dataNasabah = sessions.getNasabah();
+        Log.e("CEK",mContext+" formCode : "+formCode+" | NoCIF : "+NoCIF);
+        Log.e("CEK",mContext+" dataNasabah : "+dataNasabah);
+        if (dataNasabah.isEmpty()) {
+            try {
+                dataNasabahObj = new JSONObject(dataNasabah);
+                if (dataNasabahObj.has("namaLengkap")) {
+                    namaLengkap = dataNasabahObj.getString("namaLengkap");
+                }
+                if (dataNasabahObj.has("alamat")) {
+                    alamat = dataNasabahObj.getString("alamat");
+                }
+                if (dataNasabahObj.has("noHp")) {
+                    noHp = dataNasabahObj.getString("noHp");
+                }
+                if (dataNasabahObj.has("nik")) {
+                    nik = dataNasabahObj.getString("nik");
+                }
+                if (dataNasabahObj.has("branchCode")) {
+                    branchCode = dataNasabahObj.getString("branchCode");
+                }
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
         isSessionZoom = ZoomVideoSDK.getInstance().isInSession();
         Log.e("CEK",mContext+" isSessionZoom : "+isSessionZoom);
+        no_handphone = "089637407882";
         if (isSessionZoom) {
             rabbitMirroring = new RabbitMirroring(mContext);
         }
@@ -165,6 +209,7 @@ public class frag_ready_account extends Fragment {
                              Bundle savedInstanceState) {
         View views = inflater.inflate(R.layout.frag_ready_account, container, false);
 
+        TopBar = (LinearLayout) views.findViewById(R.id.TopBar);
         ll_head = (LinearLayout) views.findViewById(R.id.ll_head);
         tvFotoKTP = (TextView) views.findViewById(R.id.tvFotoKTP);
 
@@ -175,6 +220,7 @@ public class frag_ready_account extends Fragment {
 
         swipe = (SwipeRefreshLayout) views.findViewById(R.id.swipe);
 
+        scrollOTP = (NestedScrollView) views.findViewById(R.id.scrollOTP);
         inclOTP = views.findViewById(R.id.inclOTP);
         imgDialog = (ImageView) views.findViewById(R.id.imgDialog);
         textTitleOTP = (TextView) views.findViewById(R.id.textIBMB);
@@ -194,36 +240,117 @@ public class frag_ready_account extends Fragment {
         tvFotoKTP.setText(getString(R.string.pembukaan_akun));
 
         form_id = 19;
-        String label = getString(R.string.info_first_data);
-        label = label.replaceAll("\n"," ");
-        tvTitleReady.setText(label);
-
         if (getArguments() != null) {
             if (getArguments().containsKey("form_id")) {
                 form_id = getArguments().getInt("form_id");
-                if (form_id == 29 || form_id == 20 || form_id == 21 || form_id == 22) {
-                    label = getString(R.string.data_account_open);
-                    label = label.replaceAll("\n","");
-                    tvTitleReady.setText(label);
-                } else if (form_id == 30) {
-                    label = getString(R.string.facilities_services);
-                    label = label.replaceAll("\n","");
-                    tvTitleReady.setText(label);
-                }
             }
         }
 
+        swipe.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                processGetForm(form_id);
+            }
+        });
+
+        String label = getString(R.string.info_first_data);
+
         if (formCode == 150) {
+            label = label.replaceAll("\n"," ");
+            tvTitleReady.setText(label);
             keysData = "datautama";
+        } else if (formCode == 151) {
+            keysData = "tiperekening";
         } else if (formCode == 152) {
             keysData = "giro";
+        } else if (formCode == 153) {
+            keysData = "tabungan";
         } else if (formCode == 154) {
             keysData = "tabunganberjangka";
         } else if (formCode == 155) {
             keysData = "fasilitaslayanan";
+        } else if (formCode == 156) {
+            keysData = "tnc35";
+        }
+
+        if (formCode > 150 && formCode < 156) {
+            label = getString(R.string.data_account_open);
+            label = label.replaceAll("\n"," ");
+            tvTitleReady.setText(label);
+        } else if (formCode == 156) {
+            label = getString(R.string.facilities_services);
+            label = label.replaceAll("\n"," ");
+            tvTitleReady.setText(label);
         }
 
         dataFormObj = dataReqForm();
+        Log.e("CEK","dataFormObj AWAL : "+dataFormObj.toString());
+        if (dataFormObj.length() > 0) {
+            if (formCode == 150) {
+                if (dataFormObj.has(keysData)) {
+                    try {
+                        JSONObject getDatax = dataFormObj.getJSONObject(keysData);
+                        objEl.put(keysData,getDatax);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+            } else if (formCode == 151) {
+                if (dataFormObj.has(keysData)) {
+                    try {
+                        String getDatax = dataFormObj.getString(keysData);
+                        objEl.put(keysData,getDatax);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+            } else if (formCode == 152) {
+                if (dataFormObj.has(keysData)) {
+                    try {
+                        JSONObject getDatax = dataFormObj.getJSONObject(keysData);
+                        objEl.put(keysData,getDatax);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+            } else if (formCode == 153) {
+                if (dataFormObj.has(keysData)) {
+                    try {
+                        String getDatax = dataFormObj.getString(keysData);
+                        objEl.put(keysData,getDatax);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+            } else if (formCode == 154) {
+                if (dataFormObj.has(keysData)) {
+                    try {
+                        JSONObject getDatax = dataFormObj.getJSONObject(keysData);
+                        objEl.put(keysData,getDatax);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+            } else if (formCode == 155) {
+                if (dataFormObj.has(keysData)) {
+                    try {
+                        JSONObject getDatax = dataFormObj.getJSONObject(keysData);
+                        objEl.put(keysData,getDatax);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+            } else if (formCode == 156) {
+                if (dataFormObj.has(keysData)) {
+                    try {
+                        boolean getDatax = dataFormObj.getBoolean(keysData);
+                        objEl.put(keysData,getDatax);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }
 
         processGetForm(form_id);
 
@@ -231,7 +358,7 @@ public class frag_ready_account extends Fragment {
             @Override
             public void onClick(View view) {
                 Bundle bundle = new Bundle();
-                Fragment fragment = new frag_cif_new();
+                Fragment fragment = new frag_ready_account();
                 if (formCode == 151) {
                     bundle.putInt("form_id",19);
                     sessions.saveFormCOde(150);
@@ -241,17 +368,41 @@ public class frag_ready_account extends Fragment {
                     sessions.saveFormCOde(151);
                     rabbitMirroring.MirroringSendEndpoint(151);
                 } else if (formCode == 153) {
-                    bundle.putInt("form_id",20);
-                    sessions.saveFormCOde(152);
-                    rabbitMirroring.MirroringSendEndpoint(152);
+                    bundle.putInt("form_id",29);
+                    sessions.saveFormCOde(151);
+                    rabbitMirroring.MirroringSendEndpoint(151);
                 } else if (formCode == 154) {
-                    bundle.putInt("form_id",21);
-                    sessions.saveFormCOde(153);
-                    rabbitMirroring.MirroringSendEndpoint(153);
+                    bundle.putInt("form_id",29);
+                    sessions.saveFormCOde(151);
+                    rabbitMirroring.MirroringSendEndpoint(151);
                 } else if (formCode == 155) {
-                    bundle.putInt("form_id",22);
-                    sessions.saveFormCOde(154);
-                    rabbitMirroring.MirroringSendEndpoint(154);
+                    String tiperekening = "";
+                    if (dataFormObj.has("tiperekening")) {
+                        try {
+                            tiperekening = dataFormObj.getString("tiperekening");
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+
+                    if (tiperekening.toLowerCase().trim().equals("tabungan")) {
+                        bundle.putInt("form_id", 21);
+                        sessions.saveFormCOde(153);
+                        rabbitMirroring.MirroringSendEndpoint(153);
+                    } else if (tiperekening.toLowerCase().trim().equals("giro")) {
+                        bundle.putInt("form_id",20);
+                        sessions.saveFormCOde(152);
+                        rabbitMirroring.MirroringSendEndpoint(152);
+                    } else if (tiperekening.toLowerCase().trim().contains("jangka")) {
+                        bundle.putInt("form_id",22);
+                        sessions.saveFormCOde(154);
+                        rabbitMirroring.MirroringSendEndpoint(154);
+                    }
+
+                } else if (formCode == 156) {
+                    bundle.putInt("form_id",30);
+                    sessions.saveFormCOde(155);
+                    rabbitMirroring.MirroringSendEndpoint(155);
                 } else {
                     fragment = new frag_open_account_product();
                     sessions.saveFormCOde(201);
@@ -365,13 +516,64 @@ public class frag_ready_account extends Fragment {
     }
 
     private void processNext() {
-        JSONObject reqFormSend = dataReqForm();
-        Log.e("CEK","reqFormSend : "+reqFormSend.toString());
-        //APISaveForm();
+        dataFormObj = dataReqForm();
+        if (formCode < 156) {
+            Log.e("CEK","dataFormObj : "+dataFormObj.toString());
+            sessions.saveFormReq(dataFormObj.toString());
+            Bundle bundle = new Bundle();
+            Fragment fragment = new frag_ready_account();
+            if (formCode == 150) {
+                bundle.putInt("form_id",29);
+                sessions.saveFormCOde(151);
+                rabbitMirroring.MirroringSendEndpoint(151);
+            } else if (formCode == 151) {
+                String tiperekening = "";
+                try {
+                    tiperekening = objEl.getString("tiperekening");
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+                if (tiperekening.toLowerCase().trim().equals("tabungan")) {
+                    bundle.putInt("form_id", 21);
+                    sessions.saveFormCOde(153);
+                    rabbitMirroring.MirroringSendEndpoint(153);
+                } else if (tiperekening.toLowerCase().trim().equals("giro")) {
+                    bundle.putInt("form_id",20);
+                    sessions.saveFormCOde(152);
+                    rabbitMirroring.MirroringSendEndpoint(152);
+                } else if (tiperekening.toLowerCase().trim().contains("jangka")) {
+                    bundle.putInt("form_id",22);
+                    sessions.saveFormCOde(154);
+                    rabbitMirroring.MirroringSendEndpoint(154);
+                }
+            } else if (formCode == 152) {
+                bundle.putInt("form_id",30);
+                sessions.saveFormCOde(155);
+                rabbitMirroring.MirroringSendEndpoint(155);
+            } else if (formCode == 153) {
+                bundle.putInt("form_id",30);
+                sessions.saveFormCOde(155);
+                rabbitMirroring.MirroringSendEndpoint(155);
+            } else if (formCode == 154) {
+                bundle.putInt("form_id",30);
+                sessions.saveFormCOde(155);
+                rabbitMirroring.MirroringSendEndpoint(155);
+            } else if (formCode == 155) {
+                bundle.putInt("form_id",35);
+                sessions.saveFormCOde(156);
+                rabbitMirroring.MirroringSendEndpoint(156);
+            }
+
+            sendDataFragment(bundle, fragment);
+        } else {
+            APISaveForm();
+        }
     }
 
     private void APISaveForm() {
         JSONObject reqFormSend = dataReqForm();
+        Log.e("CEK", "reqFormSend : " + reqFormSend.toString());
         JSONObject dataObjCIF = new JSONObject();
         try {
             dataObjCIF.put("formCode","Create Account");
@@ -380,6 +582,8 @@ public class frag_ready_account extends Fragment {
         } catch (JSONException e) {
             e.printStackTrace();
         }
+        Log.e("CEK", "APISaveForm : " + dataObjCIF.toString());
+
         RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), dataObjCIF.toString());
         Server.getAPIService().saveForm(requestBody).enqueue(new Callback<JsonObject>() {
             @Override
@@ -395,7 +599,7 @@ public class frag_ready_account extends Fragment {
                         idFormObj.put("idForm",idForm);
                         rabbitMirroring.MirroringSendKey(idFormObj);
 
-                        //processSendOTP();
+                        processSendOTP();
 
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -432,22 +636,396 @@ public class frag_ready_account extends Fragment {
         });
     }
 
+    private void processSendOTP() {
+        String noHp = no_handphone;
+        if (noHp.substring(0,1).equals("0")) {
+            noHp = "62"+no_handphone.substring(1);
+        }
+        JSONObject dataObjOTP = new JSONObject();
+        try {
+            dataObjOTP.put("msisdn",noHp);
+            dataObjOTP.put("idDips",idDips);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        Log.e("CEK","processSendOTP : "+dataObjOTP.toString());
+
+        RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), dataObjOTP.toString());
+
+        Server.getAPIService().SendOTP(requestBody).enqueue(new Callback<JsonObject>() {
+            @Override
+            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                ((Activity)mContext).runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (isSessionZoom) {
+                            BaseMeetingActivity.showProgress(false);
+                        } else {
+                            DipsSwafoto.showProgress(false);
+                        }
+                    }
+                });
+                Log.e("CEK","processSendOTP code : "+response.code());
+                if (response.isSuccessful()) {
+                    String dataS = response.body().toString();
+                    Log.e("CEK","processSendOTP : "+dataS);
+                    try {
+                        JSONObject dataObj = new JSONObject(dataS);
+                        transactionId = dataObj.getJSONObject("data").getString("transactionId");
+                        rabbitMirroring.MirroringSendEndpoint(11);
+                        pageOTP();
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                } else {
+                    Toast.makeText(mContext,getString(R.string.msg_error),Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<JsonObject> call, Throwable t) {
+                ((Activity)mContext).runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (isSessionZoom) {
+                            BaseMeetingActivity.showProgress(false);
+                        } else {
+                            DipsSwafoto.showProgress(false);
+                        }
+                    }
+                });
+                Toast.makeText(mContext,t.getMessage(),Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void pageOTP() {
+        scrollOTP.setVisibility(View.VISIBLE);
+        swipe.setVisibility(View.GONE);
+        TopBar.setVisibility(View.GONE);
+        ll_head.setVisibility(View.VISIBLE);
+
+        String noHandphone = "089783434XXX";
+        if (!no_handphone.isEmpty()) {
+            String sub_no_handphone = no_handphone.substring(no_handphone.length() - 3);
+            noHandphone = no_handphone.replace(sub_no_handphone,"XXX");
+        }
+
+        String contentText = textTitleOTP.getText().toString();
+        contentText = contentText.replace("+62812 3456 7XXX",noHandphone);
+        textTitleOTP.setText(contentText);
+
+        tvFotoKTP.setText("One Time Password");
+
+        otp.setAnimationEnable(true);
+        otp.setPasswordHidden(true);
+        otp.addTextChangedListener(new TextWatcher() {
+
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                if (otp.length() == 6) {
+                    numberOTP = otp.getText().toString();
+                    JSONObject otpObj = new JSONObject();
+                    try {
+                        Log.e("CEK","numberOTP : "+numberOTP);
+                        otpObj.put("otp",numberOTP);
+                        rabbitMirroring.MirroringSendKey(otpObj);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        });
+
+        btnVerifikasi.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (otp.getText().toString().equalsIgnoreCase("")){
+                    Toast.makeText(mContext, "Kode Otp masih kosong", Toast.LENGTH_SHORT).show();
+                }
+                else {
+                    /*handler.removeMessages(0);
+                    handler.removeCallbacks(myRunnable);*/
+                    if (!transactionId.isEmpty()) {
+                        ((Activity)mContext).runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                if (isSessionZoom) {
+                                    BaseMeetingActivity.showProgress(true);
+                                } else {
+                                    DipsSwafoto.showProgress(true);
+                                }
+                            }
+                        });
+                        processValidateOTP();
+                    }
+                }
+            }
+        });
+        runTimer(TimerOTP, Resend_Otp);
+        Resend_Otp.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (seconds==0){
+                    resendOTP();
+                }
+            }
+        });
+    }
+
+    private void processValidateOTP() {
+        JSONObject dataObjOTP = new JSONObject();
+        try {
+            dataObjOTP.put("transactionId", transactionId);
+            dataObjOTP.put("idDips", idDips);
+            dataObjOTP.put("token", numberOTP);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        Log.e("CEK","processValidateOTP : "+dataObjOTP.toString());
+
+        RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), dataObjOTP.toString());
+        Server.getAPIService().ValidateOTP(requestBody).enqueue(new Callback<JsonObject>() {
+            @Override
+            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                Log.e("CEK","processValidateOTP code : "+response.code());
+                if (response.isSuccessful()) {
+                    String dataS = response.body().toString();
+                    Log.e("CEK","processValidateOTP : "+dataS);
+                    processApprovalStatus();
+                } else {
+                    ((Activity)mContext).runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (isSessionZoom) {
+                                BaseMeetingActivity.showProgress(false);
+                            } else {
+                                DipsSwafoto.showProgress(false);
+                            }
+                        }
+                    });
+                    imgDialog.setImageDrawable(AppCompatResources.getDrawable(mContext,R.drawable.v_dialog_failed));
+                    textTitleOTP.setText(R.string.titleWrongOTP);
+                    otp.setText("");
+                }
+            }
+
+            @Override
+            public void onFailure(Call<JsonObject> call, Throwable t) {
+                ((Activity)mContext).runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (isSessionZoom) {
+                            BaseMeetingActivity.showProgress(false);
+                        } else {
+                            DipsSwafoto.showProgress(false);
+                        }
+                    }
+                });
+                Toast.makeText(mContext,t.getMessage(),Toast.LENGTH_SHORT).show();
+            }
+        });
+
+    }
+
+    private void processApprovalStatus() {
+        Log.e("CEK", this+" processApprovalStatus PARAMS : "+idFormObj.toString());
+        String idForm = "";
+        try {
+            idForm = idFormObj.getString("idForm");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        Server.getAPIService().ApprovalStatus(idForm).enqueue(new Callback<JsonObject>() {
+            @Override
+            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                Log.e("CEK", this+" processApprovalStatus code : "+response.code());
+                if (response.isSuccessful()) {
+                    ((Activity)mContext).runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (isSessionZoom) {
+                                BaseMeetingActivity.showProgress(false);
+                            } else {
+                                DipsSwafoto.showProgress(false);
+                            }
+                        }
+                    });
+                    String dataS = response.body().toString();
+                    Log.e("CEK","processApprovalStatus dataS : "+dataS);
+                    try {
+                        JSONObject dataObj = new JSONObject(dataS);
+                        if (dataObj.getJSONObject("data").has("noCif")) {
+                            if (!dataObj.getJSONObject("data").getString("noCif").isEmpty()) {
+                                String noCif = dataObj.getJSONObject("data").getString("noCif");
+                                sessions.saveNoCIF(noCif);
+                            }
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                    rabbitMirroring.MirroringSendEndpoint(13);
+                    getFragmentPage(new frag_cif_resi());
+                } else {
+                    if (loopStatus >= 10) {
+                        Toast.makeText(mContext,getString(R.string.msg_error),Toast.LENGTH_SHORT).show();
+                        ((Activity)mContext).runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                if (isSessionZoom) {
+                                    BaseMeetingActivity.showProgress(false);
+                                } else {
+                                    DipsSwafoto.showProgress(false);
+                                }
+                            }
+                        });
+                    }
+                    if (loopStatus < 10) {
+                        new Handler().postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                ((Activity) mContext).runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        processApprovalStatus();
+                                    }
+                                });
+                                loopStatus++;
+                            }
+                        },10000);
+
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<JsonObject> call, Throwable t) {
+                Log.e("CEK", this+" processApprovalStatus onFailure : "+t.getMessage());
+                if (loopStatus >= 10) {
+                    Toast.makeText(mContext, t.getMessage(), Toast.LENGTH_SHORT).show();
+                }
+                if (loopStatus < 10) {
+                    new Handler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            ((Activity) mContext).runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    processApprovalStatus();
+                                }
+                            });
+                            loopStatus++;
+                        }
+                    },10000);
+                }
+            }
+        });
+    }
+
+    private void resendOTP() {
+        ((Activity)mContext).runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (isSessionZoom) {
+                    BaseMeetingActivity.showProgress(true);
+                } else {
+                    DipsSwafoto.showProgress(true);
+                }
+            }
+        });
+        processSendOTP();
+    }
+
+    public void runTimer(TextView timer_run, TextView resend) {
+        Handler handlerTimer = new Handler();
+        handlerTimer.post(new Runnable() {
+            @Override
+            public void run() {
+                int minutes = getMinutes;
+                int secs = seconds % 60;
+                String time = String.format(Locale.getDefault(),"%02d:%02d", minutes, secs);
+                timer_run.setText(time);
+                if (running) {
+                    seconds--;
+                }
+                if (seconds == 0 && minutes == 0){
+                    running = false;
+                    resend.setClickable(true);
+                } else if (seconds == 0 && minutes > 0){
+                    seconds = 59;
+                }
+                if (seconds == 59) {
+                    getMinutes--;
+                }
+                handlerTimer.postDelayed(this,1000);
+            }
+        });
+    }
+
     private JSONObject dataReqForm() {
         JSONObject reqFormSend = null;
         try {
             if (sessions.getFormReq() != null) {
                 String forms = sessions.getFormReq();
+                Log.e("CEK","sessions.getFormReq : "+forms);
                 reqFormSend = new JSONObject(forms);
             } else {
                 reqFormSend = new JSONObject();
             }
 
-            if (formCode == 151 || formCode == 153) {
-                reqFormSend.put("pembukaanakun", objEl);
-            } else {
+            JSONObject dataObj = null;
+            if (reqFormSend.has("pembukaanakun")) {
+                dataObj = reqFormSend.getJSONObject("pembukaanakun");
+            }
+
+            if (dataObj == null) {
                 JSONObject ObjCif = new JSONObject();
                 ObjCif.put(keysData, objEl);
                 reqFormSend.put("pembukaanakun", ObjCif);
+            } else {
+                if (formCode == 151 || formCode == 153 || formCode == 156) {
+                    String valGet = "";
+                    for(Iterator<String> iter = objEl.keys(); iter.hasNext();) {
+                        String key = iter.next();
+                        if (formCode == 151) {
+                            if (key.contains("rekening") || key.contains("account")) {
+                                valGet = objEl.getString(key);
+                                break;
+                            }
+                        } else if (formCode == 153) {
+                            if (key.contains("tabungan") || key.contains("saving")) {
+                                valGet = objEl.getString(key);
+                                break;
+                            }
+                        } else if (formCode == 156) {
+                            if (key.contains("setuju") || key.contains("accept")) {
+                                boolean valGetBol = objEl.getBoolean(key);
+                                dataObj.put(keysData, valGetBol);
+                                break;
+                            }
+                        }
+                    }
+                    if (formCode != 156) {
+                        dataObj.put(keysData, valGet);
+                    }
+                    reqFormSend.put("pembukaanakun", dataObj);
+                } else {
+                    dataObj.put(keysData, objEl);
+                    reqFormSend.put("pembukaanakun", dataObj);
+                }
             }
         } catch (JSONException e) {
             e.printStackTrace();
@@ -462,7 +1040,11 @@ public class frag_ready_account extends Fragment {
         Server.getAPIWAITING_PRODUCT().getFormBuilder(formId).enqueue(new Callback<JsonObject>() {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
-                BaseMeetingActivity.showProgress(false);
+                if (isSessionZoom) {
+                    BaseMeetingActivity.showProgress(false);
+                } else {
+                    DipsSwafoto.showProgress(false);
+                }
                 swipe.setRefreshing(false);
                 Log.e("CEK","response processGetForm : "+response.code());
                 if (response.isSuccessful()) {
@@ -479,8 +1061,10 @@ public class frag_ready_account extends Fragment {
                         idElement = parseForm.getForm();
                         Log.e("CEK","dataElement : "+idElement.toString());
                         processValidationActionForm();
+                        processMatchData();
+                        Log.e("CEK","AFTER processMatchData : "+objEl.toString());
+                        processDataFromOCR();
                         Log.e("CEK","DATA FORM : "+dataFormObj.toString());
-                        //rabbitMirroring.MirroringSendKey(dataFormObj);
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
@@ -490,9 +1074,135 @@ public class frag_ready_account extends Fragment {
             @Override
             public void onFailure(Call<JsonObject> call, Throwable t) {
                 swipe.setRefreshing(false);
-                BaseMeetingActivity.showProgress(false);
+                if (isSessionZoom) {
+                    BaseMeetingActivity.showProgress(false);
+                } else {
+                    DipsSwafoto.showProgress(false);
+                }
             }
         });
+    }
+
+    private void processMatchData() {
+        for(Iterator<String> iter = objEl.keys(); iter.hasNext();) {
+            if (iter.hasNext()) {
+                String key = iter.next();
+                String valKurung = "";
+                int indx = key.indexOf("(");
+                if (indx >= 0) {
+                    valKurung = key.substring(indx);
+                }
+                try {
+                    if (key.toLowerCase().contains("nama") && key.toLowerCase().contains("identitas"+valKurung)) {
+                        objEl.put(key, namaLengkap);
+                    } else if (key.toLowerCase().contains("cif"+valKurung)) {
+                        objEl.put(key, NoCIF);
+                    } else if (key.toLowerCase().contains("nama") && key.toLowerCase().contains("nasabah"+valKurung)) {
+                        objEl.put(key, namaLengkap);
+                    } else if ((key.toLowerCase().contains("no") || key.toLowerCase().contains("nomor")) && key.toLowerCase().contains("identitas"+valKurung)) {
+                        objEl.put(key, nik);
+                    } else if (key.toLowerCase().contains("tanggal") && key.toLowerCase().contains("rekening"+valKurung)) {
+                        String timeStamp = new SimpleDateFormat("dd-MM-yyyy",
+                                Locale.getDefault()).format(new Date());
+                        objEl.put(key, timeStamp);
+                    } else if (key.toLowerCase().contains("kode") && key.toLowerCase().contains("cabang"+valKurung)) {
+                        objEl.put(key, branchCode);
+                    }
+                } catch (JSONException e) {
+
+                }
+            }
+        }
+    }
+
+    private void processDataFromOCR() {
+        Log.e("CEK","processDataFromOCR : "+objEl.toString());
+        int child = llFormBuild.getChildCount();
+
+        if (child > 0 && idElement.length() > 0) {
+            for (int i = 0; i < child; i++) {
+                int idEl = llFormBuild.getChildAt(i).getId();
+                if (idEl > 0 || idEl < -1) {
+                    for (int j = 0; j < idElement.length(); j++) {
+                        try {
+                            int idDataEl = idElement.getJSONObject(j).getInt("id");
+                            String nameDataEl = idElement.getJSONObject(j).getString("name");
+                            if (idEl == idDataEl) {
+                                if (llFormBuild.getChildAt(i) instanceof EditText) {
+                                    EditText ed = (EditText) llFormBuild.getChildAt(i);
+                                    String valEl = objEl.getString(nameDataEl);
+                                    ed.setText(valEl);
+                                } else if (llFormBuild.getChildAt(i) instanceof RadioGroup) {
+                                    RadioGroup rg = (RadioGroup) llFormBuild.getChildAt(i);
+
+                                    for(int ch = 0; ch < rg.getChildCount(); ch++) {
+                                        int idRad = rg.getChildAt(ch).getId();
+                                        RadioButton rb = (RadioButton) rg.findViewById(idRad);
+                                        String labelRad = rb.getText().toString();
+                                        String valEl = objEl.getString(nameDataEl);
+                                        String valRad = valEl.toLowerCase();
+
+                                        String valKurung = "";
+                                        int indx = valEl.indexOf("(");
+                                        if (indx >= 0) {
+                                            valKurung = valEl.substring(indx);
+                                        }
+
+                                        if (valEl.toLowerCase().equals("kawin"+valKurung)) {
+                                            valRad = "menikah";
+                                        }
+                                        Log.e("CEK","labelRad : "+labelRad+" | valEl : "+valEl);
+                                        if (labelRad.toLowerCase().equals(valRad)) {
+                                            rb.setChecked(true);
+                                            break;
+                                        } else {
+
+                                            if (valRad.contains("laki") && valRad.contains("-")) {
+                                                String[] sp = valRad.split("-");
+                                                valRad = sp[0]+" - "+sp[1];
+                                                if (labelRad.toLowerCase().equals(valRad)) {
+                                                    rb.setChecked(true);
+                                                    break;
+                                                }
+                                            }
+                                        }
+                                    }
+                                    break;
+                                } else if (llFormBuild.getChildAt(i) instanceof CheckBox) {
+                                    CheckBox chk = (CheckBox) llFormBuild.getChildAt(i);
+                                    String labelCheck = chk.getText().toString();
+                                    if (objEl.has(nameDataEl)) {
+                                        boolean valEl = objEl.getBoolean(nameDataEl);
+                                        chk.setChecked(valEl);
+                                    } else if (objEl.has(labelCheck)) {
+                                        boolean valEl = objEl.getBoolean(labelCheck);
+                                        chk.setChecked(valEl);
+                                    }
+                                    break;
+                                } else if (llFormBuild.getChildAt(i) instanceof Spinner) {
+                                    Spinner spin = (Spinner) llFormBuild.getChildAt(i);
+                                    String valEl = objEl.getString(nameDataEl);
+                                    for (int ch = 0; ch < spin.getCount(); ch++) {
+                                        if (spin.getItemAtPosition(ch).toString().equals(valEl)) {
+                                            spin.setSelection(ch);
+                                            break;
+                                        }
+                                    }
+                                    break;
+                                } else if (llFormBuild.getChildAt(i) instanceof AutoCompleteTextView) {
+                                    AutoCompleteTextView autoText = (AutoCompleteTextView) llFormBuild.getChildAt(i);
+                                    String valEl = objEl.getString(nameDataEl);
+                                    autoText.setText(valEl);
+                                    break;
+                                }
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            }
+        }
     }
 
     private void processValidationActionForm() {
@@ -810,22 +1520,33 @@ public class frag_ready_account extends Fragment {
                     Log.e("CEK","processGetDynamicURL dataS : "+dataS);
                     try {
                         JSONObject dataObj = new JSONObject(dataS);
-                        JSONArray dataArr = dataObj.getJSONArray("data");
+                        String nameAction = dataObj.getString("name");
                         ArrayList<FormSpin> dataDropDown = new ArrayList<>();
-                        for (int i = 0; i < dataArr.length(); i++) {
-                            int idData = dataArr.getJSONObject(i).getInt("id");
-                            String labelIdn = dataArr.getJSONObject(i).getString("labelIdn");
-                            String labelEng = dataArr.getJSONObject(i).getString("labelEng");
-                            dataDropDown.add(new FormSpin(idData,labelIdn,labelIdn,labelEng));
-                            if (i == 0) {
-                                if (nameDataEl.contains("provinsi") || nameDataEl.contains("kabupaten") || nameDataEl.contains("kota") || nameDataEl.contains("kecamatan") || (nameDataEl.contains("kelurahan") || nameDataEl.contains("desa"))) {
-                                    valSpinProv.put(nameDataEl,idData);
-                                } else {
-                                    valSpin.put(nameDataEl, idData);
-                                }
-                                processGetSpinChild(nameDataEl);
-                                if ((nameDataEl.contains("kelurahan") || nameDataEl.contains("desa"))) {
-                                    flagStuckSpin = true;
+                        JSONArray dataArr = dataObj.getJSONArray("data");
+                        if (nameAction.equals("ProdukDropdown")) {
+                            for (int i = 0; i < dataArr.length(); i++) {
+                                int idData = dataArr.getJSONObject(i).getInt("id");
+                                String kode = dataArr.getJSONObject(i).getString("kode");
+                                String namaProduk = dataArr.getJSONObject(i).getString("namaProduk");
+
+                                dataDropDown.add(new FormSpin(idData, kode, namaProduk, namaProduk));
+                            }
+                        } else {
+                            for (int i = 0; i < dataArr.length(); i++) {
+                                int idData = dataArr.getJSONObject(i).getInt("id");
+                                String labelIdn = dataArr.getJSONObject(i).getString("labelIdn");
+                                String labelEng = dataArr.getJSONObject(i).getString("labelEng");
+                                dataDropDown.add(new FormSpin(idData, labelIdn, labelIdn, labelEng));
+                                if (i == 0) {
+                                    if (nameDataEl.contains("provinsi") || nameDataEl.contains("kabupaten") || nameDataEl.contains("kota") || nameDataEl.contains("kecamatan") || (nameDataEl.contains("kelurahan") || nameDataEl.contains("desa"))) {
+                                        valSpinProv.put(nameDataEl, idData);
+                                    } else {
+                                        valSpin.put(nameDataEl, idData);
+                                    }
+                                    processGetSpinChild(nameDataEl);
+                                    if ((nameDataEl.contains("kelurahan") || nameDataEl.contains("desa"))) {
+                                        flagStuckSpin = true;
+                                    }
                                 }
                             }
                         }

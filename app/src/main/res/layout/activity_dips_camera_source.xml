@@ -57,16 +57,18 @@
 
     <LinearLayout
         android:id="@+id/llMsg"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="50dp"
+        android:layout_marginStart="25dp"
+        android:layout_marginEnd="25dp"
         android:background="@drawable/oval_background"
         android:layout_below="@id/llHeader"
         android:layout_marginTop="30dp">
 
       <TextView
-          android:layout_width="wrap_content"
+          android:layout_width="match_parent"
           android:layout_height="wrap_content"
           android:text="@string/wink"
           android:textAlignment="center"

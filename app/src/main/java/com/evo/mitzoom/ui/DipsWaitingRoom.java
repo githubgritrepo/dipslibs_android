@@ -169,6 +169,11 @@ public class DipsWaitingRoom extends AppCompatActivity implements DatePickerDial
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        mContext = this;
+        sessions = new SessionManager(mContext);
+        String lang = sessions.getLANG();
+        setLocale(this,lang);
+        //LocaleHelper.setLocale(this,lang);
         super.onCreate(savedInstanceState);
 
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
@@ -177,15 +182,11 @@ public class DipsWaitingRoom extends AppCompatActivity implements DatePickerDial
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
 
-        mContext = this;
-        sessions = new SessionManager(mContext);
         sessions.saveRTGS(null);
         sessions.saveCSID(null);
         idDips = sessions.getKEY_IdDips();
         isCust = sessions.getKEY_iSCust();
-        String lang = sessions.getLANG();
-        setLocale(this,lang);
-        //LocaleHelper.setLocale(this,lang);
+
         setContentView(R.layout.activity_dips_waiting_room);
 
         myTicket = findViewById(R.id.myticket);
@@ -223,10 +224,6 @@ public class DipsWaitingRoom extends AppCompatActivity implements DatePickerDial
     @Override
     protected void onResume() {
         super.onResume();
-
-        String lang = sessions.getLANG();
-        setLocale(this,lang);
-        //LocaleHelper.setLocale(this,lang);
 
         Log.d("CEK","MASUK onResume");
 
@@ -342,7 +339,7 @@ public class DipsWaitingRoom extends AppCompatActivity implements DatePickerDial
         connectionFactory.setPassword(Server.RABBITMQ_PASSWORD);
         connectionFactory.setHost(Server.RABBITMQ_IP);
         connectionFactory.setPort(Server.RABBITMQ_PORT);
-        connectionFactory.setAutomaticRecoveryEnabled(true);
+        connectionFactory.setAutomaticRecoveryEnabled(false);
 
         /*String uriRabbit = Server.BASE_URL_RABBITMQ;
         try {
@@ -1291,9 +1288,11 @@ public class DipsWaitingRoom extends AppCompatActivity implements DatePickerDial
             @Override
             public void onClick(View view) {
                 if (!SessionPass.isEmpty()) {
-                    dialogSuccess.dismissWithAnimation();
-                    dialogSuccess.cancel();
-                    dialogSuccess = null;
+                    if (dialogSuccess != null) {
+                        dialogSuccess.dismissWithAnimation();
+                        dialogSuccess.cancel();
+                        dialogSuccess = null;
+                    }
                     publishCallAccept(csId); //RabbitMQ
                     processJoinVideo();
                     //Popup();

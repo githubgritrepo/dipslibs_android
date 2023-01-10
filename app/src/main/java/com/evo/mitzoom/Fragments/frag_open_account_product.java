@@ -213,13 +213,13 @@ public class frag_open_account_product extends Fragment {
     private void PopUpTnc(){
         Log.e("CEK","MASUK PopUpTnc");
         LayoutInflater inflater = ((Activity) mContext).getLayoutInflater();
-        if (sweetAlertDialogTNC == null) {
+        //if (sweetAlertDialogTNC == null) {
             dialogView = inflater.inflate(R.layout.item_tnc,null);
             sweetAlertDialogTNC = new SweetAlertDialog(mContext, SweetAlertDialog.NORMAL_TYPE);
             sweetAlertDialogTNC.setCustomView(dialogView);
             sweetAlertDialogTNC.hideConfirmButton();
             sweetAlertDialogTNC.setCancelable(true);
-        }
+        //}
         TextView tvBody = (TextView) dialogView.findViewById(R.id.tvBody);
         CheckBox checkBox = dialogView.findViewById(R.id.checktnc);
         Button btn = dialogView.findViewById(R.id.btnnexttnc);

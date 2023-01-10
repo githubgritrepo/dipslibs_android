@@ -56,6 +56,7 @@ public class ItemServiceGridAdapter extends RecyclerView.Adapter<ItemServiceGrid
         holder.ads.setOnClickListener(v -> {
             switch (dataList.get(position).getId()){
                 case "0" :
+                    rabbitMirroring.MirroringSendEndpoint(201);
                     fragment = new frag_open_account_product();
                     getFragmentPage(fragment);
                     break;

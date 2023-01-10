@@ -227,18 +227,20 @@ public class MyParserFormBuilder {
 
                                 int ids = ed.getId();
                                 String elName = "";
+                                String keyLabelInd = "";
                                 if (compName.equals("checkbox")) {
                                     String compLabelGab = parentLabel+compLabel;
+                                    String compLabelGabIndo = parentLabel+keyLabel;
                                     elName = compLabelGab.toLowerCase().replace(" ", "").replace("-", "").replace("/", "").replace(".", "");
+                                    keyLabelInd = compLabelGabIndo.toLowerCase().replace(" ", "").replace("-", "").replace("/", "").replace(".", "");
                                 } else {
                                     elName = compLabel.toLowerCase().replace(" ", "").replace("-", "").replace("/", "").replace(".", "");
+                                    keyLabelInd = keyLabel.toLowerCase().replace(" ", "").replace("-", "").replace("/", "").replace(".", "");
                                 }
-
-                                String keyLabelInd = keyLabel.toLowerCase().replace(" ", "").replace("-", "").replace("/", "").replace(".", "");
 
                                 Log.e("CEK","compName : "+elName+" | ids : "+ids);
                                 dataObjEl.put("id",ids);
-                                dataObjEl.put("name",elName);
+                                dataObjEl.put("name",keyLabelInd);
                                 dataObjEl.put("keyIndo",keyLabelInd);
                                 dataObjEl.put("required",compRequired);
                                 dataArrElement.put(dataObjEl);
@@ -268,11 +270,11 @@ public class MyParserFormBuilder {
 
                                 int ids = ed.getId();
                                 String elName = compLabel.toLowerCase().replace(" ", "").replace("-", "").replace("/", "").replace(".", "");
+                                String keyLabelInd = keyLabel.toLowerCase().replace(" ", "").replace("-", "").replace("/", "").replace(".", "");
                                 Log.e("CEK","compName : "+elName+" | ids : "+ids);
                                 dataObjEl.put("id",ids);
-                                dataObjEl.put("name",elName);
+                                dataObjEl.put("name",keyLabelInd);
                                 dataObjEl.put("required",compRequired);
-                                String keyLabelInd = keyLabel.toLowerCase().replace(" ", "").replace("-", "").replace("/", "").replace(".", "");
                                 dataObjEl.put("keyIndo",keyLabelInd);
                                 dataArrElement.put(dataObjEl);
 
@@ -366,7 +368,7 @@ public class MyParserFormBuilder {
                                     int ids = radioGroup.getId();
                                     Log.e("CEK","compName : "+elNameRad+" | ids : "+ids);
                                     dataObjEl.put("id",ids);
-                                    dataObjEl.put("name",elNameRad);
+                                    dataObjEl.put("name",keyLabelIndRad);
                                     dataObjEl.put("required",compRequired);
                                     dataObjEl.put("keyIndo",keyLabelIndRad);
                                     dataArrElement.put(dataObjEl);
@@ -402,7 +404,7 @@ public class MyParserFormBuilder {
                                 }
                                 Log.e("CEK","compName : "+elName+" | ids : "+ids);
                                 dataObjEl.put("id",ids);
-                                dataObjEl.put("name",elName);
+                                dataObjEl.put("name",keyLabelInd);
                                 dataObjEl.put("required",compRequired);
                                 dataObjEl.put("keyIndo",keyLabelInd);
                                 dataArrElement.put(dataObjEl);
@@ -458,11 +460,11 @@ public class MyParserFormBuilder {
 
                                 int ids = ln.getId();
                                 String elName = compLabel.toLowerCase().replace(" ", "").replace("-", "").replace("/", "").replace(".", "");
+                                String keyLabelInd = keyLabel.toLowerCase().replace(" ", "").replace("-", "").replace("/", "").replace(".", "");
                                 Log.e("CEK","compName : "+elName+" | ids : "+ids);
                                 dataObjEl.put("id",ids);
-                                dataObjEl.put("name",elName);
+                                dataObjEl.put("name",keyLabelInd);
                                 dataObjEl.put("required",compRequired);
-                                String keyLabelInd = keyLabel.toLowerCase().replace(" ", "").replace("-", "").replace("/", "").replace(".", "");
                                 dataObjEl.put("keyIndo",keyLabelInd);
                                 dataArrElement.put(dataObjEl);
                             }
@@ -498,11 +500,11 @@ public class MyParserFormBuilder {
                             int getIdArea = ed.getId();
                             Log.e("CEK","compName : "+compPlaceholder+" | ids : "+getIdArea);
                             String elNameArea = compLabel.toLowerCase().replace(" ", "").replace("-", "").replace("/", "").replace(".", "");
+                            String keyLabelInd = keyLabel.toLowerCase().replace(" ", "").replace("-", "").replace("/", "").replace(".", "");
                             JSONObject dataObjElArea= new JSONObject();
                             dataObjElArea.put("id",getIdArea);
-                            dataObjElArea.put("name",elNameArea);
+                            dataObjElArea.put("name",keyLabelInd);
                             dataObjElArea.put("required",compRequired);
-                            String keyLabelInd = keyLabel.toLowerCase().replace(" ", "").replace("-", "").replace("/", "").replace(".", "");
                             dataObjElArea.put("keyIndo",keyLabelInd);
                             dataArrElement.put(dataObjElArea);
 
@@ -570,12 +572,12 @@ public class MyParserFormBuilder {
                             int ids = relativeLayout.getId();
                             Log.e("CEK","compName : "+compPlaceholder+" | ids : "+ids);
                             String elName = compLabel.toLowerCase().replace(" ", "").replace("-", "").replace("/", "").replace(".", "");
+                            String keyLabelIndOpt = keyLabel.toLowerCase().replace(" ", "").replace("-", "").replace("/", "").replace(".", "");
                             JSONObject dataObjElOpt = new JSONObject();
                             dataObjElOpt.put("id",ids);
-                            dataObjElOpt.put("name",elName);
+                            dataObjElOpt.put("name",keyLabelIndOpt);
                             dataObjElOpt.put("required",compRequired);
                             dataObjElOpt.put("url",urlPath);
-                            String keyLabelIndOpt = keyLabel.toLowerCase().replace(" ", "").replace("-", "").replace("/", "").replace(".", "");
                             dataObjElOpt.put("keyIndo",keyLabelIndOpt);
                             dataArrElement.put(dataObjElOpt);
 
@@ -635,11 +637,11 @@ public class MyParserFormBuilder {
                             int idsAuto = autoText.getId();
                             Log.e("CEK","compName : "+compPlaceholder+" | ids : "+idsAuto);
                             String elName2 = compLabel.toLowerCase().replace(" ", "").replace("-", "").replace("/", "").replace(".", "");
+                            String keyLabelIndAuto = keyLabel.toLowerCase().replace(" ", "").replace("-", "").replace("/", "").replace(".", "");
                             JSONObject dataObjElAuto = new JSONObject();
                             dataObjElAuto.put("id",idsAuto);
-                            dataObjElAuto.put("name",elName2);
+                            dataObjElAuto.put("name",keyLabelIndAuto);
                             dataObjElAuto.put("required",compRequired);
-                            String keyLabelIndAuto = keyLabel.toLowerCase().replace(" ", "").replace("-", "").replace("/", "").replace(".", "");
                             dataObjElAuto.put("keyIndo",keyLabelIndAuto);
                             dataArrElement.put(dataObjElAuto);
 
