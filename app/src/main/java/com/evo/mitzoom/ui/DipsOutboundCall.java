@@ -46,7 +46,6 @@ import com.evo.mitzoom.API.Server;
 import com.evo.mitzoom.BaseMeetingActivity;
 import com.evo.mitzoom.Constants.AuthConstants;
 import com.evo.mitzoom.GlideApp;
-import com.evo.mitzoom.Helper.LocaleHelper;
 import com.evo.mitzoom.Helper.OutboundServiceNew;
 import com.evo.mitzoom.R;
 import com.evo.mitzoom.Session.SessionManager;

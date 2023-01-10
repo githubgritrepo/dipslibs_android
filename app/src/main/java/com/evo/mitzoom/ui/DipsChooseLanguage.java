@@ -4,10 +4,8 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.ActivityManager;
-import android.app.ProgressDialog;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
@@ -41,8 +39,6 @@ import androidx.core.app.ActivityCompat;
 
 import com.evo.mitzoom.API.ApiService;
 import com.evo.mitzoom.API.Server;
-import com.evo.mitzoom.Helper.DownloadTaskHelper;
-import com.evo.mitzoom.Helper.LocaleHelper;
 import com.evo.mitzoom.Helper.OutboundServiceNew;
 import com.evo.mitzoom.Model.Request.JsonCaptureIdentify;
 import com.evo.mitzoom.Model.Response.CaptureIdentify;
@@ -56,25 +52,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.security.KeyManagementException;
-import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
-import java.security.cert.X509Certificate;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.Locale;
-
-import javax.net.ssl.HttpsURLConnection;
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.X509TrustManager;
 
 import ai.advance.liveness.lib.CameraType;
 import ai.advance.liveness.lib.Detector;

@@ -40,7 +40,6 @@ import androidx.core.content.ContextCompat;
 import com.evo.mitzoom.API.ApiService;
 import com.evo.mitzoom.API.Server;
 import com.evo.mitzoom.Helper.GraphicFaceTracker;
-import com.evo.mitzoom.Helper.LocaleHelper;
 import com.evo.mitzoom.Model.Request.JsonCaptureIdentify;
 import com.evo.mitzoom.Model.Response.CaptureIdentify;
 import com.evo.mitzoom.R;

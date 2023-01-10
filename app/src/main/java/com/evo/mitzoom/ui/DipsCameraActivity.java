@@ -41,7 +41,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
-import com.evo.mitzoom.Helper.LocaleHelper;
 import com.evo.mitzoom.R;
 import com.evo.mitzoom.Session.SessionManager;
 import com.google.android.material.appbar.AppBarLayout;

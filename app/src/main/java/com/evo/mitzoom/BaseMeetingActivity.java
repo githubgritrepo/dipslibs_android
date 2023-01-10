@@ -51,7 +51,6 @@ import com.evo.mitzoom.Adapter.UserVideoAdapter;
 import com.evo.mitzoom.Fragments.frag_chat;
 import com.evo.mitzoom.Fragments.frag_conferee_agree;
 import com.evo.mitzoom.Fragments.frag_file;
-import com.evo.mitzoom.Helper.LocaleHelper;
 import com.evo.mitzoom.Helper.NotificationMgr;
 import com.evo.mitzoom.Helper.NotificationService;
 import com.evo.mitzoom.Helper.OutboundServiceNew;

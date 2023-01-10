@@ -37,7 +37,6 @@ import androidx.fragment.app.Fragment;
 import com.evo.mitzoom.API.ApiService;
 import com.evo.mitzoom.API.Server;
 import com.evo.mitzoom.Fragments.frag_inputdata_new;
-import com.evo.mitzoom.Helper.LocaleHelper;
 import com.evo.mitzoom.Helper.OutboundServiceNew;
 import com.evo.mitzoom.R;
 import com.evo.mitzoom.Session.SessionManager;

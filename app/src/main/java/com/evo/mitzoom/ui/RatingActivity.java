@@ -17,7 +17,6 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.evo.mitzoom.Helper.LocaleHelper;
 import com.evo.mitzoom.R;
 import com.evo.mitzoom.Session.SessionManager;
 

@@ -70,8 +70,6 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Locale;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;

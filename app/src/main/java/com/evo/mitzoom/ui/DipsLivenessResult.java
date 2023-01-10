@@ -2,14 +2,11 @@ package com.evo.mitzoom.ui;
 
 import static com.evo.mitzoom.ui.DipsChooseLanguage.setLocale;
 
-import android.app.Activity;
 import android.app.ActivityManager;
 import android.content.Context;
 import android.content.Intent;
-import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.StrictMode;
@@ -19,8 +16,6 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -29,7 +24,6 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.evo.mitzoom.API.ApiService;
 import com.evo.mitzoom.API.Server;
-import com.evo.mitzoom.Helper.LocaleHelper;
 import com.evo.mitzoom.Helper.OutboundServiceNew;
 import com.evo.mitzoom.R;
 import com.evo.mitzoom.Session.SessionManager;
