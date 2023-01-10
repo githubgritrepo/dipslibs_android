@@ -225,6 +225,9 @@ public interface ApiService {
     @GET("form-generator/formcif/{idDips}")
     Call<JsonObject> getResiCIF(@Path("idDips") String idDips);
 
+    @GET("form-generator/pembukaanrekening/{idForm}")
+    Call<JsonObject> getResiCIFReady(@Path("idForm") String idForm);
+
     @GET("form-generator/formkomplain/{noComplaint}")
     Call<JsonObject> getResiComplaint(@Path("noComplaint") String noComplaint);
 

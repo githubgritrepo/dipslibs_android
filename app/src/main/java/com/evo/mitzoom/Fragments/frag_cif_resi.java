@@ -67,6 +67,8 @@ public class frag_cif_resi extends Fragment {
     private String no_handphone;
     private String pdfFile = "";
     private DownloadManager manager;
+    private int formCode = 0;
+    private String idForm = "";
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -76,17 +78,23 @@ public class frag_cif_resi extends Fragment {
         sessions = new SessionManager(mContext);
         dataCIF = sessions.getCIF();
         Log.e("CEK","dataCIF : "+dataCIF);
-        try {
-            objValCIF = new JSONObject(dataCIF);
-            Log.e("CEK","CIF FULL objValCIF : "+objValCIF.toString());
+        if (dataCIF != null) {
+            try {
+                objValCIF = new JSONObject(dataCIF);
+                Log.e("CEK", "CIF FULL objValCIF : " + objValCIF.toString());
             /*JSONObject objEl = objValCIF.getJSONObject("datadiri");
             no_handphone = objEl.getString("noponsel");*/
-        } catch (JSONException e) {
-            e.printStackTrace();
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
         }
         isSessionZoom = ZoomVideoSDK.getInstance().isInSession();
         if (isSessionZoom) {
             rabbitMirroring = new RabbitMirroring(mContext);
+        }
+        if (getArguments() != null) {
+            formCode = getArguments().getInt("formCode");
+            idForm = getArguments().getString("noCif");
         }
 
     }
@@ -113,7 +121,11 @@ public class frag_cif_resi extends Fragment {
         idDips = sessions.getKEY_IdDips();
 
         swipe.setRefreshing(true);
-        getResumeResi();
+        if (formCode == 13 || formCode == 0) {
+            getResumeResi();
+        } else if (formCode == 131) {
+            getResumeResiCIFReady();
+        }
 
         String titleSuccess = getString(R.string.selamat_npembukaan_akun_berhasil);
         titleSuccess = titleSuccess.replace("Akun","Rekening");
@@ -257,6 +269,42 @@ public class frag_cif_resi extends Fragment {
                 .replace(R.id.layout_frame2, fragment)
                 .addToBackStack(null)
                 .commit();
+    }
+
+    private void getResumeResiCIFReady() {
+        Log.e("CEK","getResumeResiCIFReady");
+        Server.getAPIService().getResiCIFReady(idForm).enqueue(new Callback<JsonObject>() {
+            @Override
+            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                swipe.setRefreshing(false);
+                Log.e("CEK","getResumeResi CODE : "+response.code());
+                if (response.isSuccessful()) {
+                    btnUnduh.setEnabled(true);
+                    btnUnduh.setBackgroundTintList(ContextCompat.getColorStateList(mContext,R.color.zm_button));
+                    assert response.body() != null;
+                    String dataS = response.body().toString();
+                    try {
+                        JSONObject dataObj = new JSONObject(dataS);
+                        String base64Image = dataObj.getJSONObject("data").getString("image");
+                        pdfFile = dataObj.getJSONObject("data").getString("pdf");
+                        bytePhoto = Base64.decode(base64Image, Base64.DEFAULT);
+                        Bitmap bitmap = BitmapFactory.decodeByteArray(bytePhoto, 0, bytePhoto.length);
+                        imgResume.setImageBitmap(bitmap);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
+                } else {
+                    Toast.makeText(mContext,getString(R.string.msg_error),Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<JsonObject> call, Throwable t) {
+                swipe.setRefreshing(false);
+                Toast.makeText(mContext,t.getMessage(),Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     private void getResumeResi() {

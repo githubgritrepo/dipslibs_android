@@ -441,7 +441,7 @@ public class DipsWaitingRoom extends AppCompatActivity implements DatePickerDial
                     Log.e("CEK", "publishToAMQP Connection broken: " + e.getClass().getName());
                     try {
                         Thread.sleep(4000); //sleep and then try again
-                        //publishToAMQP();
+                        publishToAMQP();
                     } catch (InterruptedException e1) {
 
                     }
@@ -471,7 +471,7 @@ public class DipsWaitingRoom extends AppCompatActivity implements DatePickerDial
                     Log.e("CEK", "publishQSReqTicket Connection broken: " + e.getClass().getName());
                     try {
                         Thread.sleep(4000); //sleep and then try again
-                        //publishQSReqTicket();
+                        publishQSReqTicket();
                     } catch (InterruptedException e1) {
 
                     }

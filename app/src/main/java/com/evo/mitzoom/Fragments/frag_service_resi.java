@@ -77,10 +77,7 @@ public class frag_service_resi extends Fragment {
             rabbitMirroring = new RabbitMirroring(mContext);
         }
 
-        Random random=new Random();
-        int dataInt = random.nextInt(999999999);
-
-        no_Form = String.valueOf(dataInt);
+        no_Form = sessions.getNoComplaint();
         noPengaduan = sessions.getNoComplaint();
 
         Log.e("CEK",this+" noPengaduan : "+noPengaduan);

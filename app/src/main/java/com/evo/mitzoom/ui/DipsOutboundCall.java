@@ -91,7 +91,6 @@ public class DipsOutboundCall extends AppCompatActivity implements DatePickerDia
     private TextView incomingcall;
     private String passSession, idDips;
     public static ImageButton accept, reject;
-    private SweetAlertDialog dialogConfirm;
     protected final static int REQUEST_VIDEO_AUDIO_CODE = 1010;
     protected int renderType = BaseMeetingActivity.RENDER_TYPE_ZOOMRENDERER;
     private SurfaceView preview = null;
@@ -260,7 +259,8 @@ public class DipsOutboundCall extends AppCompatActivity implements DatePickerDia
                 if (mRingtone != null) {
                     mRingtone.stop();
                 }
-                Popup();
+                OutboundServiceNew.acceptCall();
+                processJoinVideo();
             }
         });
         reject.setOnClickListener(new View.OnClickListener() {
@@ -956,25 +956,7 @@ public class DipsOutboundCall extends AppCompatActivity implements DatePickerDia
     protected void onPermissionGranted() {
         processJoinVideo();
     }
-    private void Popup(){
-        if (dialogConfirm == null) {
-            dialogConfirm = new SweetAlertDialog(this, SweetAlertDialog.WARNING_TYPE);
-        }
-        dialogConfirm.setContentText(this.getResources().getString(R.string.content_input));
-        dialogConfirm.setConfirmText(this.getResources().getString(R.string.btn_continue));
-        dialogConfirm.show();
-        dialogConfirm.setCancelable(false);
-        Button btnConfirm = (Button) dialogConfirm.findViewById(cn.pedant.SweetAlert.R.id.confirm_button);
-        btnConfirm.setBackgroundTintList(this.getResources().getColorStateList(R.color.Blue));
-        btnConfirm.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                OutboundServiceNew.acceptCall();
-                dialogConfirm.dismiss();
-                processJoinVideo();
-            }
-        });
-    }
+
     private void processJoinVideo() {
         Log.e(TAG,"processJoinVideo");
         if (!requestPermission())

@@ -135,6 +135,7 @@ public class frag_service_item extends Fragment {
     private TextView Resend_Otp;
     private String noPengaduan;
     private String keyUpload = "";
+    private JSONObject dataNasabahObj;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -145,10 +146,40 @@ public class frag_service_item extends Fragment {
         idDips = sessions.getKEY_IdDips();
         isSessionZoom = ZoomVideoSDK.getInstance().isInSession();
         formCode = sessions.getFormCode();
-        no_handphone = "089637407882";
-        Log.e("CEK",mContext+" isSessionZoom : "+isSessionZoom);
         if (isSessionZoom) {
             rabbitMirroring = new RabbitMirroring(mContext);
+        }
+
+        String dataNasabah = sessions.getNasabah();
+        Log.e("CEK",mContext+" dataNasabah : "+dataNasabah);
+        if (dataNasabah.isEmpty()) {
+            try {
+                dataNasabahObj = new JSONObject(dataNasabah);
+                /*if (dataNasabahObj.has("namaLengkap")) {
+                    namaLengkap = dataNasabahObj.getString("namaLengkap");
+                }
+                if (dataNasabahObj.has("alamat")) {
+                    alamat = dataNasabahObj.getString("alamat");
+                }*/
+                if (dataNasabahObj.has("noHp")) {
+                    no_handphone = dataNasabahObj.getString("noHp");
+                }
+                /*if (dataNasabahObj.has("nik")) {
+                    nik = dataNasabahObj.getString("nik");
+                }
+                if (dataNasabahObj.has("branchCode")) {
+                    branchCode = dataNasabahObj.getString("branchCode");
+                }*/
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+
+        Log.e("CEK",mContext+" isSessionZoom : "+isSessionZoom+" | no_handphone : "+no_handphone);
+
+        if (no_handphone.isEmpty()) {
+            no_handphone = "089637407882";
         }
         
         if (getArguments() != null) {
@@ -401,12 +432,14 @@ public class frag_service_item extends Fragment {
 
         RequestBody requesttgl = RequestBody.create(MediaType.parse("text/plain"), tgl);
         RequestBody requestPrihal = RequestBody.create(MediaType.parse("text/plain"), keluhan);
+        RequestBody requestidDips = RequestBody.create(MediaType.parse("text/plain"), idDips);
 
         MultipartBody multipartBody = new MultipartBody.Builder()
                 .addPart(MultipartBody.Part.createFormData("ttd", file.getName(), requestFile))
                 .addPart(MultipartBody.Part.createFormData("idJenis", null, requestgetCodeType))
                 .addPart(MultipartBody.Part.createFormData("tanggal", null, requesttgl))
                 .addPart(MultipartBody.Part.createFormData("prihal", null, requestPrihal))
+                .addPart(MultipartBody.Part.createFormData("idDips", null, requestidDips))
                 .build();
         String contentType = "multipart/form-data; charset=utf-8; boundary=" + multipartBody.boundary();
 
@@ -427,6 +460,14 @@ public class frag_service_item extends Fragment {
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
+                    JSONObject dataMirr = null;
+                    try {
+                        dataMirr = new JSONObject(objEl.toString());
+                        dataMirr.put("noponsel",no_handphone);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                    RabbitMirroring.MirroringSendKey(dataMirr);
                     processSendOTP();
                 } else {
                     if (isSessionZoom) {
@@ -1082,6 +1123,7 @@ public class frag_service_item extends Fragment {
                 if (response.isSuccessful()) {
                     String dataS = response.body().toString();
                     Log.e("CEK","processValidateOTP : "+dataS);
+                    rabbitMirroring.MirroringSendEndpoint(130);
                     getFragmentPage(new frag_service_resi());
                 } else {
                     imgDialog.setImageDrawable(AppCompatResources.getDrawable(mContext,R.drawable.v_dialog_failed));

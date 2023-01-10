@@ -2844,7 +2844,9 @@ public class frag_cif_new extends Fragment {
                         e.printStackTrace();
                     }
                     rabbitMirroring.MirroringSendEndpoint(13);
-                    getFragmentPage(new frag_cif_resi());
+                    Bundle bundle = new Bundle();
+                    bundle.putInt("formCode",13);
+                    sendDataFragment(bundle,new frag_cif_resi());
                 } else {
                     if (loopStatus >= 10) {
                         Toast.makeText(mContext,getString(R.string.msg_error),Toast.LENGTH_SHORT).show();

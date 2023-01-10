@@ -100,9 +100,10 @@ public class frag_service_new extends Fragment {
         dataItems.add(new ItemModel("10",getResources().getString(R.string.IBMB_REGISTRATION),R.drawable.img_aktivasi_ibmb)); //Sudah
         dataItems.add(new ItemModel("12",getResources().getString(R.string.block_account),R.drawable.img_blokir_rekening)); //Sudah
         dataItems.add(new ItemModel("11",getResources().getString(R.string.CREDIT_FORM),R.drawable.img_formulir_kredit)); //Sudah
-        dataItems.add(new ItemModel("1",getResources().getString(R.string.Formulir_Transfer),R.drawable.img_formulir_trf)); //Sudah
-        dataItems.add(new ItemModel("2",getResources().getString(R.string.CUSTOMER_COMPLAIN),R.drawable.img_complaint)); //Sudah
+        dataItems.add(new ItemModel("1",getResources().getString(R.string.Formulir_Transfer),R.drawable.img_formulir_transfer)); //Sudah
+        dataItems.add(new ItemModel("2",getResources().getString(R.string.CUSTOMER_COMPLAIN),R.drawable.img_keluhan_nasabah)); //Sudah
         dataItems.add(new ItemModel("0",titleAcc,R.drawable.img_opening_account)); //Sudah
+        dataItems.add(new ItemModel("13",getString(R.string.account_closure),R.drawable.img_opening_account)); //Sudah
         dataItems.add(new ItemModel("3",getResources().getString(R.string.INTERBANK_TRANSACTION),R.drawable.img_antarbank)); //Sudah
         dataItems.add(new ItemModel("4",getString(R.string.inter_bank_transaction),R.drawable.img_interbank)); //Sudah
         dataItems.add(new ItemModel("5",getResources().getString(R.string.KYC_UPDATING),R.drawable.img_perbarui_data)); //Sudah

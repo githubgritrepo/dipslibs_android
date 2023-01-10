@@ -128,7 +128,6 @@ public class frag_ready_account extends Fragment {
     private JSONObject dataNasabahObj = null;
     String namaLengkap = "";
     String alamat = "";
-    String noHp = "";
     String nik = "";
     private String branchCode = "";
     private String NoCIF;
@@ -145,7 +144,7 @@ public class frag_ready_account extends Fragment {
         String dataNasabah = sessions.getNasabah();
         Log.e("CEK",mContext+" formCode : "+formCode+" | NoCIF : "+NoCIF);
         Log.e("CEK",mContext+" dataNasabah : "+dataNasabah);
-        if (dataNasabah.isEmpty()) {
+        if (!dataNasabah.isEmpty()) {
             try {
                 dataNasabahObj = new JSONObject(dataNasabah);
                 if (dataNasabahObj.has("namaLengkap")) {
@@ -155,7 +154,7 @@ public class frag_ready_account extends Fragment {
                     alamat = dataNasabahObj.getString("alamat");
                 }
                 if (dataNasabahObj.has("noHp")) {
-                    noHp = dataNasabahObj.getString("noHp");
+                    no_handphone = dataNasabahObj.getString("noHp");
                 }
                 if (dataNasabahObj.has("nik")) {
                     nik = dataNasabahObj.getString("nik");
@@ -168,9 +167,13 @@ public class frag_ready_account extends Fragment {
                 e.printStackTrace();
             }
         }
+        Log.e("CEK",mContext+" namaLengkap : "+namaLengkap+" | alamat : "+alamat);
+        Log.e("CEK",mContext+" no_handphone : "+no_handphone+" | nik : "+nik+" | branchCode : "+branchCode);
         isSessionZoom = ZoomVideoSDK.getInstance().isInSession();
-        Log.e("CEK",mContext+" isSessionZoom : "+isSessionZoom);
-        no_handphone = "089637407882";
+        if (no_handphone.isEmpty()) {
+            no_handphone = "089637407882";
+        }
+        Log.e("CEK",mContext+" isSessionZoom : "+isSessionZoom+" | no_handphone : "+no_handphone);
         if (isSessionZoom) {
             rabbitMirroring = new RabbitMirroring(mContext);
         }
@@ -277,8 +280,12 @@ public class frag_ready_account extends Fragment {
             label = getString(R.string.data_account_open);
             label = label.replaceAll("\n"," ");
             tvTitleReady.setText(label);
-        } else if (formCode == 156) {
+        } else if (formCode == 155) {
             label = getString(R.string.facilities_services);
+            label = label.replaceAll("\n"," ");
+            tvTitleReady.setText(label);
+        } else if (formCode == 156) {
+            label = getString(R.string.statement);
             label = label.replaceAll("\n"," ");
             tvTitleReady.setText(label);
         }
@@ -567,6 +574,16 @@ public class frag_ready_account extends Fragment {
 
             sendDataFragment(bundle, fragment);
         } else {
+            ((Activity)mContext).runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    if (isSessionZoom) {
+                        BaseMeetingActivity.showProgress(true);
+                    } else {
+                        DipsSwafoto.showProgress(true);
+                    }
+                }
+            });
             APISaveForm();
         }
     }
@@ -597,7 +614,14 @@ public class frag_ready_account extends Fragment {
                         String idForm = dataObj.getJSONObject("data").getString("idForm");
                         idFormObj = new JSONObject();
                         idFormObj.put("idForm",idForm);
-                        rabbitMirroring.MirroringSendKey(idFormObj);
+                        JSONObject dataObjAccount = reqFormSend.getJSONObject("pembukaanakun");
+                        dataObjAccount.put("noponsel",no_handphone);
+                        dataObjAccount.put("idForm",idForm);
+
+                        reqFormSend.put("pembukaanakun", dataObjAccount);
+
+                        Log.e("CEK","dataObjAccount : "+dataObjAccount.toString());
+                        rabbitMirroring.MirroringSendKey(reqFormSend);
 
                         processSendOTP();
 
@@ -849,6 +873,7 @@ public class frag_ready_account extends Fragment {
             e.printStackTrace();
         }
 
+        String finalIdForm = idForm;
         Server.getAPIService().ApprovalStatus(idForm).enqueue(new Callback<JsonObject>() {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
@@ -877,8 +902,11 @@ public class frag_ready_account extends Fragment {
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
-                    rabbitMirroring.MirroringSendEndpoint(13);
-                    getFragmentPage(new frag_cif_resi());
+                    rabbitMirroring.MirroringSendEndpoint(131);
+                    Bundle bundle = new Bundle();
+                    bundle.putInt("formCode",131);
+                    bundle.putString("idForm", finalIdForm);
+                    sendDataFragment(bundle,new frag_cif_resi());
                 } else {
                     if (loopStatus >= 10) {
                         Toast.makeText(mContext,getString(R.string.msg_error),Toast.LENGTH_SHORT).show();
@@ -1011,7 +1039,7 @@ public class frag_ready_account extends Fragment {
                                 break;
                             }
                         } else if (formCode == 156) {
-                            if (key.contains("setuju") || key.contains("accept")) {
+                            if (key.contains("setuju") || key.contains("menyetujui") || key.contains("accept")) {
                                 boolean valGetBol = objEl.getBoolean(key);
                                 dataObj.put(keysData, valGetBol);
                                 break;
@@ -1092,20 +1120,27 @@ public class frag_ready_account extends Fragment {
                 if (indx >= 0) {
                     valKurung = key.substring(indx);
                 }
+                Log.e("CEK","key : "+key+" | valKurung : "+valKurung);
                 try {
                     if (key.toLowerCase().contains("nama") && key.toLowerCase().contains("identitas"+valKurung)) {
+                        Log.e("CEK","MASUK IF");
                         objEl.put(key, namaLengkap);
                     } else if (key.toLowerCase().contains("cif"+valKurung)) {
+                        Log.e("CEK","MASUK IF 2");
                         objEl.put(key, NoCIF);
                     } else if (key.toLowerCase().contains("nama") && key.toLowerCase().contains("nasabah"+valKurung)) {
+                        Log.e("CEK","MASUK IF 3");
                         objEl.put(key, namaLengkap);
                     } else if ((key.toLowerCase().contains("no") || key.toLowerCase().contains("nomor")) && key.toLowerCase().contains("identitas"+valKurung)) {
+                        Log.e("CEK","MASUK IF 4");
                         objEl.put(key, nik);
                     } else if (key.toLowerCase().contains("tanggal") && key.toLowerCase().contains("rekening"+valKurung)) {
+                        Log.e("CEK","MASUK IF 5");
                         String timeStamp = new SimpleDateFormat("dd-MM-yyyy",
                                 Locale.getDefault()).format(new Date());
                         objEl.put(key, timeStamp);
                     } else if (key.toLowerCase().contains("kode") && key.toLowerCase().contains("cabang"+valKurung)) {
+                        Log.e("CEK","MASUK IF 6");
                         objEl.put(key, branchCode);
                     }
                 } catch (JSONException e) {

@@ -286,7 +286,7 @@
     <string name="agent_leave">Sorry, Agent has ended the session.</string>
     <string name="reject">Reject</string>
     <string name="label_ya">Yes</string>
-    <string name="caliing_comeback">Silakan jadwalkan waktu terbaik bagi kami untuk menghubungi Anda kembali.</string>
+    <string name="caliing_comeback">Please schedule the best time for us to call you back.</string>
     <string name="doesn_match">Data does not match</string>
     <string name="rtrw">Rt/Rw</string>
     <string name="kawin">Marital Status</string>
@@ -296,4 +296,5 @@
     <string name="block_account">Block Account</string>
     <string name="label_downloaded">Waiting for File to Download</string>
     <string name="content_swafoto">Make sure the photo looks clear and not blurry</string>
+    <string name="account_closure">Account Closure</string>
 </resources>
