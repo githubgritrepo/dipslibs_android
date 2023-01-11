@@ -66,7 +66,7 @@
     <string name="status">Status</string>
     <string name="process">Process</string>
     <string name="content_form_bottom">I declare that all data i have provided in this account opening form are correct.</string>
-    <string name="headline_rating">Thank you for trusting\nyour banking transaction to\n Victoria Bank.</string>
+    <string name="headline_rating">Thank you for trusting\nyour banking transactions to\n Victoria Bank.</string>
     <string name="apakah_permasalahan_anda_n_selesai_dengan_baik">Is agent serve you well ?</string>
     <string name="mohon_berikan_penilaian_anda_atas_npelayanan_dips_hari_ini">Please give your ratings for Digital Operations services today.</string>
     <string name="send">Send</string>
@@ -94,7 +94,7 @@
     <string name="produk_layanan"><![CDATA[Service]]></string>
     <string name="verifikasi">Verified</string>
     <string name="Formulir_Transfer">Transfer Form</string>
-    <string name="FOREX">Forex Transaction</string>
+    <string name="FOREX">Forex Transactions</string>
     <string name="ReceiverAccount2">Receiver Account</string>
     <string name="ReceiverName2">Receiver Name</string>
     <string name="Amount">Amount</string>
@@ -102,7 +102,7 @@
     <string name="penduduk">Civilians</string>
     <string name="bukan_penduduk">Not Civilians</string>
     <string name="berita">Description</string>
-    <string name="successTransaction">Your transaction is succes</string>
+    <string name="successTransaction">Your transactions is succes</string>
     <string name="aktivasi_m_banking">M-Banking Activation</string>
     <string name="pilih_bahasa">Bahasa / Language</string>
     <string name="lan_id">Indonesia</string>
@@ -140,20 +140,20 @@
     <string name="penerima">Receiver</string>
     <string name="biaya">Fees</string>
     <string name="konfirmasi_transfer">Transfer Confirmation</string>
-    <string name="transaksi_anda_berhasil">Your Transaction Successfully</string>
+    <string name="transaksi_anda_berhasil">Your Transactions Successfully</string>
     <string name="resi_ini_akan_otomatis_dikirim_melalui_email_anda">This receipt will be automatically\nsent to your email.</string>
     <string name="resi">Receipt</string>
     <string name="perorangan">Public</string>
     <string name="perusahaan">Company</string>
     <string name="pemerintah">Governor</string>
-    <string name="INTERBANK_TRANSACTION">Interbank Transaction</string>
+    <string name="INTERBANK_TRANSACTION">Interbank Transactions</string>
     <string name="ATM_CARD">ATM Card</string>
     <string name="KYC_UPDATING">Update Data</string>
-    <string name="CUSTOMER_COMPLAIN">Customer Complain</string>
+    <string name="CUSTOMER_COMPLAIN">Customer Complaint</string>
     <string name="DORMANT_ACTIVATION">Dormant Activation</string>
-    <string name="rto_content">Minimum transaction amount is IDR 50.000 and maximum is IDR 50.000.000</string>
-    <string name="skn_content">Minimum transaction amount is IDR 50.000 and maximum is IDR 1.000.000.000</string>
-    <string name="rtgs_content">Minimum transaction amount is IDR 100.000.000 pertransaction</string>
+    <string name="rto_content">Minimum transactions amount is IDR 50.000 and maximum is IDR 50.000.000</string>
+    <string name="skn_content">Minimum transactions amount is IDR 50.000 and maximum is IDR 1.000.000.000</string>
+    <string name="rtgs_content">Minimum transactions amount is IDR 100.000.000 pertransaction</string>
     <string name="nama_pemilik_rekening">Account Owner Name</string>
     <string name="jam">Time</string>
     <string name="date">Date</string>
@@ -216,9 +216,9 @@
     <string name="_35_bulan">35 Month</string>
     <string name="nominal_pengajuan">Nominal Submission</string>
     <string name="nomor_npwp">NPWP</string>
-    <string name="tanggal_transaksi">Transaction Date</string>
+    <string name="tanggal_transaksi">Transactions Date</string>
     <string name="mata_uang_asing">Foreign Currency</string>
-    <string name="nominal_transaksi">Transaction Amount</string>
+    <string name="nominal_transaksi">Transactions Amount</string>
     <string name="data_diri">Personal Data</string>
     <string name="gelar">Title</string>
     <string name="kelurahan_desa">Village</string>
@@ -244,7 +244,7 @@
     <string name="nama_perusahaan">Company Name</string>
     <string name="alamat_perusahaan">Company Address</string>
     <string name="data_keuangan">Financial Data</string>
-    <string name="cardless">Cardless Transaction</string>
+    <string name="cardless">Cardless Transactions</string>
     <string name="keterangan">Description</string>
     <string name="body_resi_cardless">Use the code below to make cardless transactions at available ATMs. Do not share this number with others.</string>
     <string name="headline_cardless">Thank you for entrusting your banking transactions to XYZ Bank. Use the XYZ Mobile Banking App for a profitable transaction experience. <b>Resi Digital Form has been sent to your email address</b> Please check your email.</string>
@@ -268,7 +268,7 @@
     <string name="failed">Failed</string>
     <string name="exit">Exit</string>
     <string name="call_center">Call Center</string>
-    <string name="inter_bank_transaction">Inter Bank Transaction</string>
+    <string name="inter_bank_transaction">Inter Bank Transactions</string>
     <string name="alert_ktp">Make sure the picture or photo of the KTP is clear (not blurry, damaged, or covered with fingers/light reflections)</string>
     <string name="alert_swafoto">Make sure your face and ID card are clear and not blurry.</string>
     <string name="alert_npwp">Make sure the NPWP image or photo is clear and not blurry.</string>
@@ -297,4 +297,12 @@
     <string name="label_downloaded">Waiting for File to Download</string>
     <string name="content_swafoto">Make sure the photo looks clear and not blurry</string>
     <string name="account_closure">Account Closure</string>
+    <string name="write_here">Write here..</string>
+    <string name="lbpinjaman">Pinjaman</string>
+    <string name="nasabahtype">Customer Type</string>
+    <string name="atm_transaction">ATM Transactions</string>
+    <string name="ibmb_transaction">IBMB Transactions</string>
+    <string name="credit_transactions">Credit Transactions</string>
+    <string name="deposit_transactions">Deposit Transactions</string>
+    <string name="wealth_transactions">Wealth Management Transactions</string>
 </resources>

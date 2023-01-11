@@ -21,6 +21,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 
 import com.evo.mitzoom.API.ApiService;
 import com.evo.mitzoom.API.Server;
@@ -61,10 +62,11 @@ public class DipsLivenessResult extends AppCompatActivity {
         //LocaleHelper.setLocale(this,lang);
 
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_dips_liveness_result);
 
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        //getSupportActionBar().hide();
+
+        setContentView(R.layout.activity_dips_liveness_result);
 
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
@@ -89,7 +91,7 @@ public class DipsLivenessResult extends AppCompatActivity {
         Bitmap bitmap = BitmapFactory.decodeByteArray(resultImage, 0, resultImage.length);
         mask_view.setImageBitmap(bitmap);
 
-        processCaptureIdentifyAuth(imgBase64);
+        processH5Advance(imgBase64);
     }
 
     @Override
@@ -188,8 +190,66 @@ public class DipsLivenessResult extends AppCompatActivity {
                     Log.e("CEK","dataS: "+dataS);
                     try {
                         JSONObject dataObj = new JSONObject(dataS);
+                        llCircle.setVisibility(View.VISIBLE);
+                        imgCheck.setVisibility(View.VISIBLE);
+                        tip_text_view.setVisibility(View.GONE);
 
-                        processH5Advance(imgBase64,dataObj);
+                        try {
+                            JSONObject dataCustomer = dataObj.getJSONObject("data").getJSONObject("customer");
+                            JSONObject dataToken = dataObj.getJSONObject("data").getJSONObject("token");
+
+                            String noCIF = "";
+                            boolean isCust;
+                            if (dataCustomer.isNull("noCif")) {
+                                isCust = false;
+                            } else {
+                                isCust = true;
+                                noCIF = dataCustomer.getString("noCif");
+                            }
+                            String custName = dataCustomer.getString("namaLengkap");
+                            String idDipsNew = dataCustomer.getString("idDips");
+                            Log.e("CEK", "idDipsNew : " + idDipsNew + " | idDips : " + idDips);
+                        /*if (idDips != null && OutboundService.mSocket != null && idDipsNew != idDips) {
+                            OutboundService.leaveOutbound(idDips);
+                        }*/
+                            String accessToken = dataToken.getString("accessToken");
+
+                            sessions.saveIdDips(idDipsNew);
+                            sessions.saveIsCust(isCust);
+                            sessions.saveAuthToken(accessToken);
+                            sessions.saveNoCIF(noCIF);
+                            sessions.saveNasabahName(custName);
+                            sessions.saveNasabah(dataCustomer.toString());
+
+                            idDips = idDipsNew;
+
+                            sessions.saveIdDips(idDips);
+
+                            new Handler().postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            Intent intent = null;
+                                            String noCif = sessions.getNoCIF();
+                                            if (!noCif.isEmpty()) {
+                                                intent = new Intent(mContext, DipsWaitingRoom.class);
+                                                intent.putExtra("CUSTNAME", custName);
+                                            } else {
+                                                intent = new Intent(mContext, DipsSwafoto.class);
+                                                intent.putExtra("CUSTNAME", custName);
+                                            }
+                                            startActivity(intent);
+                                            finishAffinity();
+                                        }
+                                    });
+
+                                }
+                            }, 2000);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
 
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -211,7 +271,7 @@ public class DipsLivenessResult extends AppCompatActivity {
         });
     }
 
-    private void processH5Advance(String imgBase64, JSONObject dataObj) {
+    private void processH5Advance(String imgBase64) {
         JSONObject jsons = new JSONObject();
         try {
             jsons.put("image",imgBase64);
@@ -219,72 +279,15 @@ public class DipsLivenessResult extends AppCompatActivity {
             e.printStackTrace();
         }
 
+        Log.e("CEK","processH5Advance");
+
         RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), jsons.toString());
 
         Server.getAPIService().H5Advance(requestBody).enqueue(new Callback<JsonObject>() {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
                 if (response.isSuccessful()) {
-                    llCircle.setVisibility(View.VISIBLE);
-                    imgCheck.setVisibility(View.VISIBLE);
-                    tip_text_view.setVisibility(View.GONE);
-
-                    try {
-                        JSONObject dataCustomer = dataObj.getJSONObject("data").getJSONObject("customer");
-                        JSONObject dataToken = dataObj.getJSONObject("data").getJSONObject("token");
-
-                        String noCIF = "";
-                        boolean isCust;
-                        if (dataCustomer.isNull("noCif")) {
-                            isCust = false;
-                        } else {
-                            isCust = true;
-                            noCIF = dataCustomer.getString("noCif");
-                        }
-                        String custName = dataCustomer.getString("namaLengkap");
-                        String idDipsNew = dataCustomer.getString("idDips");
-                        Log.e("CEK", "idDipsNew : " + idDipsNew + " | idDips : " + idDips);
-                        /*if (idDips != null && OutboundService.mSocket != null && idDipsNew != idDips) {
-                            OutboundService.leaveOutbound(idDips);
-                        }*/
-                        String accessToken = dataToken.getString("accessToken");
-
-                        sessions.saveIdDips(idDipsNew);
-                        sessions.saveIsCust(isCust);
-                        sessions.saveAuthToken(accessToken);
-                        sessions.saveNoCIF(noCIF);
-                        sessions.saveNasabahName(custName);
-                        sessions.saveNasabah(dataCustomer.toString());
-
-                        idDips = idDipsNew;
-
-                        sessions.saveIdDips(idDips);
-
-                        new Handler().postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                runOnUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        Intent intent = null;
-                                        String noCif = sessions.getNoCIF();
-                                        if (!noCif.isEmpty()) {
-                                            intent = new Intent(mContext, DipsWaitingRoom.class);
-                                            intent.putExtra("CUSTNAME", custName);
-                                        } else {
-                                            intent = new Intent(mContext, DipsSwafoto.class);
-                                            intent.putExtra("CUSTNAME", custName);
-                                        }
-                                        startActivity(intent);
-                                        finishAffinity();
-                                    }
-                                });
-
-                            }
-                        }, 2000);
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
+                    processCaptureIdentifyAuth(imgBase64);
                 } else {
                     Intent intent = new Intent(mContext, DipsSplashScreen.class);
                     intent.putExtra("RESPONSECODE", response.code());

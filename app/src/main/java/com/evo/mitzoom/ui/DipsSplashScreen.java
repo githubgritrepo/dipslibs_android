@@ -17,6 +17,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 
 import com.evo.mitzoom.R;
 import com.evo.mitzoom.Session.SessionManager;
@@ -36,6 +37,10 @@ public class DipsSplashScreen extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+
         setContentView(R.layout.activity_dips_splash_screen);
 
         Log.e(TAG,"MASUK onCreate");
@@ -43,8 +48,6 @@ public class DipsSplashScreen extends AppCompatActivity {
         imgSplash = (ImageView) findViewById(R.id.imgSplash);
         tvVersion = (TextView) findViewById(R.id.tvVersion);
         rlBGTransparant = (RelativeLayout) findViewById(R.id.rlBGTransparant);
-
-        getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
         //getSupportActionBar().hide();
 
         mContext = this;

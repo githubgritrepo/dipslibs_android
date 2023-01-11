@@ -103,13 +103,18 @@ public class frag_service_new extends Fragment {
         dataItems.add(new ItemModel("1",getResources().getString(R.string.Formulir_Transfer),R.drawable.img_formulir_transfer)); //Sudah
         dataItems.add(new ItemModel("2",getResources().getString(R.string.CUSTOMER_COMPLAIN),R.drawable.img_keluhan_nasabah)); //Sudah
         dataItems.add(new ItemModel("0",titleAcc,R.drawable.img_opening_account)); //Sudah
-        dataItems.add(new ItemModel("13",getString(R.string.account_closure),R.drawable.img_opening_account)); //Sudah
-        dataItems.add(new ItemModel("3",getResources().getString(R.string.INTERBANK_TRANSACTION),R.drawable.img_antarbank)); //Sudah
-        dataItems.add(new ItemModel("4",getString(R.string.inter_bank_transaction),R.drawable.img_interbank)); //Sudah
+        dataItems.add(new ItemModel("13",getString(R.string.account_closure),R.drawable.img_penutupan_rekening)); //Sudah
         dataItems.add(new ItemModel("5",getResources().getString(R.string.KYC_UPDATING),R.drawable.img_perbarui_data)); //Sudah
-        dataItems.add(new ItemModel("7",getResources().getString(R.string.FOREX),R.drawable.img_valas)); //Sudah
-        dataItems.add(new ItemModel("8",getResources().getString(R.string.ATM_CARD),R.drawable.img_antarbank)); //Sudah
-        dataItems.add(new ItemModel("9",getResources().getString(R.string.POWER_OF_ATTORNEY),R.drawable.img_interbank)); //Sudah
+        dataItems.add(new ItemModel("14",getString(R.string.lbpinjaman),R.drawable.img_pinjaman)); //Sudah
+        dataItems.add(new ItemModel("9",getResources().getString(R.string.POWER_OF_ATTORNEY),R.drawable.img_surat_kuasa)); //Sudah
+        dataItems.add(new ItemModel("3",getResources().getString(R.string.INTERBANK_TRANSACTION),R.drawable.img_transaksi_antar_bank)); //Sudah
+        dataItems.add(new ItemModel("8",getString(R.string.atm_transaction),R.drawable.img_kartu_atm)); //Sudah
+        dataItems.add(new ItemModel("15",getString(R.string.ibmb_transaction),R.drawable.img_transaksi_ibmb)); //Sudah
+        dataItems.add(new ItemModel("4",getString(R.string.inter_bank_transaction),R.drawable.img_transaksi_inter_bank)); //Sudah
+        dataItems.add(new ItemModel("16",getString(R.string.credit_transactions),R.drawable.img_transaksi_kredit)); //Sudah
+        dataItems.add(new ItemModel("17",getString(R.string.deposit_transactions),R.drawable.img_transaksi_titipan)); //Sudah
+        dataItems.add(new ItemModel("7",getResources().getString(R.string.FOREX),R.drawable.img_transaksi_valas)); //Sudah
+        dataItems.add(new ItemModel("18",getString(R.string.wealth_transactions),R.drawable.img_transaksi_wealth)); //Sudah
     }
 
     public class GridSpacingItemDecoration extends RecyclerView.ItemDecoration {

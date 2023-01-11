@@ -101,7 +101,6 @@
                                             android:textStyle="bold"
                                             android:gravity="center_vertical"/>
                                         <TextView
-                                            android:id="@+id/tvNow"
                                             android:layout_width="wrap_content"
                                             android:layout_height="wrap_content"
                                             android:text="@string/antrian_sekarang"

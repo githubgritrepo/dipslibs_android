@@ -40,6 +40,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -207,6 +208,7 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
 
         getWindow().addFlags(WindowManager.LayoutParams.
                 FLAG_KEEP_SCREEN_ON);
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
         setContentView(getLayout());
         display = ((WindowManager) getSystemService(Service.WINDOW_SERVICE)).getDefaultDisplay();
         displayMetrics = new DisplayMetrics();

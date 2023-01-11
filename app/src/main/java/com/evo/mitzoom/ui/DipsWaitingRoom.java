@@ -37,6 +37,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.cardview.widget.CardView;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
@@ -175,8 +176,8 @@ public class DipsWaitingRoom extends AppCompatActivity implements DatePickerDial
         //LocaleHelper.setLocale(this,lang);
         super.onCreate(savedInstanceState);
 
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        //getSupportActionBar().hide();
 
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
@@ -1021,14 +1022,13 @@ public class DipsWaitingRoom extends AppCompatActivity implements DatePickerDial
         btnCancelDialog.setText(getString(R.string.schedule_a_task));
         btnConfirmDialog.setText(getString(R.string.waiting));
 
-        if (dialogWaiting == null) {
+        if (!dialogWaiting.isShowing()) {
             dialogWaiting = new SweetAlertDialog(DipsWaitingRoom.this, SweetAlertDialog.NORMAL_TYPE);
             dialogWaiting.setCustomView(dialogView);
             dialogWaiting.hideConfirmButton();
             dialogWaiting.setCancelable(false);
+            dialogWaiting.show();
         }
-
-        dialogWaiting.show();
 
         btnConfirmDialog.setOnClickListener(new View.OnClickListener() {
             @Override

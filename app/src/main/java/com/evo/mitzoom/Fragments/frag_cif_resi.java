@@ -94,7 +94,7 @@ public class frag_cif_resi extends Fragment {
         }
         if (getArguments() != null) {
             formCode = getArguments().getInt("formCode");
-            idForm = getArguments().getString("noCif");
+            idForm = getArguments().getString("idForm");
         }
 
     }
@@ -131,7 +131,7 @@ public class frag_cif_resi extends Fragment {
         titleSuccess = titleSuccess.replace("Akun","Rekening");
 
         String titleHeadline = getString(R.string.headline_cardless);
-        titleHeadline = titleHeadline.replace("Bank XYZ",getString(R.string.bank_name));
+        titleHeadline = titleHeadline.replace("Bank XYZ",getString(R.string.bank_name)).replace("XYZ Bank",getString(R.string.bank_name));
         titleHeadline = titleHeadline.replace("Gunakan Aplikasi XYZ Mobile Banking untuk pengalaman transaksi penuh keuntungan.","");
 
         tvTitle.setText(titleSuccess);

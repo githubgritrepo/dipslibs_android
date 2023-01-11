@@ -1365,7 +1365,17 @@ public class frag_cif_new extends Fragment {
                                     objValCIF = new JSONObject(valDataCIF);
                                     Log.e("CEK","CIF FULL objValCIF : "+objValCIF.toString());
                                     JSONObject getObjEl = objValCIF.getJSONObject("datadiri");
+
+                                    String getDataNasabah = sessions.getNasabah();
+                                    Log.e("CEK","getDataNasabah : "+getDataNasabah);
+                                    JSONObject dataNasabahObj = null;
+                                    if (getDataNasabah != null && !getDataNasabah.isEmpty()) {
+                                        dataNasabahObj = new JSONObject(getDataNasabah);
+                                    }
+
                                     String keyNoponsel = "noponsel";
+                                    String keyNamaIdentitas = "";
+                                    String keyNoIdentitas = "";
                                     for(Iterator<String> iter = getObjEl.keys(); iter.hasNext();) {
                                         if (iter.hasNext()) {
                                             String key = iter.next();
@@ -1379,10 +1389,28 @@ public class frag_cif_new extends Fragment {
                                                     keyNoponsel = key;
                                                     break;
                                                 }
+                                            } else if (key.contains("nama") && key.contains("identitas"+valKurung)) {
+                                                keyNamaIdentitas = key;
+                                            } else if ((key.contains("no") || key.contains("nomor")) && key.contains("identitas"+valKurung)) {
+                                                keyNoIdentitas = key;
                                             }
                                         }
                                     }
                                     no_handphone = getObjEl.getString(keyNoponsel);
+                                    String namaIdentitas = "";
+                                    if (!keyNamaIdentitas.isEmpty()) {
+                                        namaIdentitas = getObjEl.getString(keyNamaIdentitas);
+                                    }
+                                    String noIdentitas = "";
+                                    if (!keyNoIdentitas.isEmpty()) {
+                                        noIdentitas = getObjEl.getString(keyNoIdentitas);
+                                    }
+                                    dataNasabahObj.put("noHp",no_handphone);
+                                    dataNasabahObj.put("namaLengkap",namaIdentitas);
+                                    dataNasabahObj.put("nik",noIdentitas);
+
+                                    sessions.saveNasabah(dataNasabahObj.toString());
+
                                 } catch (JSONException e) {
                                     e.printStackTrace();
                                 }
@@ -2850,6 +2878,16 @@ public class frag_cif_new extends Fragment {
                 } else {
                     if (loopStatus >= 10) {
                         Toast.makeText(mContext,getString(R.string.msg_error),Toast.LENGTH_SHORT).show();
+                        ((Activity)mContext).runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                if (isSessionZoom) {
+                                    BaseMeetingActivity.showProgress(false);
+                                } else {
+                                    DipsSwafoto.showProgress(false);
+                                }
+                            }
+                        });
                     }
                     if (loopStatus < 10) {
                         new Handler().postDelayed(new Runnable() {
@@ -2880,6 +2918,16 @@ public class frag_cif_new extends Fragment {
                 Log.e("CEK", this+" processApprovalStatus onFailure : "+t.getMessage());
                 if (loopStatus >= 10) {
                     Toast.makeText(mContext, t.getMessage(), Toast.LENGTH_SHORT).show();
+                    ((Activity)mContext).runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (isSessionZoom) {
+                                BaseMeetingActivity.showProgress(false);
+                            } else {
+                                DipsSwafoto.showProgress(false);
+                            }
+                        }
+                    });
                 }
                 if (loopStatus < 10) {
                     new Handler().postDelayed(new Runnable() {

@@ -286,6 +286,7 @@ public class frag_portfolio_new extends Fragment {
         pieData = new PieData(pieDataSet);
         pieData.setValueFormatter(new PercentFormatter(pieChart));
         pieChart.setEntryLabelTextSize(12f);
+        pieChart.setHoleColor(mContext.getColor(R.color.zm_button));
         pieChart.setData(pieData);
         pieChart.setEntryLabelColor(R.color.black);
         pieChart.invalidate();

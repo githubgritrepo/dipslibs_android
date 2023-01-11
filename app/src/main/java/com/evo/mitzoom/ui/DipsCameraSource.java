@@ -31,6 +31,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
@@ -74,6 +75,7 @@ public class DipsCameraSource extends AppCompatActivity implements CameraSource.
 
         super.onCreate(savedInstanceState);
 
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
         //getSupportActionBar().hide();
@@ -278,7 +280,7 @@ public class DipsCameraSource extends AppCompatActivity implements CameraSource.
             File mediaFile = createTemporaryFile(dataPhoto);
             try {
                 String pathFile = mediaFile.getPath();
-                Bitmap bitmapCropShape = getResizedBitmap(realBitmap, realBitmap.getWidth(), realBitmap.getHeight());
+                //Bitmap bitmapCropShape = getResizedBitmap(realBitmap, realBitmap.getWidth(), realBitmap.getHeight());
                 //Bitmap bitmapCrop = prosesOptimalImage(realBitmap, mediaFile);
                 ExifInterface exif = new ExifInterface(pathFile);
                 int rotation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL);
@@ -287,14 +289,14 @@ public class DipsCameraSource extends AppCompatActivity implements CameraSource.
 
                 String imgBase64 = imageRotateBase64(bitmapCrop, rotationInDegree);
 
-                String imgBase64Shape = imageRotateBase64(bitmapCropShape, rotationInDegree);
+                //String imgBase64Shape = imageRotateBase64(bitmapCropShape, rotationInDegree);
 
                 if (!imgBase64.isEmpty()) {
                     byte[] bytePhoto = Base64.decode(imgBase64, Base64.NO_WRAP);
                     Bitmap bitmap = BitmapFactory.decodeByteArray(bytePhoto, 0, bytePhoto.length);
 
-                    byte[] shape_bytePhoto = Base64.decode(imgBase64Shape, Base64.NO_WRAP);
-                    createTemporaryFile(shape_bytePhoto);
+                    /*byte[] shape_bytePhoto = Base64.decode(imgBase64Shape, Base64.NO_WRAP);
+                    createTemporaryFile(shape_bytePhoto);*/
 
                     if (mediaFile.exists()) {
                         try {
@@ -311,28 +313,6 @@ public class DipsCameraSource extends AppCompatActivity implements CameraSource.
                     returnIntent.putExtra("result_camera", bytePhoto);
                     setResult(Activity.RESULT_OK, returnIntent);
                     finish();
-
-                    /*View dialogView = getLayoutInflater().inflate(R.layout.layout_show_image, null);
-                    SweetAlertDialog sweetAlertDialog = new SweetAlertDialog(mContext, SweetAlertDialog.NORMAL_TYPE);
-                    sweetAlertDialog.setCustomView(dialogView);
-                    sweetAlertDialog.setCancelable(false);
-
-                    ImageView imgCapture = (ImageView) dialogView.findViewById(R.id.imgCapture);
-                    imgCapture.setImageBitmap(bitmap);
-
-                    sweetAlertDialog.setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
-                        @Override
-                        public void onClick(SweetAlertDialog sweetAlertDialog) {
-                            sweetAlertDialog.dismissWithAnimation();
-                            sweetAlertDialog.cancel();
-                            byte[] bytePhoto = Base64.decode(imgBase64, Base64.NO_WRAP);
-                            Intent returnIntent = getIntent();
-                            returnIntent.putExtra("result_camera", bytePhoto);
-                            setResult(Activity., retuRESULT_OKrnIntent);
-                            finish();
-                        }
-                    });
-                    sweetAlertDialog.show();*/
                 }
 
             } catch (IOException e) {

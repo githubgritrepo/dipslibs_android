@@ -8,7 +8,6 @@
     android:orientation="vertical">
 
     <ProgressBar
-        android:id="@+id/pgbar"
         android:layout_width="380dp"
         android:layout_height="380dp"
         android:layout_centerHorizontal="true"
