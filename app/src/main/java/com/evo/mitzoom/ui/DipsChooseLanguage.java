@@ -208,9 +208,6 @@ public class DipsChooseLanguage extends AppCompatActivity {
                                     //LocaleHelper.setLocale(DipsChooseLanguage.this,langCode);
                                     setLocale(DipsChooseLanguage.this,langCode);
                                     startApp();
-                                    Intent intent = new Intent(mContext, DipsCameraSource.class);
-                                    intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                                    startActivityForResult(intent, 10);
                                     //radioGroup.clearCheck();
                                 }
                             });
@@ -223,9 +220,6 @@ public class DipsChooseLanguage extends AppCompatActivity {
                                     sessions.saveLANG(langCode);
                                     //LocaleHelper.setLocale(DipsChooseLanguage.this,langCode);
                                     setLocale(DipsChooseLanguage.this,langCode);
-                                    Intent intent = new Intent(mContext, DipsCameraSource.class);
-                                    intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                                    startActivityForResult(intent, 10);
                                     startApp();
                                     //radioGroup.clearCheck();
                                 }
