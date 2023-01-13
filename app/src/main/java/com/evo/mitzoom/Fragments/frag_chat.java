@@ -37,15 +37,21 @@ import us.zoom.sdk.ZoomVideoSDKAudioHelper;
 import us.zoom.sdk.ZoomVideoSDKAudioRawData;
 import us.zoom.sdk.ZoomVideoSDKChatHelper;
 import us.zoom.sdk.ZoomVideoSDKChatMessage;
+import us.zoom.sdk.ZoomVideoSDKChatMessageDeleteType;
 import us.zoom.sdk.ZoomVideoSDKDelegate;
 import us.zoom.sdk.ZoomVideoSDKLiveStreamHelper;
 import us.zoom.sdk.ZoomVideoSDKLiveStreamStatus;
+import us.zoom.sdk.ZoomVideoSDKLiveTranscriptionHelper;
 import us.zoom.sdk.ZoomVideoSDKMultiCameraStreamStatus;
+import us.zoom.sdk.ZoomVideoSDKNetworkStatus;
 import us.zoom.sdk.ZoomVideoSDKPasswordHandler;
 import us.zoom.sdk.ZoomVideoSDKPhoneFailedReason;
 import us.zoom.sdk.ZoomVideoSDKPhoneStatus;
+import us.zoom.sdk.ZoomVideoSDKProxySettingHandler;
 import us.zoom.sdk.ZoomVideoSDKRawDataPipe;
+import us.zoom.sdk.ZoomVideoSDKRecordingConsentHandler;
 import us.zoom.sdk.ZoomVideoSDKRecordingStatus;
+import us.zoom.sdk.ZoomVideoSDKSSLCertificateInfo;
 import us.zoom.sdk.ZoomVideoSDKSession;
 import us.zoom.sdk.ZoomVideoSDKShareHelper;
 import us.zoom.sdk.ZoomVideoSDKShareStatus;
@@ -229,6 +235,11 @@ public class frag_chat extends Fragment  implements ZoomVideoSDKDelegate {
     }
 
     @Override
+    public void onChatDeleteMessageNotify(ZoomVideoSDKChatHelper chatHelper, String msgID, ZoomVideoSDKChatMessageDeleteType deleteBy) {
+
+    }
+
+    @Override
     public void onUserHostChanged(ZoomVideoSDKUserHelper zoomVideoSDKUserHelper, ZoomVideoSDKUser zoomVideoSDKUser) {
 
     }
@@ -284,7 +295,7 @@ public class frag_chat extends Fragment  implements ZoomVideoSDKDelegate {
     }
 
     @Override
-    public void onCloudRecordingStatus(ZoomVideoSDKRecordingStatus zoomVideoSDKRecordingStatus) {
+    public void onCloudRecordingStatus(ZoomVideoSDKRecordingStatus status, ZoomVideoSDKRecordingConsentHandler handler) {
 
     }
 
@@ -305,6 +316,46 @@ public class frag_chat extends Fragment  implements ZoomVideoSDKDelegate {
 
     @Override
     public void onMultiCameraStreamStatusChanged(ZoomVideoSDKMultiCameraStreamStatus status, ZoomVideoSDKUser user, ZoomVideoSDKVideoCanvas canvas) {
+
+    }
+
+    @Override
+    public void onLiveTranscriptionStatus(ZoomVideoSDKLiveTranscriptionHelper.ZoomVideoSDKLiveTranscriptionStatus status) {
+
+    }
+
+    @Override
+    public void onLiveTranscriptionMsgReceived(String ltMsg, ZoomVideoSDKUser pUser, ZoomVideoSDKLiveTranscriptionHelper.ZoomVideoSDKLiveTranscriptionOperationType type) {
+
+    }
+
+    @Override
+    public void onLiveTranscriptionMsgError(ZoomVideoSDKLiveTranscriptionHelper.ILiveTranscriptionLanguage spokenLanguage, ZoomVideoSDKLiveTranscriptionHelper.ILiveTranscriptionLanguage transcriptLanguage) {
+
+    }
+
+    @Override
+    public void onProxySettingNotification(ZoomVideoSDKProxySettingHandler handler) {
+
+    }
+
+    @Override
+    public void onSSLCertVerifiedFailNotification(ZoomVideoSDKSSLCertificateInfo info) {
+
+    }
+
+    @Override
+    public void onCameraControlRequestResult(ZoomVideoSDKUser user, boolean isApproved) {
+
+    }
+
+    @Override
+    public void onUserVideoNetworkStatusChanged(ZoomVideoSDKNetworkStatus status, ZoomVideoSDKUser user) {
+
+    }
+
+    @Override
+    public void onUserRecordingConsent(ZoomVideoSDKUser user) {
 
     }
 }
