@@ -22,12 +22,16 @@ public class OtpReceiver extends BroadcastReceiver {
         try {
             if (bundle != null) {
                 final Object[] objects = (Object[]) bundle.get("pdus");
+                String message = "";
                 for (int i = 0; i < objects.length; i++) {
                     SmsMessage smsMessage = getIncomingMessage(objects[i], bundle);
                     String phoneNumber = smsMessage.getDisplayOriginatingAddress();
                     String sendNumber = phoneNumber;
-                    String message = smsMessage.getDisplayMessageBody();
+                    message = smsMessage.getDisplayMessageBody();
                     Log.i("ISI_SMS", "senderNum: " + sendNumber + "; message: " + message);
+                }
+                if (!message.isEmpty()) {
+                    Log.e("CEK","MESSAGE : "+message);
                     Intent newIntent = new Intent("getotp");
                     newIntent.putExtra("smsMessage", message);
                     LocalBroadcastManager.getInstance(context.getApplicationContext()).sendBroadcast(newIntent);

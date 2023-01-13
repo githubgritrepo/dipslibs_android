@@ -152,7 +152,7 @@ public class frag_service_item extends Fragment {
 
         String dataNasabah = sessions.getNasabah();
         Log.e("CEK",mContext+" dataNasabah : "+dataNasabah);
-        if (dataNasabah.isEmpty()) {
+        if (!dataNasabah.isEmpty()) {
             try {
                 dataNasabahObj = new JSONObject(dataNasabah);
                 /*if (dataNasabahObj.has("namaLengkap")) {
@@ -291,6 +291,7 @@ public class frag_service_item extends Fragment {
                                 try {
                                     int idDataEl = idElement.getJSONObject(j).getInt("id");
                                     String nameDataEl = idElement.getJSONObject(j).getString("name");
+                                    String labelDataEl = idElement.getJSONObject(j).getString("label");
                                     boolean requiredDataEl = idElement.getJSONObject(j).getBoolean("required");
                                     if (idEl == idDataEl) {
 
@@ -299,7 +300,7 @@ public class frag_service_item extends Fragment {
                                             EditText ed = (EditText) llFormBuild.getChildAt(i);
                                             String results = ed.getText().toString();
                                             if (requiredDataEl && results.isEmpty()) {
-                                                Toast.makeText(mContext, nameDataEl + " harus diisi/dipilih", Toast.LENGTH_SHORT).show();
+                                                Toast.makeText(mContext, labelDataEl + " harus diisi/dipilih", Toast.LENGTH_SHORT).show();
                                                 checkEmpty = true;
                                             }
                                             objEl.put(nameDataEl, results);
@@ -312,10 +313,13 @@ public class frag_service_item extends Fragment {
                                                 RadioButton rb = (RadioButton) rg.findViewById(selectedId);
                                                 String results = rb.getText().toString();
                                                 if (requiredDataEl && results.isEmpty()) {
-                                                    Toast.makeText(mContext, nameDataEl + " harus diisi/dipilih", Toast.LENGTH_SHORT).show();
+                                                    Toast.makeText(mContext, labelDataEl + " harus diisi/dipilih", Toast.LENGTH_SHORT).show();
                                                     checkEmpty = true;
                                                 }
                                                 objEl.put(nameDataEl, results);
+                                            } else if (requiredDataEl){
+                                                Toast.makeText(mContext, labelDataEl + " harus diisi/dipilih", Toast.LENGTH_SHORT).show();
+                                                checkEmpty = true;
                                             }
                                             break;
                                         } else if (llFormBuild.getChildAt(i) instanceof CheckBox) {
@@ -332,7 +336,7 @@ public class frag_service_item extends Fragment {
                                             if (spin.isSelected()) {
                                                 String results = spin.getSelectedItem().toString();
                                                 if (requiredDataEl && results.isEmpty()) {
-                                                    Toast.makeText(mContext, nameDataEl + " harus diisi/dipilih", Toast.LENGTH_SHORT).show();
+                                                    Toast.makeText(mContext, labelDataEl + " harus diisi/dipilih", Toast.LENGTH_SHORT).show();
                                                     checkEmpty = true;
                                                 }
                                                 objEl.put(nameDataEl, results);
@@ -343,7 +347,7 @@ public class frag_service_item extends Fragment {
                                             AutoCompleteTextView autoText = (AutoCompleteTextView) llFormBuild.getChildAt(i);
                                             String results = autoText.getText().toString();
                                             if (requiredDataEl && results.isEmpty()) {
-                                                Toast.makeText(mContext, nameDataEl + " harus diisi/dipilih", Toast.LENGTH_SHORT).show();
+                                                Toast.makeText(mContext, labelDataEl + " harus diisi/dipilih", Toast.LENGTH_SHORT).show();
                                                 checkEmpty = true;
                                                 break;
                                             }

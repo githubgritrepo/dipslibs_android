@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
 
 
     <style name="liveness_preview" parent="liveness_horizontal_center">
@@ -7,10 +7,12 @@
         <item name="android:layout_height">0dp</item>
         <item name="layout_constraintDimensionRatio">"H,1:1"</item>
         <item name="layout_constraintWidth_percent">0.8</item>
+        <item name="android:forceDarkAllowed" tools:targetApi="q">false</item>
     </style>
 
     <style name="liveness_horizontal_center">
         <item name="layout_constraintLeft_toLeftOf">parent</item>
         <item name="layout_constraintRight_toRightOf">parent</item>
+        <item name="android:forceDarkAllowed" tools:targetApi="q">false</item>
     </style>
 </resources>

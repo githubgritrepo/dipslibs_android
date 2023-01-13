@@ -165,7 +165,19 @@ public class frag_open_account_product extends Fragment {
                     String dataS = response.body().toString();
                     try {
                         JSONObject dataObj = new JSONObject(dataS);
-                        dataTnC = dataObj.getJSONObject("data").getString("data");
+                        String cekdataTnC = dataObj.getJSONObject("data").getString("data");
+                        if (cekdataTnC.contains("{")) {
+                            JSONObject labelTNC = new JSONObject(cekdataTnC);
+                            String language = sessions.getLANG();
+                            if (language.equals("id")) {
+                                dataTnC = labelTNC.getString("labelIdn");
+                            } else {
+                                dataTnC = labelTNC.getString("labelEng");
+                            }
+                        } else {
+                            dataTnC = cekdataTnC;
+                        }
+
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }

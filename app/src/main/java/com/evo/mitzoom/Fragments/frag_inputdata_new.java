@@ -189,21 +189,30 @@ public class frag_inputdata_new extends Fragment {
                                             if (requiredDataEl && results.isEmpty()) {
                                                 Toast.makeText(mContext, nameDataEl + " harus diisi/dipilih", Toast.LENGTH_SHORT).show();
                                                 checkEmpty = true;
+                                            } else if (nameDataEl.contains("email")) {
+                                                boolean cekFlag = validationEmail(results);
+                                                if (!cekFlag) {
+                                                    checkEmpty = true;
+                                                }
                                             }
                                             objEl.put(nameDataEl, results);
                                             break;
                                         } else if (llFormBuild.getChildAt(i) instanceof RadioGroup) {
-                                            Log.e("CEK", "MASUK RadioGroup ke-" + i);
                                             RadioGroup rg = (RadioGroup) llFormBuild.getChildAt(i);
                                             int selectedId = rg.getCheckedRadioButtonId();
+                                            Log.e("CEK", "MASUK RadioGroup ke-" + i+" | selectedId : "+selectedId+" | requiredDataEl  : "+requiredDataEl);
                                             if (selectedId > 0 || selectedId < -1) {
                                                 RadioButton rb = (RadioButton) rg.findViewById(selectedId);
                                                 String results = rb.getText().toString();
+                                                Log.e("CEK","RadioGroup results : "+results+" | requiredDataEl : "+requiredDataEl);
                                                 if (requiredDataEl && results.isEmpty()) {
                                                     Toast.makeText(mContext, nameDataEl + " harus diisi/dipilih", Toast.LENGTH_SHORT).show();
                                                     checkEmpty = true;
                                                 }
                                                 objEl.put(nameDataEl, results);
+                                            } else if (requiredDataEl) {
+                                                Toast.makeText(mContext, nameDataEl + " harus diisi/dipilih", Toast.LENGTH_SHORT).show();
+                                                checkEmpty = true;
                                             }
                                             break;
                                         } else if (llFormBuild.getChildAt(i) instanceof CheckBox) {
@@ -359,6 +368,24 @@ public class frag_inputdata_new extends Fragment {
         }
 
         return jsObj;
+    }
+
+    private boolean validationEmail(String data) {
+        String emailPattern = "[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+";
+
+        boolean flag = false;
+        // onClick of button perform this simplest code.
+        if (data.matches(emailPattern))
+        {
+            flag = true;
+        }
+        else
+        {
+            Toast.makeText(mContext, getString(R.string.invalidate_email), Toast.LENGTH_SHORT).show();
+            flag = false;
+        }
+
+        return flag;
     }
 
     private void processGetForm() {
@@ -619,7 +646,14 @@ public class frag_inputdata_new extends Fragment {
                         JSONArray dataArr = dataObj.getJSONArray("data");
                         ArrayList<FormSpin> dataDropDown = new ArrayList<>();
                         for (int i = 0; i < dataArr.length(); i++) {
-                            int idData = dataArr.getJSONObject(i).getInt("id");
+                            int idData = 0;
+                            String idSData = "";
+                            if (dataArr.getJSONObject(i).has("ids")) {
+                                idSData = dataArr.getJSONObject(i).getString("ids").trim();
+                                idData = Integer.parseInt(idSData);
+                            } else {
+                                idData = dataArr.getJSONObject(i).getInt("id");
+                            }
                             String labelIdn = dataArr.getJSONObject(i).getString("labelIdn");
                             String labelEng = dataArr.getJSONObject(i).getString("labelEng");
                             dataDropDown.add(new FormSpin(idData,labelIdn,labelIdn,labelEng));

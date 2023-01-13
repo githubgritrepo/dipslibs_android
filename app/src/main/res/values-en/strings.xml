@@ -298,11 +298,13 @@
     <string name="content_swafoto">Make sure the photo looks clear and not blurry</string>
     <string name="account_closure">Account Closure</string>
     <string name="write_here">Write here..</string>
-    <string name="lbpinjaman">Pinjaman</string>
+    <string name="lbpinjaman">Loan</string>
     <string name="nasabahtype">Customer Type</string>
     <string name="atm_transaction">ATM Transactions</string>
     <string name="ibmb_transaction">IBMB Transactions</string>
     <string name="credit_transactions">Credit Transactions</string>
     <string name="deposit_transactions">Deposit Transactions</string>
     <string name="wealth_transactions">Wealth Management Transactions</string>
+    <string name="account_type">Account Type</string>
+    <string name="invalidate_email">Invalid email address</string>
 </resources>

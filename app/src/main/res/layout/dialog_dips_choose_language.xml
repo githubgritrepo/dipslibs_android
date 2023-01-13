@@ -48,7 +48,6 @@
                     android:onClick="onRadioButtonClicked"
                     android:text="@string/lan_id"
                     android:textSize="14dp"
-                    android:textStyle="bold"
                     android:layout_gravity="center_vertical|left"/>
 
                 <RadioButton
@@ -59,8 +58,7 @@
                     android:layout_marginStart="10dp"
                     android:onClick="onRadioButtonClicked"
                     android:text="@string/lan_en"
-                    android:textSize="14dp"
-                    android:textStyle="bold" />
+                    android:textSize="14dp" />
 
             </RadioGroup>
 

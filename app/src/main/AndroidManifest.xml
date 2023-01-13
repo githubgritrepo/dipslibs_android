@@ -111,7 +111,8 @@
             android:name=".ui.DipsSplashScreen"
             android:exported="true"
             android:screenOrientation="portrait"
-            android:theme="@style/Theme.MITZoom">
+            android:theme="@style/Theme.MITZoom"
+            android:launchMode="singleTop">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

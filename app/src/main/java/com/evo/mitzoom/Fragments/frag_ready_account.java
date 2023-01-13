@@ -122,6 +122,10 @@ public class frag_ready_account extends Fragment {
     private JSONObject idFormObj;
     private LinearLayout TopBar;
     private LinearLayout ll_head;
+    private LinearLayout iconCircle1;
+    private LinearLayout iconCircle2;
+    private LinearLayout iconCircle3;
+    private LinearLayout iconCircle4;
     private TextView tvFotoKTP;
     private String transactionId = "";
     private int loopStatus = 0;
@@ -215,6 +219,10 @@ public class frag_ready_account extends Fragment {
         TopBar = (LinearLayout) views.findViewById(R.id.TopBar);
         ll_head = (LinearLayout) views.findViewById(R.id.ll_head);
         tvFotoKTP = (TextView) views.findViewById(R.id.tvFotoKTP);
+        iconCircle1 = (LinearLayout) views.findViewById(R.id.iconCircle1);
+        iconCircle2 = (LinearLayout) views.findViewById(R.id.iconCircle2);
+        iconCircle3 = (LinearLayout) views.findViewById(R.id.iconCircle3);
+        iconCircle4 = (LinearLayout) views.findViewById(R.id.iconCircle4);
 
         btn_back = (ImageView) views.findViewById(R.id.btn_back);
         tvTitleReady = (TextView) views.findViewById(R.id.tvTitleReady);
@@ -257,6 +265,7 @@ public class frag_ready_account extends Fragment {
         });
 
         String label = getString(R.string.info_first_data);
+        iconCircle1.setBackgroundTintList(mContext.getResources().getColorStateList(R.color.bg_cif));
 
         if (formCode == 150) {
             label = label.replaceAll("\n"," ");
@@ -277,14 +286,23 @@ public class frag_ready_account extends Fragment {
         }
 
         if (formCode > 150 && formCode < 156) {
+            iconCircle1.setBackgroundTintList(mContext.getResources().getColorStateList(R.color.bg_cif_success));
+            iconCircle2.setBackgroundTintList(mContext.getResources().getColorStateList(R.color.bg_cif));
             label = getString(R.string.data_account_open);
             label = label.replaceAll("\n"," ");
             tvTitleReady.setText(label);
         } else if (formCode == 155) {
+            iconCircle1.setBackgroundTintList(mContext.getResources().getColorStateList(R.color.bg_cif_success));
+            iconCircle2.setBackgroundTintList(mContext.getResources().getColorStateList(R.color.bg_cif_success));
+            iconCircle3.setBackgroundTintList(mContext.getResources().getColorStateList(R.color.bg_cif));
             label = getString(R.string.facilities_services);
             label = label.replaceAll("\n"," ");
             tvTitleReady.setText(label);
         } else if (formCode == 156) {
+            iconCircle1.setBackgroundTintList(mContext.getResources().getColorStateList(R.color.bg_cif_success));
+            iconCircle2.setBackgroundTintList(mContext.getResources().getColorStateList(R.color.bg_cif_success));
+            iconCircle3.setBackgroundTintList(mContext.getResources().getColorStateList(R.color.bg_cif_success));
+            iconCircle4.setBackgroundTintList(mContext.getResources().getColorStateList(R.color.bg_cif));
             label = getString(R.string.statement);
             label = label.replaceAll("\n"," ");
             tvTitleReady.setText(label);
@@ -435,6 +453,7 @@ public class frag_ready_account extends Fragment {
                                 try {
                                     int idDataEl = idElement.getJSONObject(j).getInt("id");
                                     String nameDataEl = idElement.getJSONObject(j).getString("name");
+                                    String labelDataEl = idElement.getJSONObject(j).getString("label");
                                     boolean requiredDataEl = idElement.getJSONObject(j).getBoolean("required");
                                     if (idEl == idDataEl) {
 
@@ -442,10 +461,10 @@ public class frag_ready_account extends Fragment {
                                             EditText ed = (EditText) llFormBuild.getChildAt(i);
                                             String results = ed.getText().toString();
                                             if (requiredDataEl && results.isEmpty()) {
-                                                Toast.makeText(mContext, nameDataEl + " harus diisi/dipilih", Toast.LENGTH_SHORT).show();
+                                                Toast.makeText(mContext, labelDataEl + " harus diisi/dipilih", Toast.LENGTH_SHORT).show();
                                                 checkEmpty = true;
                                             } else if (nameDataEl.contains("noponsel") && results.isEmpty()) {
-                                                Toast.makeText(mContext, nameDataEl + " harus diisi/dipilih", Toast.LENGTH_SHORT).show();
+                                                Toast.makeText(mContext, labelDataEl + " harus diisi/dipilih", Toast.LENGTH_SHORT).show();
                                                 checkEmpty = true;
                                             }
                                             objEl.put(nameDataEl, results);
@@ -457,10 +476,13 @@ public class frag_ready_account extends Fragment {
                                                 RadioButton rb = (RadioButton) rg.findViewById(selectedId);
                                                 String results = rb.getText().toString();
                                                 if (requiredDataEl && results.isEmpty()) {
-                                                    Toast.makeText(mContext, nameDataEl + " harus diisi/dipilih", Toast.LENGTH_SHORT).show();
+                                                    Toast.makeText(mContext, labelDataEl + " harus diisi/dipilih", Toast.LENGTH_SHORT).show();
                                                     checkEmpty = true;
                                                 }
                                                 objEl.put(nameDataEl, results);
+                                            } else if (requiredDataEl){
+                                                Toast.makeText(mContext, labelDataEl + " harus diisi/dipilih", Toast.LENGTH_SHORT).show();
+                                                checkEmpty = true;
                                             }
                                             break;
                                         } else if (llFormBuild.getChildAt(i) instanceof CheckBox) {
@@ -477,7 +499,7 @@ public class frag_ready_account extends Fragment {
                                             if (spin.isSelected()) {
                                                 String results = spin.getSelectedItem().toString();
                                                 if (requiredDataEl && results.isEmpty()) {
-                                                    Toast.makeText(mContext, nameDataEl + " harus diisi/dipilih", Toast.LENGTH_SHORT).show();
+                                                    Toast.makeText(mContext, labelDataEl + " harus diisi/dipilih", Toast.LENGTH_SHORT).show();
                                                     checkEmpty = true;
                                                 }
                                                 objEl.put(nameDataEl, results);
@@ -487,7 +509,7 @@ public class frag_ready_account extends Fragment {
                                             AutoCompleteTextView autoText = (AutoCompleteTextView) llFormBuild.getChildAt(i);
                                             String results = autoText.getText().toString();
                                             if (requiredDataEl && results.isEmpty()) {
-                                                Toast.makeText(mContext, nameDataEl + " harus diisi/dipilih", Toast.LENGTH_SHORT).show();
+                                                Toast.makeText(mContext, labelDataEl + " harus diisi/dipilih", Toast.LENGTH_SHORT).show();
                                                 checkEmpty = true;
                                                 break;
                                             }
@@ -614,14 +636,6 @@ public class frag_ready_account extends Fragment {
                         String idForm = dataObj.getJSONObject("data").getString("idForm");
                         idFormObj = new JSONObject();
                         idFormObj.put("idForm",idForm);
-                        JSONObject dataObjAccount = reqFormSend.getJSONObject("pembukaanakun");
-                        dataObjAccount.put("noponsel",no_handphone);
-                        dataObjAccount.put("idForm",idForm);
-
-                        reqFormSend.put("pembukaanakun", dataObjAccount);
-
-                        Log.e("CEK","dataObjAccount : "+dataObjAccount.toString());
-                        rabbitMirroring.MirroringSendKey(reqFormSend);
 
                         processSendOTP();
 
@@ -828,6 +842,23 @@ public class frag_ready_account extends Fragment {
                 if (response.isSuccessful()) {
                     String dataS = response.body().toString();
                     Log.e("CEK","processValidateOTP : "+dataS);
+                    JSONObject reqFormSend = dataReqForm();
+                    
+                    try {
+                        String idForm = idFormObj.getString("idForm");
+                        
+                        JSONObject dataObjAccount = reqFormSend.getJSONObject("pembukaanakun");
+                        dataObjAccount.put("noponsel",no_handphone);
+                        dataObjAccount.put("idForm",idForm);
+
+                        reqFormSend.put("pembukaanakun", dataObjAccount);
+
+                        Log.e("CEK","dataObjAccount : "+dataObjAccount.toString());
+                        rabbitMirroring.MirroringSendKey(reqFormSend);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                    
                     processApprovalStatus();
                 } else {
                     ((Activity)mContext).runOnUiThread(new Runnable() {

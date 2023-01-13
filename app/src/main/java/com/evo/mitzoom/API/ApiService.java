@@ -24,6 +24,10 @@ public interface ApiService {
     Call<JsonObject> ocrKtp(@Body RequestBody body);
 
     @Headers("Content-Type: "+ MyConstants.CONTENT_TYPE)
+    @POST("digitech/ocr-npwp")
+    Call<JsonObject> ocrNpwp(@Body RequestBody body);
+
+    @Headers("Content-Type: "+ MyConstants.CONTENT_TYPE)
     @POST("capture/identify")
     Call<CaptureIdentify> CaptureIdentify(@Body JsonCaptureIdentify body);
 

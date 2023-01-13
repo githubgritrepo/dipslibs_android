@@ -104,10 +104,8 @@ public class DipsCameraActivity extends AppCompatActivity {
         String lang = sessions.getLANG();
         setLocale(this,lang);
         //LocaleHelper.setLocale(this,lang);
-
-        super.onCreate(savedInstanceState);
-
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+        super.onCreate(savedInstanceState);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
         setContentView(R.layout.activity_dips_camera);
@@ -323,6 +321,7 @@ public class DipsCameraActivity extends AppCompatActivity {
 
         return bitmapCrop;
     }
+
     private void initialElements() {
         appbar = (AppBarLayout) findViewById(R.id.appbar);
         flFrame = (FrameLayout) findViewById(R.id.flFrame);
@@ -484,36 +483,45 @@ public class DipsCameraActivity extends AppCompatActivity {
     }
 
     private void optimalCamera() {
-        if (useFacing != null) {
-            if (useFacing == Camera.CameraInfo.CAMERA_FACING_FRONT) {
-                useFacing = Camera.CameraInfo.CAMERA_FACING_FRONT;
-            } else {
-                useFacing = Camera.CameraInfo.CAMERA_FACING_BACK;
+        if (camera != null) {
+            if (inPreview) {
+                camera.stopPreview();
             }
+            camera.release();
 
-            onPause();
-            onResume();
-            try {
-                camera.setPreviewDisplay(previewHolder);
-                //camera.setDisplayOrientation(90);
-                CameraManager manager = (CameraManager) getSystemService(Context.CAMERA_SERVICE);
-                if (manager == null) {
-                    Log.i("CEK", "camera manager is null");
-                    return;
+            if (useFacing != null) {
+                if (useFacing == Camera.CameraInfo.CAMERA_FACING_FRONT) {
+                    useFacing = Camera.CameraInfo.CAMERA_FACING_FRONT;
+                } else {
+                    useFacing = Camera.CameraInfo.CAMERA_FACING_BACK;
                 }
-                try {
-                    for (String id: manager.getCameraIdList()) {
-                        CAM_ID = Integer.valueOf(id);
-                        setCameraDisplayOrientation();
 
+                isConfigure = false;
+                camera = Camera.open(useFacing);
+                startPreview();
+
+                try {
+                    camera.setPreviewDisplay(previewHolder);
+                    //camera.setDisplayOrientation(90);
+                    CameraManager manager = (CameraManager) getSystemService(Context.CAMERA_SERVICE);
+                    if (manager == null) {
+                        Log.i("CEK", "camera manager is null");
+                        return;
                     }
-                } catch (CameraAccessException e) {
+                    try {
+                        for (String id: manager.getCameraIdList()) {
+                            CAM_ID = Integer.valueOf(id);
+                            setCameraDisplayOrientation();
+                        }
+                    } catch (CameraAccessException e) {
+                        e.printStackTrace();
+                    }
+
+                } catch (IOException e) {
                     e.printStackTrace();
                 }
-
-            } catch (IOException e) {
-                e.printStackTrace();
             }
+
         }
     }
 
@@ -524,6 +532,7 @@ public class DipsCameraActivity extends AppCompatActivity {
 
         @Override
         public void surfaceChanged(@NonNull SurfaceHolder holder, int format, int width, int height) {
+            Log.e("CEK","surfaceChanged : width : "+width+" | height : "+height);
             initPreview(width, height);
             startPreview();
         }

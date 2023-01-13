@@ -35,6 +35,8 @@ import com.google.gson.JsonObject;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
+
 import okhttp3.MediaType;
 import okhttp3.RequestBody;
 import retrofit2.Call;
@@ -60,10 +62,8 @@ public class DipsLivenessResult extends AppCompatActivity {
         String lang = sessions.getLANG();
         setLocale(this, lang);
         //LocaleHelper.setLocale(this,lang);
-
-        super.onCreate(savedInstanceState);
-
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+        super.onCreate(savedInstanceState);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
         setContentView(R.layout.activity_dips_liveness_result);
@@ -286,9 +286,32 @@ public class DipsLivenessResult extends AppCompatActivity {
         Server.getAPIService().H5Advance(requestBody).enqueue(new Callback<JsonObject>() {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                Log.e("CEK","processH5Advance code : "+response.code());
                 if (response.isSuccessful()) {
                     processCaptureIdentifyAuth(imgBase64);
                 } else {
+                    String msg = "";
+                    if (response.errorBody().toString().isEmpty()) {
+                        String dataS = response.errorBody().toString();
+                        try {
+                            JSONObject dataObj = new JSONObject(dataS);
+                            msg = dataObj.getString("message");
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    } else {
+                        String dataS = null;
+                        try {
+                            dataS = response.errorBody().string();
+                            JSONObject dataObj = new JSONObject(dataS);
+                            if (dataObj.has("message")) {
+                                msg = dataObj.getString("message");
+                            }
+                        } catch (IOException | JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    Log.e("CEK","msg ERROR : "+msg);
                     Intent intent = new Intent(mContext, DipsSplashScreen.class);
                     intent.putExtra("RESPONSECODE", response.code());
                     startActivity(intent);

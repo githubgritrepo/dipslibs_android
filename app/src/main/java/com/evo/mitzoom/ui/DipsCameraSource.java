@@ -72,10 +72,8 @@ public class DipsCameraSource extends AppCompatActivity implements CameraSource.
         Log.e("CEK","LANG : "+lang);
         setLocale(this, lang);
         //LocaleHelper.setLocale(this,lang);
-
-        super.onCreate(savedInstanceState);
-
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+        super.onCreate(savedInstanceState);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
         //getSupportActionBar().hide();

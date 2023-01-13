@@ -305,4 +305,6 @@
     <string name="credit_transactions">Transaksi Kredit</string>
     <string name="deposit_transactions">Transaksi Titipan</string>
     <string name="wealth_transactions">Transaksi Wealth Management</string>
+    <string name="account_type">Jenis Rekening</string>
+    <string name="invalidate_email">Alamat email tidak sah</string>
 </resources>

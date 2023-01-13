@@ -44,12 +44,13 @@
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
+
                 <androidx.viewpager.widget.ViewPager
                     android:id="@+id/pager"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:focusableInTouchMode="true"
-                    android:layout_above="@id/layoutButtonResi"/>
+                    android:layout_above="@id/layoutButtonResi"
+                    android:focusableInTouchMode="true" />
                 <RelativeLayout
                     android:id="@+id/layoutButtonResi"
                     android:layout_width="match_parent"

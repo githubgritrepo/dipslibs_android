@@ -45,19 +45,18 @@
                         android:id="@+id/btnNext"
                         android:layout_width="wrap_content"
                         android:layout_height="35dp"
-                        android:layout_centerHorizontal="true"
                         android:layout_below="@id/llFormBuild"
-                        android:paddingStart="@dimen/dp_20"
-                        android:paddingEnd="@dimen/dp_20"
+                        android:layout_centerHorizontal="true"
                         android:layout_marginBottom="20dp"
                         android:background="@drawable/oval_background_10dp"
+                        android:backgroundTint="@color/zm_button"
+                        android:paddingStart="@dimen/dp_20"
+                        android:paddingEnd="@dimen/dp_20"
                         android:text="@string/btn_continue"
                         android:textAppearance="@style/TextAppearance.AppCompat.Button"
                         android:textColor="@color/white"
-                        android:backgroundTint="@color/zm_button"
                         android:textSize="13dp"
-                        android:textStyle="bold"
-                        />
+                        android:textStyle="bold" />
 
                 </RelativeLayout>
             </androidx.core.widget.NestedScrollView>

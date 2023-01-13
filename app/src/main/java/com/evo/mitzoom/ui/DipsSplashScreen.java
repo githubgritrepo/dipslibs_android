@@ -36,9 +36,8 @@ public class DipsSplashScreen extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+        super.onCreate(savedInstanceState);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
         setContentView(R.layout.activity_dips_splash_screen);
@@ -132,6 +131,7 @@ public class DipsSplashScreen extends AppCompatActivity {
     }
 
     private void processNext() {
+        Log.e("CEK","processNext");
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {

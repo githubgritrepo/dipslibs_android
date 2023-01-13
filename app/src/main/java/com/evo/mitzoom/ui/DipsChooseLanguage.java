@@ -92,9 +92,8 @@ public class DipsChooseLanguage extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+        super.onCreate(savedInstanceState);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
         //getSupportActionBar().hide();
 
@@ -209,9 +208,9 @@ public class DipsChooseLanguage extends AppCompatActivity {
                                     //LocaleHelper.setLocale(DipsChooseLanguage.this,langCode);
                                     setLocale(DipsChooseLanguage.this,langCode);
                                     startApp();
-                                    /*Intent intent = new Intent(mContext, DipsCameraSource.class);
+                                    Intent intent = new Intent(mContext, DipsCameraSource.class);
                                     intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                                    startActivityForResult(intent, 10);*/
+                                    startActivityForResult(intent, 10);
                                     //radioGroup.clearCheck();
                                 }
                             });
@@ -224,9 +223,9 @@ public class DipsChooseLanguage extends AppCompatActivity {
                                     sessions.saveLANG(langCode);
                                     //LocaleHelper.setLocale(DipsChooseLanguage.this,langCode);
                                     setLocale(DipsChooseLanguage.this,langCode);
-                                    /*Intent intent = new Intent(mContext, DipsCameraSource.class);
+                                    Intent intent = new Intent(mContext, DipsCameraSource.class);
                                     intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                                    startActivityForResult(intent, 10);*/
+                                    startActivityForResult(intent, 10);
                                     startApp();
                                     //radioGroup.clearCheck();
                                 }
@@ -285,9 +284,11 @@ public class DipsChooseLanguage extends AppCompatActivity {
                 ActivityCompat.checkSelfPermission(mContext, Manifest.permission.READ_SMS) != PackageManager.PERMISSION_GRANTED &&
                 ActivityCompat.checkSelfPermission(mContext, Manifest.permission.READ_PHONE_NUMBERS) != PackageManager.PERMISSION_GRANTED){
 
+            Log.e("CEK","MASUK IF reqPermission");
             requestPermissions(new String[]{Manifest.permission.READ_PHONE_STATE,Manifest.permission.CAMERA,Manifest.permission.WRITE_EXTERNAL_STORAGE,Manifest.permission.READ_EXTERNAL_STORAGE,Manifest.permission.RECEIVE_SMS,
                     Manifest.permission.READ_SMS,Manifest.permission.READ_PHONE_NUMBERS}, REQUEST_ALL);
         } else {
+            Log.e("CEK","MASUK ELSE reqPermission");
             if (ActivityCompat.checkSelfPermission(mContext, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
                 ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, READ_EXTERNAL_STORAGE);
             } else if (ActivityCompat.checkSelfPermission(mContext, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
@@ -324,12 +325,26 @@ public class DipsChooseLanguage extends AppCompatActivity {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 if (ActivityCompat.checkSelfPermission(mContext, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
                     ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, REQUEST_CAMERA);
+                } else {
+                    if (ActivityCompat.checkSelfPermission(mContext, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                        ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, WRITE_EXTERNAL_STORAGE);
+                    }
                 }
             }
         } else if (requestCode == REQUEST_CAMERA) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 if (ActivityCompat.checkSelfPermission(mContext, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
                     ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, WRITE_EXTERNAL_STORAGE);
+                } else {
+                    if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                            if (!Environment.isExternalStorageManager()){
+                                Intent getpermission = new Intent();
+                                getpermission.setAction(Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION);
+                                startActivityForResult(getpermission,ATTACHMENT_MANAGE_ALL_FILE);
+                            }
+                        }
+                    }
                 }
             }
         } else if (requestCode == WRITE_EXTERNAL_STORAGE) {
@@ -353,7 +368,7 @@ public class DipsChooseLanguage extends AppCompatActivity {
         Log.e("CEK","yourLicense : "+yourLicense);
         GuardianLivenessDetectionSDK.setCameraType(CameraType.FRONT);// The back camera is CameraType.BACK
         GuardianLivenessDetectionSDK.setActionSequence(true, Detector.DetectionType.BLINK);
-        GuardianLivenessDetectionSDK.setResultPictureSize(600); // Settable input range: [300,1000], unit: pixels
+        GuardianLivenessDetectionSDK.setResultPictureSize(300); // Settable input range: [300,1000], unit: pixels
         GuardianLivenessDetectionSDK.setActionTimeoutMills(20000);
         String checkResult = GuardianLivenessDetectionSDK.setLicenseAndCheck(yourLicense);
         Log.e("CEK","checkResult : "+checkResult);

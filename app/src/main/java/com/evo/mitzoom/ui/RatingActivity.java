@@ -38,11 +38,10 @@ public class RatingActivity extends AppCompatActivity {
         String lang = sessions.getLANG();
         setLocale(this, lang);
         //LocaleHelper.setLocale(this,lang);
-
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_rating);
-        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
         //getSupportActionBar().hide();
         rating = findViewById(R.id.ratingBar);

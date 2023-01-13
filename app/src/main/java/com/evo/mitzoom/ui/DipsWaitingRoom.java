@@ -40,6 +40,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.cardview.widget.CardView;
 import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
 import com.auth0.android.jwt.Claim;
@@ -101,6 +102,8 @@ public class DipsWaitingRoom extends AppCompatActivity implements DatePickerDial
 
     private Context mContext;
     protected final static int REQUEST_VIDEO_AUDIO_CODE = 1010;
+    public static final int REQUEST_WRITE_PERMISSION = 786;
+    private static final int MY_CAMERA_PERMISSION_CODE = 100;
     protected int renderType = BaseMeetingActivity.RENDER_TYPE_ZOOMRENDERER;
     private static final Integer[] img = {R.drawable.adsv1, R.drawable.adsv2, R.drawable.adsv3};
     public static int CAM_ID = 0;
@@ -121,8 +124,6 @@ public class DipsWaitingRoom extends AppCompatActivity implements DatePickerDial
     String myTicketNumber;
     boolean isCust;
     String custName;
-    private Handler handlerSuccess;
-    private boolean stopPopSuccess = false;
     private boolean doubleBackToExitPressedOnce = false;
     private SessionManager sessions;
     private TextView myTicket, lastTicket;
@@ -159,6 +160,7 @@ public class DipsWaitingRoom extends AppCompatActivity implements DatePickerDial
     private JSONArray periodePenuh;
     private Button btnSchedule2;
     public static RelativeLayout rlprogress;
+    private boolean isConfigure;
 
     {
         try {
@@ -174,9 +176,8 @@ public class DipsWaitingRoom extends AppCompatActivity implements DatePickerDial
         String lang = sessions.getLANG();
         setLocale(this,lang);
         //LocaleHelper.setLocale(this,lang);
-        super.onCreate(savedInstanceState);
-
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+        super.onCreate(savedInstanceState);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
@@ -196,10 +197,12 @@ public class DipsWaitingRoom extends AppCompatActivity implements DatePickerDial
         preview = (SurfaceView) findViewById(R.id.mySurface);
         rlprogress = (RelativeLayout) findViewById(R.id.rlprogress);
 
-        displayMetrics = new DisplayMetrics();
+        /*displayMetrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
         int widthDisp = displayMetrics.widthPixels;
-        int dyWidth = (int) Math.ceil(widthDisp / 2);
+        int dyWidth = (int) Math.ceil(widthDisp / 2);*/
+
+        previewHolder();
 
         Intent intent = getIntent();
         useFacing = intent.getIntExtra(KEY_USE_FACING, Camera.CameraInfo.CAMERA_FACING_FRONT);
@@ -227,11 +230,22 @@ public class DipsWaitingRoom extends AppCompatActivity implements DatePickerDial
 
         Log.d("CEK","MASUK onResume");
 
-        camera = Camera.open(useFacing);
-        //startPreview();
-        cameraConfigured = false;
-        previewHolder();
-        stopPopSuccess = false;
+        isConfigure = false;
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (checkSelfPermission(Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+                requestPermissions(new String[]{Manifest.permission.CAMERA}, MY_CAMERA_PERMISSION_CODE);
+            } else {
+                requestPermissionWrite();
+            }
+        } else {
+            int resultPerm = ContextCompat.checkSelfPermission(mContext, Manifest.permission.CAMERA);
+            if (resultPerm != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, MY_CAMERA_PERMISSION_CODE);
+            } else {
+                requestPermissionWrite();
+            }
+        }
     }
 
     @Override
@@ -292,6 +306,25 @@ public class DipsWaitingRoom extends AppCompatActivity implements DatePickerDial
         }
         if (subscribeAllTicketInfoCall != null) {
             subscribeAllTicketInfoCall.interrupt();
+        }
+    }
+
+    private void requestPermissionWrite() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                requestPermissions(new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE},  REQUEST_WRITE_PERMISSION);
+            } else {
+                camera = Camera.open(useFacing);
+                startPreview();
+            }
+        } else {
+            int resultPerm = ContextCompat.checkSelfPermission(mContext, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+            if (resultPerm != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_WRITE_PERMISSION);
+            } else {
+                camera = Camera.open(useFacing);
+                startPreview();
+            }
         }
     }
 
@@ -952,6 +985,7 @@ public class DipsWaitingRoom extends AppCompatActivity implements DatePickerDial
             }
 
             if (!cameraConfigured) {
+                isConfigure = true;
                 Camera.Parameters parameters = camera.getParameters();
                 List<Camera.Size> sizes = parameters.getSupportedPreviewSizes();
                 Camera.Size size = getOptimalPreviewSize(sizes, width, height);
@@ -968,7 +1002,56 @@ public class DipsWaitingRoom extends AppCompatActivity implements DatePickerDial
     private void startPreview() {
         if (cameraConfigured && camera != null) {
             camera.startPreview();
+            Camera.Parameters parameters = camera.getParameters();
+            if (parameters.getSupportedFocusModes().contains(
+                    Camera.Parameters.FOCUS_MODE_CONTINUOUS_VIDEO)) {
+                parameters.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_VIDEO);
+            }
+            camera.setParameters(parameters);
             inPreview = true;
+            if (isConfigure) {
+                Log.d("CEK","MASUK isConfigure");
+                try {
+                    Thread.sleep(500);
+                    optimalCamera();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    private void optimalCamera() {
+        if (useFacing != null) {
+            if (useFacing == Camera.CameraInfo.CAMERA_FACING_FRONT) {
+                useFacing = Camera.CameraInfo.CAMERA_FACING_FRONT;
+            } else {
+                useFacing = Camera.CameraInfo.CAMERA_FACING_BACK;
+            }
+
+            /*onPause();
+            onResume();*/
+            try {
+                camera.setPreviewDisplay(previewHolder);
+                //camera.setDisplayOrientation(90);
+                CameraManager manager = (CameraManager) getSystemService(Context.CAMERA_SERVICE);
+                if (manager == null) {
+                    Log.i("CEK", "camera manager is null");
+                    return;
+                }
+                try {
+                    for (String id: manager.getCameraIdList()) {
+                        CAM_ID = Integer.valueOf(id);
+                        setCameraDisplayOrientation();
+
+                    }
+                } catch (CameraAccessException e) {
+                    e.printStackTrace();
+                }
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -1022,13 +1105,11 @@ public class DipsWaitingRoom extends AppCompatActivity implements DatePickerDial
         btnCancelDialog.setText(getString(R.string.schedule_a_task));
         btnConfirmDialog.setText(getString(R.string.waiting));
 
-        if (!dialogWaiting.isShowing()) {
-            dialogWaiting = new SweetAlertDialog(DipsWaitingRoom.this, SweetAlertDialog.NORMAL_TYPE);
-            dialogWaiting.setCustomView(dialogView);
-            dialogWaiting.hideConfirmButton();
-            dialogWaiting.setCancelable(false);
-            dialogWaiting.show();
-        }
+        dialogWaiting = new SweetAlertDialog(DipsWaitingRoom.this, SweetAlertDialog.NORMAL_TYPE);
+        dialogWaiting.setCustomView(dialogView);
+        dialogWaiting.hideConfirmButton();
+        dialogWaiting.setCancelable(false);
+        dialogWaiting.show();
 
         btnConfirmDialog.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -1384,6 +1465,7 @@ public class DipsWaitingRoom extends AppCompatActivity implements DatePickerDial
 
         @Override
         public void surfaceChanged(@NonNull SurfaceHolder holder, int format, int width, int height) {
+            Log.e("CEK","surfaceChanged width : "+width+" | height : "+height);
             initPreview(width, height);
             startPreview();
         }
@@ -1394,9 +1476,8 @@ public class DipsWaitingRoom extends AppCompatActivity implements DatePickerDial
         }
     };
     protected boolean requestPermission() {
-        if (ActivityCompat.checkSelfPermission(mContext,Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED || ActivityCompat.checkSelfPermission(mContext,Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED || ActivityCompat.checkSelfPermission(mContext,Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.CAMERA,
-                    Manifest.permission.RECORD_AUDIO, Manifest.permission.READ_EXTERNAL_STORAGE}, REQUEST_VIDEO_AUDIO_CODE);
+        if (ActivityCompat.checkSelfPermission(mContext,Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED || ActivityCompat.checkSelfPermission(mContext,Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.RECORD_AUDIO, Manifest.permission.READ_EXTERNAL_STORAGE}, REQUEST_VIDEO_AUDIO_CODE);
             return false;
         }
         return true;
@@ -1410,9 +1491,11 @@ public class DipsWaitingRoom extends AppCompatActivity implements DatePickerDial
             }
         }
     }
+
     protected void onPermissionGranted() {
         processJoinVideo();
     }
+
     private void processGetTicket(TextView my_Ticket){
         JSONObject jsons = new JSONObject();
         try {

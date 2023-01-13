@@ -167,7 +167,7 @@ public class DipsOutboundCall extends AppCompatActivity implements DatePickerDia
         String lang = sessions.getLANG();
         setLocale(this,lang);
         //LocaleHelper.setLocale(this,lang);
-
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
         super.onCreate(savedInstanceState);
         Log.e(TAG,"MASUK onCreate DipsOutboundCall");
         if (getIntent().getAction() != null) {
@@ -178,8 +178,6 @@ public class DipsOutboundCall extends AppCompatActivity implements DatePickerDia
         }
 
         getPackageManager().getLaunchIntentForPackage("com.evo.mitzoom");
-
-        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
         //getSupportActionBar().hide();
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);

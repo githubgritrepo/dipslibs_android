@@ -181,7 +181,7 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
         //LocaleHelper.setLocale(this,lang);
         sessions.saveFlagUpDoc(false);
         sessions.saveFlagConfAgree(false);
-
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
         super.onCreate(savedInstanceState);
         isCust = sessions.getKEY_iSCust();
         isSwafoto = sessions.getKEY_iSSwafoto();
@@ -208,7 +208,6 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
 
         getWindow().addFlags(WindowManager.LayoutParams.
                 FLAG_KEEP_SCREEN_ON);
-        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
         setContentView(getLayout());
         display = ((WindowManager) getSystemService(Service.WINDOW_SERVICE)).getDefaultDisplay();
         displayMetrics = new DisplayMetrics();

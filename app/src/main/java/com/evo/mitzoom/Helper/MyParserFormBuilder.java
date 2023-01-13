@@ -76,6 +76,7 @@ public class MyParserFormBuilder {
                 JSONArray components = dataObj.getJSONArray("components");
                 RadioGroup radioGroup = null;
                 int compLen = components.length();
+                String compLabelRad = "";
                 String elNameRad = "";
                 String keyLabelIndRad = "";
                 boolean radGroup = false;
@@ -227,7 +228,9 @@ public class MyParserFormBuilder {
                                 int ids = ed.getId();
                                 String elName = "";
                                 String keyLabelInd = "";
+                                String compLabelGab2 = compLabel;
                                 if (compName.equals("checkbox")) {
+                                    compLabelGab2 = parentLabel+" "+compLabel;
                                     String compLabelGab = parentLabel+compLabel;
                                     String compLabelGabIndo = parentLabel+keyLabel;
                                     elName = compLabelGab.toLowerCase().replace(" ", "").replace("-", "").replace("/", "").replace(".", "");
@@ -241,6 +244,7 @@ public class MyParserFormBuilder {
                                 dataObjEl.put("id",ids);
                                 dataObjEl.put("name",keyLabelInd);
                                 dataObjEl.put("keyIndo",keyLabelInd);
+                                dataObjEl.put("label",compLabelGab2);
                                 dataObjEl.put("required",compRequired);
                                 dataArrElement.put(dataObjEl);
                             } else if (compType.equals("number")) {
@@ -274,6 +278,7 @@ public class MyParserFormBuilder {
                                 dataObjEl.put("id",ids);
                                 dataObjEl.put("name",keyLabelInd);
                                 dataObjEl.put("required",compRequired);
+                                dataObjEl.put("label",compLabel);
                                 dataObjEl.put("keyIndo",keyLabelInd);
                                 dataArrElement.put(dataObjEl);
 
@@ -293,6 +298,7 @@ public class MyParserFormBuilder {
                                     tv.setLayoutParams(lp);
                                     llFormBuild.addView(tv);
 
+                                    compLabelRad = compLabel;
                                     elNameRad = compLabel.toLowerCase().replace(" ", "").replace("-", "").replace("/", "").replace(".", "");
                                     keyLabelIndRad = keyLabel.toLowerCase().replace(" ", "").replace("-", "").replace("/", "").replace(".", "");
 
@@ -370,6 +376,7 @@ public class MyParserFormBuilder {
                                     dataObjEl.put("name",keyLabelIndRad);
                                     dataObjEl.put("required",compRequired);
                                     dataObjEl.put("keyIndo",keyLabelIndRad);
+                                    dataObjEl.put("label",compLabelRad);
                                     dataArrElement.put(dataObjEl);
                                 }
 
@@ -406,6 +413,7 @@ public class MyParserFormBuilder {
                                 dataObjEl.put("name",keyLabelInd);
                                 dataObjEl.put("required",compRequired);
                                 dataObjEl.put("keyIndo",keyLabelInd);
+                                dataObjEl.put("label",parentLabel);
                                 dataArrElement.put(dataObjEl);
 
                             } else if (compType.equals("file")) {
@@ -465,6 +473,7 @@ public class MyParserFormBuilder {
                                 dataObjEl.put("name",keyLabelInd);
                                 dataObjEl.put("required",compRequired);
                                 dataObjEl.put("keyIndo",keyLabelInd);
+                                dataObjEl.put("label",compLabel);
                                 dataArrElement.put(dataObjEl);
                             }
                             break;
@@ -505,6 +514,7 @@ public class MyParserFormBuilder {
                             dataObjElArea.put("name",keyLabelInd);
                             dataObjElArea.put("required",compRequired);
                             dataObjElArea.put("keyIndo",keyLabelInd);
+                            dataObjElArea.put("label",compLabel);
                             dataArrElement.put(dataObjElArea);
 
                             break;
@@ -578,6 +588,7 @@ public class MyParserFormBuilder {
                             dataObjElOpt.put("required",compRequired);
                             dataObjElOpt.put("url",urlPath);
                             dataObjElOpt.put("keyIndo",keyLabelIndOpt);
+                            dataObjElOpt.put("label",compLabel);
                             dataArrElement.put(dataObjElOpt);
 
                             break;
@@ -642,6 +653,7 @@ public class MyParserFormBuilder {
                             dataObjElAuto.put("name",keyLabelIndAuto);
                             dataObjElAuto.put("required",compRequired);
                             dataObjElAuto.put("keyIndo",keyLabelIndAuto);
+                            dataObjElAuto.put("label",compLabel);
                             dataArrElement.put(dataObjElAuto);
 
                             break;

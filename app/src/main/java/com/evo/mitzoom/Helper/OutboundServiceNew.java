@@ -51,13 +51,13 @@ public class OutboundServiceNew extends Service {
     private static String TAG = "OutboundServiceNew";
     private static Context mContext;
     private static SessionManager sessions;
-    private static String idDips;
-    public static String username_agent;
-    public static String customerName;
-    public static String password_session;
-    public static String imagesAgent;
-    public static String nameAgent;
-    private static String csId;
+    private static String idDips = "";
+    public static String username_agent = "";
+    public static String customerName ="";
+    public static String password_session ="";
+    public static String imagesAgent = "";
+    public static String nameAgent = "";
+    private static String csId = "";
 
     @Override
     public void onCreate() {

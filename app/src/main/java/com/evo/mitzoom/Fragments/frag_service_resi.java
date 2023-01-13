@@ -1,5 +1,6 @@
 package com.evo.mitzoom.Fragments;
 
+import android.app.Activity;
 import android.app.DownloadManager;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -8,6 +9,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
 import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -64,6 +66,7 @@ public class frag_service_resi extends Fragment {
     private SwipeRefreshLayout swipe;
     private String pdfFile = "";
     private DownloadManager manager;
+    private int loopStatus = 0;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -169,9 +172,9 @@ public class frag_service_resi extends Fragment {
         Server.getAPIService().getResiComplaint(noPengaduan).enqueue(new Callback<JsonObject>() {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
-                swipe.setRefreshing(false);
                 Log.e("CEK","getResumeResi CODE : "+response.code());
                 if (response.isSuccessful()) {
+                    swipe.setRefreshing(false);
                     btnUnduh.setEnabled(true);
                     btnUnduh.setBackgroundTintList(ContextCompat.getColorStateList(mContext,R.color.zm_button));
                     assert response.body() != null;
@@ -188,7 +191,22 @@ public class frag_service_resi extends Fragment {
                     }
 
                 } else {
-                    Toast.makeText(mContext,getString(R.string.msg_error),Toast.LENGTH_SHORT).show();
+                    if (loopStatus < 3) {
+                        new Handler().postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                ((Activity) mContext).runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        getResumeResi();
+                                    }
+                                });
+                                loopStatus++;
+                            }
+                        },10000);
+                    } else {
+                        swipe.setRefreshing(false);
+                    }
                 }
             }
 
