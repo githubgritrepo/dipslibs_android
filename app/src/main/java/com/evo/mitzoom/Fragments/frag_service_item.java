@@ -363,7 +363,7 @@ public class frag_service_item extends Fragment {
                                                     TextView tvll = (TextView) ll2.getChildAt(1);
                                                     String txt = tvll.getText().toString();
                                                     Log.e("CEK", "tvll : " + txt);
-                                                    objEl.put(nameDataEl, imageBytes);
+                                                    //objEl.put(nameDataEl, imgBase64);
                                                 }
                                             }
                                         }

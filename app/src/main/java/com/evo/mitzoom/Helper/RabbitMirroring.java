@@ -98,6 +98,9 @@ public class RabbitMirroring {
                             if (sessions.getKEY_IdDips() != null) {
                                 jsons.put("idDips",sessions.getKEY_IdDips());
                             }
+                            OutboundServiceNew.stopServiceSocket();
+                            Intent intentOutbound = new Intent(mContext, OutboundServiceNew.class);
+                            mContext.stopService(intentOutbound);
                         }
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -119,10 +122,6 @@ public class RabbitMirroring {
 
                     ch.basicPublish("dips361-cs-send-endpoint","dips.direct.cs."+csID+".send.endpoint",false,null,dataxS.getBytes());
                     ch.waitForConfirmsOrDie();
-
-                    OutboundServiceNew.stopServiceSocket();
-                    Intent intentOutbound = new Intent(mContext, OutboundServiceNew.class);
-                    mContext.stopService(intentOutbound);
 
                 } catch (IOException | TimeoutException | InterruptedException e) {
                     Log.e(TAG, "publishToAMQP Connection broken: " + e.getClass().getName());

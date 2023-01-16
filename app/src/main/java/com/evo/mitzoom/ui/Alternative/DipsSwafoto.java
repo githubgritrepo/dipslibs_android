@@ -2,8 +2,10 @@ package com.evo.mitzoom.ui.Alternative;
 
 import static com.evo.mitzoom.ui.DipsChooseLanguage.setLocale;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.hardware.Camera;
 import android.hardware.camera2.CameraAccessException;
 import android.hardware.camera2.CameraManager;
@@ -31,7 +33,10 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.content.res.AppCompatResources;
 import androidx.cardview.widget.CardView;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
 import com.evo.mitzoom.API.ApiService;
@@ -65,6 +70,8 @@ import retrofit2.Response;
 public class DipsSwafoto extends AppCompatActivity implements com.wdullaer.materialdatetimepicker.date.DatePickerDialog.OnDateSetListener {
 
     private Context mContext;
+    public static final int REQUEST_WRITE_PERMISSION = 786;
+    private static final int MY_CAMERA_PERMISSION_CODE = 100;
     private SurfaceView preview = null;
     private SurfaceHolder previewHolder = null;
     public static int CAM_ID = 0;
@@ -95,6 +102,8 @@ public class DipsSwafoto extends AppCompatActivity implements com.wdullaer.mater
     private JSONArray periodePenuh;
     private Button btnSchedule2;
     public static RelativeLayout rlprogress;
+    Camera.Parameters parameters;
+    private boolean isConfigure;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -125,18 +134,20 @@ public class DipsSwafoto extends AppCompatActivity implements com.wdullaer.mater
         btnEndCall = (Button) findViewById(R.id.end_call);
         rlprogress = (RelativeLayout) findViewById(R.id.rlprogress);
 
-        displayMetrics = new DisplayMetrics();
+        previewHolder();
+
+        /*displayMetrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
         int widthDisp = displayMetrics.widthPixels;
         int dyWidth = (int) Math.ceil(widthDisp / 2);
 
-        Intent intent = getIntent();
-        useFacing = intent.getIntExtra(KEY_USE_FACING, Camera.CameraInfo.CAMERA_FACING_FRONT);
-
         ViewGroup.LayoutParams lp = cardSurf.getLayoutParams();
-        Log.e("CEK","dyWidth : "+dyWidth);
+        Log.e("CEK","dyWidth : "+dyWidth);*/
         /*lp.width = dyWidth;
         cardSurf.setLayoutParams(lp);*/
+
+        Intent intent = getIntent();
+        useFacing = intent.getIntExtra(KEY_USE_FACING, Camera.CameraInfo.CAMERA_FACING_FRONT);
 
         custName = getIntent().getExtras().getString("CUSTNAME");
 
@@ -194,12 +205,24 @@ public class DipsSwafoto extends AppCompatActivity implements com.wdullaer.mater
     protected void onResume() {
         super.onResume();
 
+        isConfigure = false;
+
         Log.d("CEK","MASUK onResume");
 
-        camera = Camera.open(useFacing);
-        //startPreview();
-        cameraConfigured = false;
-        previewHolder();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (checkSelfPermission(Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+                requestPermissions(new String[]{Manifest.permission.CAMERA}, MY_CAMERA_PERMISSION_CODE);
+            } else {
+                requestPermission();
+            }
+        } else {
+            int resultPerm = ContextCompat.checkSelfPermission(mContext, Manifest.permission.CAMERA);
+            if (resultPerm != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, MY_CAMERA_PERMISSION_CODE);
+            } else {
+                requestPermission();
+            }
+        }
     }
 
     public static void showProgress(Boolean bool){
@@ -239,6 +262,25 @@ public class DipsSwafoto extends AppCompatActivity implements com.wdullaer.mater
         }
 
         super.onPause();
+    }
+
+    private void requestPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                requestPermissions(new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE},  REQUEST_WRITE_PERMISSION);
+            } else {
+                camera = Camera.open(useFacing);
+                startPreview();
+            }
+        } else {
+            int resultPerm = ContextCompat.checkSelfPermission(mContext, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+            if (resultPerm != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_WRITE_PERMISSION);
+            } else {
+                camera = Camera.open(useFacing);
+                startPreview();
+            }
+        }
     }
 
     private class AsyncProcess extends AsyncTask<Void,Void,Void> {
@@ -465,18 +507,31 @@ public class DipsSwafoto extends AppCompatActivity implements com.wdullaer.mater
                     }
                     serviceOutbound();
 
-                    SweetAlertDialog sweetAlertDialog = new SweetAlertDialog(mContext, SweetAlertDialog.SUCCESS_TYPE);
-                    sweetAlertDialog.setContentText(getResources().getString(R.string.content_after_schedule));
-                    sweetAlertDialog.setConfirmText(getResources().getString(R.string.done));
+                    LayoutInflater inflater = getLayoutInflater();
+                    View dialogView = inflater.inflate(R.layout.layout_dialog_sweet, null);
+
+                    ImageView imgDialog = (ImageView) dialogView.findViewById(R.id.imgDialog);
+                    TextView tvTitleDialog = (TextView) dialogView.findViewById(R.id.tvTitleDialog);
+                    TextView tvBodyDialog = (TextView) dialogView.findViewById(R.id.tvBodyDialog);
+                    Button btnCancelDialog = (Button) dialogView.findViewById(R.id.btnCancelDialog);
+                    Button btnConfirmDialog = (Button) dialogView.findViewById(R.id.btnConfirmDialog);
+
+                    tvTitleDialog.setVisibility(View.GONE);
+
+                    imgDialog.setImageDrawable(AppCompatResources.getDrawable(mContext,R.drawable.v_dialog_success));
+                    tvBodyDialog.setText(getString(R.string.content_after_schedule));
+                    btnConfirmDialog.setText(getString(R.string.done));
+
+                    SweetAlertDialog sweetAlertDialog = new SweetAlertDialog(mContext, SweetAlertDialog.NORMAL_TYPE);
+                    sweetAlertDialog.setCustomView(dialogView);
+                    sweetAlertDialog.hideConfirmButton();
                     sweetAlertDialog.show();
-                    Button btnConfirm = (Button) sweetAlertDialog.findViewById(cn.pedant.SweetAlert.R.id.confirm_button);
-                    btnConfirm.setBackgroundTintList(getResources().getColorStateList(R.color.Blue));
-                    btnConfirm.setOnClickListener(new View.OnClickListener() {
+
+                    btnConfirmDialog.setOnClickListener(new View.OnClickListener() {
                         @Override
-                        public void onClick(View v) {
+                        public void onClick(View view) {
                             sweetAlertDialog.dismiss();
                             OutApps();
-
                         }
                     });
                 }
@@ -577,6 +632,7 @@ public class DipsSwafoto extends AppCompatActivity implements com.wdullaer.mater
 
         @Override
         public void surfaceChanged(@NonNull SurfaceHolder holder, int format, int width, int height) {
+            Log.e("CEK","surfaceChanged width : "+width+" | height : "+height);
             initPreview(width, height);
             startPreview();
         }
@@ -610,11 +666,13 @@ public class DipsSwafoto extends AppCompatActivity implements com.wdullaer.mater
             }
 
             if (!cameraConfigured) {
+                isConfigure = true;
                 Camera.Parameters parameters = camera.getParameters();
                 List<Camera.Size> sizes = parameters.getSupportedPreviewSizes();
                 Camera.Size size = getOptimalPreviewSize(sizes, width, height);
 
                 if (size != null) {
+                    Log.e("CEK","size.width : "+size.width+" | size.height : "+size.height);
                     parameters.setPreviewSize(size.width, size.height);
                     camera.setParameters(parameters);
                     cameraConfigured = true;
@@ -626,7 +684,65 @@ public class DipsSwafoto extends AppCompatActivity implements com.wdullaer.mater
     private void startPreview() {
         if (cameraConfigured && camera != null) {
             camera.startPreview();
+            parameters = camera.getParameters();
+            if (parameters.getSupportedFocusModes().contains(
+                    Camera.Parameters.FOCUS_MODE_CONTINUOUS_VIDEO)) {
+                parameters.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_VIDEO);
+            }
+            camera.setParameters(parameters);
             inPreview = true;
+            if (isConfigure) {
+                Log.d("CEK","MASUK isConfigure");
+                try {
+                    Thread.sleep(500);
+                    optimalCamera();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    private void optimalCamera() {
+        if (camera != null) {
+            if (inPreview) {
+                camera.stopPreview();
+            }
+            camera.release();
+
+            if (useFacing != null) {
+                if (useFacing == Camera.CameraInfo.CAMERA_FACING_FRONT) {
+                    useFacing = Camera.CameraInfo.CAMERA_FACING_FRONT;
+                } else {
+                    useFacing = Camera.CameraInfo.CAMERA_FACING_BACK;
+                }
+
+                isConfigure = false;
+                camera = Camera.open(useFacing);
+                startPreview();
+
+                try {
+                    camera.setPreviewDisplay(previewHolder);
+                    //camera.setDisplayOrientation(90);
+                    CameraManager manager = (CameraManager) getSystemService(Context.CAMERA_SERVICE);
+                    if (manager == null) {
+                        Log.i("CEK", "camera manager is null");
+                        return;
+                    }
+                    try {
+                        for (String id: manager.getCameraIdList()) {
+                            CAM_ID = Integer.valueOf(id);
+                            setCameraDisplayOrientation();
+                        }
+                    } catch (CameraAccessException e) {
+                        e.printStackTrace();
+                    }
+
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+
         }
     }
 

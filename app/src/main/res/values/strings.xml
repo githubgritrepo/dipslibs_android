@@ -260,7 +260,7 @@
     <string name="prepare_id_card">Harap untuk menyiapkan Kartu Tanda Penduduk (KTP) Anda.</string>
     <string name="open_account">Buka Rekening</string>
     <string name="ktp_swafoto">Foto diri dengan KTP</string>
-    <string name="photo_swafoto">Foto Diri\nDengan\nKTP</string>
+    <string name="photo_swafoto">Foto Diri\n&amp;\nKTP</string>
     <string name="bank_name">Bank Victoria</string>
     <string name="warn_not_use_app">Maaf Anda tidak dapat menggunakan layanan Digital Operations Bank XYZ</string>
     <string name="warn_hub_calcenter">Untuk info lebih lanjut silakan menghubungi Call Center Bank XYZ</string>
@@ -307,4 +307,6 @@
     <string name="wealth_transactions">Transaksi Wealth Management</string>
     <string name="account_type">Jenis Rekening</string>
     <string name="invalidate_email">Alamat email tidak sah</string>
+    <string name="calling">Memanggil...</string>
+    <string name="incoming_call_from">Panggilan Masuk dari</string>
 </resources>

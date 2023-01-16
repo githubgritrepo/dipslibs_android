@@ -1,5 +1,6 @@
 package com.evo.mitzoom.Helper;
 
+import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.Notification;
 import android.app.NotificationChannel;
@@ -8,12 +9,15 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
+import android.os.Handler;
 import android.os.IBinder;
 import android.os.PowerManager;
 import android.util.Log;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.core.app.NotificationCompat;
 import androidx.core.content.ContextCompat;
 
@@ -42,6 +46,8 @@ import java.util.concurrent.TimeoutException;
 public class OutboundServiceNew extends Service {
     private PowerManager.WakeLock wakeLock;
     public static final int POST_CONNECTIVITY_CHANGE_PING_INTERVAL = 30;
+    String ACTION_DISMISS_CALL = "dismiss_call";
+    String ACTION_ACCEPT_CALL = "action_accept_call";
     //RabitMQ
     static ConnectionFactory connectionFactory = new ConnectionFactory();
     private static Thread subscribeThreadCallOutbound;
@@ -58,6 +64,9 @@ public class OutboundServiceNew extends Service {
     public static String imagesAgent = "";
     public static String nameAgent = "";
     private static String csId = "";
+    String CHANNEL_ID = "OutboundCall";
+    String CHANNEL_NAME = "Outbound Call";
+    int LED_COLOR = 0xff00ff00;
 
     @Override
     public void onCreate() {
@@ -165,53 +174,74 @@ public class OutboundServiceNew extends Service {
                             Log.e(TAG,"Success subscribeCall getMessage : "+getMessage);
                             try {
                                 JSONObject dataObj = new JSONObject(getMessage);
-                                int getTicket = dataObj.getJSONObject("transaction").getInt("ticket");
-                                csId = dataObj.getJSONObject("transaction").getString("csId");
-                                String password = dataObj.getJSONObject("transaction").getString("password");
-                                Log.e(TAG,"subscribeCall csId : "+csId);
-                                Log.e(TAG,"subscribeCall password : "+password);
-                                Log.e(TAG,"subscribeCall getTicket : "+getTicket);
-                                String getQueue = String.format("%03d", getTicket);
-                                Log.e(TAG,"subscribeCall getQueue : "+getQueue);
-
-                                String agentImage = "";
-                                String namaAgen = "Fulan";
-                                if (dataObj.getJSONObject("transaction").has("agentImage")) {
-                                    agentImage = dataObj.getJSONObject("transaction").getString("agentImage");
-                                }
-                                if (dataObj.getJSONObject("transaction").has("namaAgen")) {
-                                    namaAgen = dataObj.getJSONObject("transaction").getString("namaAgen");
+                                String actionCall = "";
+                                if (dataObj.getJSONObject("transaction").has("action")) {
+                                    actionCall = dataObj.getJSONObject("transaction").getString("action");
                                 }
 
-                                Log.e(TAG,"subscribeCall agentImage : "+agentImage);
-                                Log.e(TAG,"subscribeCall namaAgen : "+namaAgen);
+                                if (actionCall.equals("info")) {
+                                    String csId = dataObj.getJSONObject("transaction").getString("csId");
+                                    sessions.saveCSID(csId);
+                                } else {
+                                    int getTicket = dataObj.getJSONObject("transaction").getInt("ticket");
+                                    csId = dataObj.getJSONObject("transaction").getString("csId");
+                                    String password = dataObj.getJSONObject("transaction").getString("password");
+                                    Log.e(TAG, "subscribeCall csId : " + csId);
+                                    Log.e(TAG, "subscribeCall password : " + password);
+                                    Log.e(TAG, "subscribeCall getTicket : " + getTicket);
+                                    String getQueue = String.format("%03d", getTicket);
+                                    Log.e(TAG, "subscribeCall getQueue : " + getQueue);
 
-                                password_session = password;
-                                customerName = sessions.getNasabahName();
-                                imagesAgent = agentImage;
-                                nameAgent = namaAgen;
-                                sessions.saveCSID(csId);
+                                    String agentImage = "";
+                                    String namaAgen = "Fulan";
+                                    if (dataObj.getJSONObject("transaction").has("agentImage")) {
+                                        agentImage = dataObj.getJSONObject("transaction").getString("agentImage");
+                                    }
+                                    if (dataObj.getJSONObject("transaction").has("namaAgen")) {
+                                        namaAgen = dataObj.getJSONObject("transaction").getString("namaAgen");
+                                    }
 
-                                Intent intent = new Intent(getApplicationContext(), MyBroadcastReceiver.class);
-                                intent.setAction("calloutbound");
+                                    Log.e(TAG, "subscribeCall agentImage : " + agentImage);
+                                    Log.e(TAG, "subscribeCall namaAgen : " + namaAgen);
 
-                                PendingIntent pendingIntent = null;
-                                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
-                                    pendingIntent = PendingIntent.getBroadcast
-                                            (mContext, 0, intent, PendingIntent.FLAG_MUTABLE);
+                                    password_session = password;
+                                    customerName = sessions.getNasabahName();
+                                    imagesAgent = agentImage;
+                                    nameAgent = namaAgen;
+                                    sessions.saveCSID(csId);
+
+                                    //showIncomingCallNotification();
+
+                                    Intent intent = new Intent(getApplicationContext(), MyBroadcastReceiver.class);
+                                    intent.setAction("calloutbound");
+
+                                    PendingIntent pendingIntent = null;
+                                    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
+                                        pendingIntent = PendingIntent.getBroadcast
+                                                (mContext, 0, intent, PendingIntent.FLAG_MUTABLE);
+                                    } else {
+                                        pendingIntent = PendingIntent.getBroadcast
+                                                (mContext, 0, intent, 0);
+                                    }
+
+                                    long addTimes = System.currentTimeMillis() + 2000;
+
+                                    AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+                                    alarmManager.set(AlarmManager.RTC_WAKEUP, addTimes, pendingIntent);
+
+                                    new Handler().postDelayed(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            //setelah loading maka akan langsung berpindah ke home activity
+                                            ((Activity)mContext).runOnUiThread(new Runnable() {
+                                                @Override
+                                                public void run() {
+                                                    showNotificationOutbound();
+                                                }
+                                            });
+                                        }
+                                    },5000);
                                 }
-                                else
-                                {
-                                    pendingIntent = PendingIntent.getBroadcast
-                                            (mContext, 0, intent, 0);
-                                }
-
-                                long addTimes = System.currentTimeMillis() + 2000;
-
-                                AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-                                alarmManager.set(AlarmManager.RTC_WAKEUP,addTimes,pendingIntent);
-
-                                showNotificationOutbound();
 
                             } catch (JSONException e) {
                                 e.printStackTrace();
@@ -246,12 +276,93 @@ public class OutboundServiceNew extends Service {
         subscribeThreadCallOutbound.start();
     }
 
+    private void showIncomingCallNotification() {
+        Log.e("CEK","showIncomingCallNotification");
+        username_agent = nameAgent;
+
+        NotificationManager notificationManagerCompat = (NotificationManager) getApplicationContext().getSystemService(Context.NOTIFICATION_SERVICE);
+
+        PendingIntent pendingIntent = createPendingDiPSOutboundSession(Intent.ACTION_VIEW, 101);
+        PendingIntent pendingIntentCall = createPendingDiPSOutboundSession(ACTION_ACCEPT_CALL, 102);
+        PendingIntent pendingIntentEnd = createPendingDiPSOutboundSession(ACTION_DISMISS_CALL, 103);
+
+        String nameApps = getResources().getString(R.string.app_name_dips);
+
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext(), CHANNEL_ID)
+                .setSmallIcon(R.mipmap.dips361)
+                .setFullScreenIntent(pendingIntent, true)
+                .setContentIntent(pendingIntent) // old androids need this?
+                .setOngoing(true)
+                .setContentTitle(nameApps+" "+getString(R.string.calling))
+                .setContentText(getString(R.string.incoming_call_from)+" "+username_agent)
+                .addAction(R.drawable.ic_call,getString(R.string.setuju_accept),pendingIntentCall)
+                .addAction(R.drawable.ic_call_end,getString(R.string.reject),pendingIntentEnd)
+                .setPriority(NotificationCompat.PRIORITY_HIGH)
+                .setColor(ContextCompat.getColor(getApplicationContext(), android.R.color.transparent))
+                .setVibrate(new long[]{1000, 2000, 1000, 2000, 1000})
+                .setAutoCancel(true)
+                .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+                .setCategory(NotificationCompat.CATEGORY_CALL);
+
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            NotificationChannel incomingCallsChannel = new NotificationChannel(
+                    CHANNEL_ID, CHANNEL_NAME,
+                    NotificationManager.IMPORTANCE_HIGH);
+            incomingCallsChannel.setSound(null, null);
+            incomingCallsChannel.setShowBadge(false);
+            incomingCallsChannel.setLightColor(LED_COLOR);
+            incomingCallsChannel.enableLights(true);
+            incomingCallsChannel.setGroup("calls");
+            incomingCallsChannel.setBypassDnd(true);
+            incomingCallsChannel.enableVibration(false);
+
+            builder.setChannelId(CHANNEL_ID);
+
+            notificationManagerCompat.createNotificationChannel(incomingCallsChannel);
+        }
+
+        modifyIncomingCall(builder);
+        final Notification notification = builder.build();
+        notification.flags = notification.flags | Notification.FLAG_INSISTENT;
+        notificationManagerCompat.notify(NOTIFICATION_IDOutbound, notification);
+
+        Log.e("CEK","END showIncomingCallNotification");
+    }
+
+    private void modifyIncomingCall(final NotificationCompat.Builder mBuilder) {
+        mBuilder.setPriority(NotificationCompat.PRIORITY_HIGH);
+        setNotificationColor(mBuilder);
+        mBuilder.setLights(LED_COLOR, 2000, 3000);
+    }
+
+    private void setNotificationColor(final NotificationCompat.Builder mBuilder) {
+        mBuilder.setColor(ContextCompat.getColor(mContext, R.color.zm_capture_circle));
+    }
+
+    private PendingIntent createPendingDiPSOutboundSession(final String action, final int requestCode) {
+        final Intent fullScreenIntent =
+                new Intent(getApplicationContext(), DipsOutboundCall.class);
+        fullScreenIntent.setAction(action);
+        return PendingIntent.getActivity(
+                getApplicationContext(),
+                requestCode,
+                fullScreenIntent,
+                s()
+                        ? PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT
+                        : PendingIntent.FLAG_UPDATE_CURRENT);
+    }
+
+    private boolean s() {
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.S;
+    }
+
     private static JSONObject reqAcceptCall() {
         long unixTime = System.currentTimeMillis() / 1000L;
 
         JSONObject custObj = new JSONObject();
         try {
             custObj.put("status","ack");
+            custObj.put("action","accept");
             custObj.put("custId",idDips);
             custObj.put("msg","OK");
             custObj.put("ticket",sessions.getIDSchedule());
@@ -330,8 +441,6 @@ public class OutboundServiceNew extends Service {
     private void showNotificationOutbound() {
         Log.e(TAG,"showNotificationOutbound");
         username_agent = nameAgent;
-        String CHANNEL_ID = "OutboundCall";
-        String CHANNEL_NAME = "Outbound Call";
 
         NotificationManager notificationManagerCompat = (NotificationManager) getApplicationContext().getSystemService(Context.NOTIFICATION_SERVICE);
 
@@ -368,10 +477,10 @@ public class OutboundServiceNew extends Service {
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext(), CHANNEL_ID)
                 .setSmallIcon(R.mipmap.dips361)
-                .setContentTitle(nameApps+" Memanggil...")
-                .setContentText("Panggilan Masuk dari "+username_agent)
-                .addAction(R.drawable.ic_call,"Accept Call",pendingIntentCall)
-                .addAction(R.drawable.ic_call_end,"Reject Call",pendingIntentEnd)
+                .setContentTitle(nameApps+" "+getString(R.string.calling))
+                .setContentText(getString(R.string.incoming_call_from)+" "+username_agent)
+                .addAction(R.drawable.ic_call,getString(R.string.setuju_accept),pendingIntentCall)
+                .addAction(R.drawable.ic_call_end,getString(R.string.reject),pendingIntentEnd)
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
                 .setColor(ContextCompat.getColor(getApplicationContext(), android.R.color.transparent))
                 .setVibrate(new long[]{1000, 2000, 1000, 2000, 1000})

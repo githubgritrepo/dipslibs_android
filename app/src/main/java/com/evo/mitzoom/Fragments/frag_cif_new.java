@@ -2795,7 +2795,7 @@ public class frag_cif_new extends Fragment {
                             }
                         }
                     });
-                    Toast.makeText(mContext,R.string.msg_error,Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(mContext,R.string.msg_error,Toast.LENGTH_SHORT).show();
                 }
             }
 

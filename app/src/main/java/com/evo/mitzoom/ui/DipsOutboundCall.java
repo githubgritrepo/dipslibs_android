@@ -54,6 +54,9 @@ import com.evo.mitzoom.util.ErrorMsgUtil;
 import com.evo.mitzoom.util.NetworkUtil;
 import com.google.android.material.button.MaterialButton;
 import com.google.gson.JsonObject;
+import com.rabbitmq.client.Channel;
+import com.rabbitmq.client.Connection;
+import com.rabbitmq.client.ConnectionFactory;
 import com.wdullaer.materialdatetimepicker.date.DatePickerDialog;
 
 import org.json.JSONArray;
@@ -66,9 +69,11 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeoutException;
 
 import cn.pedant.SweetAlert.SweetAlertDialog;
 import de.hdodenhof.circleimageview.CircleImageView;
+import io.socket.client.Socket;
 import okhttp3.MediaType;
 import okhttp3.RequestBody;
 import retrofit2.Call;
@@ -81,6 +86,7 @@ import us.zoom.sdk.ZoomVideoSDKInitParams;
 import us.zoom.sdk.ZoomVideoSDKRawDataMemoryMode;
 import us.zoom.sdk.ZoomVideoSDKSession;
 import us.zoom.sdk.ZoomVideoSDKSessionContext;
+import us.zoom.sdk.ZoomVideoSDKUser;
 import us.zoom.sdk.ZoomVideoSDKVideoOption;
 
 public class DipsOutboundCall extends AppCompatActivity implements DatePickerDialog.OnDateSetListener {
@@ -131,6 +137,10 @@ public class DipsOutboundCall extends AppCompatActivity implements DatePickerDia
     private DatePickerDialog dpd;
     private JSONArray tanggalPenuh;
     private JSONArray periodePenuh;
+
+    //RabitMQ
+    ConnectionFactory connectionFactory = new ConnectionFactory();
+    private Thread publishCallAcceptThread;
 
     private Runnable runnable = new Runnable() {
         @Override
@@ -211,6 +221,8 @@ public class DipsOutboundCall extends AppCompatActivity implements DatePickerDia
         imageAgent = OutboundServiceNew.getImagesAgent();
         nameAgent = OutboundServiceNew.getNameAgent();
         nama_agen.setText(nameAgent);
+
+        setupConnectionFactory(); //RabbitMQ
 
         Log.i(TAG,"passSession  : "+passSession);
         Log.i(TAG,"imageAgent  : "+imageAgent);
@@ -452,6 +464,59 @@ public class DipsOutboundCall extends AppCompatActivity implements DatePickerDia
 
     }
 
+    private void onClickEnd(View view) {
+
+        LayoutInflater inflater = getLayoutInflater();
+        View dialogView = inflater.inflate(R.layout.layout_dialog_sweet, null);
+
+        ImageView imgDialog = (ImageView) dialogView.findViewById(R.id.imgDialog);
+        TextView tvTitleDialog = (TextView) dialogView.findViewById(R.id.tvTitleDialog);
+        TextView tvBodyDialog = (TextView) dialogView.findViewById(R.id.tvBodyDialog);
+        Button btnCancelDialog = (Button) dialogView.findViewById(R.id.btnCancelDialog);
+        Button btnConfirmDialog = (Button) dialogView.findViewById(R.id.btnConfirmDialog);
+
+        tvTitleDialog.setVisibility(View.GONE);
+        btnCancelDialog.setVisibility(View.VISIBLE);
+
+        imgDialog.setImageDrawable(getDrawable(R.drawable.v_dialog_info));
+        tvBodyDialog.setText(getString(R.string.leave_message));
+        btnCancelDialog.setText(getString(R.string.tidak_not));
+        btnConfirmDialog.setText(getString(R.string.label_ya));
+
+        SweetAlertDialog dialogEnd = new SweetAlertDialog(mContext,SweetAlertDialog.NORMAL_TYPE);
+        dialogEnd.setCustomView(dialogView);
+        dialogEnd.setCancelable(false);
+        dialogEnd.hideConfirmButton();
+
+        btnConfirmDialog.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                OutboundServiceNew.stopServiceSocket();
+                Intent intentOutbound = new Intent(mContext, OutboundServiceNew.class);
+                mContext.stopService(intentOutbound);
+
+                dialogEnd.dismissWithAnimation();
+            }
+        });
+        btnCancelDialog.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialogEnd.dismissWithAnimation();
+            }
+        });
+
+        dialogEnd.show();
+    }
+
+    private void setupConnectionFactory() {
+        connectionFactory.setUsername(Server.RABBITMQ_USERNAME);
+        connectionFactory.setPassword(Server.RABBITMQ_PASSWORD);
+        connectionFactory.setHost(Server.RABBITMQ_IP);
+        connectionFactory.setPort(Server.RABBITMQ_PORT);
+        connectionFactory.setAutomaticRecoveryEnabled(false);
+
+    }
+
     private void processGetCheckSchedule() {
         Server.getAPIService().GetCheckSchedule().enqueue(new Callback<JsonObject>() {
             @Override
@@ -674,6 +739,7 @@ public class DipsOutboundCall extends AppCompatActivity implements DatePickerDia
         });
         btnSchedule2.setBackgroundTintList(DipsOutboundCall.this.getResources().getColorStateList(R.color.Blue));
     }
+
     private void saveSchedule(){
         JSONObject jsons = new JSONObject();
         try {
@@ -865,36 +931,45 @@ public class DipsOutboundCall extends AppCompatActivity implements DatePickerDia
     }
 
     private void optimalCamera() {
-        if (useFacing != null) {
-            if (useFacing == Camera.CameraInfo.CAMERA_FACING_FRONT) {
-                useFacing = Camera.CameraInfo.CAMERA_FACING_FRONT;
-            } else {
-                useFacing = Camera.CameraInfo.CAMERA_FACING_BACK;
+        if (camera != null) {
+            if (inPreview) {
+                camera.stopPreview();
             }
+            camera.release();
 
-            onPause();
-            onResume();
-            try {
-                camera.setPreviewDisplay(previewHolder);
-                //camera.setDisplayOrientation(90);
-                CameraManager manager = (CameraManager) getSystemService(Context.CAMERA_SERVICE);
-                if (manager == null) {
-                    Log.i("CEK", "camera manager is null");
-                    return;
+            if (useFacing != null) {
+                if (useFacing == Camera.CameraInfo.CAMERA_FACING_FRONT) {
+                    useFacing = Camera.CameraInfo.CAMERA_FACING_FRONT;
+                } else {
+                    useFacing = Camera.CameraInfo.CAMERA_FACING_BACK;
                 }
-                try {
-                    for (String id: manager.getCameraIdList()) {
-                        CAM_ID = Integer.valueOf(id);
-                        setCameraDisplayOrientation();
 
+                isConfigure = false;
+                camera = Camera.open(useFacing);
+                startPreview();
+
+                try {
+                    camera.setPreviewDisplay(previewHolder);
+                    //camera.setDisplayOrientation(90);
+                    CameraManager manager = (CameraManager) getSystemService(Context.CAMERA_SERVICE);
+                    if (manager == null) {
+                        Log.i("CEK", "camera manager is null");
+                        return;
                     }
-                } catch (CameraAccessException e) {
+                    try {
+                        for (String id: manager.getCameraIdList()) {
+                            CAM_ID = Integer.valueOf(id);
+                            setCameraDisplayOrientation();
+                        }
+                    } catch (CameraAccessException e) {
+                        e.printStackTrace();
+                    }
+
+                } catch (IOException e) {
                     e.printStackTrace();
                 }
-
-            } catch (IOException e) {
-                e.printStackTrace();
             }
+
         }
     }
 

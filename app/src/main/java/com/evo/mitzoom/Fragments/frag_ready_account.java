@@ -636,7 +636,14 @@ public class frag_ready_account extends Fragment {
                         String idForm = dataObj.getJSONObject("data").getString("idForm");
                         idFormObj = new JSONObject();
                         idFormObj.put("idForm",idForm);
-
+                        JSONObject dataMirr = null;
+                        try {
+                            dataMirr = new JSONObject(objEl.toString());
+                            dataMirr.put("noponsel",no_handphone);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                        RabbitMirroring.MirroringSendKey(dataMirr);
                         processSendOTP();
 
                     } catch (JSONException e) {

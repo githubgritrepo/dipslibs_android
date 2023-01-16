@@ -729,6 +729,10 @@ public class frag_berita extends Fragment implements com.wdullaer.materialdateti
                     }
                     //Toast.makeText(context.getApplicationContext(), getResources().getString(R.string.schedule) + tanggal + " & " + getResources().getString(R.string.jam) + waktu, Toast.LENGTH_LONG).show();
                     sweetAlertDialog.dismiss();
+                    String csId = sessions.getCSID();
+                    if (csId != null && !csId.isEmpty()) {
+                        DipsWaitingRoom.publishCallAccept(csId, "cancel"); //RabbitMQ
+                    }
                     saveSchedule();
                 }
 

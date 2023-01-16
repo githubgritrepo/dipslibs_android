@@ -2,6 +2,7 @@ package com.evo.mitzoom.Fragments;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Rect;
@@ -260,6 +261,12 @@ public class frag_open_account_product extends Fragment {
 
         sweetAlertDialogTNC.getWindow().setGravity(Gravity.CENTER_HORIZONTAL);
         sweetAlertDialogTNC.getWindow().setLayout(width,height);
+        sweetAlertDialogTNC.setOnDismissListener(new DialogInterface.OnDismissListener() {
+            @Override
+            public void onDismiss(DialogInterface dialogInterface) {
+
+            }
+        });
 
         sweetAlertDialogTNC.show();
         checkBox.setOnClickListener(new View.OnClickListener() {

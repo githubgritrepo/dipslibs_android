@@ -9,8 +9,8 @@
     <string name="tutup">Close</string>
     <string name="chat">Chat</string>
     <string name="confirm_accept">For the sake of mutual convenience, this conversation will be recorded automatically.\nDo you agree to use the Digital Operations Victoria Bank Service?</string>
-    <string name="tidak_not">Not</string>
-    <string name="setuju_accept">Accept</string>
+    <string name="tidak_not">Disagree</string>
+    <string name="setuju_accept">Agree</string>
     <string name="leave_message">Are you sure you want to end the call?</string>
     <string name="cancel">Cancel</string>
     <string name="leave_leave_text">Leave Session</string>
@@ -307,4 +307,6 @@
     <string name="wealth_transactions">Wealth Management Transactions</string>
     <string name="account_type">Account Type</string>
     <string name="invalidate_email">Invalid email address</string>
+    <string name="calling">Calling...</string>
+    <string name="incoming_call_from">Incoming call from</string>
 </resources>

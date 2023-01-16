@@ -119,9 +119,9 @@ public class DipsWaitingRoom extends AppCompatActivity implements DatePickerDial
     private ImageView btnclose;
     private TextView AnimationCall;
     String NameSession;
-    String idDips;
+    private static String idDips;
     String SessionPass;
-    String myTicketNumber;
+    private static String myTicketNumber;
     boolean isCust;
     String custName;
     private boolean doubleBackToExitPressedOnce = false;
@@ -133,7 +133,7 @@ public class DipsWaitingRoom extends AppCompatActivity implements DatePickerDial
     private DisplayMetrics displayMetrics;
     private int Savewaktu;
     //RabitMQ
-    ConnectionFactory connectionFactory = new ConnectionFactory();
+    private static ConnectionFactory connectionFactory = new ConnectionFactory();
     private Socket mSocket;
     private Thread subscribeThread;
     private Thread subscribeReqTicketThread;
@@ -141,7 +141,7 @@ public class DipsWaitingRoom extends AppCompatActivity implements DatePickerDial
     private Thread subscribeAllTicketInfoCall;
     private Thread publishThread;
     private Thread publishQSTicketThread;
-    private Thread publishCallAcceptThread;
+    private static Thread publishCallAcceptThread;
     private boolean isSwafoto = false;
     public static Channel channelCall = null;
 
@@ -429,12 +429,13 @@ public class DipsWaitingRoom extends AppCompatActivity implements DatePickerDial
         return jsObj;
     }
 
-    private JSONObject reqAcceptCall() {
+    private static JSONObject reqAcceptCall(String labelAction) {
         long unixTime = System.currentTimeMillis() / 1000L;
 
         JSONObject custObj = new JSONObject();
         try {
             custObj.put("status","ack");
+            custObj.put("action",labelAction);
             custObj.put("custId",idDips);
             custObj.put("msg","OK");
             custObj.put("ticket",myTicketNumber);
@@ -654,47 +655,56 @@ public class DipsWaitingRoom extends AppCompatActivity implements DatePickerDial
                             Log.e("CEK","Success subscribeCall getMessage : "+getMessage);
                             try {
                                 JSONObject dataObj = new JSONObject(getMessage);
-                                int getTicket = dataObj.getJSONObject("transaction").getInt("ticket");
-                                Log.e("CEK","subscribeCall getTicket : "+getTicket);
-                                String getQueue = String.format("%03d", getTicket);
-                                String lastTicketContent = getQueue;
-                                runOnUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        lastTicket.setText(lastTicketContent);
-                                    }
-                                });
-                                Log.e("CEK","subscribeCall getQueue : "+getQueue+" | myTicketNumber : "+myTicketNumber);
-                                if (getQueue.equals(myTicketNumber)) {
-                                    Log.e("CEK","subscribeCall MASUK IF");
+                                String actionCall = "";
+                                if (dataObj.getJSONObject("transaction").has("action")) {
+                                    actionCall = dataObj.getJSONObject("transaction").getString("action");
+                                }
+                                if (actionCall.equals("info")) {
                                     String csId = dataObj.getJSONObject("transaction").getString("csId");
-                                    String password = dataObj.getJSONObject("transaction").getString("password");
-                                    Log.e("CEK","subscribeCall csId : "+csId);
-                                    Log.e("CEK","subscribeCall password : "+password);
-
-                                    NameSession = idDips;
-                                    SessionPass = password;
                                     sessions.saveCSID(csId);
+                                } else {
+                                    int getTicket = dataObj.getJSONObject("transaction").getInt("ticket");
+                                    Log.e("CEK", "subscribeCall getTicket : " + getTicket);
+                                    String getQueue = String.format("%03d", getTicket);
+                                    String lastTicketContent = getQueue;
                                     runOnUiThread(new Runnable() {
                                         @Override
                                         public void run() {
-                                            if (!isFinishing()) {
-                                                try {
-                                                    PopUpSucces(csId);
-                                                } catch (WindowManager.BadTokenException e) {
-                                                    Log.e("WindowManagerBad ", e.toString());
+                                            lastTicket.setText(lastTicketContent);
+                                        }
+                                    });
+                                    Log.e("CEK", "subscribeCall getQueue : " + getQueue + " | myTicketNumber : " + myTicketNumber);
+                                    if (getQueue.equals(myTicketNumber)) {
+                                        Log.e("CEK", "subscribeCall MASUK IF");
+                                        String csId = dataObj.getJSONObject("transaction").getString("csId");
+                                        String password = dataObj.getJSONObject("transaction").getString("password");
+                                        Log.e("CEK", "subscribeCall csId : " + csId);
+                                        Log.e("CEK", "subscribeCall password : " + password);
+
+                                        NameSession = idDips;
+                                        SessionPass = password;
+                                        sessions.saveCSID(csId);
+                                        runOnUiThread(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                if (!isFinishing()) {
+                                                    try {
+                                                        PopUpSucces(csId);
+                                                    } catch (WindowManager.BadTokenException e) {
+                                                        Log.e("WindowManagerBad ", e.toString());
+                                                    }
                                                 }
                                             }
-                                        }
-                                    });
-                                } else {
-                                    Log.e("CEK","subscribeCall MASUK ELSE WAITING");
-                                    runOnUiThread(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            PopUpWaiting();
-                                        }
-                                    });
+                                        });
+                                    } else {
+                                        Log.e("CEK", "subscribeCall MASUK ELSE WAITING");
+                                        runOnUiThread(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                PopUpWaiting();
+                                            }
+                                        });
+                                    }
                                 }
                             } catch (JSONException e) {
                                 e.printStackTrace();
@@ -759,7 +769,7 @@ public class DipsWaitingRoom extends AppCompatActivity implements DatePickerDial
         subscribeAllTicketInfoCall.start();
     }
 
-    private void publishCallAccept(String csId) {
+    public static void publishCallAccept(String csId, String labelAction) {
         publishCallAcceptThread = new Thread(new Runnable() {
             @Override
             public void run() {
@@ -768,7 +778,7 @@ public class DipsWaitingRoom extends AppCompatActivity implements DatePickerDial
                     Channel ch = connection.createChannel();
                     ch.confirmSelect();
 
-                    JSONObject dataTicketObj = reqAcceptCall();
+                    JSONObject dataTicketObj = reqAcceptCall(labelAction);
                     String dataTicket = dataTicketObj.toString();
 
                     ch.exchangeDeclare("dips361-cs-accept-user", "direct", true);
@@ -779,7 +789,7 @@ public class DipsWaitingRoom extends AppCompatActivity implements DatePickerDial
                     Log.e("CEK", "publishCallAccept Connection broken: " + e.getClass().getName());
                     try {
                         Thread.sleep(4000); //sleep and then try again
-                        publishCallAccept(csId);
+                        publishCallAccept(csId, labelAction);
                     } catch (InterruptedException e1) {
 
                     }
@@ -1022,36 +1032,45 @@ public class DipsWaitingRoom extends AppCompatActivity implements DatePickerDial
     }
 
     private void optimalCamera() {
-        if (useFacing != null) {
-            if (useFacing == Camera.CameraInfo.CAMERA_FACING_FRONT) {
-                useFacing = Camera.CameraInfo.CAMERA_FACING_FRONT;
-            } else {
-                useFacing = Camera.CameraInfo.CAMERA_FACING_BACK;
+        if (camera != null) {
+            if (inPreview) {
+                camera.stopPreview();
             }
+            camera.release();
 
-            /*onPause();
-            onResume();*/
-            try {
-                camera.setPreviewDisplay(previewHolder);
-                //camera.setDisplayOrientation(90);
-                CameraManager manager = (CameraManager) getSystemService(Context.CAMERA_SERVICE);
-                if (manager == null) {
-                    Log.i("CEK", "camera manager is null");
-                    return;
+            if (useFacing != null) {
+                if (useFacing == Camera.CameraInfo.CAMERA_FACING_FRONT) {
+                    useFacing = Camera.CameraInfo.CAMERA_FACING_FRONT;
+                } else {
+                    useFacing = Camera.CameraInfo.CAMERA_FACING_BACK;
                 }
-                try {
-                    for (String id: manager.getCameraIdList()) {
-                        CAM_ID = Integer.valueOf(id);
-                        setCameraDisplayOrientation();
 
+                isConfigure = false;
+                camera = Camera.open(useFacing);
+                startPreview();
+
+                try {
+                    camera.setPreviewDisplay(previewHolder);
+                    //camera.setDisplayOrientation(90);
+                    CameraManager manager = (CameraManager) getSystemService(Context.CAMERA_SERVICE);
+                    if (manager == null) {
+                        Log.i("CEK", "camera manager is null");
+                        return;
                     }
-                } catch (CameraAccessException e) {
+                    try {
+                        for (String id: manager.getCameraIdList()) {
+                            CAM_ID = Integer.valueOf(id);
+                            setCameraDisplayOrientation();
+                        }
+                    } catch (CameraAccessException e) {
+                        e.printStackTrace();
+                    }
+
+                } catch (IOException e) {
                     e.printStackTrace();
                 }
-
-            } catch (IOException e) {
-                e.printStackTrace();
             }
+
         }
     }
 
@@ -1242,6 +1261,10 @@ public class DipsWaitingRoom extends AppCompatActivity implements DatePickerDial
                     }
                     //Toast.makeText(context.getApplicationContext(), getResources().getString(R.string.schedule) + tanggal + " & " + getResources().getString(R.string.jam) + waktu, Toast.LENGTH_LONG).show();
                     sweetAlertDialog.dismiss();
+                    String csId = sessions.getCSID();
+                    if (csId != null && !csId.isEmpty()) {
+                        publishCallAccept(csId, "cancel"); //RabbitMQ
+                    }
                     saveSchedule();
                 }
 
@@ -1373,7 +1396,7 @@ public class DipsWaitingRoom extends AppCompatActivity implements DatePickerDial
                         dialogSuccess.cancel();
                         dialogSuccess = null;
                     }
-                    publishCallAccept(csId); //RabbitMQ
+                    publishCallAccept(csId,"accept"); //RabbitMQ
                     processJoinVideo();
                     //Popup();
                 } else {
