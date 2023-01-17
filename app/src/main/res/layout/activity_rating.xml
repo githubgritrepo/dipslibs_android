@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.core.widget.NestedScrollView
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -7,138 +7,126 @@
     android:layout_height="match_parent"
     android:background="#FFFFFF"
     tools:context=".ui.RatingActivity">
-    <LinearLayout
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
-
-        <ImageView
-            android:layout_marginTop="30dp"
-            android:layout_marginStart="30dp"
-            android:layout_marginEnd="30dp"
-            android:layout_gravity="center"
-            android:layout_width="match_parent"
-            android:layout_height="100dp"
-            android:src="@drawable/logo_bank_victoria"
-            android:scaleType="fitCenter"/>
-        <TextView
-            android:layout_marginStart="30dp"
-            android:layout_marginEnd="30dp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:layout_gravity="center"
-            android:textSize="16dp"
-            android:textAlignment="center"
-            android:textColor="@color/black"
-            android:text="@string/headline_rating"/>
-        <androidx.cardview.widget.CardView
-            android:layout_marginTop="20dp"
-            android:layout_marginStart="30dp"
-            android:layout_marginEnd="30dp"
-            android:elevation="0dp"
-            android:backgroundTint="#F1F2F2"
+        android:layout_height="match_parent">
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:cardCornerRadius="10dp"
-            android:layout_gravity="center">
+            android:orientation="vertical">
 
-            <LinearLayout
+            <ImageView
+                android:layout_marginTop="30dp"
+                android:layout_marginStart="30dp"
+                android:layout_marginEnd="30dp"
+                android:layout_gravity="center"
+                android:layout_width="match_parent"
+                android:layout_height="100dp"
+                android:src="@drawable/logo_bank_victoria"
+                android:scaleType="fitCenter"/>
+            <TextView
+                android:layout_marginStart="30dp"
+                android:layout_marginEnd="30dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:layout_gravity="center"
+                android:textSize="16dp"
+                android:textAlignment="center"
+                android:textColor="@color/black"
+                android:text="@string/headline_rating"/>
+            <androidx.cardview.widget.CardView
+                android:layout_marginTop="20dp"
+                android:layout_marginStart="30dp"
+                android:layout_marginEnd="30dp"
+                android:elevation="0dp"
+                android:backgroundTint="#F1F2F2"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical">
-                <TextView
-                    android:layout_marginStart="10dp"
-                    android:layout_marginEnd="10dp"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="20dp"
-                    android:layout_gravity="center"
-                    android:textSize="16dp"
-                    android:textAlignment="center"
-                    android:textColor="@color/black"
-                    android:text="@string/apakah_permasalahan_anda_n_selesai_dengan_baik"/>
+                app:cardCornerRadius="10dp"
+                android:layout_gravity="center">
+
                 <LinearLayout
-                    android:gravity="center"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    android:layout_marginBottom="20dp"
-                    android:orientation="horizontal">
-                    <ImageView
-                        android:id="@+id/thumbs_up"
+                    android:orientation="vertical">
+                    <TextView
+                        android:layout_marginStart="10dp"
+                        android:layout_marginEnd="10dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="20dp"
                         android:layout_gravity="center"
-                        android:layout_width="40dp"
-                        android:layout_height="40dp"
-                        android:layout_marginEnd="20dp"
-                        android:src="@drawable/thumbs_up"/>
-                    <ImageView
-                        android:id="@+id/thumbs_down"
-                        android:layout_gravity="center"
-                        android:layout_width="40dp"
-                        android:layout_height="40dp"
-                        android:src="@drawable/thumbs_down"/>
+                        android:textSize="16dp"
+                        android:textAlignment="center"
+                        android:textColor="@color/black"
+                        android:text="@string/apakah_permasalahan_anda_n_selesai_dengan_baik"/>
+                    <LinearLayout
+                        android:gravity="center"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:layout_marginBottom="20dp"
+                        android:orientation="horizontal">
+                        <ImageView
+                            android:id="@+id/thumbs_up"
+                            android:layout_gravity="center"
+                            android:layout_width="40dp"
+                            android:layout_height="40dp"
+                            android:layout_marginEnd="20dp"
+                            android:src="@drawable/thumbs_up"/>
+                        <ImageView
+                            android:id="@+id/thumbs_down"
+                            android:layout_gravity="center"
+                            android:layout_width="40dp"
+                            android:layout_height="40dp"
+                            android:src="@drawable/thumbs_down"/>
+                    </LinearLayout>
                 </LinearLayout>
-            </LinearLayout>
 
-        </androidx.cardview.widget.CardView>
+            </androidx.cardview.widget.CardView>
 
-        <androidx.cardview.widget.CardView
-            android:layout_marginTop="20dp"
-            android:layout_marginStart="30dp"
-            android:layout_marginEnd="30dp"
-            android:elevation="0dp"
-            android:backgroundTint="#F1F2F2"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:cardCornerRadius="10dp"
-            android:layout_gravity="center">
-
-            <LinearLayout
+            <androidx.cardview.widget.CardView
+                android:layout_marginTop="20dp"
+                android:layout_marginStart="30dp"
+                android:layout_marginEnd="30dp"
+                android:elevation="0dp"
+                android:backgroundTint="#F1F2F2"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical">
+                app:cardCornerRadius="10dp"
+                android:layout_gravity="center">
 
-                <TextView
-                    android:layout_width="wrap_content"
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    android:layout_marginStart="10dp"
-                    android:layout_marginEnd="10dp"
-                    android:layout_gravity="center"
-                    android:textSize="16dp"
-                    android:textAlignment="center"
-                    android:textColor="@color/black"
-                    android:text="@string/mohon_berikan_penilaian_anda_atas_npelayanan_dips_hari_ini"/>
-                <RatingBar
-                    android:clickable="false"
-                    android:focusable="false"
-                    android:progressTint="@color/ratingON"
-                    android:layout_gravity="center"
-                    android:id="@+id/ratingBar"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    android:stepSize="1"/>
+                    android:orientation="vertical">
 
-            </LinearLayout>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:layout_marginStart="10dp"
+                        android:layout_marginEnd="10dp"
+                        android:layout_gravity="center"
+                        android:textSize="16dp"
+                        android:textAlignment="center"
+                        android:textColor="@color/black"
+                        android:text="@string/mohon_berikan_penilaian_anda_atas_npelayanan_dips_hari_ini"/>
+                    <RatingBar
+                        android:clickable="false"
+                        android:focusable="false"
+                        android:progressTint="@color/ratingON"
+                        android:layout_gravity="center"
+                        android:id="@+id/ratingBar"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:stepSize="1"/>
 
-        </androidx.cardview.widget.CardView>
+                </LinearLayout>
 
-        <!--<com.google.android.material.textfield.TextInputLayout
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:layout_marginStart="30dp"
-            android:layout_marginEnd="30dp"
-            android:layout_marginBottom="20dp"
-            app:boxStrokeWidth="2dp"
-            app:boxStrokeColor="@color/black"
-            app:boxCornerRadiusBottomEnd="10dp"
-            app:boxCornerRadiusBottomStart="10dp"
-            app:boxCornerRadiusTopEnd="10dp"
-            app:boxCornerRadiusTopStart="10dp">-->
+            </androidx.cardview.widget.CardView>
 
             <EditText
                 android:gravity="top"
@@ -160,20 +148,25 @@
                 android:scrollbars="vertical"
                 android:textSize="16sp"
                 tools:ignore="SpeakableTextPresentCheck,SpeakableTextPresentCheck,SpeakableTextPresentCheck" />
-    <!--    </com.google.android.material.textfield.TextInputLayout>-->
-        <Button
-            android:enabled="false"
-            android:layout_marginStart="30dp"
-            android:layout_marginEnd="30dp"
-            android:layout_marginBottom="20dp"
-            android:id="@+id/btnSend"
-            android:layout_width="match_parent"
-            android:layout_height="40dp"
-            android:background="@drawable/oval_background_10dp"
-            android:backgroundTint="@color/btnFalse"
-            android:text="@string/send"
-            android:textSize="14dp"
-            android:textColor="@color/white"
-            android:textStyle="bold" />
-    </LinearLayout>
-</androidx.core.widget.NestedScrollView>
+            <Button
+                android:enabled="false"
+                android:layout_marginStart="30dp"
+                android:layout_marginEnd="30dp"
+                android:layout_marginBottom="20dp"
+                android:id="@+id/btnSend"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:background="@drawable/oval_background_10dp"
+                android:backgroundTint="@color/btnFalse"
+                android:text="@string/send"
+                android:textSize="14dp"
+                android:textColor="@color/white"
+                android:textStyle="bold" />
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+    <include
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        layout="@layout/progress_loading"
+        android:layout_centerInParent="true"/>
+</RelativeLayout>

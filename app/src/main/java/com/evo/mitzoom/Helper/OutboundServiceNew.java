@@ -277,8 +277,8 @@ public class OutboundServiceNew extends Service {
     }
 
     private void showIncomingCallNotification() {
-        Log.e("CEK","showIncomingCallNotification");
         username_agent = nameAgent;
+        Log.e(TAG,"showIncomingCallNotification username_agent : "+username_agent);
 
         NotificationManager notificationManagerCompat = (NotificationManager) getApplicationContext().getSystemService(Context.NOTIFICATION_SERVICE);
 
@@ -287,6 +287,8 @@ public class OutboundServiceNew extends Service {
         PendingIntent pendingIntentEnd = createPendingDiPSOutboundSession(ACTION_DISMISS_CALL, 103);
 
         String nameApps = getResources().getString(R.string.app_name_dips);
+
+        Log.e(TAG,"showIncomingCallNotification nameApps : "+nameApps);
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext(), CHANNEL_ID)
                 .setSmallIcon(R.mipmap.dips361)
@@ -304,16 +306,18 @@ public class OutboundServiceNew extends Service {
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
                 .setCategory(NotificationCompat.CATEGORY_CALL);
 
+        Log.e(TAG,"showIncomingCallNotification NotificationCompat");
+
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
             NotificationChannel incomingCallsChannel = new NotificationChannel(
                     CHANNEL_ID, CHANNEL_NAME,
                     NotificationManager.IMPORTANCE_HIGH);
             incomingCallsChannel.setSound(null, null);
-            incomingCallsChannel.setShowBadge(false);
+            //incomingCallsChannel.setShowBadge(false);
             incomingCallsChannel.setLightColor(LED_COLOR);
             incomingCallsChannel.enableLights(true);
             incomingCallsChannel.setGroup("calls");
-            incomingCallsChannel.setBypassDnd(true);
+            //incomingCallsChannel.setBypassDnd(true);
             incomingCallsChannel.enableVibration(false);
 
             builder.setChannelId(CHANNEL_ID);
@@ -326,10 +330,11 @@ public class OutboundServiceNew extends Service {
         notification.flags = notification.flags | Notification.FLAG_INSISTENT;
         notificationManagerCompat.notify(NOTIFICATION_IDOutbound, notification);
 
-        Log.e("CEK","END showIncomingCallNotification");
+        Log.e(TAG,"END showIncomingCallNotification");
     }
 
     private void modifyIncomingCall(final NotificationCompat.Builder mBuilder) {
+        Log.e(TAG,"modifyIncomingCall");
         mBuilder.setPriority(NotificationCompat.PRIORITY_HIGH);
         setNotificationColor(mBuilder);
         mBuilder.setLights(LED_COLOR, 2000, 3000);
@@ -343,8 +348,10 @@ public class OutboundServiceNew extends Service {
         final Intent fullScreenIntent =
                 new Intent(getApplicationContext(), DipsOutboundCall.class);
         fullScreenIntent.setAction(action);
+        fullScreenIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+        fullScreenIntent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
         return PendingIntent.getActivity(
-                getApplicationContext(),
+                this,
                 requestCode,
                 fullScreenIntent,
                 s()
@@ -427,12 +434,12 @@ public class OutboundServiceNew extends Service {
         Log.e("CEK","acceptCall : "+sessions.getIDSchedule());
         if (sessions.getIDSchedule() > 0) {
             publishCallAccept();
-            if (subscribeThreadCallOutbound != null) {
+            /*if (subscribeThreadCallOutbound != null) {
                 subscribeThreadCallOutbound.interrupt();
             }
             if (publishCallAcceptThread != null) {
                 publishCallAcceptThread.interrupt();
-            }
+            }*/
         } else {
             Toast.makeText(mContext,"Tidak berhasil Call",Toast.LENGTH_SHORT).show();
         }

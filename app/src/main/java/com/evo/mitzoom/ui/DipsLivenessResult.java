@@ -87,11 +87,12 @@ public class DipsLivenessResult extends AppCompatActivity {
         AnimationCall();
 
         byte[] resultImage = getIntent().getExtras().getByteArray("RESULT_IMAGE_AI");
-        String imgBase64 = Base64.encodeToString(resultImage, Base64.NO_WRAP);
-        Bitmap bitmap = BitmapFactory.decodeByteArray(resultImage, 0, resultImage.length);
-        mask_view.setImageBitmap(bitmap);
-
-        processH5Advance(imgBase64);
+        if (resultImage.length > 0) {
+            String imgBase64 = Base64.encodeToString(resultImage, Base64.NO_WRAP);
+            Bitmap bitmap = BitmapFactory.decodeByteArray(resultImage, 0, resultImage.length);
+            mask_view.setImageBitmap(bitmap);
+            processH5Advance(imgBase64);
+        }
     }
 
     @Override
@@ -125,19 +126,19 @@ public class DipsLivenessResult extends AppCompatActivity {
 
                 if (count == 1)
                 {
-                    tip_text_view.setText(getString(R.string.please_wait));
+                    tip_text_view.setText(getResources().getString(R.string.please_wait));
                 }
                 else if (count == 2)
                 {
-                    tip_text_view.setText(getString(R.string.please_wait1));
+                    tip_text_view.setText(getResources().getString(R.string.please_wait1));
                 }
                 else if (count == 3)
                 {
-                    tip_text_view.setText(getString(R.string.please_wait2));
+                    tip_text_view.setText(getResources().getString(R.string.please_wait2));
                 }
                 else if (count == 4)
                 {
-                    tip_text_view.setText(getString(R.string.please_wait3));
+                    tip_text_view.setText(getResources().getString(R.string.please_wait3));
                 }
 
                 if (count == 4)

@@ -214,6 +214,12 @@ public class SessionManager {
         editor.commit();
     }
 
+    public void clearIdDiPSCSID(){
+        editor.putString(KEY_IdDips,null);
+        editor.putString(KEY_CSID,null);
+        editor.commit();
+    }
+
     public void clearData(){
         editor.clear();
         editor.commit();

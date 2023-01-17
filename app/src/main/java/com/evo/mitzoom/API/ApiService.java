@@ -250,4 +250,12 @@ public interface ApiService {
     @POST("digitech/h5-advance")
     Call<JsonObject> H5Advance(@Body RequestBody body);
 
+    @Headers("Content-Type: "+ MyConstants.CONTENT_TYPE)
+    @POST("rating-agent")
+    Call<JsonObject> RateAgent(@Body RequestBody body);
+
+    @Headers("Content-Type: "+ MyConstants.CONTENT_TYPE)
+    @POST("rating-app")
+    Call<JsonObject> RateApp(@Body RequestBody body);
+
 }

@@ -4,7 +4,9 @@ import static com.evo.mitzoom.ui.DipsChooseLanguage.setLocale;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,37 +15,61 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RatingBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 
+import com.evo.mitzoom.API.Server;
+import com.evo.mitzoom.BaseMeetingActivity;
 import com.evo.mitzoom.R;
 import com.evo.mitzoom.Session.SessionManager;
+import com.evo.mitzoom.ui.Alternative.DipsSwafoto;
+import com.google.gson.JsonObject;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import cn.pedant.SweetAlert.SweetAlertDialog;
+import okhttp3.MediaType;
+import okhttp3.RequestBody;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import us.zoom.sdk.ZoomVideoSDK;
 
 public class RatingActivity extends AppCompatActivity {
+    private final String TAG = "CEK_RatingActivity";
     private ImageView thumbs_up, thumbs_down;
     private Button btnSend;
     private RatingBar rating;
     private EditText kritik;
     private Context mContext;
     private SessionManager sessions;
+    private String thumb = "";
+    private String idDips = "";
+    private String idAgent = "";
+    private RelativeLayout rlprogress;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         mContext = this;
         sessions = new SessionManager(mContext);
         String lang = sessions.getLANG();
+        idDips = sessions.getKEY_IdDips();
+        idAgent = sessions.getCSID();
         setLocale(this, lang);
         //LocaleHelper.setLocale(this,lang);
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_rating);
+
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
         //getSupportActionBar().hide();
+        Log.e(TAG,"idDips : "+idDips+" | idAgent : "+idAgent);
+        rlprogress = (RelativeLayout) findViewById(R.id.rlprogress);
         rating = findViewById(R.id.ratingBar);
         rating.setClickable(false);
         rating.setFocusable(false);
@@ -63,6 +89,7 @@ public class RatingActivity extends AppCompatActivity {
                 btnSend.setBackgroundTintList(RatingActivity.this.getResources().getColorStateList(R.color.zm_button));
                 thumbs_down.setImageResource(R.drawable.thumbs_down2);
                 thumbs_up.setImageResource(R.drawable.thumbs_up);
+                thumb = "thumbDown";
             }
         });
         thumbs_up.setOnClickListener(new View.OnClickListener() {
@@ -74,6 +101,7 @@ public class RatingActivity extends AppCompatActivity {
                 btnSend.setEnabled(true);
                 btnSend.setBackgroundTintList(RatingActivity.this.getResources().getColorStateList(R.color.zm_button));
                 thumbs_down.setImageResource(R.drawable.thumbs_down);
+                thumb = "thumbUp";
             }
         });
 
@@ -81,7 +109,11 @@ public class RatingActivity extends AppCompatActivity {
        btnSend.setOnClickListener(new View.OnClickListener() {
            @Override
            public void onClick(View v) {
-               PopUp();
+               Log.e(TAG,"thumb : "+thumb+" | rating getNumStars : "+rating.getNumStars()+" | rating getRating : "+rating.getRating());
+               if (idDips != null && idAgent != null) {
+                   showProgress(true);
+                   new AsyncRating().execute();
+               }
            }
        });
     }
@@ -99,6 +131,7 @@ public class RatingActivity extends AppCompatActivity {
         }
         return super.onKeyDown(keyCode, event);
     }
+
     private void PopUp(){
         LayoutInflater inflater = getLayoutInflater();
         View dialogView = inflater.inflate(R.layout.layout_dialog_sweet, null);
@@ -130,6 +163,93 @@ public class RatingActivity extends AppCompatActivity {
             }
         });
     }
+
+    private class AsyncRating extends AsyncTask<Void,Void,Void> {
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            RatingAgent();
+            return null;
+        }
+    }
+
+    private void RatingAgent() {
+        JSONObject jsons = new JSONObject();
+        try {
+            jsons.put("idAgent",Integer.parseInt(idAgent));
+            jsons.put("idDips",idDips);
+            jsons.put("rating",thumb);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        Log.e(TAG,"RatingAgent : "+jsons.toString());
+
+        RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), jsons.toString());
+
+        Server.getAPIService().RateAgent(requestBody).enqueue(new Callback<JsonObject>() {
+            @Override
+            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                Log.e(TAG,"RatingAgent ResponCode : "+response.code());
+                if (response.isSuccessful()) {
+                    RatingApps();
+                } else {
+                    showProgress(false);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<JsonObject> call, Throwable t) {
+                showProgress(false);
+            }
+        });
+    }
+
+    private void RatingApps() {
+        String getKritik = kritik.getText().toString().trim();
+        int getStar = (int) rating.getRating();
+        String stars = String.valueOf(getStar);
+        Log.e(TAG,"KRITIK : "+getKritik+" | stars : "+stars);
+        JSONObject jsons = new JSONObject();
+        try {
+            jsons.put("idDips",idDips);
+            jsons.put("rating",stars);
+            jsons.put("comment",getKritik);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        Log.e(TAG,"RatingApps : "+jsons.toString());
+
+        RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), jsons.toString());
+
+        Server.getAPIService().RateApp(requestBody).enqueue(new Callback<JsonObject>() {
+            @Override
+            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                Log.e(TAG,"RatingApps ResponCode : "+response.code());
+                showProgress(false);
+                if (response.isSuccessful()) {
+                    sessions.clearIdDiPSCSID();
+                    PopUp();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<JsonObject> call, Throwable t) {
+                showProgress(false);
+            }
+        });
+    }
+
+    private void showProgress(Boolean bool){
+
+        if (bool){
+            rlprogress.setVisibility(View.VISIBLE);
+        }else {
+            rlprogress.setVisibility(View.GONE);
+        }
+    }
+
     private void OutApps(){
         Intent intent = new Intent(Intent.ACTION_MAIN);
         intent.addCategory(Intent.CATEGORY_HOME);

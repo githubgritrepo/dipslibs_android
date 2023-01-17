@@ -3,6 +3,7 @@ package com.evo.mitzoom.ui;
 import static com.evo.mitzoom.ui.DipsChooseLanguage.setLocale;
 
 import android.Manifest;
+import android.app.Activity;
 import android.app.ActivityManager;
 import android.content.Context;
 import android.content.Intent;
@@ -127,7 +128,6 @@ public class DipsWaitingRoom extends AppCompatActivity implements DatePickerDial
     private boolean doubleBackToExitPressedOnce = false;
     private SessionManager sessions;
     private TextView myTicket, lastTicket;
-    private SweetAlertDialog dialogWaiting;
     private SweetAlertDialog dialogSuccess;
     private SweetAlertDialog dialogConfirm;
     private DisplayMetrics displayMetrics;
@@ -228,7 +228,7 @@ public class DipsWaitingRoom extends AppCompatActivity implements DatePickerDial
     protected void onResume() {
         super.onResume();
 
-        Log.d("CEK","MASUK onResume");
+        Log.d("CEK","MASUK onResume inPreview : "+inPreview+" | camera : "+camera);
 
         isConfigure = false;
 
@@ -275,6 +275,8 @@ public class DipsWaitingRoom extends AppCompatActivity implements DatePickerDial
             inPreview = false;
         }
 
+        Log.e("CEK","inPreview : "+inPreview+" | camera : "+camera);
+
         super.onPause();
     }
 
@@ -314,16 +316,20 @@ public class DipsWaitingRoom extends AppCompatActivity implements DatePickerDial
             if (checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
                 requestPermissions(new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE},  REQUEST_WRITE_PERMISSION);
             } else {
-                camera = Camera.open(useFacing);
-                startPreview();
+                if (camera == null) {
+                    camera = Camera.open(useFacing);
+                    startPreview();
+                }
             }
         } else {
             int resultPerm = ContextCompat.checkSelfPermission(mContext, Manifest.permission.WRITE_EXTERNAL_STORAGE);
             if (resultPerm != PackageManager.PERMISSION_GRANTED) {
                 ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_WRITE_PERMISSION);
             } else {
-                camera = Camera.open(useFacing);
-                startPreview();
+                if (camera == null) {
+                    camera = Camera.open(useFacing);
+                    startPreview();
+                }
             }
         }
     }
@@ -1124,25 +1130,27 @@ public class DipsWaitingRoom extends AppCompatActivity implements DatePickerDial
         btnCancelDialog.setText(getString(R.string.schedule_a_task));
         btnConfirmDialog.setText(getString(R.string.waiting));
 
-        dialogWaiting = new SweetAlertDialog(DipsWaitingRoom.this, SweetAlertDialog.NORMAL_TYPE);
-        dialogWaiting.setCustomView(dialogView);
-        dialogWaiting.hideConfirmButton();
-        dialogWaiting.setCancelable(false);
-        dialogWaiting.show();
+        if (!((Activity) mContext).isFinishing()) {
+            SweetAlertDialog dialogWaiting = new SweetAlertDialog(DipsWaitingRoom.this, SweetAlertDialog.NORMAL_TYPE);
+            dialogWaiting.setCustomView(dialogView);
+            dialogWaiting.hideConfirmButton();
+            dialogWaiting.setCancelable(false);
+            dialogWaiting.show();
 
-        btnConfirmDialog.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                dialogWaiting.dismissWithAnimation();
-            }
-        });
-        btnCancelDialog.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                dialogWaiting.dismissWithAnimation();
-                PopUpSchedule();
-            }
-        });
+            btnConfirmDialog.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    dialogWaiting.dismissWithAnimation();
+                }
+            });
+            btnCancelDialog.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    dialogWaiting.dismissWithAnimation();
+                    PopUpSchedule();
+                }
+            });
+        }
     }
 
     private void PopUpSchedule(){
@@ -1410,6 +1418,7 @@ public class DipsWaitingRoom extends AppCompatActivity implements DatePickerDial
             public void onClick(View view) {
                 dialogSuccess.dismissWithAnimation();
                 dialogSuccess.cancel();
+                publishCallAccept(csId,"cancel"); //RabbitMQ
                 EndCall();
                 dialogSuccess = null;
             }

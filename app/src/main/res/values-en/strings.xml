@@ -124,8 +124,8 @@
     <string name="dana_pihak_ketiga">Third Fund</string>
     <string name="investasi">Investment</string>
     <string name="kredit">Credit</string>
-    <string name="antrian_saya">(Your number)</string>
-    <string name="antrian_sekarang">(At the moment)</string>
+    <string name="antrian_saya">(Your queue)</string>
+    <string name="antrian_sekarang">(Current queue)</string>
     <string name="mata_uang">IDR</string>
     <string name="formulir_rtgs">Transfer Form</string>
     <string name="please_wait">Please Wait</string>
@@ -143,7 +143,7 @@
     <string name="transaksi_anda_berhasil">Your Transactions Successfully</string>
     <string name="resi_ini_akan_otomatis_dikirim_melalui_email_anda">This receipt will be automatically\nsent to your email.</string>
     <string name="resi">Receipt</string>
-    <string name="perorangan">Public</string>
+    <string name="perorangan">Personal</string>
     <string name="perusahaan">Company</string>
     <string name="pemerintah">Governor</string>
     <string name="INTERBANK_TRANSACTION">Interbank Transactions</string>

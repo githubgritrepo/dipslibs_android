@@ -1122,12 +1122,20 @@ public class DipsOutboundCall extends AppCompatActivity implements DatePickerDia
         //Optional
         sessionContext.sessionPassword = sessionPass;
 
+        Log.i(TAG,"masuk processCreateVideo sessionName : "+sessionName+" | userName : "+name);
+        Log.i(TAG,"masuk processCreateVideo signatures : "+signatures);
+
         ZoomVideoSDKSession session = ZoomVideoSDK.getInstance().joinSession(sessionContext);
 
         if(null==session){
             Log.i(TAG,"SESSION NULL");
             return;
         }
+
+        Log.i(TAG,"masuk processCreateVideo getSessionID : "+session.getSessionID());
+        Log.i(TAG,"masuk processCreateVideo getSessionPassword : "+session.getSessionPassword());
+        Log.i(TAG,"masuk processCreateVideo getSessionName : "+session.getSessionName());
+        Log.i(TAG,"masuk processCreateVideo getSessionHostName : "+session.getSessionHostName());
 
         Log.i(TAG,"LANJUUTT");
 
@@ -1138,6 +1146,7 @@ public class DipsOutboundCall extends AppCompatActivity implements DatePickerDia
         intent.putExtra("render_type", renderType);
         startActivity(intent);
         finish();
+        OutboundServiceNew.stopServiceSocket();
     }
 
 }

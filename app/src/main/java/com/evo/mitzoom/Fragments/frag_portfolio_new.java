@@ -1,6 +1,8 @@
 package com.evo.mitzoom.Fragments;
 
 import android.content.Context;
+import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
@@ -84,18 +86,32 @@ public class frag_portfolio_new extends Fragment {
         return Color.rgb(r, g, b);
     }
 
+    /*@Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        Log.e("CEK","MASUK onAttach");
+        sessions = new SessionManager(context);
+        String lang = sessions.getLANG();
+
+        Locale locale = new Locale(lang);
+        Locale.setDefault(locale);
+        Resources resources = context.getResources();
+        Configuration config = resources.getConfiguration();
+        config.setLocale(locale);
+        resources.updateConfiguration(config, resources.getDisplayMetrics());
+    }*/
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+        Log.e("CEK","MASUK context");
         mContext = getContext();
         sessions = new SessionManager(mContext);
 
+        super.onCreate(savedInstanceState);
+        Log.e("CEK","MASUK onCreate");
+
         if (sessions.getNoCIF() != null) {
             noCif = sessions.getNoCIF();
-        }
-
-        if (noCif.isEmpty()) {
-            noCif = "obnllnnxo";
         }
 
         isSessionZoom = ZoomVideoSDK.getInstance().isInSession();
