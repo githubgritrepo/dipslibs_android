@@ -6,6 +6,7 @@ import android.Manifest;
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.hardware.Camera;
@@ -30,6 +31,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -128,7 +130,6 @@ public class DipsWaitingRoom extends AppCompatActivity implements DatePickerDial
     private boolean doubleBackToExitPressedOnce = false;
     private SessionManager sessions;
     private TextView myTicket, lastTicket;
-    private SweetAlertDialog dialogSuccess;
     private SweetAlertDialog dialogConfirm;
     private DisplayMetrics displayMetrics;
     private int Savewaktu;
@@ -161,6 +162,7 @@ public class DipsWaitingRoom extends AppCompatActivity implements DatePickerDial
     private Button btnSchedule2;
     public static RelativeLayout rlprogress;
     private boolean isConfigure;
+    private boolean flagShowJoin = false;
 
     {
         try {
@@ -682,12 +684,17 @@ public class DipsWaitingRoom extends AppCompatActivity implements DatePickerDial
                                     Log.e("CEK", "subscribeCall getQueue : " + getQueue + " | myTicketNumber : " + myTicketNumber);
                                     if (getQueue.equals(myTicketNumber)) {
                                         Log.e("CEK", "subscribeCall MASUK IF");
+                                        String sessionId = idDips;
+                                        if (dataObj.getJSONObject("transaction").has("sessionId")) {
+                                            sessionId = dataObj.getJSONObject("transaction").getString("sessionId");
+                                        }
                                         String csId = dataObj.getJSONObject("transaction").getString("csId");
                                         String password = dataObj.getJSONObject("transaction").getString("password");
+                                        Log.e("CEK", "subscribeCall sessionId : " + sessionId);
                                         Log.e("CEK", "subscribeCall csId : " + csId);
                                         Log.e("CEK", "subscribeCall password : " + password);
 
-                                        NameSession = idDips;
+                                        NameSession = sessionId;
                                         SessionPass = password;
                                         sessions.saveCSID(csId);
                                         runOnUiThread(new Runnable() {
@@ -695,7 +702,9 @@ public class DipsWaitingRoom extends AppCompatActivity implements DatePickerDial
                                             public void run() {
                                                 if (!isFinishing()) {
                                                     try {
-                                                        PopUpSucces(csId);
+                                                        if (flagShowJoin == false) {
+                                                            PopUpSucces(csId);
+                                                        }
                                                     } catch (WindowManager.BadTokenException e) {
                                                         Log.e("WindowManagerBad ", e.toString());
                                                     }
@@ -1119,8 +1128,15 @@ public class DipsWaitingRoom extends AppCompatActivity implements DatePickerDial
         ImageView imgDialog = (ImageView) dialogView.findViewById(R.id.imgDialog);
         TextView tvTitleDialog = (TextView) dialogView.findViewById(R.id.tvTitleDialog);
         TextView tvBodyDialog = (TextView) dialogView.findViewById(R.id.tvBodyDialog);
+        LinearLayout llBtnWaiting = (LinearLayout) dialogView.findViewById(R.id.llBtnWaiting);
         Button btnCancelDialog = (Button) dialogView.findViewById(R.id.btnCancelDialog);
         Button btnConfirmDialog = (Button) dialogView.findViewById(R.id.btnConfirmDialog);
+
+        if (sessions.getLANG().equals("en")) {
+            llBtnWaiting.setOrientation(LinearLayout.HORIZONTAL);
+        } else {
+            llBtnWaiting.setOrientation(LinearLayout.VERTICAL);
+        }
 
         tvTitleDialog.setVisibility(View.GONE);
         btnCancelDialog.setVisibility(View.VISIBLE);
@@ -1369,6 +1385,7 @@ public class DipsWaitingRoom extends AppCompatActivity implements DatePickerDial
     }
 
     private void PopUpSucces(String csId){
+        flagShowJoin = true;
         LayoutInflater inflater = getLayoutInflater();
         View dialogView = inflater.inflate(R.layout.layout_dialog_sweet, null);
 
@@ -1386,24 +1403,25 @@ public class DipsWaitingRoom extends AppCompatActivity implements DatePickerDial
         btnCancelDialog.setText(getString(R.string.reject));
         btnConfirmDialog.setText(getString(R.string.btn_continue));
 
-        if (dialogSuccess == null) {
-            Log.e("CEK","dialogSuccess");
-            dialogSuccess = new SweetAlertDialog(DipsWaitingRoom.this, SweetAlertDialog.NORMAL_TYPE);
-        }
+        SweetAlertDialog dialogSuccess = new SweetAlertDialog(DipsWaitingRoom.this, SweetAlertDialog.NORMAL_TYPE);
         dialogSuccess.setCustomView(dialogView);
         dialogSuccess.setCancelable(false);
         dialogSuccess.hideConfirmButton();
         dialogSuccess.show();
 
+        dialogSuccess.setOnDismissListener(new DialogInterface.OnDismissListener() {
+            @Override
+            public void onDismiss(DialogInterface dialogInterface) {
+                flagShowJoin = false;
+            }
+        });
+
         btnConfirmDialog.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if (!SessionPass.isEmpty()) {
-                    if (dialogSuccess != null) {
-                        dialogSuccess.dismissWithAnimation();
-                        dialogSuccess.cancel();
-                        dialogSuccess = null;
-                    }
+                    dialogSuccess.cancel();
+                    dialogSuccess.dismissWithAnimation();
                     publishCallAccept(csId,"accept"); //RabbitMQ
                     processJoinVideo();
                     //Popup();
@@ -1416,11 +1434,10 @@ public class DipsWaitingRoom extends AppCompatActivity implements DatePickerDial
         btnCancelDialog.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                dialogSuccess.dismissWithAnimation();
                 dialogSuccess.cancel();
+                dialogSuccess.dismissWithAnimation();
                 publishCallAccept(csId,"cancel"); //RabbitMQ
                 EndCall();
-                dialogSuccess = null;
             }
         });
     }

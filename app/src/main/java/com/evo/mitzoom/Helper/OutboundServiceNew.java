@@ -17,7 +17,6 @@ import android.util.Log;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
 import androidx.core.app.NotificationCompat;
 import androidx.core.content.ContextCompat;
 
@@ -64,6 +63,7 @@ public class OutboundServiceNew extends Service {
     public static String imagesAgent = "";
     public static String nameAgent = "";
     private static String csId = "";
+    private static String sessionId;
     String CHANNEL_ID = "OutboundCall";
     String CHANNEL_NAME = "Outbound Call";
     int LED_COLOR = 0xff00ff00;
@@ -82,6 +82,7 @@ public class OutboundServiceNew extends Service {
         final PowerManager pm = ContextCompat.getSystemService(mContext, PowerManager.class);
         wakeLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "Outbound:Service");
 
+        sessionId = idDips;
     }
 
     @Override
@@ -184,6 +185,10 @@ public class OutboundServiceNew extends Service {
                                     sessions.saveCSID(csId);
                                 } else {
                                     int getTicket = dataObj.getJSONObject("transaction").getInt("ticket");
+                                    sessionId = idDips;
+                                    if (dataObj.getJSONObject("transaction").has("sessionId")) {
+                                        sessionId = dataObj.getJSONObject("transaction").getString("sessionId");
+                                    }
                                     csId = dataObj.getJSONObject("transaction").getString("csId");
                                     String password = dataObj.getJSONObject("transaction").getString("password");
                                     Log.e(TAG, "subscribeCall csId : " + csId);
@@ -516,6 +521,10 @@ public class OutboundServiceNew extends Service {
             notification.flags = notification.flags | Notification.FLAG_INSISTENT;
             notificationManagerCompat.notify(NOTIFICATION_IDOutbound, notification);
         }
+    }
+
+    public static String getSessionID_Zoom(){
+        return sessionId;
     }
 
     public static String getPassword_session(){

@@ -42,11 +42,11 @@ import androidx.core.content.ContextCompat;
 
 import com.auth0.android.jwt.Claim;
 import com.auth0.android.jwt.JWT;
+import com.bumptech.glide.Glide;
 import com.evo.mitzoom.API.ApiService;
 import com.evo.mitzoom.API.Server;
 import com.evo.mitzoom.BaseMeetingActivity;
 import com.evo.mitzoom.Constants.AuthConstants;
-import com.evo.mitzoom.GlideApp;
 import com.evo.mitzoom.Helper.OutboundServiceNew;
 import com.evo.mitzoom.R;
 import com.evo.mitzoom.Session.SessionManager;
@@ -54,8 +54,6 @@ import com.evo.mitzoom.util.ErrorMsgUtil;
 import com.evo.mitzoom.util.NetworkUtil;
 import com.google.android.material.button.MaterialButton;
 import com.google.gson.JsonObject;
-import com.rabbitmq.client.Channel;
-import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 import com.wdullaer.materialdatetimepicker.date.DatePickerDialog;
 
@@ -69,11 +67,9 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.TimeoutException;
 
 import cn.pedant.SweetAlert.SweetAlertDialog;
 import de.hdodenhof.circleimageview.CircleImageView;
-import io.socket.client.Socket;
 import okhttp3.MediaType;
 import okhttp3.RequestBody;
 import retrofit2.Call;
@@ -86,7 +82,6 @@ import us.zoom.sdk.ZoomVideoSDKInitParams;
 import us.zoom.sdk.ZoomVideoSDKRawDataMemoryMode;
 import us.zoom.sdk.ZoomVideoSDKSession;
 import us.zoom.sdk.ZoomVideoSDKSessionContext;
-import us.zoom.sdk.ZoomVideoSDKUser;
 import us.zoom.sdk.ZoomVideoSDKVideoOption;
 
 public class DipsOutboundCall extends AppCompatActivity implements DatePickerDialog.OnDateSetListener {
@@ -129,6 +124,7 @@ public class DipsOutboundCall extends AppCompatActivity implements DatePickerDia
     private String customerName = "Customer";
     private String imageAgent = null;
     private String nameAgent = null;
+    private String sessionId;
     private CircleImageView imgCS;
     private boolean startTimeOut = true;
     private int loop = 1;
@@ -220,10 +216,12 @@ public class DipsOutboundCall extends AppCompatActivity implements DatePickerDia
         customerName = OutboundServiceNew.getCustomerName();
         imageAgent = OutboundServiceNew.getImagesAgent();
         nameAgent = OutboundServiceNew.getNameAgent();
+        sessionId = OutboundServiceNew.getSessionID_Zoom();
         nama_agen.setText(nameAgent);
 
         setupConnectionFactory(); //RabbitMQ
 
+        Log.i(TAG,"sessionId Zoom  : "+sessionId);
         Log.i(TAG,"passSession  : "+passSession);
         Log.i(TAG,"imageAgent  : "+imageAgent);
         Log.i(TAG,"startTimeOut  : "+startTimeOut);
@@ -234,7 +232,11 @@ public class DipsOutboundCall extends AppCompatActivity implements DatePickerDia
             String imageAgentnew = imageAgent.replace("https://dips.grit.id:6503/", Server.BASE_URL_API);
             Log.i("CEK GAMBAR", "" + imageAgentnew);
 
-            GlideApp.with(mContext)
+            /*GlideApp.with(mContext)
+                    .load(imageAgentnew)
+                    .placeholder(R.drawable.agen_profile)
+                    .into(imgCS);*/
+            Glide.with(mContext)
                     .load(imageAgentnew)
                     .placeholder(R.drawable.agen_profile)
                     .into(imgCS);
@@ -1051,7 +1053,7 @@ public class DipsOutboundCall extends AppCompatActivity implements DatePickerDia
         Log.e(TAG,"processSignature");
         JSONObject jsons = new JSONObject();
         try {
-            jsons.put("sessionName",idDips);
+            jsons.put("sessionName",sessionId);
             jsons.put("role",0);
             jsons.put("sessionKey",passSession);
             jsons.put("userIdentity", customerName);

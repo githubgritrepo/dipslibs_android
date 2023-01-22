@@ -13,7 +13,6 @@ import android.os.Bundle;
 import android.text.Html;
 import android.util.Base64;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -66,10 +65,9 @@ public class frag_open_account_product extends Fragment {
     private Button btnNext;
 
     private String dataTnC = "";
-    private SweetAlertDialog sweetAlertDialogTNC = null;
-    private View dialogView;
     private boolean isCust = false;
     private boolean isSwafoto = false;
+    private boolean flagViewTNC = false;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -142,8 +140,10 @@ public class frag_open_account_product extends Fragment {
                     Toast.makeText(mContext,getString(R.string.waiting),Toast.LENGTH_SHORT).show();
                     return;
                 }
-                rabbitMirroring.MirroringSendEndpoint(361);
-                PopUpTnc();
+                if (flagViewTNC == false) {
+                    rabbitMirroring.MirroringSendEndpoint(361);
+                    PopUpTnc();
+                }
             }
         });
 
@@ -224,18 +224,19 @@ public class frag_open_account_product extends Fragment {
     }
 
     private void PopUpTnc(){
+        flagViewTNC = true;
         Log.e("CEK","MASUK PopUpTnc");
         LayoutInflater inflater = ((Activity) mContext).getLayoutInflater();
-        //if (sweetAlertDialogTNC == null) {
-            dialogView = inflater.inflate(R.layout.item_tnc,null);
-            sweetAlertDialogTNC = new SweetAlertDialog(mContext, SweetAlertDialog.NORMAL_TYPE);
-            sweetAlertDialogTNC.setCustomView(dialogView);
-            sweetAlertDialogTNC.hideConfirmButton();
-            sweetAlertDialogTNC.setCancelable(true);
-        //}
+        View dialogView = inflater.inflate(R.layout.item_tnc, null);
+        SweetAlertDialog sweetAlertDialogTNC = new SweetAlertDialog(mContext, SweetAlertDialog.NORMAL_TYPE);
         TextView tvBody = (TextView) dialogView.findViewById(R.id.tvBody);
         CheckBox checkBox = dialogView.findViewById(R.id.checktnc);
         Button btn = dialogView.findViewById(R.id.btnnexttnc);
+        btn.setClickable(false);
+
+        sweetAlertDialogTNC.setCustomView(dialogView);
+        sweetAlertDialogTNC.hideConfirmButton();
+        sweetAlertDialogTNC.setCancelable(true);
 
         if (!dataTnC.isEmpty()) {
             tvBody.setText(Html.fromHtml(dataTnC, Html.FROM_HTML_MODE_LEGACY, new Html.ImageGetter() {
@@ -254,21 +255,26 @@ public class frag_open_account_product extends Fragment {
                 }
             }, null));
         }
-        btn.setClickable(false);
 
-        int width = (int)(((Activity)mContext).getResources().getDisplayMetrics().widthPixels*0.60);
-        int height = (int)(((Activity)mContext).getResources().getDisplayMetrics().heightPixels*0.60);
+        sweetAlertDialogTNC.show();
 
-        sweetAlertDialogTNC.getWindow().setGravity(Gravity.CENTER_HORIZONTAL);
-        sweetAlertDialogTNC.getWindow().setLayout(width,height);
+        int width = (int)(((Activity)mContext).getResources().getDisplayMetrics().widthPixels);
+        int height = (int)(((Activity)mContext).getResources().getDisplayMetrics().heightPixels);
+
+        Log.e("CEK","PopUpTnc width : "+width+" | height : "+height);
+        int newWidth = (int)(width*0.8);
+        int newHeight = (int)(height*0.85);
+        Log.e("CEK","PopUpTnc newWidth : "+newWidth+" | newHeight : "+newHeight);
+
+        //sweetAlertDialogTNC.getWindow().setGravity(Gravity.CENTER_HORIZONTAL);
+        sweetAlertDialogTNC.getWindow().setLayout(newWidth,newHeight);
         sweetAlertDialogTNC.setOnDismissListener(new DialogInterface.OnDismissListener() {
             @Override
             public void onDismiss(DialogInterface dialogInterface) {
-
+                flagViewTNC = false;
             }
         });
 
-        sweetAlertDialogTNC.show();
         checkBox.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -302,8 +308,8 @@ public class frag_open_account_product extends Fragment {
             @Override
             public void onClick(View v) {
                 if (checkBox.isChecked()){
-                    sweetAlertDialogTNC.dismiss();
                     sweetAlertDialogTNC.cancel();
+                    sweetAlertDialogTNC.dismissWithAnimation();
                     if (sessions.getNoCIF() == null || sessions.getNoCIF().isEmpty()) {
                         sessions.saveIsCust(isCust);
                         sessions.saveIsSwafoto(isSwafoto);

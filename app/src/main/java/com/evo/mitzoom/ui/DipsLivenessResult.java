@@ -91,6 +91,7 @@ public class DipsLivenessResult extends AppCompatActivity {
             String imgBase64 = Base64.encodeToString(resultImage, Base64.NO_WRAP);
             Bitmap bitmap = BitmapFactory.decodeByteArray(resultImage, 0, resultImage.length);
             mask_view.setImageBitmap(bitmap);
+            //processCaptureIdentifyAuth(imgBase64);
             processH5Advance(imgBase64);
         }
     }

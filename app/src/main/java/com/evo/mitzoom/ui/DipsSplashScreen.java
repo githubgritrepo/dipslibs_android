@@ -98,9 +98,17 @@ public class DipsSplashScreen extends AppCompatActivity {
         btnCancelDialog.setText(getString(R.string.call_center));
         btnConfirmDialog.setText(getString(R.string.exit));
 
+        SweetAlertDialog sweetAlertDialog = new SweetAlertDialog(mContext, SweetAlertDialog.NORMAL_TYPE);
+        sweetAlertDialog.setCustomView(dialogView);
+        sweetAlertDialog.hideConfirmButton();
+        sweetAlertDialog.setCancelable(false);
+        sweetAlertDialog.show();
+
         btnCancelDialog.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                sweetAlertDialog.cancel();
+                sweetAlertDialog.dismissWithAnimation();
                 Intent dialPhoneIntent = new Intent(Intent.ACTION_DIAL, Uri.parse("tel:1500977"));
                 startActivity(dialPhoneIntent);
                 finishAffinity();
@@ -110,15 +118,11 @@ public class DipsSplashScreen extends AppCompatActivity {
         btnConfirmDialog.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                sweetAlertDialog.cancel();
+                sweetAlertDialog.dismissWithAnimation();
                 OutApps();
             }
         });
-
-        SweetAlertDialog sweetAlertDialog = new SweetAlertDialog(mContext, SweetAlertDialog.NORMAL_TYPE);
-        sweetAlertDialog.setCustomView(dialogView);
-        sweetAlertDialog.hideConfirmButton();
-        sweetAlertDialog.setCancelable(false);
-        sweetAlertDialog.show();
     }
 
     private void OutApps(){

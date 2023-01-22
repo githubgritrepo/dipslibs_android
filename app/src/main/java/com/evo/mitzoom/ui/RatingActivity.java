@@ -22,10 +22,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 
 import com.evo.mitzoom.API.Server;
-import com.evo.mitzoom.BaseMeetingActivity;
 import com.evo.mitzoom.R;
 import com.evo.mitzoom.Session.SessionManager;
-import com.evo.mitzoom.ui.Alternative.DipsSwafoto;
 import com.google.gson.JsonObject;
 
 import org.json.JSONException;
@@ -37,7 +35,6 @@ import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import us.zoom.sdk.ZoomVideoSDK;
 
 public class RatingActivity extends AppCompatActivity {
     private final String TAG = "CEK_RatingActivity";

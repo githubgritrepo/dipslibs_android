@@ -3,6 +3,8 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Kerjaan GRIT/Project Mobile/DiPS361/app/src/main/res/drawable/bg_porto.xml" value="0.253" />
+        <entry key="..\:/Kerjaan GRIT/Project Mobile/DiPS361/app/src/main/res/drawable/bg_subporto.xml" value="0.253" />
         <entry key="..\:/Kerjaan GRIT/Project Mobile/DiPS361/app/src/main/res/drawable/bg_textinput.xml" value="0.253" />
         <entry key="..\:/Kerjaan GRIT/Project Mobile/DiPS361/app/src/main/res/drawable/circle_background.xml" value="0.253" />
         <entry key="..\:/Kerjaan GRIT/Project Mobile/DiPS361/app/src/main/res/drawable/circle_icon.xml" value="0.253" />
@@ -18,7 +20,7 @@
         <entry key="..\:/Kerjaan GRIT/Project Mobile/DiPS361/app/src/main/res/layout/activity_dips_loading.xml" value="0.25" />
         <entry key="..\:/Kerjaan GRIT/Project Mobile/DiPS361/app/src/main/res/layout/activity_dips_splash_screen.xml" value="0.25" />
         <entry key="..\:/Kerjaan GRIT/Project Mobile/DiPS361/app/src/main/res/layout/activity_dips_swafoto.xml" value="0.4" />
-        <entry key="..\:/Kerjaan GRIT/Project Mobile/DiPS361/app/src/main/res/layout/activity_dips_video_confren.xml" value="0.2" />
+        <entry key="..\:/Kerjaan GRIT/Project Mobile/DiPS361/app/src/main/res/layout/activity_dips_video_confren.xml" value="0.4" />
         <entry key="..\:/Kerjaan GRIT/Project Mobile/DiPS361/app/src/main/res/layout/activity_dips_waiting_room.xml" value="0.264" />
         <entry key="..\:/Kerjaan GRIT/Project Mobile/DiPS361/app/src/main/res/layout/activity_rating.xml" value="0.25" />
         <entry key="..\:/Kerjaan GRIT/Project Mobile/DiPS361/app/src/main/res/layout/aktivasi_berhasil.xml" value="0.25" />
@@ -33,6 +35,7 @@
         <entry key="..\:/Kerjaan GRIT/Project Mobile/DiPS361/app/src/main/res/layout/frag_form_komplain.xml" value="0.25" />
         <entry key="..\:/Kerjaan GRIT/Project Mobile/DiPS361/app/src/main/res/layout/frag_form_opening_account.xml" value="0.18432971014492755" />
         <entry key="..\:/Kerjaan GRIT/Project Mobile/DiPS361/app/src/main/res/layout/frag_form_rtgs2.xml" value="0.25" />
+        <entry key="..\:/Kerjaan GRIT/Project Mobile/DiPS361/app/src/main/res/layout/frag_input_nik_nama.xml" value="0.25" />
         <entry key="..\:/Kerjaan GRIT/Project Mobile/DiPS361/app/src/main/res/layout/frag_item_bank.xml" value="0.25" />
         <entry key="..\:/Kerjaan GRIT/Project Mobile/DiPS361/app/src/main/res/layout/frag_new_account.xml" value="0.25" />
         <entry key="..\:/Kerjaan GRIT/Project Mobile/DiPS361/app/src/main/res/layout/frag_opening_account.xml" value="0.25" />
@@ -70,7 +73,7 @@
         <entry key="..\:/Kerjaan GRIT/Project Mobile/DiPS361/app/src/main/res/layout/item_ocr.xml" value="0.25" />
         <entry key="..\:/Kerjaan GRIT/Project Mobile/DiPS361/app/src/main/res/layout/item_otp.xml" value="0.25" />
         <entry key="..\:/Kerjaan GRIT/Project Mobile/DiPS361/app/src/main/res/layout/item_portfolio.xml" value="0.25" />
-        <entry key="..\:/Kerjaan GRIT/Project Mobile/DiPS361/app/src/main/res/layout/item_portfolio_new.xml" value="0.25" />
+        <entry key="..\:/Kerjaan GRIT/Project Mobile/DiPS361/app/src/main/res/layout/item_portfolio_new.xml" value="0.4" />
         <entry key="..\:/Kerjaan GRIT/Project Mobile/DiPS361/app/src/main/res/layout/item_ready_account_head.xml" value="0.4" />
         <entry key="..\:/Kerjaan GRIT/Project Mobile/DiPS361/app/src/main/res/layout/item_schedule.xml" value="0.25" />
         <entry key="..\:/Kerjaan GRIT/Project Mobile/DiPS361/app/src/main/res/layout/item_tabungan.xml" value="0.25" />

@@ -468,6 +468,7 @@ public class frag_service_item extends Fragment {
                     try {
                         dataMirr = new JSONObject(objEl.toString());
                         dataMirr.put("noponsel",no_handphone);
+                        dataMirr.put("noPengaduan",noPengaduan);
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }

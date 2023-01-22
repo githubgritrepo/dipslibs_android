@@ -38,12 +38,14 @@
         tools:text="Body Message" />
 
     <LinearLayout
+        android:id="@+id/llBtnWaiting"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
         android:orientation="horizontal"
         android:layout_below="@id/tvBodyDialog"
-        android:layout_centerHorizontal="true">
+        android:layout_centerHorizontal="true"
+        android:gravity="center">
 
         <Button
             android:id="@+id/btnCancelDialog"
@@ -53,7 +55,10 @@
             android:text="@string/cancel"
             android:textColor="@color/zm_button"
             android:textSize="13dp"
-            android:layout_margin="10dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginStart="5dp"
+            android:layout_marginEnd="5dp"
+            android:layout_marginBottom="5dp"
             android:visibility="gone"/>
         <Button
             android:id="@+id/btnConfirmDialog"
@@ -64,7 +69,10 @@
             android:backgroundTint="@color/zm_button"
             android:textColor="@color/white"
             android:textSize="13dp"
-            android:layout_margin="10dp"/>
+            android:layout_marginTop="10dp"
+            android:layout_marginStart="5dp"
+            android:layout_marginEnd="5dp"
+            android:layout_marginBottom="5dp"/>
     </LinearLayout>
 
 </RelativeLayout>

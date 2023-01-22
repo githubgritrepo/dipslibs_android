@@ -54,6 +54,8 @@ public class AdapterPortofolioNew extends RecyclerView.Adapter<AdapterPortofolio
                 linkIcon = dataList.getJSONObject(position).getString("icon");
             }
             JSONArray dataListPorto = dataList.getJSONObject(position).getJSONArray("dataList");
+            Log.e("CEK","dataListPorto length : "+dataListPorto.length());
+            Log.e("CEK","dataListPorto : "+dataListPorto.toString());
 
             holder.tv_nama_product.setText(typeProd);
 
@@ -92,6 +94,11 @@ public class AdapterPortofolioNew extends RecyclerView.Adapter<AdapterPortofolio
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
+
+                /*LinearLayout parentLinear = new LinearLayout(mContext);
+                LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                parentLinear.setLayoutParams(layoutParams);
+                parentLinear.setOrientation(LinearLayout.VERTICAL);*/
 
                 RelativeLayout rlExpandLayout = new RelativeLayout(mContext);
                 rlExpandLayout.setId(idRelatif);
@@ -150,6 +157,7 @@ public class AdapterPortofolioNew extends RecyclerView.Adapter<AdapterPortofolio
                 imageView2.setVisibility(View.GONE);
                 rlExpandLayout.addView(imageView2);
 
+                //parentLinear.addView(rlExpandLayout);
                 holder.container.addView(rlExpandLayout);
 
                 if (i < dataListPorto.length()-1) {

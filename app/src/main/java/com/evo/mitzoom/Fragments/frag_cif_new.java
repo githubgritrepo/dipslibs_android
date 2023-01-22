@@ -7,6 +7,7 @@ import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
@@ -24,6 +25,7 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Base64;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -672,7 +674,7 @@ public class frag_cif_new extends Fragment {
 
         JSONObject reqFormSend = dataReqForm();
 
-        String keyPernyataan = "pernyataan";
+        String keyPernyataan = "alamatdomisili";
         for(Iterator<String> iter = objEl.keys(); iter.hasNext();) {
             String key = iter.next();
             String valKurung = "";
@@ -681,7 +683,7 @@ public class frag_cif_new extends Fragment {
                 valKurung = key.substring(indx);
             }
 
-            if (key.contains(keyPernyataan)) {
+            if (key.contains(keyPernyataan) || key.contains("domisili")) {
                 if (key.equals(keyPernyataan+valKurung)) {
                     keyPernyataan = key;
                 }
@@ -1124,7 +1126,7 @@ public class frag_cif_new extends Fragment {
             String lbprovinsi = "provinsi";
             String lbkodepos = "kodepos";
             String lbnotelp = "notelp";
-            String lbpernyataan = "pernyataan";
+            String lbpernyataan = "alamatdomisili";
 
             for(Iterator<String> iter = objEl.keys(); iter.hasNext();) {
                 Log.e("CEK","iter : "+iter.toString());
@@ -1164,7 +1166,7 @@ public class frag_cif_new extends Fragment {
                     if (key.equals(lbnotelp + valKurung)) {
                         lbnotelp = key;
                     }
-                    if (key.equals(lbpernyataan + valKurung)) {
+                    if (key.equals(lbpernyataan + valKurung) || key.contains("domisili" + valKurung)) {
                         lbpernyataan = key;
                     }
 
@@ -1349,9 +1351,9 @@ public class frag_cif_new extends Fragment {
                             sessions.saveFormReqMirroring(null);
 
                             Bundle bundle = new Bundle();
-                            int intLayoutWork = 0;
+                            int intLayoutWork = formCode;
 
-                            String keyPernyataan = "pernyataan";
+                            String keyPernyataan = "alamatdomisili";
                             for(Iterator<String> iter = objEl.keys(); iter.hasNext();) {
                                 if (iter.hasNext()) {
                                     String key = iter.next();
@@ -1360,7 +1362,7 @@ public class frag_cif_new extends Fragment {
                                     if (indx >= 0) {
                                         valKurung = key.substring(indx);
                                     }
-                                    if (key.contains(keyPernyataan)) {
+                                    if (key.contains(keyPernyataan) || key.contains("domisili")) {
                                         if (key.equals(keyPernyataan + valKurung)) {
                                             keyPernyataan = key;
                                             break;
@@ -1891,11 +1893,6 @@ public class frag_cif_new extends Fragment {
         LayoutInflater inflater = getLayoutInflater();
         View dialogView = inflater.inflate(R.layout.item_ocr, null);
         SweetAlertDialog sweetAlertDialog = new SweetAlertDialog(mContext, SweetAlertDialog.NORMAL_TYPE);
-        sweetAlertDialog.setCustomView(dialogView);
-        sweetAlertDialog.hideConfirmButton();
-        sweetAlertDialog.setCancelable(false);
-        sweetAlertDialog.show();
-
         EditText NIK = (EditText) dialogView.findViewById(R.id.et_nik_ocr);
         EditText Nama = (EditText) dialogView.findViewById(R.id.et_name_ocr);
         EditText TTL = (EditText) dialogView.findViewById(R.id.et_ttl_ocr);
@@ -1914,6 +1911,28 @@ public class frag_cif_new extends Fragment {
         EditText et_work= (EditText) dialogView.findViewById(R.id.et_work);
         Button btnOCRCancel = (Button) dialogView.findViewById(R.id.btncncl);
         Button btnOCRNext = (Button) dialogView.findViewById(R.id.btnlnjt);
+
+        sweetAlertDialog.setCustomView(dialogView);
+        sweetAlertDialog.hideConfirmButton();
+        sweetAlertDialog.setCancelable(false);
+        sweetAlertDialog.show();
+
+        int width = (int)(((Activity)mContext).getResources().getDisplayMetrics().widthPixels);
+        int height = (int)(((Activity)mContext).getResources().getDisplayMetrics().heightPixels);
+
+        Log.e("CEK","PopUpOCR width : "+width+" | height : "+height);
+        int newWidth = (int)(width*0.8);
+        int newHeight = (int)(height*0.85);
+        Log.e("CEK","PopUpOCR newWidth : "+newWidth+" | newHeight : "+newHeight);
+
+        sweetAlertDialog.getWindow().setGravity(Gravity.CENTER_HORIZONTAL);
+        sweetAlertDialog.getWindow().setLayout(newWidth,newHeight);
+        sweetAlertDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+            @Override
+            public void onDismiss(DialogInterface dialogInterface) {
+
+            }
+        });
 
         String tglLahir = "-";
         if (ttl.indexOf(",") > 0) {
@@ -2407,13 +2426,15 @@ public class frag_cif_new extends Fragment {
                     processFormDataAttachment(fieldName,picturePath);
                 }
                 //}
-                sweetAlertDialog.dismiss();
+                sweetAlertDialog.cancel();
+                sweetAlertDialog.dismissWithAnimation();
             }
         });
         btnOCRCancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                sweetAlertDialog.dismiss();
+                sweetAlertDialog.cancel();
+                sweetAlertDialog.dismissWithAnimation();
                 IMG_BYTE = new byte[0];
                 imageBytes = new byte[0];
             }
@@ -3175,7 +3196,7 @@ public class frag_cif_new extends Fragment {
         if (formCode == 4) {
             imgBase64 = encodedImage;
             keys = "ktp";
-            File mediaFilesCrop = null;
+            /*File mediaFilesCrop = null;
             try {
                 mediaFilesCrop = createTemporaryFile(imageBytes);
             } catch (Exception e) {
@@ -3185,7 +3206,7 @@ public class frag_cif_new extends Fragment {
 
             Bitmap bitmapOptimal = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length);
 
-            Log.e("CEK", "file_mediaFilesCrop :"+file_mediaFilesCrop+" | bitmapOptimal.getWidth() : "+bitmapOptimal.getWidth()+" | bitmapOptimal.getHeight() : "+bitmapOptimal.getHeight());
+            Log.e("CEK", "file_mediaFilesCrop :"+file_mediaFilesCrop+" | bitmapOptimal.getWidth() : "+bitmapOptimal.getWidth()+" | bitmapOptimal.getHeight() : "+bitmapOptimal.getHeight());*/
 
             imgtoBase64OCR();
         } else if (formCode == 22) {
@@ -3219,6 +3240,11 @@ public class frag_cif_new extends Fragment {
                 } else {
                     DipsSwafoto.showProgress(true);
                 }
+                btnNext.setVisibility(View.VISIBLE);
+                btnNext.setClickable(true);
+                imgDelete.setVisibility(View.VISIBLE);
+                viewImage.setVisibility(View.VISIBLE);
+                chooseImage.setVisibility(View.GONE);
             }
         });
         ocrKTP();
@@ -3492,12 +3518,13 @@ public class frag_cif_new extends Fragment {
                 picturePath = mediaFilePhoto.getAbsolutePath();
                 Log.e("CEK","onActivityResult picturePath : "+picturePath);
                 LL.setBackgroundResource(0);
-                btnNext.setVisibility(View.VISIBLE);
-                //btnNext.setBackgroundTintList(mContext.getResources().getColorStateList(R.color.zm_button));
-                btnNext.setClickable(true);
-                imgDelete.setVisibility(View.VISIBLE);
-                viewImage.setVisibility(View.VISIBLE);
-                chooseImage.setVisibility(View.GONE);
+                if (formCode != 4) {
+                    btnNext.setVisibility(View.VISIBLE);
+                    btnNext.setClickable(true);
+                    imgDelete.setVisibility(View.VISIBLE);
+                    viewImage.setVisibility(View.VISIBLE);
+                    chooseImage.setVisibility(View.GONE);
+                }
                 viewImage.setImageBitmap(bitmap);
                 processSendImage(bitmap);
             }
@@ -3530,12 +3557,14 @@ public class frag_cif_new extends Fragment {
                 } else {
                     sessions.saveFlagUpDoc(true);
                     LL.setBackgroundResource(0);
-                    btnNext.setVisibility(View.VISIBLE);
-                    //btnNext.setBackgroundTintList(mContext.getResources().getColorStateList(R.color.zm_button));
-                    btnNext.setClickable(true);
-                    imgDelete.setVisibility(View.VISIBLE);
-                    viewImage.setVisibility(View.VISIBLE);
-                    chooseImage.setVisibility(View.GONE);
+                    if (formCode != 4) {
+                        btnNext.setVisibility(View.VISIBLE);
+                        //btnNext.setBackgroundTintList(mContext.getResources().getColorStateList(R.color.zm_button));
+                        btnNext.setClickable(true);
+                        imgDelete.setVisibility(View.VISIBLE);
+                        viewImage.setVisibility(View.VISIBLE);
+                        chooseImage.setVisibility(View.GONE);
+                    }
                     imgtoBase64(thumbnail);
                     if (formCode == 4) {
                         imgtoBase64OCR();

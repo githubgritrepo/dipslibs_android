@@ -470,8 +470,16 @@ public class DipsCapture extends AppCompatActivity implements CameraSource.Pictu
                     byte[] bytePhoto = Base64.decode(imgBase64, Base64.NO_WRAP);
                     Bitmap bitmap = BitmapFactory.decodeByteArray(bytePhoto, 0, bytePhoto.length);
 
-                    showProgress(true);
-                    processCaptureIdentifyAuth(imgBase64);
+                    sessions.saveNoCIF(null);
+
+                    Intent intent = new Intent(mContext, DipsLivenessResult.class);
+                    intent.putExtra("RESULT_IMAGE_AI",bytePhoto);
+                    intent.putExtra("idDips", idDips);
+                    startActivity(intent);
+                    finishAffinity();
+
+                    //showProgress(true);
+                    //processCaptureIdentifyAuth(imgBase64);
 
                     /*View dialogView = getLayoutInflater().inflate(R.layout.layout_show_image, null);
                     SweetAlertDialog sweetAlertDialog = new SweetAlertDialog(mContext, SweetAlertDialog.NORMAL_TYPE);

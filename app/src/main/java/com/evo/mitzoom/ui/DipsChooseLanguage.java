@@ -6,6 +6,7 @@ import android.app.Activity;
 import android.app.ActivityManager;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
@@ -13,6 +14,9 @@ import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -21,11 +25,14 @@ import android.os.Environment;
 import android.os.PowerManager;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
+import android.text.Html;
 import android.util.Base64;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
@@ -38,15 +45,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.app.ActivityCompat;
 
-import com.evo.mitzoom.API.ApiService;
 import com.evo.mitzoom.API.Server;
 import com.evo.mitzoom.Helper.OutboundServiceNew;
-import com.evo.mitzoom.Model.Request.JsonCaptureIdentify;
-import com.evo.mitzoom.Model.Response.CaptureIdentify;
 import com.evo.mitzoom.R;
 import com.evo.mitzoom.Session.SessionManager;
-import com.evo.mitzoom.ui.Alternative.DipsSwafoto;
-import com.evo.mitzoom.util.NetworkUtil;
 import com.google.gson.JsonObject;
 
 import org.json.JSONException;
@@ -89,6 +91,8 @@ public class DipsChooseLanguage extends AppCompatActivity {
     private TextView tvVersion;
     private RelativeLayout rlload;
     private String idDips;
+    private String dataTnC = "";
+    private boolean flagViewTNC = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -137,6 +141,7 @@ public class DipsChooseLanguage extends AppCompatActivity {
             Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:" + getPackageName()));
             startActivityForResult(intent, 1);
         }
+
     }
 
     @Override
@@ -432,10 +437,6 @@ public class DipsChooseLanguage extends AppCompatActivity {
         return "show_battery_optimization" + (device == null ? "" : device);
     }
 
-    private void setNeverAskForBatteryOptimizationsAgain() {
-        getPreferences().edit().putBoolean(getBatteryOptimizationPreferenceKey(), false).apply();
-    }
-
     protected SharedPreferences getPreferences() {
         return PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
     }
@@ -491,207 +492,148 @@ public class DipsChooseLanguage extends AppCompatActivity {
         });
     }
 
-    private void processCaptureIdentifyAuth(String imgBase64) {
-        if (!NetworkUtil.hasDataNetwork(mContext)) {
-            Toast.makeText(this, "Connection Failed. Please check your network connection and try again.", Toast.LENGTH_LONG).show();
-            return;
+    private class AsyncProcess extends AsyncTask<Void,Void,Void> {
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            processGetTNC();
+            return null;
         }
+    }
 
-        byte[] bytePhoto = Base64.decode(imgBase64, Base64.NO_WRAP);
-
-        JSONObject jsons = new JSONObject();
-        try {
-            jsons.put("idDips","");
-            jsons.put("image",imgBase64);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        /*String filename = "CaptureAuth_"+idDips+".txt";
-        try {
-            createTemporaryFile(jsons.toString(),filename);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }*/
-
-        RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), jsons.toString());
-
-        ApiService API = Server.getAPIService2();
-        Call<JsonObject> call = API.CaptureAuth(requestBody);
-        Log.e("CEK","REQUEST CALL : "+call.request().url());
-        call.enqueue(new Callback<JsonObject>() {
+    private void processGetTNC() {
+        Server.getAPIService().getTNC(1).enqueue(new Callback<JsonObject>() {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
-                Log.e("CEK","RESPONSE CODE: "+response.code());
                 if (response.isSuccessful()) {
                     String dataS = response.body().toString();
-                    Log.e("CEK","dataS: "+dataS);
                     try {
                         JSONObject dataObj = new JSONObject(dataS);
-                        JSONObject dataCustomer = dataObj.getJSONObject("data").getJSONObject("customer");
-                        JSONObject dataToken = dataObj.getJSONObject("data").getJSONObject("token");
-
-                        boolean isSwafoto = dataCustomer.getBoolean("isSwafoto");
-
-                        String noCIF = "";
-                        boolean isCust;
-                        if (dataCustomer.isNull("noCif")) {
-                            isCust = false;
+                        String cekdataTnC = dataObj.getJSONObject("data").getString("data");
+                        if (cekdataTnC.contains("{")) {
+                            JSONObject labelTNC = new JSONObject(cekdataTnC);
+                            String language = sessions.getLANG();
+                            if (language.equals("id")) {
+                                dataTnC = labelTNC.getString("labelIdn");
+                            } else {
+                                dataTnC = labelTNC.getString("labelEng");
+                            }
                         } else {
-                            isCust = true;
-                            noCIF = dataCustomer.getString("noCif");
+                            dataTnC = cekdataTnC;
                         }
-                        String custName = dataCustomer.getString("namaLengkap");
-                        String idDipsNew = dataCustomer.getString("idDips");
-                        Log.e("CEK","idDipsNew : "+idDipsNew+" | idDips : "+idDips);
-                        /*if (idDips != null && OutboundService.mSocket != null && idDipsNew != idDips) {
-                            OutboundService.leaveOutbound(idDips);
-                        }*/
-                        String accessToken = dataToken.getString("accessToken");
-
-                        sessions.saveIdDips(idDipsNew);
-                        sessions.saveIsCust(isCust);
-                        sessions.saveAuthToken(accessToken);
-
-                        idDips = idDipsNew;
-
-                        sessions.saveIdDips(idDips);
-
-                        Intent intent = null;
-                        if (!noCIF.isEmpty()) {
-                            intent = new Intent(mContext, DipsWaitingRoom.class);
-                            intent.putExtra("RESULT_IMAGE_AI",bytePhoto);
-                        } else {
-                            intent = new Intent(mContext, DipsSwafoto.class);
-                            intent.putExtra("RESULT_IMAGE_AI", bytePhoto);
-                            intent.putExtra("CUSTNAME", custName);
-                        }
-                        startActivity(intent);
-                        finishAffinity();
 
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
-                }  else {
-                    if (response.code() < 500) {
-                        if (response.code() == 401) {
-                            Intent intent = new Intent(mContext, DipsSplashScreen.class);
-                            intent.putExtra("RESPONSECODE", response.code());
-                            startActivity(intent);
-                            finishAffinity();
-                        } else {
-                            String dataErr = null;
-                            try {
-                                dataErr = response.errorBody().string();
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
-                            Log.e("CEK", "dataErr : " + dataErr);
-                            if (dataErr != null) {
-                                try {
-                                    JSONObject dataObj = new JSONObject(dataErr);
-                                    if (dataObj.has("message")) {
-                                        String message = dataObj.getString("message");
-                                        Toast.makeText(mContext, message, Toast.LENGTH_SHORT).show();
-                                    }
-                                } catch (JSONException e) {
-                                    e.printStackTrace();
-                                }
-                            } else {
-                                Toast.makeText(mContext, R.string.msg_error, Toast.LENGTH_SHORT).show();
-                            }
+                } else {
+                    String msg = "";
+                    if (response.body() != null) {
+                        String dataS = response.body().toString();
+                        try {
+                            JSONObject dataObj = new JSONObject(dataS);
+                            msg = dataObj.getString("message");
+                        } catch (JSONException e) {
+                            e.printStackTrace();
                         }
                     } else {
-                        Toast.makeText(mContext, R.string.msg_error, Toast.LENGTH_SHORT).show();
+                        if (response.errorBody().toString().isEmpty()) {
+                            String dataS = response.errorBody().toString();
+                            try {
+                                JSONObject dataObj = new JSONObject(dataS);
+                                msg = dataObj.getString("message");
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                        } else {
+                            String dataS = null;
+                            try {
+                                dataS = response.errorBody().string();
+                                JSONObject dataObj = new JSONObject(dataS);
+                                msg = dataObj.getString("message");
+                            } catch (IOException | JSONException e) {
+                                e.printStackTrace();
+                            }
+                        }
                     }
+                    Toast.makeText(mContext,msg,Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
             public void onFailure(Call<JsonObject> call, Throwable t) {
-                Log.e("CEK","onFailure MESSAGE : "+t.getMessage());
-                Toast.makeText(mContext, t.getMessage(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(mContext,t.getMessage(),Toast.LENGTH_SHORT).show();
             }
         });
     }
 
-    private void processCaptureIdentify(String imgBase64) {
+    private void PopUpTnc(){
+        flagViewTNC = true;
+        Log.e("CEK","MASUK PopUpTnc");
+        LayoutInflater inflater = ((Activity) mContext).getLayoutInflater();
+        //if (sweetAlertDialogTNC == null) {
+        View dialogView = inflater.inflate(R.layout.item_tnc, null);
+        SweetAlertDialog sweetAlertDialogTNC = new SweetAlertDialog(mContext, SweetAlertDialog.NORMAL_TYPE);
+        sweetAlertDialogTNC.setCustomView(dialogView);
+        sweetAlertDialogTNC.hideConfirmButton();
+        sweetAlertDialogTNC.setCancelable(true);
+        //}
+        TextView tvBody = (TextView) dialogView.findViewById(R.id.tvBody);
+        CheckBox checkBox = dialogView.findViewById(R.id.checktnc);
+        Button btn = dialogView.findViewById(R.id.btnnexttnc);
 
-        if (!NetworkUtil.hasDataNetwork(mContext)) {
-            Toast.makeText(this, "Connection Failed. Please check your network connection and try again.", Toast.LENGTH_LONG).show();
-            return;
+        if (!dataTnC.isEmpty()) {
+            tvBody.setText(Html.fromHtml(dataTnC, Html.FROM_HTML_MODE_LEGACY, new Html.ImageGetter() {
+                @Override
+                public Drawable getDrawable(String source) {
+                    int idx = source.indexOf(",");
+                    idx += 1;
+                    String new_source = source.substring(idx);
+                    byte[] data = Base64.decode(new_source, Base64.NO_WRAP);
+                    Bitmap bitmap = BitmapFactory.decodeByteArray(data, 0, data.length);
+                    Drawable d = new BitmapDrawable(((Activity) mContext).getResources(), bitmap);
+                    int intH = d.getIntrinsicHeight();
+                    int intW = d.getIntrinsicWidth();
+                    d.setBounds(0, 0, intW, intH);
+                    return d;
+                }
+            }, null));
         }
+        btn.setClickable(false);
 
-        JsonCaptureIdentify jsons = new JsonCaptureIdentify();
-        jsons.setIdDips(idDips);
-        jsons.setImage(imgBase64);
+        sweetAlertDialogTNC.show();
 
-        ApiService API = Server.getAPIService();
-        Call<CaptureIdentify> call = API.CaptureAdvanceAI(jsons);
-        Log.e("CEK","REQUEST CALL : "+call.request().url());
-        call.enqueue(new Callback<CaptureIdentify>() {
+        int width = (int)(((Activity)mContext).getResources().getDisplayMetrics().widthPixels);
+        int height = (int)(((Activity)mContext).getResources().getDisplayMetrics().heightPixels);
+
+        Log.e("CEK","PopUpTnc width : "+width+" | height : "+height);
+        int newWidth = (int)(width*0.8);
+        int newHeight = (int)(height*0.85);
+        Log.e("CEK","PopUpTnc newWidth : "+newWidth+" | newHeight : "+newHeight);
+
+        //sweetAlertDialogTNC.getWindow().setGravity(Gravity.CENTER_HORIZONTAL);
+        sweetAlertDialogTNC.getWindow().setLayout(newWidth,newHeight);
+        sweetAlertDialogTNC.setOnDismissListener(new DialogInterface.OnDismissListener() {
             @Override
-            public void onResponse(Call<CaptureIdentify> call, Response<CaptureIdentify> response) {
-                Log.e("CEK","RESPONSE CODE: "+response.code());
-                if (response.body() != null) {
-                    Log.e("CEK","Response Body : "+response.body().toString());
-                }
-                if (response.isSuccessful() && response.body() != null) {
-                    int errCode = response.body().getErr_code();
-                    if (errCode == 0) {
-                        SweetAlertDialog sweetDialog = new SweetAlertDialog(mContext,SweetAlertDialog.WARNING_TYPE);
-                        sweetDialog.setTitleText("Warning!!!");
-                        sweetDialog.setContentText(getResources().getString(R.string.not_using_dips));
-                        sweetDialog.setConfirmText("OK");
-                        sweetDialog.setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
-                            @Override
-                            public void onClick(SweetAlertDialog sweetAlertDialog) {
-                                sweetDialog.dismissWithAnimation();
-                                Intent intent = new Intent(Intent.ACTION_MAIN);
-                                intent.addCategory(Intent.CATEGORY_HOME);
-                                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);//***Change Here***
-                                startActivity(intent);
-                                finish();
-                            }
-                        });
-                        sweetDialog.show();
-                        return;
-                    }
-
-                    String idDipsOld = sessions.getKEY_IdDips();
-                    /*if (idDipsOld != null && OutboundService.mSocket != null) {
-                        OutboundService.leaveOutbound(idDipsOld);
-                    }*/
-
-                    boolean isCust = response.body().isCustomer();
-                    String custName = response.body().getName();
-                    String idDips = response.body().getIdDips();
-                    String sessionName = response.body().getDataSession().getNameSession();
-                    String sessionPass = response.body().getDataSession().getPass();
-
-                    sessions.saveIdDips(idDips);
-                    sessions.saveIsCust(isCust);
-
-                    Intent intent = new Intent(mContext,DipsWaitingRoom.class);
-                    sessions.saveIsCust(isCust);
-                    intent.putExtra("CUSTNAME",custName);
-                    intent.putExtra("idDips", idDips);
-                    intent.putExtra("SessionName", sessionName);
-                    intent.putExtra("SessionPass", sessionPass);
-                    startActivity(intent);
-                    finish();
-
-                } else {
-                    Toast.makeText(mContext, R.string.msg_error,Toast.LENGTH_SHORT).show();
-                }
-            }
-
-            @Override
-            public void onFailure(Call<CaptureIdentify> call, Throwable t) {
-                Log.e("CEK","onFailure MESSAGE : "+t.getMessage());
-                Toast.makeText(mContext, t.getMessage(), Toast.LENGTH_SHORT).show();
+            public void onDismiss(DialogInterface dialogInterface) {
+                Log.e("CEK","onDismiss");
+                flagViewTNC = false;
             }
         });
+        sweetAlertDialogTNC.setOnCancelListener(new DialogInterface.OnCancelListener() {
+            @Override
+            public void onCancel(DialogInterface dialogInterface) {
+                Log.e("CEK","onCancel");
+                flagViewTNC = false;
+            }
+        });
+
+        btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                sweetAlertDialogTNC.dismissWithAnimation();
+            }
+        });
+
     }
 
 }

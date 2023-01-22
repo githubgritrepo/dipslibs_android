@@ -1,8 +1,6 @@
 package com.evo.mitzoom.Fragments;
 
 import android.content.Context;
-import android.content.res.Configuration;
-import android.content.res.Resources;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
@@ -278,9 +276,8 @@ public class frag_portfolio_new extends Fragment {
                     percent = percent.replace(",", ".");
                     pieEntryList.add(new PieEntry(Float.parseFloat(percent), typeProduk));
 
-                    JSONObject dataListPorto = parseGetProduct(type);
-                    JSONArray dataList = new JSONArray();
-                    dataList.put(dataListPorto);
+                    JSONArray dataList = parseGetProduct(type);
+                    Log.e("CEK","dataList : "+dataList.toString());
 
                     dataValProduk.put("typeProduct",typeProduk);
                     dataValProduk.put("dataList",dataList);
@@ -302,14 +299,14 @@ public class frag_portfolio_new extends Fragment {
         pieData = new PieData(pieDataSet);
         pieData.setValueFormatter(new PercentFormatter(pieChart));
         pieChart.setEntryLabelTextSize(12f);
-        pieChart.setHoleColor(mContext.getColor(R.color.zm_bg2));
+        pieChart.setTransparentCircleColor(mContext.getColor(R.color.zm_text));
         pieChart.setData(pieData);
         pieChart.setEntryLabelColor(R.color.black);
         pieChart.invalidate();
 
     }
 
-    private JSONObject parseGetProduct(String type) throws JSONException {
+    private JSONArray parseGetProduct(String type) throws JSONException {
         JSONArray prod = null;
         if (type.equals("tabungan")) {
             prod = dataNasabah.getJSONArray("portotabungan");
@@ -319,7 +316,7 @@ public class frag_portfolio_new extends Fragment {
             prod = dataNasabah.getJSONArray("portoloan");
         }
 
-        JSONObject dataListPorto = new JSONObject();
+        JSONArray dataList = new JSONArray();
 
         for (int i = 0; i < prod.length(); i++) {
             String prodName = "";
@@ -349,13 +346,15 @@ public class frag_portfolio_new extends Fragment {
                 kurs = prod.getJSONObject(i).getString("mataUang");
             }
 
+            JSONObject dataListPorto = new JSONObject();
             dataListPorto.put("namaProduk",prodName);
             dataListPorto.put("noRekening",noRekening);
             dataListPorto.put("jumlahDana",jumlahDana);
             dataListPorto.put("kurs",kurs);
+            dataList.put(dataListPorto);
         }
 
-        return dataListPorto;
+        return dataList;
 
     }
 

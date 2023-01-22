@@ -164,6 +164,7 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
     private Context mContext;
     private CardView cardSurf;
     private RelativeLayout llUsersVideo;
+    private CardView cardSurfOff;
     private RelativeLayout offUsersVideo;
 
     protected Handler handler = new Handler(Looper.getMainLooper());
@@ -176,6 +177,7 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
     public static RelativeLayout rlprogress;
     private String lang = "";
     private LinearLayout iconBubble;
+    private boolean flagShowLeave = false;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -582,22 +584,19 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
         int widthDisp = displayMetrics.widthPixels;
         int dyWidth = (int) Math.ceil(widthDisp / 2);
 
+        Log.e(TAG,"dyWidth : "+dyWidth);
+
         gifLoading = (GifImageView) findViewById(R.id.gifLoading);
         rlprogress = (RelativeLayout) findViewById(R.id.rlprogress);
         imgBatikVic = (ImageView) findViewById(R.id.imgBatikVic);
         llUsersVideo = (RelativeLayout) findViewById(R.id.llUsersVideo);
         cardSurf = (CardView) findViewById(R.id.cardSurf);
+        cardSurfOff = (CardView) findViewById(R.id.cardSurfOff);
         offUsersVideo= (RelativeLayout) findViewById(R.id.offUsersVideo);
         ImageView video_off_tips2 = (ImageView) findViewById(R.id.video_off_tips2);
         ImageView video_off_tips3 = (ImageView) findViewById(R.id.video_off_tips3);
         userVideoList = findViewById(R.id.userVideoList);
         videoListContain = findViewById(R.id.video_list_contain);
-        adapter = new UserVideoAdapter(this, this, renderType, dyWidth);
-        userVideoList.setItemViewCacheSize(0);
-        LinearLayoutManager layoutManager=new LinearLayoutManager(this, RecyclerView.HORIZONTAL, false);
-        layoutManager.setItemPrefetchEnabled(false);
-        userVideoList.setLayoutManager(layoutManager);
-        userVideoList.setAdapter(adapter);
         actionBar = findViewById(R.id.action_bar);
         iconAudio = findViewById(R.id.icon_audio);
         iconVideo = findViewById(R.id.icon_video);
@@ -605,10 +604,26 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
         iconBubble = (LinearLayout) findViewById(R.id.iconBubble);
         btnChat = findViewById(R.id.icon_chat);
         btnFile = findViewById(R.id.icon_file);
-
         //llUsersVideo.setVisibility(View.INVISIBLE);
         cardSurf.setVisibility(View.INVISIBLE);
-        offUsersVideo.setVisibility(View.VISIBLE);
+        cardSurfOff.setVisibility(View.VISIBLE);
+
+        int widthCard = cardSurfOff.getMeasuredWidth();
+        Log.e(TAG,"widthCard : "+widthCard);
+        int dyCardWidth = (int) Math.ceil(widthCard / 2);
+        Log.e(TAG,"dyCardWidth : "+dyCardWidth);
+        if (dyCardWidth > 0) {
+            dyWidth = dyCardWidth;
+        }
+
+        dyWidth -= 20;
+
+        adapter = new UserVideoAdapter(this, this, renderType, dyWidth);
+        userVideoList.setItemViewCacheSize(0);
+        LinearLayoutManager layoutManager=new LinearLayoutManager(this, RecyclerView.HORIZONTAL, false);
+        layoutManager.setItemPrefetchEnabled(false);
+        userVideoList.setLayoutManager(layoutManager);
+        userVideoList.setAdapter(adapter);
 
         final int margin = (int) (5 * displayMetrics.scaledDensity);
         userVideoList.addItemDecoration(new RecyclerView.ItemDecoration() {
@@ -703,6 +718,7 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
     }
 
     private void dialogAgentLeave() {
+        flagShowLeave = true;
         LayoutInflater inflater = getLayoutInflater();
         View dialogView = inflater.inflate(R.layout.layout_dialog_sweet, null);
 
@@ -727,11 +743,12 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
         btnConfirmDialog.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                flagShowLeave = false;
+                dialogEnd.cancel();
+                dialogEnd.dismissWithAnimation();
                 OutboundServiceNew.stopServiceSocket();
                 Intent intentOutbound = new Intent(mContext, OutboundServiceNew.class);
                 mContext.stopService(intentOutbound);
-                dialogEnd.dismissWithAnimation();
-                dialogEnd.cancel();
                 releaseResource();
                 int ret = ZoomVideoSDK.getInstance().leaveSession(false);
                 sessions.clearPartData();
@@ -964,6 +981,7 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
             int maxWidth = (int) (325 * displayMetrics.scaledDensity);
             width = maxWidth;
         }
+        Log.e(TAG,"updateVideoListLayout width : "+width+" | preWidth : "+preWidth+" | params height : "+params.height);
         if (width != preWidth) {
             params.width = width;
             userVideoList.setLayoutParams(params);
@@ -1060,7 +1078,7 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
     public void onSessionJoin() {
         //llUsersVideo.setVisibility(View.VISIBLE);
         cardSurf.setVisibility(View.VISIBLE);
-        offUsersVideo.setVisibility(View.INVISIBLE);
+        cardSurfOff.setVisibility(View.INVISIBLE);
         //btnFile.setBackgroundTintList(BaseMeetingActivity.this.getResources().getColorStateList(R.color.btnFalse));
         //btnChat.setBackgroundTintList(BaseMeetingActivity.this.getResources().getColorStateList(R.color.btnFalse));
         btnFile.setClickable(false);
@@ -1099,7 +1117,9 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
     public void onSessionLeave() {
         Log.e("CEK","onSessionLeave");
         if (flagUserLeave == false) {
-            dialogAgentLeave();
+            if (flagShowLeave == false) {
+                dialogAgentLeave();
+            }
         } else {
             OutboundServiceNew.stopServiceSocket();
             Intent intentOutbound = new Intent(mContext, OutboundServiceNew.class);
@@ -1154,7 +1174,9 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
         flagUserLeave = true;
 
         if (userList.size() < 2 && flagClickEnd == false) {
-            dialogAgentLeave();
+            if (flagShowLeave == false) {
+                dialogAgentLeave();
+            }
         }
     }
 
