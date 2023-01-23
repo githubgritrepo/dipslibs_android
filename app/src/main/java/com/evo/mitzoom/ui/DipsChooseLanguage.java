@@ -138,8 +138,29 @@ public class DipsChooseLanguage extends AppCompatActivity {
         }
 
         if (!Settings.canDrawOverlays(this)) {
-            Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:" + getPackageName()));
-            startActivityForResult(intent, 1);
+            /*Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:" + getPackageName()));
+            startActivityForResult(intent, 1);*/
+            if ("xiaomi".equals(Build.MANUFACTURER.toLowerCase(Locale.ROOT))) {
+                final Intent intent =new Intent("miui.intent.action.APP_PERM_EDITOR");
+                intent.setClassName("com.miui.securitycenter",
+                        "com.miui.permcenter.permissions.PermissionsEditorActivity");
+                intent.putExtra("extra_pkgname", getPackageName());
+                startActivity(intent);
+                /*new AlertDialog.Builder(this)
+                        .setTitle("Please Enable the additional permissions")
+                        .setMessage("You will not receive notifications while the app is in background if you disable these permissions")
+                        .setPositiveButton("Go to Settings", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                startActivity(intent);
+                            }
+                        })
+                        .setIcon(android.R.drawable.ic_dialog_info)
+                        .setCancelable(false)
+                        .show();*/
+            }else {
+                Intent overlaySettings = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:" + getPackageName()));
+                startActivityForResult(overlaySettings, 1);
+            }
         }
 
     }
@@ -165,7 +186,8 @@ public class DipsChooseLanguage extends AppCompatActivity {
         Log.e("CEK","isOptimizingBattery : "+isOptimizingBattery());
         Log.e("CEK","getBatteryOptimizationPreferenceKey : "+getPreferences().getBoolean(getBatteryOptimizationPreferenceKey(), true));
 
-        if (isOptimizingBattery() && getPreferences().getBoolean(getBatteryOptimizationPreferenceKey(), true)) {
+        //if (isOptimizingBattery() && getPreferences().getBoolean(getBatteryOptimizationPreferenceKey(), true)) {
+        if (isOptimizingBattery()) {
             Intent intent = new Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS);
             Uri uri = Uri.parse("package:" + getPackageName());
             intent.setData(uri);
@@ -418,8 +440,12 @@ public class DipsChooseLanguage extends AppCompatActivity {
                 }
             }
         } else if (requestCode == REQUEST_BATTERY_OP) {
-
+            setNeverAskForBatteryOptimizationsAgain();
         }
+    }
+
+    private void setNeverAskForBatteryOptimizationsAgain() {
+        getPreferences().edit().putBoolean(getBatteryOptimizationPreferenceKey(), false).apply();
     }
 
     protected boolean isOptimizingBattery() {

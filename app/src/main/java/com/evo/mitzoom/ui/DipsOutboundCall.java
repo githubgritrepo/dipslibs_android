@@ -3,6 +3,7 @@ package com.evo.mitzoom.ui;
 import static com.evo.mitzoom.ui.DipsChooseLanguage.setLocale;
 
 import android.Manifest;
+import android.app.Activity;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -67,6 +68,7 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeoutException;
 
 import cn.pedant.SweetAlert.SweetAlertDialog;
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -716,8 +718,9 @@ public class DipsOutboundCall extends AppCompatActivity implements DatePickerDia
                     Toast.makeText(getApplicationContext(), R.string.notif_blank, Toast.LENGTH_SHORT).show();
                 }
                 else {
+                    sessions.saveIDSchedule(0);
                     saveSchedule();
-                    //OutboundService.rejectCall();
+                    OutboundServiceNew.rejectCall();
                     Toast.makeText(getApplicationContext(), "Jadwal panggilan anda "+tanggal+" jam "+waktu, Toast.LENGTH_LONG).show();
                     sweetAlertDialog.dismissWithAnimation();
                     sweetAlertDialog.setCancelable(false);
@@ -758,7 +761,32 @@ public class DipsOutboundCall extends AppCompatActivity implements DatePickerDia
         call.enqueue(new Callback<JsonObject>() {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                Log.e("CEK","saveSchedule Respon Code : "+response.code());
                 if (response.isSuccessful() && response.body().size() > 0) {
+                    Log.e("CEK","saveSchedule Respon : "+response.body().toString());
+                    String dataS = response.body().toString();
+                    try {
+                        JSONObject dataObj = new JSONObject(dataS);
+                        int idSchedule = dataObj.getJSONObject("data").getInt("id");
+                        sessions.saveIDSchedule(idSchedule);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
+                    if (DipsWaitingRoom.channelCall != null) {
+                        try {
+                            Log.e("CEK","MASUK channelCall abort close");
+                            DipsWaitingRoom.channelCall.close();
+                        } catch (IOException | TimeoutException e) {
+                            e.printStackTrace();
+                        }
+                        if (DipsWaitingRoom.subscribeThreadCall != null) {
+                            Log.e("CEK","MASUK subscribeThreadCall interrupt");
+                            DipsWaitingRoom.subscribeThreadCall.interrupt();
+                        }
+                    }
+
+                    serviceOutbound();
                 }
             }
 
@@ -768,6 +796,15 @@ public class DipsOutboundCall extends AppCompatActivity implements DatePickerDia
             }
         });
 
+    }
+
+    private void serviceOutbound() {
+        Intent serviceIntent = new Intent(mContext, OutboundServiceNew.class);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            ((Activity)mContext).startForegroundService(serviceIntent);
+        } else {
+            ((Activity)mContext).startService(serviceIntent);
+        }
     }
 
     private void OutApps(){

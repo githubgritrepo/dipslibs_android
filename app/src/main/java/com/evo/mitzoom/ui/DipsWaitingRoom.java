@@ -121,7 +121,7 @@ public class DipsWaitingRoom extends AppCompatActivity implements DatePickerDial
     private LayoutInflater inflater;
     private ImageView btnclose;
     private TextView AnimationCall;
-    String NameSession;
+    static String NameSession;
     private static String idDips;
     String SessionPass;
     private static String myTicketNumber;
@@ -444,7 +444,7 @@ public class DipsWaitingRoom extends AppCompatActivity implements DatePickerDial
         try {
             custObj.put("status","ack");
             custObj.put("action",labelAction);
-            custObj.put("custId",idDips);
+            custObj.put("custId",NameSession);
             custObj.put("msg","OK");
             custObj.put("ticket",myTicketNumber);
         } catch (JSONException e) {
@@ -795,6 +795,8 @@ public class DipsWaitingRoom extends AppCompatActivity implements DatePickerDial
 
                     JSONObject dataTicketObj = reqAcceptCall(labelAction);
                     String dataTicket = dataTicketObj.toString();
+
+                    Log.e("CEK","publishCallAccept dips.direct.cs."+csId+".accept.user REQ : "+dataTicket);
 
                     ch.exchangeDeclare("dips361-cs-accept-user", "direct", true);
                     ch.basicPublish("dips361-cs-accept-user","dips.direct.cs."+csId+".accept.user",false,null,dataTicket.getBytes());
@@ -1289,6 +1291,7 @@ public class DipsWaitingRoom extends AppCompatActivity implements DatePickerDial
                     if (csId != null && !csId.isEmpty()) {
                         publishCallAccept(csId, "cancel"); //RabbitMQ
                     }
+                    sessions.saveIDSchedule(0);
                     saveSchedule();
                 }
 

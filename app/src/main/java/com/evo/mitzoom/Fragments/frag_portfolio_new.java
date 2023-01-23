@@ -75,6 +75,8 @@ public class frag_portfolio_new extends Fragment {
     private String noCif = "";
     private RabbitMirroring rabbitMirroring;
     private boolean isSessionZoom = false;
+    private String typeProduct = "";
+    private String percentProduct = "";
 
     private static int rgb(String hex) {
         int color = (int) Long.parseLong(hex.replace("#", ""), 16);
@@ -156,12 +158,12 @@ public class frag_portfolio_new extends Fragment {
         Calendar c = Calendar.getInstance();
         String TanggalSekarang = "";
         if (bahasa.equalsIgnoreCase("en")){
-            SimpleDateFormat df = new SimpleDateFormat("EEEE dd MMMM yyy", Locale.US);
+            SimpleDateFormat df = new SimpleDateFormat("dd MMMM yyy", Locale.US);
             TanggalSekarang = df.format(c.getTime());
             tvtanggal.setText(TanggalSekarang);
         }
         else if (bahasa.equalsIgnoreCase("id")){
-            SimpleDateFormat df = new SimpleDateFormat("EEEE dd MMMM yyy",new Locale("id", "ID"));
+            SimpleDateFormat df = new SimpleDateFormat("dd MMMM yyy",new Locale("id", "ID"));
             TanggalSekarang = df.format(c.getTime());
             tvtanggal.setText(TanggalSekarang);
         }
@@ -259,6 +261,8 @@ public class frag_portfolio_new extends Fragment {
 
         setLegendChart();
 
+        List<Integer> colorsProd = new ArrayList<>();
+
         typeProdukListArr = new JSONArray();
         for (int i = 0; i < listTypeProduk.length(); i++) {
             JSONObject dataValProduk = new JSONObject();
@@ -267,9 +271,30 @@ public class frag_portfolio_new extends Fragment {
                 String type = listTypeProduk.getJSONObject(i).getString("type");
                 int persentase = listTypeProduk.getJSONObject(i).getInt("persentase");
 
+                if (typeProduct.equals("tabungan")) {
+                    colorsProd.add(mContext.getColor(R.color.zm_tabungan));
+                } else if (typeProduct.equals("deposito")) {
+                    colorsProd.add(mContext.getColor(R.color.zm_deposito));
+                } else if (typeProduct.equals("pinjaman")) {
+                    colorsProd.add(mContext.getColor(R.color.zm_kredit));
+                } else if (typeProduct.equals("giro")) {
+                    colorsProd.add(mContext.getColor(R.color.zm_giro));
+                } else if (typeProduct.contains("banca")) {
+                    colorsProd.add(mContext.getColor(R.color.zm_banca));
+                } else if (typeProduct.contains("reksa")) {
+                    colorsProd.add(mContext.getColor(R.color.zm_reksa));
+                } else {
+                    colorsProd.add(mContext.getColor(R.color.zm_button));
+                }
+
                 double d = (double) persentase / 10;
                 String percent = String.format("%.1f", d);
                 Log.e("CEK","percent : "+percent);
+
+                if (i == 0) {
+                    typeProduct = type;
+                    percentProduct = percent;
+                }
 
                 if (!percent.isEmpty()) {
                     String typeProduk = type.substring(0, 1).toUpperCase() + type.substring(1).toLowerCase();
@@ -290,16 +315,36 @@ public class frag_portfolio_new extends Fragment {
         }
 
         PieDataSet pieDataSet = new PieDataSet(pieEntryList,"");
-        if (pieEntryList.size() > 5) {
+        pieDataSet.setColors(colorsProd);
+        /*if (pieEntryList.size() > 5) {
             pieDataSet.setColors(MATERIAL_COLORS);
         } else {
             pieDataSet.setColors(ColorTemplate.VORDIPLOM_COLORS);
-        }
+        }*/
 
         pieData = new PieData(pieDataSet);
         pieData.setValueFormatter(new PercentFormatter(pieChart));
         pieChart.setEntryLabelTextSize(12f);
-        pieChart.setTransparentCircleColor(mContext.getColor(R.color.zm_text));
+        if (listTypeProduk.length() == 1 && !typeProduct.isEmpty() && !percentProduct.isEmpty()) {
+            if (percentProduct != "0,0" || percentProduct != "0.0") {
+                if (typeProduct.equals("tabungan")) {
+                    pieChart.setTransparentCircleColor(mContext.getColor(R.color.zm_tabungan));
+                } else if (typeProduct.equals("deposito")) {
+                    pieChart.setTransparentCircleColor(mContext.getColor(R.color.zm_deposito));
+                } else if (typeProduct.equals("pinjaman")) {
+                    pieChart.setTransparentCircleColor(mContext.getColor(R.color.zm_kredit));
+                } else if (typeProduct.equals("giro")) {
+                    pieChart.setTransparentCircleColor(mContext.getColor(R.color.zm_giro));
+                } else if (typeProduct.contains("banca")) {
+                    pieChart.setTransparentCircleColor(mContext.getColor(R.color.zm_banca));
+                } else if (typeProduct.contains("reksa")) {
+                    pieChart.setTransparentCircleColor(mContext.getColor(R.color.zm_reksa));
+                } else {
+                    pieChart.setTransparentCircleColor(mContext.getColor(R.color.zm_text));
+                }
+
+            }
+        }
         pieChart.setData(pieData);
         pieChart.setEntryLabelColor(R.color.black);
         pieChart.invalidate();

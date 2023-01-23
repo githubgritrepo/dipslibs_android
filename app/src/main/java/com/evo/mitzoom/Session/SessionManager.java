@@ -48,6 +48,7 @@ public class SessionManager {
     public static final String KEY_FORMREQMIRRORING = "FORMREQMIRRORING";
     public static final String KEY_noComplaint = "NOCOMPLAINT";
     public static final String KEY_NAMANASABAH = "NAMANASABAH";
+    public static final String KEY_SESSIONID_DIPS = "SESSIONID_DIPS";
 
     // Constructor
     public SessionManager(Context context){
@@ -75,6 +76,12 @@ public class SessionManager {
         editor.putString(KEY_IdDips,data);
         editor.commit();
     }
+
+    public void saveSessionIdDips(String data){
+        editor.putString(KEY_SESSIONID_DIPS,data);
+        editor.commit();
+    }
+
     public void saveKTP(String data){
         editor.putString(KEY_KTP, data);
         editor.commit();
@@ -216,6 +223,7 @@ public class SessionManager {
 
     public void clearIdDiPSCSID(){
         editor.putString(KEY_IdDips,null);
+        editor.putString(KEY_SESSIONID_DIPS,null);
         editor.putString(KEY_CSID,null);
         editor.commit();
     }
@@ -239,6 +247,9 @@ public class SessionManager {
     }
     public String getKEY_IdDips (){
         return pref.getString(KEY_IdDips,null);
+    }
+    public String getSessionIdDips (){
+        return pref.getString(KEY_SESSIONID_DIPS,null);
     }
     public String getKEY_KTP (){
         return pref.getString(KEY_KTP,null);

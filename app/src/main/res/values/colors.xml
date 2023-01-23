@@ -43,6 +43,12 @@
     <color name="zm_v_loading">#FCFCFF</color>
     <color name="zm_otp_time">#54575C</color>
     <color name="zm_capture_circle">#3ACE84</color>
+    <color name="zm_giro">#50A0FF</color>
+    <color name="zm_tabungan">#FF9658</color>
+    <color name="zm_deposito">#A5A5A5</color>
+    <color name="zm_banca">#F9C014</color>
+    <color name="zm_reksa">#84BCE7</color>
+    <color name="zm_kredit">#72AC46</color>
 
     <color name="blue_btn_bg">#AEDEF4</color>
     <color name="item_file_silver">#F3F3F3</color>

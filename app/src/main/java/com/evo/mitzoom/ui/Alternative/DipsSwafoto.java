@@ -454,6 +454,7 @@ public class DipsSwafoto extends AppCompatActivity implements com.wdullaer.mater
                     }
                     //Toast.makeText(context.getApplicationContext(), getResources().getString(R.string.schedule) + tanggal + " & " + getResources().getString(R.string.jam) + waktu, Toast.LENGTH_LONG).show();
                     sweetAlertDialog.dismiss();
+                    sessions.saveIDSchedule(0);
                     saveSchedule();
                 }
 

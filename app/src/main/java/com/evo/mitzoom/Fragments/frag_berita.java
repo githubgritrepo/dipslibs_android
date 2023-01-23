@@ -733,6 +733,7 @@ public class frag_berita extends Fragment implements com.wdullaer.materialdateti
                     if (csId != null && !csId.isEmpty()) {
                         DipsWaitingRoom.publishCallAccept(csId, "cancel"); //RabbitMQ
                     }
+                    sessions.saveIDSchedule(0);
                     saveSchedule();
                 }
 
@@ -792,6 +793,7 @@ public class frag_berita extends Fragment implements com.wdullaer.materialdateti
                             DipsWaitingRoom.subscribeThreadCall.interrupt();
                         }
                     }
+
                     serviceOutbound();
 
                     LayoutInflater inflater = getLayoutInflater();

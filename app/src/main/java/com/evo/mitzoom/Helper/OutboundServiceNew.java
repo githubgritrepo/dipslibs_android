@@ -104,6 +104,10 @@ public class OutboundServiceNew extends Service {
         Log.e(TAG, "onStartCommand action : "+action);
 
         idDips = sessions.getKEY_IdDips();
+        sessionId = idDips;
+        if (sessions.getSessionIdDips() != null) {
+            sessionId = sessions.getSessionIdDips();
+        }
         sessions.saveIdDips(idDips);
 
         stopForeground(IDSERVICES);
@@ -185,9 +189,9 @@ public class OutboundServiceNew extends Service {
                                     sessions.saveCSID(csId);
                                 } else {
                                     int getTicket = dataObj.getJSONObject("transaction").getInt("ticket");
-                                    sessionId = idDips;
                                     if (dataObj.getJSONObject("transaction").has("sessionId")) {
                                         sessionId = dataObj.getJSONObject("transaction").getString("sessionId");
+                                        sessions.saveSessionIdDips(sessionId);
                                     }
                                     csId = dataObj.getJSONObject("transaction").getString("csId");
                                     String password = dataObj.getJSONObject("transaction").getString("password");
@@ -245,7 +249,7 @@ public class OutboundServiceNew extends Service {
                                                 }
                                             });
                                         }
-                                    },5000);
+                                    },3000);
                                 }
 
                             } catch (JSONException e) {
@@ -368,14 +372,14 @@ public class OutboundServiceNew extends Service {
         return Build.VERSION.SDK_INT >= Build.VERSION_CODES.S;
     }
 
-    private static JSONObject reqAcceptCall() {
+    private static JSONObject reqAcceptCall(String labelAction) {
         long unixTime = System.currentTimeMillis() / 1000L;
 
         JSONObject custObj = new JSONObject();
         try {
             custObj.put("status","ack");
-            custObj.put("action","accept");
-            custObj.put("custId",idDips);
+            custObj.put("action",labelAction);
+            custObj.put("custId",sessionId);
             custObj.put("msg","OK");
             custObj.put("ticket",sessions.getIDSchedule());
         } catch (JSONException e) {
@@ -395,7 +399,7 @@ public class OutboundServiceNew extends Service {
         return jsObj;
     }
 
-    private static void publishCallAccept() {
+    private static void publishCallAccept(String labelAction) {
         Log.e("CEK","publishCallAccept");
         publishCallAcceptThread = new Thread(new Runnable() {
             @Override
@@ -405,8 +409,11 @@ public class OutboundServiceNew extends Service {
                     Channel ch = connection.createChannel();
                     ch.confirmSelect();
 
-                    JSONObject dataTicketObj = reqAcceptCall();
+                    JSONObject dataTicketObj = reqAcceptCall(labelAction);
                     String dataTicket = dataTicketObj.toString();
+
+                    Log.e("CEK","publishCallAccept REQ csId : "+csId);
+                    Log.e("CEK","publishCallAccept REQ : "+dataTicket);
 
                     ch.exchangeDeclare("dips361-cs-accept-user", "direct", true);
                     ch.basicPublish("dips361-cs-accept-user","dips.direct.cs."+csId+".accept.user",false,null,dataTicket.getBytes());
@@ -416,7 +423,7 @@ public class OutboundServiceNew extends Service {
                     Log.e(TAG, "publishCallAccept Connection broken: " + e.getClass().getName());
                     try {
                         Thread.sleep(4000); //sleep and then try again
-                        publishCallAccept();
+                        publishCallAccept(labelAction);
                     } catch (InterruptedException e1) {
 
                     }
@@ -438,7 +445,7 @@ public class OutboundServiceNew extends Service {
     public static void acceptCall() {
         Log.e("CEK","acceptCall : "+sessions.getIDSchedule());
         if (sessions.getIDSchedule() > 0) {
-            publishCallAccept();
+            publishCallAccept("accept");
             /*if (subscribeThreadCallOutbound != null) {
                 subscribeThreadCallOutbound.interrupt();
             }
@@ -447,6 +454,13 @@ public class OutboundServiceNew extends Service {
             }*/
         } else {
             Toast.makeText(mContext,"Tidak berhasil Call",Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    public static void rejectCall() {
+        Log.e("CEK","rejectCall : "+sessions.getIDSchedule());
+        if (sessions.getIDSchedule() > 0) {
+            publishCallAccept("cancel");
         }
     }
 
