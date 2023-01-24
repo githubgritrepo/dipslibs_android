@@ -525,6 +525,7 @@ public class DipsSwafoto extends AppCompatActivity implements com.wdullaer.mater
                     SweetAlertDialog sweetAlertDialog = new SweetAlertDialog(mContext, SweetAlertDialog.NORMAL_TYPE);
                     sweetAlertDialog.setCustomView(dialogView);
                     sweetAlertDialog.hideConfirmButton();
+                    sweetAlertDialog.setCancelable(false);
                     sweetAlertDialog.show();
 
                     btnConfirmDialog.setOnClickListener(new View.OnClickListener() {

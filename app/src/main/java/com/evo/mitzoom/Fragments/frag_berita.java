@@ -734,6 +734,7 @@ public class frag_berita extends Fragment implements com.wdullaer.materialdateti
                         DipsWaitingRoom.publishCallAccept(csId, "cancel"); //RabbitMQ
                     }
                     sessions.saveIDSchedule(0);
+                    DipsWaitingRoom.showProgress(true);
                     saveSchedule();
                 }
 
@@ -768,6 +769,7 @@ public class frag_berita extends Fragment implements com.wdullaer.materialdateti
         call.enqueue(new Callback<JsonObject>() {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                DipsWaitingRoom.showProgress(false);
                 Log.e("CEK","saveSchedule Respon Code : "+response.code());
                 if (response.isSuccessful() && response.body().size() > 0) {
                     Log.e("CEK","saveSchedule Respon : "+response.body().toString());
@@ -814,6 +816,7 @@ public class frag_berita extends Fragment implements com.wdullaer.materialdateti
                     SweetAlertDialog sweetAlertDialog = new SweetAlertDialog(context, SweetAlertDialog.NORMAL_TYPE);
                     sweetAlertDialog.setCustomView(dialogView);
                     sweetAlertDialog.hideConfirmButton();
+                    sweetAlertDialog.setCancelable(false);
                     sweetAlertDialog.show();
 
                     btnConfirmDialog.setOnClickListener(new View.OnClickListener() {
@@ -828,6 +831,7 @@ public class frag_berita extends Fragment implements com.wdullaer.materialdateti
 
             @Override
             public void onFailure(Call<JsonObject> call, Throwable t) {
+                DipsWaitingRoom.showProgress(false);
                 Toast.makeText(context,t.getMessage(),Toast.LENGTH_SHORT).show();
             }
         });

@@ -32,7 +32,7 @@
                 android:layout_marginStart="6dp"
                 android:text="@string/produk_layanan"
                 android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-                android:textSize="20dp"
+                android:textSize="16dp"
                 android:textStyle="bold" />
         </LinearLayout>
 

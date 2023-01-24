@@ -727,6 +727,7 @@ public class DipsOutboundCall extends AppCompatActivity implements DatePickerDia
                     SweetAlertDialog sweetAlertDialog = new SweetAlertDialog(DipsOutboundCall.this, SweetAlertDialog.SUCCESS_TYPE);
                     sweetAlertDialog.setContentText(getResources().getString(R.string.content_after_schedule));
                     sweetAlertDialog.setConfirmText(getResources().getString(R.string.done));
+                    sweetAlertDialog.setCancelable(false);
                     sweetAlertDialog.show();
                     Button btnConfirm = (Button) sweetAlertDialog.findViewById(cn.pedant.SweetAlert.R.id.confirm_button);
                     btnConfirm.setBackgroundTintList(DipsOutboundCall.this.getResources().getColorStateList(R.color.Blue));
