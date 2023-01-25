@@ -103,6 +103,7 @@ import us.zoom.sdk.ZoomVideoSDKVideoOption;
 
 public class DipsWaitingRoom extends AppCompatActivity implements DatePickerDialog.OnDateSetListener {
 
+    private static final String TAG = "CEK_DipsWaitingRoom";
     private Context mContext;
     protected final static int REQUEST_VIDEO_AUDIO_CODE = 1010;
     public static final int REQUEST_WRITE_PERMISSION = 786;
@@ -230,7 +231,7 @@ public class DipsWaitingRoom extends AppCompatActivity implements DatePickerDial
     protected void onResume() {
         super.onResume();
 
-        Log.d("CEK","MASUK onResume inPreview : "+inPreview+" | camera : "+camera);
+        Log.d(TAG,"MASUK onResume inPreview : "+inPreview+" | camera : "+camera);
 
         isConfigure = false;
 
@@ -257,7 +258,7 @@ public class DipsWaitingRoom extends AppCompatActivity implements DatePickerDial
 
     @Override
     protected void onPause() {
-        Log.e("CEK","MASUK ONPAUSE");
+        Log.e(TAG,"MASUK ONPAUSE");
         if (inPreview) {
             camera.stopPreview();
         }
@@ -268,7 +269,7 @@ public class DipsWaitingRoom extends AppCompatActivity implements DatePickerDial
             inPreview = false;
         }
 
-        Log.e("CEK","inPreview : "+inPreview+" | camera : "+camera);
+        Log.e(TAG,"inPreview : "+inPreview+" | camera : "+camera);
 
         super.onPause();
     }
@@ -305,6 +306,7 @@ public class DipsWaitingRoom extends AppCompatActivity implements DatePickerDial
     }
 
     private void requestPermissionWrite() {
+        Log.e(TAG,"MASUK requestPermissionWrite");
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
             if (checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
                 requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},  REQUEST_WRITE_PERMISSION);
@@ -324,7 +326,7 @@ public class DipsWaitingRoom extends AppCompatActivity implements DatePickerDial
     }
 
     private void initialWaitingRoom() {
-        Log.d("CEK", "idDips : "+idDips);
+        Log.d(TAG, "idDips : "+idDips);
         subscribeReqTicket();
 
         /*mSocket.on("waiting", waitingListener);
@@ -468,7 +470,7 @@ public class DipsWaitingRoom extends AppCompatActivity implements DatePickerDial
                     ch.waitForConfirmsOrDie();
 
                 } catch (IOException | TimeoutException | InterruptedException e) {
-                    Log.e("CEK", "publishToAMQP Connection broken: " + e.getClass().getName());
+                    Log.e(TAG, "publishToAMQP Connection broken: " + e.getClass().getName());
                     try {
                         Thread.sleep(4000); //sleep and then try again
                         publishToAMQP();
@@ -498,7 +500,7 @@ public class DipsWaitingRoom extends AppCompatActivity implements DatePickerDial
                     ch.waitForConfirmsOrDie();
 
                 } catch (IOException | TimeoutException | InterruptedException e) {
-                    Log.e("CEK", "publishQSReqTicket Connection broken: " + e.getClass().getName());
+                    Log.e(TAG, "publishQSReqTicket Connection broken: " + e.getClass().getName());
                     try {
                         Thread.sleep(4000); //sleep and then try again
                         publishQSReqTicket();
@@ -527,15 +529,15 @@ public class DipsWaitingRoom extends AppCompatActivity implements DatePickerDial
                         @Override
                         public void handle(String consumerTag, Delivery message) throws IOException {
                             String getMessage = new String(message.getBody());
-                            Log.e("CEK","Success subscribeThread getMessage : "+getMessage);
+                            Log.e(TAG,"Success subscribeThread getMessage : "+getMessage);
                             try {
                                 JSONObject dataObj = new JSONObject(getMessage);
                                 String getTicket = dataObj.getJSONObject("transaction").getString("ticket");
-                                Log.e("CEK","subscribeThread getTicket : "+getTicket);
+                                Log.e(TAG,"subscribeThread getTicket : "+getTicket);
                                 int myTicketInt = Integer.parseInt(getTicket);
-                                Log.e("CEK","subscribeThread myTicketInt : "+myTicketInt);
+                                Log.e(TAG,"subscribeThread myTicketInt : "+myTicketInt);
                                 myTicketNumber = String.format("%03d", myTicketInt).toString();
-                                Log.e("CEK","subscribeThread myTicketNumber : "+myTicketNumber);
+                                Log.e(TAG,"subscribeThread myTicketNumber : "+myTicketNumber);
                                 String myticketContent = myTicketNumber;
                                 runOnUiThread(new Runnable() {
                                     @Override
@@ -550,12 +552,12 @@ public class DipsWaitingRoom extends AppCompatActivity implements DatePickerDial
                     }, new CancelCallback() {
                         @Override
                         public void handle(String consumerTag) throws IOException {
-                            Log.e("CEK","subscribeThread consumerTag : "+consumerTag);
+                            Log.e(TAG,"subscribeThread consumerTag : "+consumerTag);
                         }
                     });
                     publishToAMQP(); //RabbitMQ
                 } catch (Exception e1) {
-                    Log.e("CEK", "subscribe Connection broken: " + e1.getClass().getName());
+                    Log.e(TAG, "subscribe Connection broken: " + e1.getClass().getName());
                     try {
                         Thread.sleep(4000); //sleep and then try again
                         subscribe();
@@ -573,7 +575,7 @@ public class DipsWaitingRoom extends AppCompatActivity implements DatePickerDial
             @Override
             public void run() {
                 try {
-                    Log.e("CEK","MASUK subscribeReqTicket");
+                    Log.e(TAG,"MASUK subscribeReqTicket");
                     Connection connection = connectionFactory.newConnection();
                     Channel channel = connection.createChannel();
                     channel.basicQos(1);
@@ -584,14 +586,14 @@ public class DipsWaitingRoom extends AppCompatActivity implements DatePickerDial
                         @Override
                         public void handle(String consumerTag, Delivery message) throws IOException {
                             String getMessage = new String(message.getBody());
-                            Log.e("CEK","Success subscribeReqTicket getMessage : "+getMessage);
+                            Log.e(TAG,"Success subscribeReqTicket getMessage : "+getMessage);
                             try {
                                 JSONObject dataObj = new JSONObject(getMessage);
                                 String ticketLast = dataObj.getJSONObject("transaction").getString("ticket");
                                 int ticketLastInt = Integer.parseInt(ticketLast);
-                                Log.e("CEK", "subscribeReqTicket ticketLast : " +ticketLast);
+                                Log.e(TAG, "subscribeReqTicket ticketLast : " +ticketLast);
                                 String lastQueue = String.format("%03d", ticketLastInt).toString();
-                                Log.e("CEK", "subscribeReqTicket lastQueue : " +lastQueue);
+                                Log.e(TAG, "subscribeReqTicket lastQueue : " +lastQueue);
                                 String lastTicketContent = lastQueue;
                                 runOnUiThread(new Runnable() {
                                     @Override
@@ -610,13 +612,13 @@ public class DipsWaitingRoom extends AppCompatActivity implements DatePickerDial
                     }, new CancelCallback() {
                         @Override
                         public void handle(String consumerTag) throws IOException {
-                            Log.e("CEK","subscribeReqTicket consumerTag : "+consumerTag);
+                            Log.e(TAG,"subscribeReqTicket consumerTag : "+consumerTag);
                         }
                     });
 
                     publishQSReqTicket();
                 } catch (Exception e1) {
-                    Log.e("CEK", "subscribeReqTicket Connection broken: " + e1.getClass().getName());
+                    Log.e(TAG, "subscribeReqTicket Connection broken: " + e1.getClass().getName());
                     try {
                         Thread.sleep(4000); //sleep and then try again
                         subscribeReqTicket();
@@ -634,20 +636,20 @@ public class DipsWaitingRoom extends AppCompatActivity implements DatePickerDial
             @Override
             public void run() {
                 try {
-                    Log.e("CEK","MASUK subscribeCall");
+                    Log.e(TAG,"MASUK subscribeCall");
                     Connection connection = connectionFactory.newConnection();
                     channelCall = connection.createChannel();
                     channelCall.basicQos(1);
                     AMQP.Queue.DeclareOk q = channelCall.queueDeclare();
-                    Log.e("CEK","subscribeCall getQueue : "+q.getQueue());
+                    Log.e(TAG,"subscribeCall getQueue : "+q.getQueue());
                     channelCall.exchangeDeclare("dips361-cust-call", "direct", true);
                     channelCall.queueBind(q.getQueue(), "dips361-cust-call", "dips.direct.cust."+idDips+".call");
-                    Log.e("CEK","AFTER subscribeCall queueBind getChannelNumber : "+channelCall.getChannelNumber());
+                    Log.e(TAG,"AFTER subscribeCall queueBind getChannelNumber : "+channelCall.getChannelNumber());
                     channelCall.basicConsume(q.getQueue(), true, new DeliverCallback() {
                         @Override
                         public void handle(String consumerTag, Delivery message) throws IOException {
                             String getMessage = new String(message.getBody());
-                            Log.e("CEK","Success subscribeCall getMessage : "+getMessage);
+                            Log.e(TAG,"Success subscribeCall getMessage : "+getMessage);
                             try {
                                 JSONObject dataObj = new JSONObject(getMessage);
                                 String actionCall = "";
@@ -659,7 +661,7 @@ public class DipsWaitingRoom extends AppCompatActivity implements DatePickerDial
                                     sessions.saveCSID(csId);
                                 } else {
                                     int getTicket = dataObj.getJSONObject("transaction").getInt("ticket");
-                                    Log.e("CEK", "subscribeCall getTicket : " + getTicket);
+                                    Log.e(TAG, "subscribeCall getTicket : " + getTicket);
                                     String getQueue = String.format("%03d", getTicket);
                                     String lastTicketContent = getQueue;
                                     runOnUiThread(new Runnable() {
@@ -668,18 +670,18 @@ public class DipsWaitingRoom extends AppCompatActivity implements DatePickerDial
                                             lastTicket.setText(lastTicketContent);
                                         }
                                     });
-                                    Log.e("CEK", "subscribeCall getQueue : " + getQueue + " | myTicketNumber : " + myTicketNumber);
+                                    Log.e(TAG, "subscribeCall getQueue : " + getQueue + " | myTicketNumber : " + myTicketNumber);
                                     if (getQueue.equals(myTicketNumber)) {
-                                        Log.e("CEK", "subscribeCall MASUK IF");
+                                        Log.e(TAG, "subscribeCall MASUK IF");
                                         String sessionId = idDips;
                                         if (dataObj.getJSONObject("transaction").has("sessionId")) {
                                             sessionId = dataObj.getJSONObject("transaction").getString("sessionId");
                                         }
                                         String csId = dataObj.getJSONObject("transaction").getString("csId");
                                         String password = dataObj.getJSONObject("transaction").getString("password");
-                                        Log.e("CEK", "subscribeCall sessionId : " + sessionId);
-                                        Log.e("CEK", "subscribeCall csId : " + csId);
-                                        Log.e("CEK", "subscribeCall password : " + password);
+                                        Log.e(TAG, "subscribeCall sessionId : " + sessionId);
+                                        Log.e(TAG, "subscribeCall csId : " + csId);
+                                        Log.e(TAG, "subscribeCall password : " + password);
 
                                         NameSession = sessionId;
                                         SessionPass = password;
@@ -699,7 +701,7 @@ public class DipsWaitingRoom extends AppCompatActivity implements DatePickerDial
                                             }
                                         });
                                     } else {
-                                        Log.e("CEK", "subscribeCall MASUK ELSE WAITING");
+                                        Log.e(TAG, "subscribeCall MASUK ELSE WAITING");
                                         runOnUiThread(new Runnable() {
                                             @Override
                                             public void run() {
@@ -715,12 +717,12 @@ public class DipsWaitingRoom extends AppCompatActivity implements DatePickerDial
                     }, new CancelCallback() {
                         @Override
                         public void handle(String consumerTag) throws IOException {
-                            Log.e("CEK","subscribeCall consumerTag : "+consumerTag);
+                            Log.e(TAG,"subscribeCall consumerTag : "+consumerTag);
                         }
                     });
 
                 } catch (Exception e1) {
-                    Log.e("CEK", "subscribeCall Connection broken: " + e1.getClass().getName());
+                    Log.e(TAG, "subscribeCall Connection broken: " + e1.getClass().getName());
                     try {
                         Thread.sleep(4000); //sleep and then try again
                         subscribeCall();
@@ -748,18 +750,18 @@ public class DipsWaitingRoom extends AppCompatActivity implements DatePickerDial
                         @Override
                         public void handle(String consumerTag, Delivery message) throws IOException {
                             String getMessage = new String(message.getBody());
-                            Log.e("CEK","Success subscribeAllTicketInfo getMessage : "+getMessage);
-                            Log.e("CEK","Success subscribeAllTicketInfo consumerTag : "+consumerTag);
+                            Log.e(TAG,"Success subscribeAllTicketInfo getMessage : "+getMessage);
+                            Log.e(TAG,"Success subscribeAllTicketInfo consumerTag : "+consumerTag);
                         }
                     }, new CancelCallback() {
                         @Override
                         public void handle(String consumerTag) throws IOException {
-                            Log.e("CEK","subscribeAllTicketInfo consumerTag : "+consumerTag);
+                            Log.e(TAG,"subscribeAllTicketInfo consumerTag : "+consumerTag);
                         }
                     });
 
                 } catch (Exception e1) {
-                    Log.e("CEK", "subscribeAllTicketInfo Connection broken: " + e1.getClass().getName());
+                    Log.e(TAG, "subscribeAllTicketInfo Connection broken: " + e1.getClass().getName());
                     try {
                         Thread.sleep(4000); //sleep and then try again
                         subscribeAllTicketInfo();
@@ -783,14 +785,14 @@ public class DipsWaitingRoom extends AppCompatActivity implements DatePickerDial
                     JSONObject dataTicketObj = reqAcceptCall(labelAction);
                     String dataTicket = dataTicketObj.toString();
 
-                    Log.e("CEK","publishCallAccept dips.direct.cs."+csId+".accept.user REQ : "+dataTicket);
+                    Log.e(TAG,"publishCallAccept dips.direct.cs."+csId+".accept.user REQ : "+dataTicket);
 
                     ch.exchangeDeclare("dips361-cs-accept-user", "direct", true);
                     ch.basicPublish("dips361-cs-accept-user","dips.direct.cs."+csId+".accept.user",false,null,dataTicket.getBytes());
                     ch.waitForConfirmsOrDie();
 
                 } catch (IOException | TimeoutException | InterruptedException e) {
-                    Log.e("CEK", "publishCallAccept Connection broken: " + e.getClass().getName());
+                    Log.e(TAG, "publishCallAccept Connection broken: " + e.getClass().getName());
                     try {
                         Thread.sleep(4000); //sleep and then try again
                         publishCallAccept(csId, labelAction);
@@ -846,7 +848,7 @@ public class DipsWaitingRoom extends AppCompatActivity implements DatePickerDial
     }
 
     private void initializeSdk() {
-        Log.e("CEK","initializeSdk");
+        Log.e(TAG,"initializeSdk");
         ZoomVideoSDKInitParams params = new ZoomVideoSDKInitParams();
         params.domain = AuthConstants.WEB_DOMAIN; // Required
         params.enableLog = true; // Optional for debugging
@@ -925,7 +927,7 @@ public class DipsWaitingRoom extends AppCompatActivity implements DatePickerDial
         public void call(final Object... args) {
             try {
                 JSONArray dataArr = new JSONArray(args);
-                Log.d("CEK","dataArr : "+dataArr);
+                Log.d(TAG,"dataArr : "+dataArr);
                 //Status
                 int statusCode = dataArr.getInt(0);
                 //Nama Sesi
@@ -982,7 +984,7 @@ public class DipsWaitingRoom extends AppCompatActivity implements DatePickerDial
                 camera.setPreviewDisplay(previewHolder);
                 CameraManager manager = (CameraManager) getSystemService(Context.CAMERA_SERVICE);
                 if (manager == null) {
-                    Log.i("CEK", "camera manager is null");
+                    Log.i(TAG, "camera manager is null");
                     return;
                 }
                 try {
@@ -1024,7 +1026,7 @@ public class DipsWaitingRoom extends AppCompatActivity implements DatePickerDial
             camera.setParameters(parameters);
             inPreview = true;
             if (isConfigure) {
-                Log.d("CEK","MASUK isConfigure");
+                Log.d(TAG,"MASUK isConfigure");
                 try {
                     Thread.sleep(500);
                     optimalCamera();
@@ -1058,7 +1060,7 @@ public class DipsWaitingRoom extends AppCompatActivity implements DatePickerDial
                     //camera.setDisplayOrientation(90);
                     CameraManager manager = (CameraManager) getSystemService(Context.CAMERA_SERVICE);
                     if (manager == null) {
-                        Log.i("CEK", "camera manager is null");
+                        Log.i(TAG, "camera manager is null");
                         return;
                     }
                     try {
@@ -1296,7 +1298,7 @@ public class DipsWaitingRoom extends AppCompatActivity implements DatePickerDial
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        Log.e("CEK","PARAMS saveSchedule : "+jsons.toString());
+        Log.e(TAG,"PARAMS saveSchedule : "+jsons.toString());
         Log.d("PARAMS JADWAL","idDips = "+idDips+", Tanggal = "+Savetanggal);
         RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), jsons.toString());
         ApiService API = Server.getAPIService();
@@ -1304,9 +1306,9 @@ public class DipsWaitingRoom extends AppCompatActivity implements DatePickerDial
         call.enqueue(new Callback<JsonObject>() {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
-                Log.e("CEK","saveSchedule Respon Code : "+response.code());
+                Log.e(TAG,"saveSchedule Respon Code : "+response.code());
                 if (response.isSuccessful() && response.body().size() > 0) {
-                    Log.e("CEK","saveSchedule Respon : "+response.body().toString());
+                    Log.e(TAG,"saveSchedule Respon : "+response.body().toString());
 
                     String dataS = response.body().toString();
                     try {
@@ -1319,13 +1321,13 @@ public class DipsWaitingRoom extends AppCompatActivity implements DatePickerDial
 
                     if (DipsWaitingRoom.channelCall != null) {
                         try {
-                            Log.e("CEK","MASUK channelCall abort close");
+                            Log.e(TAG,"MASUK channelCall abort close");
                             DipsWaitingRoom.channelCall.close();
                         } catch (IOException | TimeoutException e) {
                             e.printStackTrace();
                         }
                         if (DipsWaitingRoom.subscribeThreadCall != null) {
-                            Log.e("CEK","MASUK subscribeThreadCall interrupt");
+                            Log.e(TAG,"MASUK subscribeThreadCall interrupt");
                             DipsWaitingRoom.subscribeThreadCall.interrupt();
                         }
                     }
@@ -1464,7 +1466,7 @@ public class DipsWaitingRoom extends AppCompatActivity implements DatePickerDial
     public void setCameraDisplayOrientation(){
         if (camera == null)
         {
-            Log.d("CEK","setCameraDisplayOrientation - camera null");
+            Log.d(TAG,"setCameraDisplayOrientation - camera null");
             return;
         }
 
@@ -1504,7 +1506,7 @@ public class DipsWaitingRoom extends AppCompatActivity implements DatePickerDial
 
         @Override
         public void surfaceChanged(@NonNull SurfaceHolder holder, int format, int width, int height) {
-            Log.e("CEK","surfaceChanged width : "+width+" | height : "+height);
+            Log.e(TAG,"surfaceChanged width : "+width+" | height : "+height);
             initPreview(width, height);
             startPreview();
         }
@@ -1620,20 +1622,20 @@ public class DipsWaitingRoom extends AppCompatActivity implements DatePickerDial
             e.printStackTrace();
         }
 
-        Log.e("CEK","processSignature REQ : "+jsons.toString());
+        Log.e(TAG,"processSignature REQ : "+jsons.toString());
 
         RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), jsons.toString());
 
         ApiService API = Server.getAPIService();
         Call<JsonObject> call = API.Signature(requestBody);
-        Log.e("CEK","Signature URL : "+call.request().url());
+        Log.e(TAG,"Signature URL : "+call.request().url());
         call.enqueue(new Callback<JsonObject>() {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
-                Log.e("CEK","Signature RESPONSE "+response.code());
+                Log.e(TAG,"Signature RESPONSE "+response.code());
                 if (response.isSuccessful() && response.body().size() > 0) {
                     String dataS = response.body().toString();
-                    Log.e("CEK","Signature dataS : "+dataS);
+                    Log.e(TAG,"Signature dataS : "+dataS);
                     try {
                         JSONObject jsObj = new JSONObject(dataS);
                         String signatures = "";
@@ -1666,7 +1668,7 @@ public class DipsWaitingRoom extends AppCompatActivity implements DatePickerDial
         String name = allClaims.get("user_identity").asString();
         String sessionName = allClaims.get("tpc").asString();
         String sessionPassKey = allClaims.get("session_key").asString();
-        Log.e("CEK","processCreateVideo sessionPassKey : "+sessionPassKey);
+        Log.e(TAG,"processCreateVideo sessionPassKey : "+sessionPassKey);
 
         ZoomVideoSDKSessionContext sessionContext = new ZoomVideoSDKSessionContext();
 
@@ -1740,8 +1742,8 @@ public class DipsWaitingRoom extends AppCompatActivity implements DatePickerDial
                             tanggalPenuh = dataObj.getJSONObject("data").getJSONArray("tanggalPenuh");
                             periodePenuh = dataObj.getJSONObject("data").getJSONArray("periodePenuh");
 
-                            Log.e("CEK","tanggalPenuh : "+tanggalPenuh.toString());
-                            Log.e("CEK","periodePenuh : "+periodePenuh.toString());
+                            Log.e(TAG,"tanggalPenuh : "+tanggalPenuh.toString());
+                            Log.e(TAG,"periodePenuh : "+periodePenuh.toString());
                         }
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -1767,7 +1769,7 @@ public class DipsWaitingRoom extends AppCompatActivity implements DatePickerDial
                         int errCode = dataObj.getInt("code");
                         if (errCode == 200) {
                             JSONArray dataArrTimes = dataObj.getJSONArray("data");
-                            Log.e("CEK","dataArrTimes : "+dataArrTimes);
+                            Log.e(TAG,"dataArrTimes : "+dataArrTimes);
                             for (int i = 0; i < dataArrTimes.length(); i++) {
                                 int periodeId = dataArrTimes.getJSONObject(i).getInt("id");
                                 String periode = dataArrTimes.getJSONObject(i).getString("periode");
@@ -1793,7 +1795,7 @@ public class DipsWaitingRoom extends AppCompatActivity implements DatePickerDial
 
     @Override
     public void onDateSet(DatePickerDialog view, int year, int monthOfYear, int dayOfMonth) {
-        Log.e("CEK","onDateSet");
+        Log.e(TAG,"onDateSet");
         int addmonths = (month + 1);
         String months = String.valueOf(addmonths);
         if (addmonths < 10) {

@@ -464,15 +464,17 @@ public class frag_service_item extends Fragment {
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
+
                     JSONObject dataMirr = null;
                     try {
                         dataMirr = new JSONObject(objEl.toString());
                         dataMirr.put("noponsel",no_handphone);
                         dataMirr.put("noPengaduan",noPengaduan);
+                        dataForms.put(keys,dataMirr);
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
-                    RabbitMirroring.MirroringSendKey(dataMirr);
+                    RabbitMirroring.MirroringSendKey(dataForms);
                     processSendOTP();
                 } else {
                     if (isSessionZoom) {
