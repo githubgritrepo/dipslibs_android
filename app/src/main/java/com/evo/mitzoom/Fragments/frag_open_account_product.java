@@ -289,6 +289,7 @@ public class frag_open_account_product extends Fragment {
             @Override
             public void onDismiss(DialogInterface dialogInterface) {
                 flagViewTNC = false;
+                rabbitMirroring.MirroringSendEndpoint(201);
             }
         });
 
