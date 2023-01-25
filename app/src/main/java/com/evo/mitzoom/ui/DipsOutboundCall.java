@@ -45,7 +45,6 @@ import androidx.core.content.ContextCompat;
 
 import com.auth0.android.jwt.Claim;
 import com.auth0.android.jwt.JWT;
-import com.bumptech.glide.Glide;
 import com.evo.mitzoom.API.ApiService;
 import com.evo.mitzoom.API.Server;
 import com.evo.mitzoom.BaseMeetingActivity;
@@ -268,6 +267,7 @@ public class DipsOutboundCall extends AppCompatActivity implements DatePickerDia
                 } else {
                     startService(serviceIntent);
                 }
+                OutboundServiceNew.OutConference();
             }
         };
         handlerTimes.postDelayed(myRunnable, 30000);
