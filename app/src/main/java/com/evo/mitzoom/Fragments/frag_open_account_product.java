@@ -110,7 +110,8 @@ public class frag_open_account_product extends Fragment {
         } else {
             DipsSwafoto.showProgress(true);
         }
-        new AsyncProcess().execute();
+        processGetTNC();
+        //new AsyncProcess().execute();
 
         addData();
 
@@ -285,11 +286,10 @@ public class frag_open_account_product extends Fragment {
 
         //sweetAlertDialogTNC.getWindow().setGravity(Gravity.CENTER_HORIZONTAL);
         sweetAlertDialogTNC.getWindow().setLayout(newWidth,newHeight);
-        sweetAlertDialogTNC.setOnDismissListener(new DialogInterface.OnDismissListener() {
+        sweetAlertDialogTNC.setOnCancelListener(new DialogInterface.OnCancelListener() {
             @Override
-            public void onDismiss(DialogInterface dialogInterface) {
+            public void onCancel(DialogInterface dialogInterface) {
                 flagViewTNC = false;
-                rabbitMirroring.MirroringSendEndpoint(201);
             }
         });
 
