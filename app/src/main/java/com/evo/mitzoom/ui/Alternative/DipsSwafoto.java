@@ -208,19 +208,10 @@ public class DipsSwafoto extends AppCompatActivity implements com.wdullaer.mater
 
         Log.d("CEK","MASUK onResume");
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (checkSelfPermission(Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
-                requestPermissions(new String[]{Manifest.permission.CAMERA}, MY_CAMERA_PERMISSION_CODE);
-            } else {
-                requestPermission();
-            }
+        if (checkSelfPermission(Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(new String[]{Manifest.permission.CAMERA}, MY_CAMERA_PERMISSION_CODE);
         } else {
-            int resultPerm = ContextCompat.checkSelfPermission(mContext, Manifest.permission.CAMERA);
-            if (resultPerm != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, MY_CAMERA_PERMISSION_CODE);
-            } else {
-                requestPermission();
-            }
+            requestPermission();
         }
     }
 
@@ -264,21 +255,16 @@ public class DipsSwafoto extends AppCompatActivity implements com.wdullaer.mater
     }
 
     private void requestPermission() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
             if (checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-                requestPermissions(new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE},  REQUEST_WRITE_PERMISSION);
+                requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},  REQUEST_WRITE_PERMISSION);
             } else {
                 camera = Camera.open(useFacing);
                 startPreview();
             }
         } else {
-            int resultPerm = ContextCompat.checkSelfPermission(mContext, Manifest.permission.WRITE_EXTERNAL_STORAGE);
-            if (resultPerm != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_WRITE_PERMISSION);
-            } else {
-                camera = Camera.open(useFacing);
-                startPreview();
-            }
+            camera = Camera.open(useFacing);
+            startPreview();
         }
     }
 

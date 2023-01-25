@@ -9,6 +9,8 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.hardware.Camera;
 import android.hardware.camera2.CameraAccessException;
 import android.hardware.camera2.CameraManager;
@@ -63,12 +65,23 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
+import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeoutException;
+
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
 
 import cn.pedant.SweetAlert.SweetAlertDialog;
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -233,15 +246,11 @@ public class DipsOutboundCall extends AppCompatActivity implements DatePickerDia
         if (!imageAgent.isEmpty()) {
             String imageAgentnew = imageAgent.replace("https://dips.grit.id:6503/", Server.BASE_URL_API);
             Log.i("CEK GAMBAR", "" + imageAgentnew);
-
-            /*GlideApp.with(mContext)
+            /*Glide.with(mContext)
                     .load(imageAgentnew)
                     .placeholder(R.drawable.agen_profile)
                     .into(imgCS);*/
-            Glide.with(mContext)
-                    .load(imageAgentnew)
-                    .placeholder(R.drawable.agen_profile)
-                    .into(imgCS);
+            new DownloadImageTask().execute(imageAgentnew);
         } else {
             imgCS.setImageDrawable(getDrawable(R.drawable.agen_profile));
         }
@@ -397,6 +406,52 @@ public class DipsOutboundCall extends AppCompatActivity implements DatePickerDia
             processGetCheckSchedule();
             processGetScheduleTimes();
             return null;
+        }
+    }
+
+    private class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
+
+        protected Bitmap doInBackground(String... urls) {
+            Bitmap mIcon11 = null;
+
+            try {
+                SSLContext ssl_ctx = SSLContext.getInstance("TLS");
+                TrustManager[ ] trust_mgr = new TrustManager[ ] {
+                        new X509TrustManager() {
+                            public X509Certificate[ ] getAcceptedIssuers() { return null; }
+                            public void checkClientTrusted(X509Certificate[ ] certs, String t) { }
+                            public void checkServerTrusted(X509Certificate[ ] certs, String t) { }
+                        }
+                };
+                ssl_ctx.init(null,                // key manager
+                        trust_mgr,           // trust manager
+                        new SecureRandom()); // random number generator
+                HttpsURLConnection.setDefaultSSLSocketFactory(ssl_ctx.getSocketFactory());
+            } catch(NoSuchAlgorithmException e) {
+                e.printStackTrace();
+            } catch (KeyManagementException e) {
+                e.printStackTrace();
+            }
+
+            HttpsURLConnection connection = null;
+
+            try {
+                URL url = new URL(urls[0]);
+                Log.e(TAG,"url : "+url);
+                connection = (HttpsURLConnection) url.openConnection();
+                connection.connect();
+
+                InputStream in = connection.getInputStream();
+                mIcon11 = BitmapFactory.decodeStream(in);
+            } catch (Exception e) {
+                Log.e("Error", e.getMessage());
+                e.printStackTrace();
+            }
+            return mIcon11;
+        }
+
+        protected void onPostExecute(Bitmap result) {
+            imgCS.setImageBitmap(result);
         }
     }
 
@@ -1049,7 +1104,14 @@ public class DipsOutboundCall extends AppCompatActivity implements DatePickerDia
         handler.postDelayed(runnableText, 1000);
     }
     protected boolean requestPermission() {
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED || ActivityCompat.checkSelfPermission(this,Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED || ActivityCompat.checkSelfPermission(this,Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED || ActivityCompat.checkSelfPermission(this,Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED || ActivityCompat.checkSelfPermission(this,Manifest.permission.READ_MEDIA_IMAGES) != PackageManager.PERMISSION_GRANTED ||
+                    ActivityCompat.checkSelfPermission(this,Manifest.permission.READ_MEDIA_AUDIO) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.CAMERA,
+                        Manifest.permission.RECORD_AUDIO, Manifest.permission.READ_MEDIA_IMAGES}, REQUEST_VIDEO_AUDIO_CODE);
+                return false;
+            }
+        } else if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED || ActivityCompat.checkSelfPermission(this,Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED || ActivityCompat.checkSelfPermission(this,Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.CAMERA,
                     Manifest.permission.RECORD_AUDIO, Manifest.permission.READ_EXTERNAL_STORAGE}, REQUEST_VIDEO_AUDIO_CODE);
             return false;

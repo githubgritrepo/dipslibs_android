@@ -8,11 +8,11 @@
 
     <ImageView
         android:id="@+id/imgSplash"
-        android:layout_marginStart="30dp"
-        android:layout_marginEnd="30dp"
         android:layout_width="match_parent"
         android:layout_height="100dp"
         android:layout_centerInParent="true"
+        android:layout_marginStart="30dp"
+        android:layout_marginEnd="30dp"
         android:scaleType="fitCenter"
         android:src="@drawable/logo_bank_victoria_white" />
 

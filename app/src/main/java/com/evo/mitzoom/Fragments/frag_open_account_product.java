@@ -30,10 +30,12 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.evo.mitzoom.API.Server;
 import com.evo.mitzoom.Adapter.ItemOpenAccount;
+import com.evo.mitzoom.BaseMeetingActivity;
 import com.evo.mitzoom.Helper.RabbitMirroring;
 import com.evo.mitzoom.Model.ItemModel;
 import com.evo.mitzoom.R;
 import com.evo.mitzoom.Session.SessionManager;
+import com.evo.mitzoom.ui.Alternative.DipsSwafoto;
 import com.google.gson.JsonObject;
 
 import org.json.JSONException;
@@ -103,6 +105,11 @@ public class frag_open_account_product extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        if (isSessionZoom) {
+            BaseMeetingActivity.showProgress(true);
+        } else {
+            DipsSwafoto.showProgress(true);
+        }
         new AsyncProcess().execute();
 
         addData();
@@ -162,6 +169,11 @@ public class frag_open_account_product extends Fragment {
         Server.getAPIService().getTNC(1).enqueue(new Callback<JsonObject>() {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                if (isSessionZoom) {
+                    BaseMeetingActivity.showProgress(false);
+                } else {
+                    DipsSwafoto.showProgress(false);
+                }
                 if (response.isSuccessful()) {
                     String dataS = response.body().toString();
                     try {
@@ -218,6 +230,11 @@ public class frag_open_account_product extends Fragment {
 
             @Override
             public void onFailure(Call<JsonObject> call, Throwable t) {
+                if (isSessionZoom) {
+                    BaseMeetingActivity.showProgress(false);
+                } else {
+                    DipsSwafoto.showProgress(false);
+                }
                 Toast.makeText(mContext,t.getMessage(),Toast.LENGTH_SHORT).show();
             }
         });

@@ -73,6 +73,7 @@ import retrofit2.Response;
 
 public class DipsChooseLanguage extends AppCompatActivity {
 
+    private final String TAG = "CEK_DipsChooseLanguage";
     public static final int REQUEST_CODE_LIVENESS = 1001;
     public static final int READ_EXTERNAL_STORAGE = 780;
     public static final int REQUEST_CAMERA = 781;
@@ -93,6 +94,7 @@ public class DipsChooseLanguage extends AppCompatActivity {
     private String idDips;
     private String dataTnC = "";
     private boolean flagViewTNC = false;
+    private boolean isFlagALL_FILES_ACCESS = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -137,38 +139,12 @@ public class DipsChooseLanguage extends AppCompatActivity {
             e.printStackTrace();
         }
 
-        if (!Settings.canDrawOverlays(this)) {
-            /*Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:" + getPackageName()));
-            startActivityForResult(intent, 1);*/
-            if ("xiaomi".equals(Build.MANUFACTURER.toLowerCase(Locale.ROOT))) {
-                final Intent intent =new Intent("miui.intent.action.APP_PERM_EDITOR");
-                intent.setClassName("com.miui.securitycenter",
-                        "com.miui.permcenter.permissions.PermissionsEditorActivity");
-                intent.putExtra("extra_pkgname", getPackageName());
-                startActivity(intent);
-                /*new AlertDialog.Builder(this)
-                        .setTitle("Please Enable the additional permissions")
-                        .setMessage("You will not receive notifications while the app is in background if you disable these permissions")
-                        .setPositiveButton("Go to Settings", new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
-                                startActivity(intent);
-                            }
-                        })
-                        .setIcon(android.R.drawable.ic_dialog_info)
-                        .setCancelable(false)
-                        .show();*/
-            }else {
-                Intent overlaySettings = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:" + getPackageName()));
-                startActivityForResult(overlaySettings, 1);
-            }
-        }
-
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        Log.e("CEK","MASUK onResume");
+        Log.e(TAG,"MASUK onResume");
         reqPermission();
 
         long unixTime = System.currentTimeMillis() / 1000L;
@@ -182,19 +158,23 @@ public class DipsChooseLanguage extends AppCompatActivity {
             new AsyncAuth().execute();
         }
 
-        Log.e("CEK","openBatteryOptimizationDialogIfNeeded");
-        Log.e("CEK","isOptimizingBattery : "+isOptimizingBattery());
-        Log.e("CEK","getBatteryOptimizationPreferenceKey : "+getPreferences().getBoolean(getBatteryOptimizationPreferenceKey(), true));
+        Log.e(TAG,"openBatteryOptimizationDialogIfNeeded");
+        Log.e(TAG,"isOptimizingBattery : "+isOptimizingBattery());
+        Log.e(TAG,"getBatteryOptimizationPreferenceKey : "+getPreferences().getBoolean(getBatteryOptimizationPreferenceKey(), true));
 
-        //if (isOptimizingBattery() && getPreferences().getBoolean(getBatteryOptimizationPreferenceKey(), true)) {
-        if (isOptimizingBattery()) {
-            Intent intent = new Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS);
-            Uri uri = Uri.parse("package:" + getPackageName());
-            intent.setData(uri);
-            try {
-                startActivityForResult(intent, REQUEST_BATTERY_OP);
-            } catch (ActivityNotFoundException e) {
-                Toast.makeText(this, "Your device does not support opting out of battery optimization", Toast.LENGTH_SHORT).show();
+        if (isFlagALL_FILES_ACCESS) {
+            if (!Settings.canDrawOverlays(this)) {
+                Log.e(TAG,"MASUK canDrawOverlays");
+                if ("xiaomi".equals(Build.MANUFACTURER.toLowerCase(Locale.ROOT))) {
+                    final Intent intent =new Intent("miui.intent.action.APP_PERM_EDITOR");
+                    intent.setClassName("com.miui.securitycenter",
+                            "com.miui.permcenter.permissions.PermissionsEditorActivity");
+                    intent.putExtra("extra_pkgname", getPackageName());
+                    startActivity(intent);
+                }else {
+                    Intent overlaySettings = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:" + getPackageName()));
+                    startActivityForResult(overlaySettings, 1);
+                }
             }
         }
     }
@@ -264,7 +244,7 @@ public class DipsChooseLanguage extends AppCompatActivity {
         finishAffinity();*/
 
         String licenseAI = sessions.getAuthAdvanceAI();
-        Log.e("CEK","licenseAI : "+licenseAI);
+        Log.e(TAG,"licenseAI : "+licenseAI);
         if (licenseAI != null) {
             startLivenessDetection(licenseAI);
         } else {
@@ -297,7 +277,11 @@ public class DipsChooseLanguage extends AppCompatActivity {
     }
 
     private void reqPermission(){
-        if (ActivityCompat.checkSelfPermission(mContext, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED &&
+        String readImagePermission = Manifest.permission.READ_EXTERNAL_STORAGE;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            readImagePermission = Manifest.permission.READ_MEDIA_IMAGES;
+        }
+        if (ActivityCompat.checkSelfPermission(mContext, readImagePermission) != PackageManager.PERMISSION_GRANTED &&
                 ActivityCompat.checkSelfPermission(mContext, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED &&
                 ActivityCompat.checkSelfPermission(mContext, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED &&
                 ActivityCompat.checkSelfPermission(mContext, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED &&
@@ -305,22 +289,44 @@ public class DipsChooseLanguage extends AppCompatActivity {
                 ActivityCompat.checkSelfPermission(mContext, Manifest.permission.READ_SMS) != PackageManager.PERMISSION_GRANTED &&
                 ActivityCompat.checkSelfPermission(mContext, Manifest.permission.READ_PHONE_NUMBERS) != PackageManager.PERMISSION_GRANTED){
 
-            Log.e("CEK","MASUK IF reqPermission");
-            requestPermissions(new String[]{Manifest.permission.READ_PHONE_STATE,Manifest.permission.CAMERA,Manifest.permission.WRITE_EXTERNAL_STORAGE,Manifest.permission.READ_EXTERNAL_STORAGE,Manifest.permission.RECEIVE_SMS,
+            Log.e(TAG,"MASUK IF reqPermission");
+            requestPermissions(new String[]{Manifest.permission.READ_PHONE_STATE,Manifest.permission.CAMERA,Manifest.permission.WRITE_EXTERNAL_STORAGE,readImagePermission,Manifest.permission.RECEIVE_SMS,
                     Manifest.permission.READ_SMS,Manifest.permission.READ_PHONE_NUMBERS}, REQUEST_ALL);
         } else {
-            Log.e("CEK","MASUK ELSE reqPermission");
-            if (ActivityCompat.checkSelfPermission(mContext, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, READ_EXTERNAL_STORAGE);
+            Log.e(TAG,"MASUK ELSE reqPermission");
+            if (ActivityCompat.checkSelfPermission(mContext, readImagePermission) != PackageManager.PERMISSION_GRANTED) {
+                Log.e(TAG,"MASUK ELSE reqPermission READ_EXTERNAL_STORAGE");
+                ActivityCompat.requestPermissions(this, new String[]{readImagePermission}, READ_EXTERNAL_STORAGE);
             } else if (ActivityCompat.checkSelfPermission(mContext, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+                Log.e(TAG,"MASUK ELSE reqPermission CAMERA");
                 ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, REQUEST_CAMERA);
-            } else if (ActivityCompat.checkSelfPermission(mContext, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, WRITE_EXTERNAL_STORAGE);
+            } else if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.Q) {
+                if (ActivityCompat.checkSelfPermission(mContext, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                    Log.e(TAG, "MASUK ELSE reqPermission WRITE_EXTERNAL_STORAGE");
+                    ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, WRITE_EXTERNAL_STORAGE);
+                }
             } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                if (!Environment.isExternalStorageManager()){
+                Log.e(TAG,"MASUK ELSE reqPermission isExternalStorageManager");
+                if (!Environment.isExternalStorageManager() && isFlagALL_FILES_ACCESS == false){
+                    isFlagALL_FILES_ACCESS = true;
+                    Log.e(TAG,"MASUK ELSE reqPermission isExternalStorageManager 2");
                     Intent getpermission = new Intent();
                     getpermission.setAction(Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION);
                     startActivityForResult(getpermission,ATTACHMENT_MANAGE_ALL_FILE);
+                }
+            }
+
+            if (Settings.canDrawOverlays(this)) {
+                Log.e(TAG,"MASUK canDrawOverlays true");
+                if (isOptimizingBattery() && getPreferences().getBoolean(getBatteryOptimizationPreferenceKey(), true)) {
+                    Intent intent = new Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS);
+                    Uri uri = Uri.parse("package:" + getPackageName());
+                    intent.setData(uri);
+                    try {
+                        startActivityForResult(intent, REQUEST_BATTERY_OP);
+                    } catch (ActivityNotFoundException e) {
+                        Toast.makeText(this, "Your device does not support opting out of battery optimization", Toast.LENGTH_SHORT).show();
+                    }
                 }
             }
         }
@@ -329,11 +335,13 @@ public class DipsChooseLanguage extends AppCompatActivity {
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        Log.e(TAG,"onRequestPermissionsResult : "+requestCode);
         if (requestCode == REQUEST_ALL) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                Log.e("CEK","MASUK PERMISSION_GRANTED");
+                Log.e(TAG,"MASUK PERMISSION_GRANTED");
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                    if (!Environment.isExternalStorageManager()){
+                    if (!Environment.isExternalStorageManager() && isFlagALL_FILES_ACCESS == false){
+                        isFlagALL_FILES_ACCESS = true;
                         Intent getpermission = new Intent();
                         getpermission.setAction(Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION);
                         startActivityForResult(getpermission,ATTACHMENT_MANAGE_ALL_FILE);
@@ -344,10 +352,14 @@ public class DipsChooseLanguage extends AppCompatActivity {
             }
         } else if (requestCode == READ_EXTERNAL_STORAGE) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                Log.e(TAG,"READ_EXTERNAL_STORAGE PERMISSION_GRANTED");
                 if (ActivityCompat.checkSelfPermission(mContext, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+                    Log.e(TAG,"READ_EXTERNAL_STORAGE PERMISSION_GRANTED CAMERA");
                     ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, REQUEST_CAMERA);
                 } else {
+                    Log.e(TAG,"READ_EXTERNAL_STORAGE PERMISSION_GRANTED WRITE_EXTERNAL_STORAGE");
                     if (ActivityCompat.checkSelfPermission(mContext, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                        Log.e(TAG,"READ_EXTERNAL_STORAGE PERMISSION_GRANTED WRITE_EXTERNAL_STORAGE 2");
                         ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, WRITE_EXTERNAL_STORAGE);
                     }
                 }
@@ -386,13 +398,13 @@ public class DipsChooseLanguage extends AppCompatActivity {
         GuardianLivenessDetectionSDK.init(getApplication(), yourMarket);
         GuardianLivenessDetectionSDK.letSDKHandleCameraPermission();
         String yourLicense = licenseAI;
-        Log.e("CEK","yourLicense : "+yourLicense);
+        Log.e(TAG,"yourLicense : "+yourLicense);
         GuardianLivenessDetectionSDK.setCameraType(CameraType.FRONT);// The back camera is CameraType.BACK
         GuardianLivenessDetectionSDK.setActionSequence(true, Detector.DetectionType.BLINK);
         GuardianLivenessDetectionSDK.setResultPictureSize(300); // Settable input range: [300,1000], unit: pixels
         GuardianLivenessDetectionSDK.setActionTimeoutMills(20000);
         String checkResult = GuardianLivenessDetectionSDK.setLicenseAndCheck(yourLicense);
-        Log.e("CEK","checkResult : "+checkResult);
+        Log.e(TAG,"checkResult : "+checkResult);
         if ("SUCCESS".equals(checkResult)) {
             startActivityForResult(new Intent(this, LivenessActivity.class), REQUEST_CODE_LIVENESS);
         } else {
@@ -449,13 +461,9 @@ public class DipsChooseLanguage extends AppCompatActivity {
     }
 
     protected boolean isOptimizingBattery() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            final PowerManager pm = (PowerManager) getSystemService(POWER_SERVICE);
-            return pm != null
-                    && !pm.isIgnoringBatteryOptimizations(getPackageName());
-        } else {
-            return false;
-        }
+        final PowerManager pm = (PowerManager) getSystemService(POWER_SERVICE);
+        return pm != null
+                && !pm.isIgnoringBatteryOptimizations(getPackageName());
     }
 
     private String getBatteryOptimizationPreferenceKey() {
@@ -488,15 +496,15 @@ public class DipsChooseLanguage extends AppCompatActivity {
         String AccessKey = "9daf9d6e9dfe6cdd";//bankvictoria_ebd
         //String AccessKey = "75140e9a1d9c161f";//evolusi_test
 
-        Log.e("CEK","REUQEST AUTH AI : "+jsons.toString());
+        Log.e(TAG,"REUQEST AUTH AI : "+jsons.toString());
         RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), jsons.toString());
 
         Server.getAPIServiceAdvanceAI().AuthLicenseLiveness(requestBody,AccessKey).enqueue(new Callback<JsonObject>() {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
-                Log.e("CEK","RESPONSE AUTH AI : "+response.code());
+                Log.e(TAG,"RESPONSE AUTH AI : "+response.code());
                 if (response.isSuccessful()) {
-                    Log.e("CEK","RESPONSE AUTH AI SUCCESS : "+response.body().toString());
+                    Log.e(TAG,"RESPONSE AUTH AI SUCCESS : "+response.body().toString());
                     try {
                         JSONObject dataObj = new JSONObject(response.body().toString());
                         String sttcode = dataObj.getString("code");
@@ -513,7 +521,7 @@ public class DipsChooseLanguage extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<JsonObject> call, Throwable t) {
-                Log.e("CEK","onFailure AUTH AI : "+t.getMessage());
+                Log.e(TAG,"onFailure AUTH AI : "+t.getMessage());
             }
         });
     }
@@ -594,7 +602,7 @@ public class DipsChooseLanguage extends AppCompatActivity {
 
     private void PopUpTnc(){
         flagViewTNC = true;
-        Log.e("CEK","MASUK PopUpTnc");
+        Log.e(TAG,"MASUK PopUpTnc");
         LayoutInflater inflater = ((Activity) mContext).getLayoutInflater();
         //if (sweetAlertDialogTNC == null) {
         View dialogView = inflater.inflate(R.layout.item_tnc, null);
@@ -631,24 +639,24 @@ public class DipsChooseLanguage extends AppCompatActivity {
         int width = (int)(((Activity)mContext).getResources().getDisplayMetrics().widthPixels);
         int height = (int)(((Activity)mContext).getResources().getDisplayMetrics().heightPixels);
 
-        Log.e("CEK","PopUpTnc width : "+width+" | height : "+height);
+        Log.e(TAG,"PopUpTnc width : "+width+" | height : "+height);
         int newWidth = (int)(width*0.8);
         int newHeight = (int)(height*0.85);
-        Log.e("CEK","PopUpTnc newWidth : "+newWidth+" | newHeight : "+newHeight);
+        Log.e(TAG,"PopUpTnc newWidth : "+newWidth+" | newHeight : "+newHeight);
 
         //sweetAlertDialogTNC.getWindow().setGravity(Gravity.CENTER_HORIZONTAL);
         sweetAlertDialogTNC.getWindow().setLayout(newWidth,newHeight);
         sweetAlertDialogTNC.setOnDismissListener(new DialogInterface.OnDismissListener() {
             @Override
             public void onDismiss(DialogInterface dialogInterface) {
-                Log.e("CEK","onDismiss");
+                Log.e(TAG,"onDismiss");
                 flagViewTNC = false;
             }
         });
         sweetAlertDialogTNC.setOnCancelListener(new DialogInterface.OnCancelListener() {
             @Override
             public void onCancel(DialogInterface dialogInterface) {
-                Log.e("CEK","onCancel");
+                Log.e(TAG,"onCancel");
                 flagViewTNC = false;
             }
         });
