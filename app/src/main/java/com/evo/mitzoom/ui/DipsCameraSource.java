@@ -17,6 +17,7 @@ import android.graphics.PixelFormat;
 import android.graphics.RectF;
 import android.hardware.Camera;
 import android.media.ExifInterface;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
@@ -259,13 +260,17 @@ public class DipsCameraSource extends AppCompatActivity implements CameraSource.
     public void onPictureTaken(@NonNull byte[] dataPhoto) {
         if (dataPhoto.length > 0) {
             cameraSource.stop();
-            if (ContextCompat.checkSelfPermission(mContext, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED) {
-                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
-                processCropImage(dataPhoto);
-            } else
-            {
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
+                if (ContextCompat.checkSelfPermission(mContext, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED) {
+                    ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
+                    processCropImage(dataPhoto);
+                } else {
+                    processCropImage(dataPhoto);
+                }
+            } else {
                 processCropImage(dataPhoto);
             }
+
         }
     }
 

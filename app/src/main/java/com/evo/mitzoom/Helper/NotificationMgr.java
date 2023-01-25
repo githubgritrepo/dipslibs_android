@@ -23,22 +23,20 @@ public class NotificationMgr {
     public static final String ZOOM_NOTIFICATION_CHANNEL_ID = "Video_sdk_notification_channel_id";
 
     public static boolean hasNotification(int notificationId) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            try {
-                Context context = MyApplication.getInstance();
-                NotificationManager notificationMgr = (NotificationManager) context
-                        .getSystemService(Activity.NOTIFICATION_SERVICE);
-                if (notificationMgr != null) {
-                    StatusBarNotification[] statusBarNotifications = notificationMgr.getActiveNotifications();
-                    for (StatusBarNotification notification : statusBarNotifications) {
-                        if (notification.getId() == notificationId) {
-                            return true;
-                        }
+        try {
+            Context context = MyApplication.getInstance();
+            NotificationManager notificationMgr = (NotificationManager) context
+                    .getSystemService(Activity.NOTIFICATION_SERVICE);
+            if (notificationMgr != null) {
+                StatusBarNotification[] statusBarNotifications = notificationMgr.getActiveNotifications();
+                for (StatusBarNotification notification : statusBarNotifications) {
+                    if (notification.getId() == notificationId) {
+                        return true;
                     }
                 }
-            } catch (Exception e) {
-                return false;
             }
+        } catch (Exception e) {
+            return false;
         }
         return false;
     }

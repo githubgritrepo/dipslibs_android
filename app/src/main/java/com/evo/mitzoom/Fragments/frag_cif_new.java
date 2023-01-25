@@ -17,6 +17,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.media.ExifInterface;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
@@ -683,7 +684,8 @@ public class frag_cif_new extends Fragment {
                 valKurung = key.substring(indx);
             }
 
-            if (key.contains(keyPernyataan) || key.contains("domisili")) {
+            if (key.contains(keyPernyataan) || key.contains("domisili") || key.contains("pernyataan" + valKurung) ||
+                    (key.contains("alamat" + valKurung) && key.contains("berbeda" + valKurung))) {
                 if (key.equals(keyPernyataan+valKurung)) {
                     keyPernyataan = key;
                 }
@@ -1166,7 +1168,8 @@ public class frag_cif_new extends Fragment {
                     if (key.equals(lbnotelp + valKurung)) {
                         lbnotelp = key;
                     }
-                    if (key.equals(lbpernyataan + valKurung) || key.contains("domisili" + valKurung)) {
+                    if (key.equals(lbpernyataan + valKurung) || key.contains("domisili" + valKurung) || key.contains("pernyataan" + valKurung) ||
+                            (key.contains("alamat" + valKurung) && key.contains("berbeda" + valKurung))) {
                         lbpernyataan = key;
                     }
 
@@ -1289,6 +1292,32 @@ public class frag_cif_new extends Fragment {
             }
 
             if (formCode == 8 || formCode == 801) {
+                if (formCode == 8) {
+                    String lbpernyataan = "alamatdomisili";
+
+                    for(Iterator<String> iter = objEl.keys(); iter.hasNext();) {
+                        if(iter.hasNext()) {
+                            String key = iter.next();
+                            String valKurung = "";
+                            int indx = key.indexOf("(");
+                            if (indx >= 0) {
+                                valKurung = key.substring(indx);
+                            }
+
+                            if (key.equals(lbpernyataan + valKurung) || key.contains("domisili" + valKurung) || key.contains("pernyataan" + valKurung) ||
+                                    (key.contains("alamat" + valKurung) && key.contains("berbeda" + valKurung))) {
+                                lbpernyataan = key;
+                            }
+                        }
+
+                    }
+
+                    if (dataFormObj2.has(lbpernyataan)) {
+                        boolean chk = dataFormObj2.getBoolean(lbpernyataan);
+                        dataFormObj.put("datatidaksesuai", chk);
+                        dataFormObj2.remove(lbpernyataan);
+                    }
+                }
                 if (dataFormObj.has("datadiri")) {
                     JSONObject selfObj = dataFormObj.getJSONObject("datadiri");
                     selfObj.put("datatidaksesuai",dataFormObj2);
@@ -1362,7 +1391,8 @@ public class frag_cif_new extends Fragment {
                                     if (indx >= 0) {
                                         valKurung = key.substring(indx);
                                     }
-                                    if (key.contains(keyPernyataan) || key.contains("domisili")) {
+                                    if (key.contains(keyPernyataan) || key.contains("domisili") || key.contains("pernyataan" + valKurung) ||
+                                            (key.contains("alamat" + valKurung) && key.contains("berbeda" + valKurung))) {
                                         if (key.equals(keyPernyataan + valKurung)) {
                                             keyPernyataan = key;
                                             break;
@@ -3458,7 +3488,12 @@ public class frag_cif_new extends Fragment {
     }
 
     protected boolean requestPermission() {
-        if (ActivityCompat.checkSelfPermission(mContext, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED || ActivityCompat.checkSelfPermission(mContext,Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ActivityCompat.checkSelfPermission(mContext,Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.READ_PHONE_STATE}, REQUEST_WRITE_PERMISSION);
+                return false;
+            }
+        } else if (ActivityCompat.checkSelfPermission(mContext, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED || ActivityCompat.checkSelfPermission(mContext,Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE,
                     Manifest.permission.READ_PHONE_STATE}, REQUEST_WRITE_PERMISSION);
             return false;
@@ -3471,7 +3506,11 @@ public class frag_cif_new extends Fragment {
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == REQUEST_WRITE_PERMISSION) {
-            if (ActivityCompat.checkSelfPermission(mContext,Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED &&
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                if (ActivityCompat.checkSelfPermission(mContext,Manifest.permission.READ_PHONE_STATE) == PackageManager.PERMISSION_GRANTED) {
+
+                }
+            } else if (ActivityCompat.checkSelfPermission(mContext,Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED &&
                     ActivityCompat.checkSelfPermission(mContext,Manifest.permission.READ_PHONE_STATE) == PackageManager.PERMISSION_GRANTED) {
 
             }

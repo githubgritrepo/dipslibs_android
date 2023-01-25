@@ -148,7 +148,7 @@ public class DipsSplashScreen extends AppCompatActivity {
                 });
 
             }
-        },5000);
+        },1000);
     }
 
     private void startApp() {
