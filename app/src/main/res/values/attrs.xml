@@ -2,4 +2,9 @@
 <resources>
     <attr name="customTextInputStyle" format="reference" />
     <attr name="customTextInputStyleDropDown" format="reference" />
+    <declare-styleable name="CircularSurfaceView">
+        <attr name="border_width" format="dimension"/>
+        <attr name="border_color" format="color"/>
+        <attr name="CircularSurfaceViewStyle" format="reference"/>
+    </declare-styleable>
 </resources>

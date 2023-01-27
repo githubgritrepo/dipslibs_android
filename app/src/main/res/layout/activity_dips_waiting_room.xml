@@ -35,19 +35,12 @@
                     android:layout_width="0dp"
                     android:layout_weight="1">
 
-                    <androidx.cardview.widget.CardView
-                        android:layout_width="150dp"
-                        android:layout_height="150dp"
-                        app:cardCornerRadius="100dp"
-                        android:layout_gravity="center">
-
-                        <SurfaceView
-                            android:id="@+id/mySurface"
-                            android:layout_width="150dp"
-                            android:layout_height="150dp"
-                            android:background="@android:color/transparent" />
-
-                    </androidx.cardview.widget.CardView>
+                    <com.evo.mitzoom.view.CircularSurfaceView
+                        android:id="@+id/mySurface"
+                        android:layout_margin="5dp"
+                        android:layout_gravity="center"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" />
 
                 </FrameLayout>
 

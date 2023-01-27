@@ -6,6 +6,7 @@ import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.PixelFormat;
 import android.hardware.Camera;
 import android.hardware.camera2.CameraAccessException;
 import android.hardware.camera2.CameraManager;
@@ -43,6 +44,7 @@ import com.evo.mitzoom.Helper.OutboundServiceNew;
 import com.evo.mitzoom.R;
 import com.evo.mitzoom.Session.SessionManager;
 import com.evo.mitzoom.ui.DipsWaitingRoom;
+import com.evo.mitzoom.view.CircularSurfaceView;
 import com.google.gson.JsonObject;
 import com.wdullaer.materialdatetimepicker.date.DatePickerDialog;
 
@@ -69,7 +71,7 @@ public class DipsSwafoto extends AppCompatActivity implements com.wdullaer.mater
     private Context mContext;
     public static final int REQUEST_WRITE_PERMISSION = 786;
     private static final int MY_CAMERA_PERMISSION_CODE = 100;
-    private SurfaceView preview = null;
+    private CircularSurfaceView preview = null;
     private SurfaceHolder previewHolder = null;
     public static int CAM_ID = 0;
     private static final String KEY_USE_FACING = "use_facing";
@@ -126,7 +128,7 @@ public class DipsSwafoto extends AppCompatActivity implements com.wdullaer.mater
 
 
         CardView cardSurf = (CardView) findViewById(R.id.cardSurf);
-        preview = (SurfaceView) findViewById(R.id.mySurface);
+        preview = (CircularSurfaceView) findViewById(R.id.mySurface);
         btnSchedule = (Button) findViewById(R.id.btnSchedule);
         btnEndCall = (Button) findViewById(R.id.end_call);
         rlprogress = (RelativeLayout) findViewById(R.id.rlprogress);
@@ -608,6 +610,7 @@ public class DipsSwafoto extends AppCompatActivity implements com.wdullaer.mater
 
     private void previewHolder(){
         previewHolder = preview.getHolder();
+        previewHolder.setFormat(PixelFormat.TRANSLUCENT);
         previewHolder.addCallback(surfaceCallback);
         previewHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
     }
@@ -621,7 +624,7 @@ public class DipsSwafoto extends AppCompatActivity implements com.wdullaer.mater
         @Override
         public void surfaceChanged(@NonNull SurfaceHolder holder, int format, int width, int height) {
             Log.e("CEK","surfaceChanged width : "+width+" | height : "+height);
-            initPreview(width, height);
+            initPreview(width, height, holder);
             startPreview();
         }
 
@@ -631,10 +634,10 @@ public class DipsSwafoto extends AppCompatActivity implements com.wdullaer.mater
         }
     };
 
-    private void initPreview(int width, int height) {
-        if (camera != null && previewHolder.getSurface() != null) {
+    private void initPreview(int width, int height, SurfaceHolder holder) {
+        if (camera != null && holder.getSurface() != null) {
             try {
-                camera.setPreviewDisplay(previewHolder);
+                camera.setPreviewDisplay(holder);
                 CameraManager manager = (CameraManager) getSystemService(Context.CAMERA_SERVICE);
                 if (manager == null) {
                     Log.i("CEK", "camera manager is null");
@@ -679,15 +682,15 @@ public class DipsSwafoto extends AppCompatActivity implements com.wdullaer.mater
             }
             camera.setParameters(parameters);
             inPreview = true;
-            if (isConfigure) {
-                Log.d("CEK","MASUK isConfigure");
-                try {
-                    Thread.sleep(500);
-                    optimalCamera();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
+//            if (isConfigure) {
+//                Log.d("CEK","MASUK isConfigure");
+//                try {
+//                    Thread.sleep(500);
+//                    optimalCamera();
+//                } catch (InterruptedException e) {
+//                    e.printStackTrace();
+//                }
+//            }
         }
     }
 
@@ -737,14 +740,10 @@ public class DipsSwafoto extends AppCompatActivity implements com.wdullaer.mater
     private Camera.Size getOptimalPreviewSize(List<Camera.Size> sizes, int w, int h) {
         final double ASPECT_TOLERANCE = 0.1;
         double targetRatio=(double)h / w;
-
         if (sizes == null) return null;
-
         Camera.Size optimalSize = null;
         double minDiff = Double.MAX_VALUE;
-
         int targetHeight = h;
-
         for (Camera.Size size : sizes) {
             double ratio = (double) size.width / size.height;
             if (Math.abs(ratio - targetRatio) > ASPECT_TOLERANCE) continue;
@@ -753,7 +752,6 @@ public class DipsSwafoto extends AppCompatActivity implements com.wdullaer.mater
                 minDiff = Math.abs(size.height - targetHeight);
             }
         }
-
         if (optimalSize == null) {
             minDiff = Double.MAX_VALUE;
             for (Camera.Size size : sizes) {
