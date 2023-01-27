@@ -34,8 +34,6 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.cardview.widget.CardView;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
 import com.evo.mitzoom.API.ApiService;
@@ -255,10 +253,13 @@ public class DipsSwafoto extends AppCompatActivity implements com.wdullaer.mater
     }
 
     private void requestPermission() {
+        Log.e("CEK","requestPermission");
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
             if (checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                Log.e("CEK","WRITE_EXTERNAL_STORAGE");
                 requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},  REQUEST_WRITE_PERMISSION);
             } else {
+                Log.e("CEK","Camera.open");
                 camera = Camera.open(useFacing);
                 startPreview();
             }

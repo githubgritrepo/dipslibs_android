@@ -45,7 +45,6 @@ import androidx.core.content.ContextCompat;
 
 import com.auth0.android.jwt.Claim;
 import com.auth0.android.jwt.JWT;
-import com.bumptech.glide.Glide;
 import com.evo.mitzoom.API.ApiService;
 import com.evo.mitzoom.API.Server;
 import com.evo.mitzoom.BaseMeetingActivity;
@@ -176,7 +175,7 @@ public class DipsOutboundCall extends AppCompatActivity implements DatePickerDia
             }
         }
     };
-    private Handler handlerTimes;
+    private Handler handlerTimes = null;
     private Runnable myRunnable;
 
     @Override
@@ -255,7 +254,7 @@ public class DipsOutboundCall extends AppCompatActivity implements DatePickerDia
             imgCS.setImageDrawable(getDrawable(R.drawable.agen_profile));
         }
 
-        new AsynTimeout().execute();
+        //new AsynTimeout().execute();
         handlerTimes = new Handler();
         myRunnable = new Runnable() {
             @Override
@@ -268,6 +267,7 @@ public class DipsOutboundCall extends AppCompatActivity implements DatePickerDia
                 } else {
                     startService(serviceIntent);
                 }
+                OutboundServiceNew.OutConference();
             }
         };
         handlerTimes.postDelayed(myRunnable, 30000);
@@ -304,7 +304,7 @@ public class DipsOutboundCall extends AppCompatActivity implements DatePickerDia
                 PopUpSchedule();
             }
         } else {
-            new AsynTimeout().execute();
+            //new AsynTimeout().execute();
         }
     }
 
@@ -658,7 +658,23 @@ public class DipsOutboundCall extends AppCompatActivity implements DatePickerDia
                 Log.i(TAG,"MASUK DISMISS");
                 startTimeOut = true;
                 if (getAction.isEmpty()) {
-                    new AsynTimeout().execute();
+                    //new AsynTimeout().execute();
+                    handlerTimes = new Handler();
+                    myRunnable = new Runnable() {
+                        @Override
+                        public void run() {
+                            Log.d("TIDAK DIANGKAT","");
+                            OutApps();
+                            Intent serviceIntent = new Intent(mContext, OutboundServiceNew.class);
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                                startForegroundService(serviceIntent);
+                            } else {
+                                startService(serviceIntent);
+                            }
+                            OutboundServiceNew.OutConference();
+                        }
+                    };
+                    handlerTimes.postDelayed(myRunnable, 30000);
                 }
             }
         });
@@ -1105,8 +1121,7 @@ public class DipsOutboundCall extends AppCompatActivity implements DatePickerDia
     }
     protected boolean requestPermission() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED || ActivityCompat.checkSelfPermission(this,Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED || ActivityCompat.checkSelfPermission(this,Manifest.permission.READ_MEDIA_IMAGES) != PackageManager.PERMISSION_GRANTED ||
-                    ActivityCompat.checkSelfPermission(this,Manifest.permission.READ_MEDIA_AUDIO) != PackageManager.PERMISSION_GRANTED) {
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED || ActivityCompat.checkSelfPermission(this,Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
                 ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.CAMERA,
                         Manifest.permission.RECORD_AUDIO, Manifest.permission.READ_MEDIA_IMAGES}, REQUEST_VIDEO_AUDIO_CODE);
                 return false;

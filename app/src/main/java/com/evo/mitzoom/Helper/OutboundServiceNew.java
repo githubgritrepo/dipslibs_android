@@ -51,6 +51,8 @@ public class OutboundServiceNew extends Service {
     static ConnectionFactory connectionFactory = new ConnectionFactory();
     private static Thread subscribeThreadCallOutbound;
     private static Thread publishCallAcceptThread;
+    private static Thread publishMirroringKeyThread;
+    private static Thread publishEndpointThread;
     public static int IDSERVICES = 1001;
     public static int NOTIFICATION_IDOutbound = 101;
     private static String TAG = "OutboundServiceNew";
@@ -399,6 +401,109 @@ public class OutboundServiceNew extends Service {
         return jsObj;
     }
 
+    private static void MirroringSendKey(JSONObject jsons) {
+        Log.e(TAG,"MASUK MirroringSendKey : "+jsons.toString());
+        publishMirroringKeyThread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Connection connection = connectionFactory.newConnection();
+                    Channel ch = connection.createChannel();
+                    ch.confirmSelect();
+
+                    String csID = sessions.getCSID();
+                    Log.e(TAG,"csID : "+csID);
+
+                    JSONObject datax = dataMirroring(jsons);
+                    String dataxS = datax.toString();
+
+                    Log.e(TAG,"dataxS : "+dataxS.toString());
+
+                    ch.basicPublish("dips361-cs-send-key","dips.direct.cs."+csID+".send.key",false,null,dataxS.getBytes());
+                    ch.waitForConfirmsOrDie();
+
+                } catch (IOException | TimeoutException | InterruptedException e) {
+                    Log.e(TAG, "publishToAMQP Connection broken: " + e.getClass().getName());
+                    try {
+                        Thread.sleep(4000); //sleep and then try again
+                        MirroringSendKey(jsons);
+                    } catch (InterruptedException e1) {
+
+                    }
+                }
+            }
+        });
+        publishMirroringKeyThread.start();
+    }
+
+    public static void MirroringSendEndpoint(int kodeEndPoint) {
+        Log.e(TAG,"MASUK MirroringSendEndpoint : "+kodeEndPoint);
+        publishEndpointThread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    JSONObject jsons = null;
+                    try {
+                        jsons = new JSONObject();
+                        jsons.put("endpoint",kodeEndPoint);
+                        if (kodeEndPoint == 99) {
+                            if (sessions.getKEY_IdDips() != null) {
+                                jsons.put("idDips",sessions.getKEY_IdDips());
+                            }
+                            OutboundServiceNew.stopServiceSocket();
+                            Intent intentOutbound = new Intent(mContext, OutboundServiceNew.class);
+                            mContext.stopService(intentOutbound);
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
+                    Log.e(TAG,"jsons : "+jsons.toString());
+
+                    Connection connection = connectionFactory.newConnection();
+                    Channel ch = connection.createChannel();
+                    ch.confirmSelect();
+
+                    String csID = sessions.getCSID();
+                    Log.e(TAG,"csID : "+csID);
+
+                    JSONObject datax = dataMirroring(jsons);
+                    String dataxS = datax.toString();
+
+                    Log.e(TAG,"dataxS : "+dataxS.toString());
+
+                    ch.basicPublish("dips361-cs-send-endpoint","dips.direct.cs."+csID+".send.endpoint",false,null,dataxS.getBytes());
+                    ch.waitForConfirmsOrDie();
+
+                } catch (IOException | TimeoutException | InterruptedException e) {
+                    Log.e(TAG, "publishToAMQP Connection broken: " + e.getClass().getName());
+                    try {
+                        Thread.sleep(4000); //sleep and then try again
+                    } catch (InterruptedException e1) {
+
+                    }
+                }
+            }
+        });
+        publishEndpointThread.start();
+    }
+
+    private static JSONObject dataMirroring(JSONObject dataObj) {
+        long unixTime = System.currentTimeMillis() / 1000L;
+
+        JSONObject jsObj = new JSONObject();
+        try {
+            jsObj.put("from","Cust");
+            jsObj.put("to","CS");
+            jsObj.put("created",unixTime);
+            jsObj.put("transaction",dataObj);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        return jsObj;
+    }
+
     private static void publishCallAccept(String labelAction) {
         Log.e("CEK","publishCallAccept");
         publishCallAcceptThread = new Thread(new Runnable() {
@@ -535,6 +640,10 @@ public class OutboundServiceNew extends Service {
             notification.flags = notification.flags | Notification.FLAG_INSISTENT;
             notificationManagerCompat.notify(NOTIFICATION_IDOutbound, notification);
         }
+    }
+
+    public static void OutConference() {
+        MirroringSendEndpoint(99);
     }
 
     public static String getSessionID_Zoom(){

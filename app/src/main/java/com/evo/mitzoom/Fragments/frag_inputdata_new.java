@@ -809,6 +809,37 @@ public class frag_inputdata_new extends Fragment {
                             JSONObject dataObj = jsObj.getJSONObject("data");
                             idDips = dataObj.getString("idDips");
                             session.saveIdDips(idDips);
+
+                            String getDataNasabah = session.getNasabah();
+                            Log.e("CEK","getDataNasabah : "+getDataNasabah);
+                            JSONObject dataNasabahObj = null;
+                            if (getDataNasabah != null && !getDataNasabah.isEmpty()) {
+                                dataNasabahObj = new JSONObject(getDataNasabah);
+                            }
+
+                            String namaIdentitas = "";
+                            if (dataObj.has("namaLengkap")) {
+                                namaIdentitas = dataObj.getString("namaLengkap");
+                            }
+                            String no_handphone = "";
+                            if (dataObj.has("noHp")) {
+                                no_handphone = dataObj.getString("noHp");
+                            }
+                            String noIdentitas = "";
+                            if (dataObj.has("nik")) {
+                                noIdentitas = dataObj.getString("nik");
+                            }
+                            String branchCode = "";
+                            if (dataObj.has("branchCode")) {
+                                branchCode = dataObj.getString("branchCode");
+                            }
+
+                            dataNasabahObj.put("noHp",no_handphone);
+                            dataNasabahObj.put("namaLengkap",namaIdentitas);
+                            dataNasabahObj.put("nik",noIdentitas);
+                            dataNasabahObj.put("branchCode",branchCode);
+                            session.saveNasabah(dataNasabahObj.toString());
+
                             if (session.getCSID() != null) {
                                 try {
                                     jsons.put("idDips",idDips);

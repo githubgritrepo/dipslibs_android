@@ -84,6 +84,7 @@ public class MyParserFormBuilder {
                 int jkRad = 0;
                 int radB = 0;
                 String parentLabel = "";
+                String parentLabelIndo = "";
                 for (int j = 0; j < compLen; j++) {
                     String pcPlaceIdn = "";
                     String keyLabel = "";
@@ -232,7 +233,7 @@ public class MyParserFormBuilder {
                                 if (compName.equals("checkbox")) {
                                     compLabelGab2 = parentLabel+" "+compLabel;
                                     String compLabelGab = parentLabel+compLabel;
-                                    String compLabelGabIndo = parentLabel+keyLabel;
+                                    String compLabelGabIndo = parentLabelIndo+keyLabel;
                                     elName = compLabelGab.toLowerCase().replace(" ", "").replace("-", "").replace("/", "").replace(".", "");
                                     keyLabelInd = compLabelGabIndo.toLowerCase().replace(" ", "").replace("-", "").replace("/", "").replace(".", "");
                                 } else {
@@ -383,6 +384,7 @@ public class MyParserFormBuilder {
                             } else if (compType.equals("checkbox")) {
                                 if (!compLabel.isEmpty()) {
                                     parentLabel = compLabel;
+                                    parentLabelIndo = keyLabel;
                                     TextView tv = new TextView(mContext);
                                     tv.setText(compLabel);
                                     tv.setLayoutParams(lp);
