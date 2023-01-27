@@ -657,7 +657,7 @@ public class frag_berita extends Fragment implements com.wdullaer.materialdateti
                 Calendar day = Calendar.getInstance();
                 int loopAdd = 0;
                 for (int i = 0; i < 30; i++) {
-                    //if (day.get(Calendar.DAY_OF_WEEK) != Calendar.SATURDAY && day.get(Calendar.DAY_OF_WEEK) != Calendar.SUNDAY) {
+                    if (day.get(Calendar.DAY_OF_WEEK) != Calendar.SATURDAY && day.get(Calendar.DAY_OF_WEEK) != Calendar.SUNDAY) {
                         if (tanggalPenuh.length() > 0) {
                             for (int tg = 0; tg < tanggalPenuh.length(); tg++) {
                                 try {
@@ -689,9 +689,9 @@ public class frag_berita extends Fragment implements com.wdullaer.materialdateti
                             Calendar d = (Calendar) day.clone();
                             weekdays.add(d);
                         }
-                    /*} else {
+                    } else {
                         loopAdd++;
-                    }*/
+                    }
                     day.add(Calendar.DATE, 1);
                 }
                 Calendar[] weekdayDays = weekdays.toArray(new Calendar[weekdays.size()]);

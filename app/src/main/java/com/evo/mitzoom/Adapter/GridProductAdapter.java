@@ -152,11 +152,19 @@ public class GridProductAdapter extends RecyclerView.Adapter<GridProductAdapter.
             }
         });
 
-        int width = (int)(((Activity)ctx).getResources().getDisplayMetrics().widthPixels*0.60);
-        int height = (int)(((Activity)ctx).getResources().getDisplayMetrics().heightPixels*0.60);
+        int width = (int)(((Activity)ctx).getResources().getDisplayMetrics().widthPixels);
+        int height = (int)(((Activity)ctx).getResources().getDisplayMetrics().heightPixels);
+
+        Log.e("CEK","PopUpTnc width : "+width+" | height : "+height);
+        int newWidth = (int)(width*0.8);
+        int newHeight = (int)(height*0.85);
+        Log.e("CEK","PopUpTnc newWidth : "+newWidth+" | newHeight : "+newHeight);
 
         sweet.getWindow().setGravity(Gravity.CENTER_HORIZONTAL);
-        sweet.getWindow().setLayout(width,height);
+        sweet.getWindow().setLayout(newWidth,newHeight);
+
+        /*sweet.getWindow().setGravity(Gravity.CENTER_HORIZONTAL);
+        sweet.getWindow().setLayout(width,height);*/
     }
 
     private void processProductMedia(int produkId, GriViewHolder holder) {
