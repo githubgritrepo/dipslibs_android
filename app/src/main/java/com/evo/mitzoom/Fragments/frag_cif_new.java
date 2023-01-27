@@ -1292,7 +1292,11 @@ public class frag_cif_new extends Fragment {
             }
 
             if (formCode == 8 || formCode == 801) {
-                if (formCode == 8) {
+                if (dataFormObj.has("datadiri")) {
+                    JSONObject selfObj = dataFormObj.getJSONObject("datadiri");
+                    selfObj.put("datatidaksesuai",dataFormObj2);
+                    dataFormObj.put("datadiri", selfObj);
+
                     String lbpernyataan = "alamatdomisili";
 
                     for(Iterator<String> iter = objEl.keys(); iter.hasNext();) {
@@ -1305,24 +1309,18 @@ public class frag_cif_new extends Fragment {
                             }
 
                             if (key.equals(lbpernyataan + valKurung) || key.contains("domisili" + valKurung) || key.contains("pernyataan" + valKurung) ||
-                                    (key.contains("alamat" + valKurung) && key.contains("berbeda" + valKurung))) {
+                                    (key.contains("alamat") && key.contains("berbeda" + valKurung))) {
                                 lbpernyataan = key;
                             }
                         }
 
                     }
 
-                    if (dataFormObj2.has(lbpernyataan)) {
-                        boolean chk = dataFormObj2.getBoolean(lbpernyataan);
+                    if (selfObj.has(lbpernyataan)) {
+                        boolean chk = selfObj.getBoolean(lbpernyataan);
                         dataFormObj.put("datatidaksesuai", chk);
-                        dataFormObj2.remove(lbpernyataan);
                     }
-                }
-                if (dataFormObj.has("datadiri")) {
-                    JSONObject selfObj = dataFormObj.getJSONObject("datadiri");
-                    selfObj.put("datatidaksesuai",dataFormObj2);
-                    dataFormObj.put("datadiri", selfObj);
-                } else {
+                } else if (formCode == 8){
                     dataFormObj.put("datadiri", dataFormObj2);
                 }
             } else if (formCode == 802) {
@@ -1392,7 +1390,7 @@ public class frag_cif_new extends Fragment {
                                         valKurung = key.substring(indx);
                                     }
                                     if (key.contains(keyPernyataan) || key.contains("domisili") || key.contains("pernyataan" + valKurung) ||
-                                            (key.contains("alamat" + valKurung) && key.contains("berbeda" + valKurung))) {
+                                            (key.contains("alamat") && key.contains("berbeda" + valKurung))) {
                                         if (key.equals(keyPernyataan + valKurung)) {
                                             keyPernyataan = key;
                                             break;
@@ -1461,6 +1459,8 @@ public class frag_cif_new extends Fragment {
                                             }
                                         }
                                     }
+                                    Log.e("CEK","keyNamaIdentitas : "+keyNamaIdentitas);
+                                    Log.e("CEK","keyNoIdentitas : "+keyNoIdentitas);
                                     no_handphone = getObjEl.getString(keyNoponsel);
                                     String namaIdentitas = "";
                                     if (!keyNamaIdentitas.isEmpty()) {
@@ -1473,7 +1473,7 @@ public class frag_cif_new extends Fragment {
                                     dataNasabahObj.put("noHp",no_handphone);
                                     dataNasabahObj.put("namaLengkap",namaIdentitas);
                                     dataNasabahObj.put("nik",noIdentitas);
-
+                                    Log.e("CEK","dataNasabahObj : "+dataNasabahObj.toString());
                                     sessions.saveNasabah(dataNasabahObj.toString());
 
                                 } catch (JSONException e) {
@@ -1890,7 +1890,15 @@ public class frag_cif_new extends Fragment {
                     } else if (key.contains("tanggal") && key.contains("lahir")) {
                         objEl.put(key, tgllahirOCR);
                     } else if (key.contains("kelamin")) {
-                        objEl.put(key, jeniskelaminOCR);
+                        if (sessions.getLANG().equals("en")) {
+                            if (jeniskelaminOCR.toLowerCase().contains("laki")) {
+                                objEl.put(key, "Male");
+                            } else {
+                                objEl.put(key, "Female");
+                            }
+                        } else {
+                            objEl.put(key, jeniskelaminOCR);
+                        }
                     } else if (key.contains("alamat") && key.contains("identitas")) {
                         objEl.put(key, alamatOCR);
                     } else if (key.equals("rt" + valKurung)) {
@@ -1906,10 +1914,18 @@ public class frag_cif_new extends Fragment {
                     } else if (key.contains("nikah") || key.contains("menikah")) {
                         objEl.put(key, kawinOCR);
                     } else if (key.contains("warganegara")) {
-                        objEl.put(key, wargaOCR);
+                        if (sessions.getLANG().equals("en")) {
+                            objEl.put(key, "Indonesian citizens");
+                        } else {
+                            objEl.put(key, wargaOCR);
+                        }
                     } else if (key.contains("jenisidentitas")) {
-                        objEl.put(key, "KTP");
-                    } else if (key.contains("negara") && wargaOCR.equals("WNI" + valKurung)) {
+                        if (sessions.getLANG().equals("en")) {
+                            objEl.put(key, "ID card");
+                        } else {
+                            objEl.put(key, "KTP");
+                        }
+                    } else if (key.contains("negara") && wargaOCR.equals("WNI")) {
                         objEl.put(key, "Indonesia");
                     }
                 }

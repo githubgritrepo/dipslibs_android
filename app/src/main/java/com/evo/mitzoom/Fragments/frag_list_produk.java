@@ -305,7 +305,7 @@ public class frag_list_produk extends Fragment {
                         e.printStackTrace();
                     }
                 } else {
-                    String msg = "";
+                    /*String msg = "";
                     if (response.body() != null) {
                         String dataS = response.body().toString();
                         try {
@@ -334,7 +334,7 @@ public class frag_list_produk extends Fragment {
                             }
                         }
                     }
-                    Toast.makeText(context,msg,Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context,msg,Toast.LENGTH_SHORT).show();*/
                 }
             }
 

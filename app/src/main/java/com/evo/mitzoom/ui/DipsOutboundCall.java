@@ -175,7 +175,7 @@ public class DipsOutboundCall extends AppCompatActivity implements DatePickerDia
             }
         }
     };
-    private Handler handlerTimes;
+    private Handler handlerTimes = null;
     private Runnable myRunnable;
 
     @Override
@@ -254,7 +254,7 @@ public class DipsOutboundCall extends AppCompatActivity implements DatePickerDia
             imgCS.setImageDrawable(getDrawable(R.drawable.agen_profile));
         }
 
-        new AsynTimeout().execute();
+        //new AsynTimeout().execute();
         handlerTimes = new Handler();
         myRunnable = new Runnable() {
             @Override
@@ -304,7 +304,7 @@ public class DipsOutboundCall extends AppCompatActivity implements DatePickerDia
                 PopUpSchedule();
             }
         } else {
-            new AsynTimeout().execute();
+            //new AsynTimeout().execute();
         }
     }
 
@@ -658,7 +658,23 @@ public class DipsOutboundCall extends AppCompatActivity implements DatePickerDia
                 Log.i(TAG,"MASUK DISMISS");
                 startTimeOut = true;
                 if (getAction.isEmpty()) {
-                    new AsynTimeout().execute();
+                    //new AsynTimeout().execute();
+                    handlerTimes = new Handler();
+                    myRunnable = new Runnable() {
+                        @Override
+                        public void run() {
+                            Log.d("TIDAK DIANGKAT","");
+                            OutApps();
+                            Intent serviceIntent = new Intent(mContext, OutboundServiceNew.class);
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                                startForegroundService(serviceIntent);
+                            } else {
+                                startService(serviceIntent);
+                            }
+                            OutboundServiceNew.OutConference();
+                        }
+                    };
+                    handlerTimes.postDelayed(myRunnable, 30000);
                 }
             }
         });
