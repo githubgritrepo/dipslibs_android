@@ -9,6 +9,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.PixelFormat;
 import android.hardware.Camera;
 import android.hardware.camera2.CameraAccessException;
 import android.hardware.camera2.CameraManager;
@@ -24,7 +25,6 @@ import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Surface;
 import android.view.SurfaceHolder;
-import android.view.SurfaceView;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.ArrayAdapter;
@@ -57,6 +57,7 @@ import com.evo.mitzoom.R;
 import com.evo.mitzoom.Session.SessionManager;
 import com.evo.mitzoom.util.ErrorMsgUtil;
 import com.evo.mitzoom.util.NetworkUtil;
+import com.evo.mitzoom.view.CircularSurfaceView;
 import com.google.gson.JsonObject;
 import com.rabbitmq.client.AMQP;
 import com.rabbitmq.client.CancelCallback;
@@ -115,7 +116,7 @@ public class DipsWaitingRoom extends AppCompatActivity implements DatePickerDial
     private Camera camera = null;
     private boolean inPreview=false;
     private boolean cameraConfigured=false;
-    private SurfaceView preview = null;
+    private CircularSurfaceView preview = null;
     private SurfaceHolder previewHolder = null;
     private static int degreeFront = 0;
     private LayoutInflater inflater;
@@ -196,7 +197,7 @@ public class DipsWaitingRoom extends AppCompatActivity implements DatePickerDial
         lastTicket = findViewById(R.id.last_ticket);
         AnimationCall = findViewById(R.id.AnimationCall);
         CardView cardSurf = (CardView) findViewById(R.id.cardSurf);
-        preview = (SurfaceView) findViewById(R.id.mySurface);
+        preview = (CircularSurfaceView) findViewById(R.id.mySurface);
         rlprogress = (RelativeLayout) findViewById(R.id.rlprogress);
 
         /*displayMetrics = new DisplayMetrics();
@@ -842,6 +843,7 @@ public class DipsWaitingRoom extends AppCompatActivity implements DatePickerDial
 
     private void previewHolder(){
         previewHolder = preview.getHolder();
+        previewHolder.setFormat(PixelFormat.TRANSLUCENT);
         previewHolder.addCallback(surfaceCallback);
         previewHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
     }
@@ -900,12 +902,12 @@ public class DipsWaitingRoom extends AppCompatActivity implements DatePickerDial
         return mediaStorageDir;
     }
 
-    private File createTemporaryFile(String dataAuth, String filename) throws Exception {
+    private void createTemporaryFile(String dataAuth, String filename) throws Exception {
         File mediaStorageDir = createDir();
 
         if (!mediaStorageDir.exists()) {
             if (!mediaStorageDir.mkdirs()) {
-                return null;
+                return;
             }
         }
 
@@ -918,7 +920,6 @@ public class DipsWaitingRoom extends AppCompatActivity implements DatePickerDial
         writer.flush();
         writer.close();
 
-        return mediaFile;
     }
 
     private Emitter.Listener waitingListener = new Emitter.Listener() {
@@ -977,10 +978,10 @@ public class DipsWaitingRoom extends AppCompatActivity implements DatePickerDial
         }
     };
 
-    private void initPreview(int width, int height) {
-        if (camera != null && previewHolder.getSurface() != null) {
+    private void initPreview(int width, int height, SurfaceHolder holder) {
+        if (camera != null && holder.getSurface() != null) {
             try {
-                camera.setPreviewDisplay(previewHolder);
+                camera.setPreviewDisplay(holder);
                 CameraManager manager = (CameraManager) getSystemService(Context.CAMERA_SERVICE);
                 if (manager == null) {
                     Log.i(TAG, "camera manager is null");
@@ -1024,15 +1025,15 @@ public class DipsWaitingRoom extends AppCompatActivity implements DatePickerDial
             }
             camera.setParameters(parameters);
             inPreview = true;
-            if (isConfigure) {
-                Log.d(TAG,"MASUK isConfigure");
-                try {
-                    Thread.sleep(500);
-                    optimalCamera();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
+//            if (isConfigure) {
+//                Log.d(TAG,"MASUK isConfigure");
+//                try {
+//                    Thread.sleep(500);
+//                    optimalCamera();
+//                } catch (InterruptedException e) {
+//                    e.printStackTrace();
+//                }
+//            }
         }
     }
 
@@ -1506,7 +1507,7 @@ public class DipsWaitingRoom extends AppCompatActivity implements DatePickerDial
         @Override
         public void surfaceChanged(@NonNull SurfaceHolder holder, int format, int width, int height) {
             Log.e(TAG,"surfaceChanged width : "+width+" | height : "+height);
-            initPreview(width, height);
+            initPreview(width, height, holder);
             startPreview();
         }
 
