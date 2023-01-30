@@ -195,14 +195,14 @@ public class DipsCameraSource extends AppCompatActivity implements CameraSource.
 
             Log.e("CEK","surfaceChanged width : "+width+" | height : "+height);
 
-            double diffH = Math.ceil(height / 1.7);
-            double diffw = Math.ceil(width / 14);
+            double diffH = Math.ceil(height / 1.5);
+            double diffw = Math.ceil(width / 3.5);
 
             double surfRight = 0;
             double surfBottom = 0;
 
             surfRight = (width-diffw);
-            surfBottom = (height-(diffw+50));
+            surfBottom = (height-200);
 
             Log.e("CEK","surfaceChanged diffw : "+diffw+" | diffH : "+diffH+" | surfRight : "+surfRight+" | surfBottom : "+surfBottom);
 
@@ -283,7 +283,7 @@ public class DipsCameraSource extends AppCompatActivity implements CameraSource.
             File mediaFile = createTemporaryFile(dataPhoto);
             try {
                 String pathFile = mediaFile.getPath();
-                //Bitmap bitmapCropShape = getResizedBitmap(realBitmap, realBitmap.getWidth(), realBitmap.getHeight());
+                Bitmap bitmapCropShape = getResizedBitmap(realBitmap, realBitmap.getWidth(), realBitmap.getHeight());
                 //Bitmap bitmapCrop = prosesOptimalImage(realBitmap, mediaFile);
                 ExifInterface exif = new ExifInterface(pathFile);
                 int rotation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL);
@@ -292,14 +292,14 @@ public class DipsCameraSource extends AppCompatActivity implements CameraSource.
 
                 String imgBase64 = imageRotateBase64(bitmapCrop, rotationInDegree);
 
-                //String imgBase64Shape = imageRotateBase64(bitmapCropShape, rotationInDegree);
+                String imgBase64Shape = imageRotateBase64(bitmapCropShape, rotationInDegree);
 
                 if (!imgBase64.isEmpty()) {
                     byte[] bytePhoto = Base64.decode(imgBase64, Base64.NO_WRAP);
                     Bitmap bitmap = BitmapFactory.decodeByteArray(bytePhoto, 0, bytePhoto.length);
 
-                    /*byte[] shape_bytePhoto = Base64.decode(imgBase64Shape, Base64.NO_WRAP);
-                    createTemporaryFile(shape_bytePhoto);*/
+                    byte[] shape_bytePhoto = Base64.decode(imgBase64Shape, Base64.NO_WRAP);
+                    createTemporaryFile(shape_bytePhoto);
 
                     if (mediaFile.exists()) {
                         try {
@@ -343,22 +343,28 @@ public class DipsCameraSource extends AppCompatActivity implements CameraSource.
             sy = ((float) newWidth) / width;
         }
 
-        int cx = (int) (width / 14);
-        int cy = (int) (height / 1.7);
+        /*if (useFacing == CameraSource.CAMERA_FACING_FRONT) {
+            matrix.setRotate(rotationInDegree);
+        } else {
+            matrix.setRotate(90);
+        }*/
+
+        int cx = (int) (width / 3.5);
+        int cy = (int) (height / 1.5);
         int diffH = cy;
 
         Matrix matrix = new Matrix();
         // RESIZE THE BIT MAP
-        matrix.postScale(sx, sy);
+        matrix.postScale(-1, 1);
 
         int widthChange = (int) width - cx;
-        int HeightChange = height-(cx+50);
+        int HeightChange = height;
         HeightChange = HeightChange - diffH;
         // "RECREATE" THE NEW BITMAP
         Log.e("CEK","diffH : "+diffH+" | sx : "+sx+" | sy : "+sy+" | cx : "+cx+" | cy : "+cy);
         Log.e("CEK","Width Change : "+widthChange+" | Height Change : "+HeightChange);
         Bitmap resizedBitmap  = Bitmap.createBitmap(
-                bm, cx, cy, widthChange, HeightChange, matrix, false);
+                bm, cx, cy, widthChange-700, HeightChange-450, matrix, false);
 
         return resizedBitmap;
     }

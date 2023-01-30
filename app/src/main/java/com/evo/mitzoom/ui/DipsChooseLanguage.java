@@ -194,7 +194,11 @@ public class DipsChooseLanguage extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-                int selectedId = radioGroup.getCheckedRadioButtonId();
+                Intent intent = new Intent(mContext, DipsCameraSource.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                startActivityForResult(intent, 10010);
+
+                /*int selectedId = radioGroup.getCheckedRadioButtonId();
                 if (selectedId == -1) {
                     Toast.makeText(mContext,
                                     getResources().getString(R.string.select_language),
@@ -233,7 +237,7 @@ public class DipsChooseLanguage extends AppCompatActivity {
                             });
                             break;
                     }
-                }
+                }*/
             }
         });
     }
