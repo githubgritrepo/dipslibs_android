@@ -18,6 +18,8 @@
         <item name="android:fontFamily">@font/font_poppins</item>
     </style>
 
+
+
     <style name="Base.Widget.Design.TabLayout" parent="android:Widget">
         <item name="tabBackground">@drawable/tab_background</item>
         <item name="tabIndicatorColor">#D5F5FF</item>

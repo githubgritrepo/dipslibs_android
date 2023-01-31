@@ -322,7 +322,7 @@ public class DipsCameraSource extends AppCompatActivity implements CameraSource.
                             e.printStackTrace();
                         }
                     }
-
+                    Log.d("Size Byte Arr","Hasil Camera : "+bytePhoto.length+" | Hasil Crop : "+shape_bytePhoto.length);
                     Intent returnIntent = getIntent();
                     returnIntent.putExtra("result_camera", bytePhoto);
                     returnIntent.putExtra("result_cropImage", shape_bytePhoto);

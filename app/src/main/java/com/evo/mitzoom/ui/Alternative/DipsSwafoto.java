@@ -341,7 +341,8 @@ public class DipsSwafoto extends AppCompatActivity implements com.wdullaer.mater
                             c.get(Calendar.MONTH),
                             c.get(Calendar.DAY_OF_MONTH)
                     );
-                } else {
+                }
+                else {
                     dpd.initialize(
                             DipsSwafoto.this,
                             c.get(Calendar.YEAR),
@@ -383,23 +384,27 @@ public class DipsSwafoto extends AppCompatActivity implements com.wdullaer.mater
                                     e.printStackTrace();
                                 }
                             }
-                        } else {
+                        }
+                        else {
                             Calendar d = (Calendar) day.clone();
                             weekdays.add(d);
                         }
-                    } else {
+                    }
+                    else {
                         loopAdd++;
                     }
                     day.add(Calendar.DATE, 1);
                 }
                 Calendar[] weekdayDays = weekdays.toArray(new Calendar[weekdays.size()]);
                 dpd.setSelectableDays(weekdayDays);
+
                 //dpd.setMaxDate(day);
 
                 dpd.setOnCancelListener(dialog -> {
                     Log.e("DatePickerDialog", "Dialog was cancelled");
                     dpd = null;
                 });
+
                 dpd.show(getSupportFragmentManager(), "Datepickerdialog");
 
             }
