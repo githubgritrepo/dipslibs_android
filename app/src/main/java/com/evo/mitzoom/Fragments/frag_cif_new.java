@@ -3631,17 +3631,24 @@ public class frag_cif_new extends Fragment {
                 }
             } else if (requestCode == REQUESTCODE_SWAFOTO){
                 sessions.saveFlagUpDoc(true);
-                byte[] resultCamera = data.getByteArrayExtra("result_camera");
+                /*byte[] resultCamera = data.getByteArrayExtra("result_camera");
                 byte[] resultCropCamera = data.getByteArrayExtra("result_cropImage");
-                Bitmap bitmap = BitmapFactory.decodeByteArray(resultCamera, 0, resultCamera.length);
+                Bitmap bitmap = BitmapFactory.decodeByteArray(resultCamera, 0, resultCamera.length);*/
+                String filePaths = data.getStringExtra("result_camera");
+                String filePathsCrop = data.getStringExtra("result_cropImage");
+                Bitmap bitmap = BitmapFactory.decodeFile(filePaths);
 
-                try {
+                mediaFilePhoto = new File(filePaths);
+                mediaFilePhotoCropSwafoto = new File(filePathsCrop);
+
+                /*try {
                     mediaFilePhoto = createTemporaryFile(resultCamera);
                     mediaFilePhotoCropSwafoto = createTemporaryFile(resultCropCamera);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-                picturePath = mediaFilePhoto.getAbsolutePath();
+                picturePath = mediaFilePhoto.getAbsolutePath();*/
+                picturePath = filePaths;
 
                 LL.setBackgroundResource(0);
                 btnNext.setVisibility(View.VISIBLE);
