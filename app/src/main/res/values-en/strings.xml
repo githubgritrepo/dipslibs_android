@@ -280,6 +280,9 @@
     <string name="body2_complaint">Thank you for your entrusted to using transaction with XYZ Bank. This receipt has been sent to your email address. Please check your email.</string>
     <string name="badan_usaha">Business Entity</string>
     <string name="join_account">Join Account</string>
+    <string name="title_gagal_livenes">Face Not Detected</string>
+    <string name="body_gagal_livenes">Please Try Again.</string>
+    <string name="button_gagal_livenes">Try again</string>
     <string name="join_account_and">Join Account (AND)</string>
     <string name="join_account_or">Join Account (OR)</string>
     <string name="tunggal_account">Single Account</string>

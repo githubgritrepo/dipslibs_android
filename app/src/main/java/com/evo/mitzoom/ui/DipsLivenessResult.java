@@ -7,19 +7,23 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.StrictMode;
 import android.util.Base64;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 
@@ -35,8 +39,16 @@ import com.google.gson.JsonObject;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
+import ai.advance.liveness.lib.CameraType;
+import ai.advance.liveness.lib.Detector;
+import ai.advance.liveness.lib.GuardianLivenessDetectionSDK;
+import ai.advance.liveness.lib.LivenessResult;
+import ai.advance.liveness.lib.Market;
+import ai.advance.liveness.sdk.activity.LivenessActivity;
+import cn.pedant.SweetAlert.SweetAlertDialog;
 import okhttp3.MediaType;
 import okhttp3.RequestBody;
 import retrofit2.Call;
@@ -53,6 +65,7 @@ public class DipsLivenessResult extends AppCompatActivity {
     private TextView tip_text_view;
     private RelativeLayout llCircle;
     private ImageView imgCheck;
+    public static final int REQUEST_CODE_LIVENESS = 1001;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -304,10 +317,14 @@ public class DipsLivenessResult extends AppCompatActivity {
                         }
                     }
                     Log.e("CEK","msg ERROR : "+msg);
-                    Intent intent = new Intent(mContext, DipsSplashScreen.class);
-                    intent.putExtra("RESPONSECODE", response.code());
-                    startActivity(intent);
-                    finishAffinity();
+                    String licenseAI = sessions.getAuthAdvanceAI();
+                    Log.e(TAG,"licenseAI : "+licenseAI);
+                    if (licenseAI != null) {
+                        dialogShowError(licenseAI);
+                    } else {
+                        Toast.makeText(mContext,"Terjadi Kesalahan", Toast.LENGTH_LONG).show();
+                        onResume();
+                    }
                 }
             }
 
@@ -317,5 +334,86 @@ public class DipsLivenessResult extends AppCompatActivity {
                 Toast.makeText(mContext, t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    private void dialogShowError(String license) {
+        LayoutInflater inflater = getLayoutInflater();
+        View dialogView = inflater.inflate(R.layout.layout_dialog_sweet, null);
+        ImageView imgDialog = (ImageView) dialogView.findViewById(R.id.imgDialog);
+        TextView tvTitleDialog = (TextView) dialogView.findViewById(R.id.tvTitleDialog);
+        TextView tvBodyDialog = (TextView) dialogView.findViewById(R.id.tvBodyDialog);
+        Button btnCancelDialog = (Button) dialogView.findViewById(R.id.btnCancelDialog);
+        Button btnConfirmDialog = (Button) dialogView.findViewById(R.id.btnConfirmDialog);
+        btnCancelDialog.setVisibility(View.GONE);
+
+        imgDialog.setImageDrawable(getDrawable(R.drawable.v_dialog_warning));
+        tvTitleDialog.setText(getString(R.string.title_gagal_livenes));
+        tvBodyDialog.setText(getString(R.string.body_gagal_livenes));
+        btnConfirmDialog.setText(getString(R.string.button_gagal_livenes));
+
+        SweetAlertDialog sweetAlertDialog = new SweetAlertDialog(this, SweetAlertDialog.NORMAL_TYPE);
+        sweetAlertDialog.setCustomView(dialogView);
+        sweetAlertDialog.hideConfirmButton();
+        sweetAlertDialog.setCancelable(false);
+        sweetAlertDialog.show();
+        btnConfirmDialog.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                sweetAlertDialog.cancel();
+                sweetAlertDialog.dismissWithAnimation();
+                startLivenessDetection(license);
+            }
+        });
+    }
+
+    public void startLivenessDetection(String licenseAI) {
+        Market yourMarket = Market.Indonesia;
+        GuardianLivenessDetectionSDK.init(getApplication(), yourMarket);
+        GuardianLivenessDetectionSDK.letSDKHandleCameraPermission();
+        String yourLicense = licenseAI;
+        Log.e(TAG,"yourLicense : "+yourLicense);
+        GuardianLivenessDetectionSDK.setCameraType(CameraType.FRONT);// The back camera is CameraType.BACK
+        GuardianLivenessDetectionSDK.setActionSequence(true, Detector.DetectionType.BLINK);
+        GuardianLivenessDetectionSDK.setResultPictureSize(300); // Settable input range: [300,1000], unit: pixels
+        GuardianLivenessDetectionSDK.setActionTimeoutMills(20000);
+        String checkResult = GuardianLivenessDetectionSDK.setLicenseAndCheck(yourLicense);
+        Log.e(TAG,"checkResult : "+checkResult);
+        if ("SUCCESS".equals(checkResult)) {
+            startActivityForResult(new Intent(this, LivenessActivity.class), REQUEST_CODE_LIVENESS);
+        } else {
+            Log.e("LivenessSDK", "License check failed:" + checkResult);
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == REQUEST_CODE_LIVENESS) {
+            if (LivenessResult.isSuccess()) {// Success
+                Bitmap livenessBitmap = LivenessResult.getLivenessBitmap();// picture
+                String imgBase64 = imgtoBase64(livenessBitmap);
+                byte[] bytePhoto = Base64.decode(imgBase64, Base64.NO_WRAP);
+                sessions.saveNoCIF(null);
+                Intent intent = new Intent(mContext, DipsLivenessResult.class);
+                intent.putExtra("RESULT_IMAGE_AI",bytePhoto);
+                intent.putExtra("idDips", idDips);
+                startActivity(intent);
+                finishAffinity();
+            } else {// Failure
+                String errorMsg = LivenessResult.getErrorMsg();// error message
+                //String transactionId = LivenessResult.getTransactionId(); // Transaction number, which can be used to troubleshoot problems with us
+                if (errorMsg != null) {
+                    Toast.makeText(mContext, errorMsg, Toast.LENGTH_LONG).show();
+                }
+            }
+        }
+    }
+    private String imgtoBase64(Bitmap bitmap) {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.JPEG,100, baos);
+        byte[] imageBytes = baos.toByteArray();
+        String encodedImage = Base64.encodeToString(imageBytes, Base64.NO_WRAP);
+
+        return encodedImage;
     }
 }
