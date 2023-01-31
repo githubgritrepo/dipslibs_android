@@ -5,7 +5,7 @@
     <string name="desc_welcome">Virtual Customer Support Application\nEasy, safe and convenient</string>
     <string name="wink">Wink\nto capture image.</string>
     <string name="msg_error">There is an error</string>
-    <string name="not_using_dips">Sorry You Cant Use DiPS361 Services</string>
+    <string name="not_using_dips">Sorry You Can\'t Use DiPS361 Services</string>
     <string name="tutup">Close</string>
     <string name="chat">Chat</string>
     <string name="confirm_accept">For the sake of mutual convenience, this conversation will be recorded automatically.\nDo you agree to use the Digital Operations Victoria Bank Service?</string>
@@ -247,7 +247,7 @@
     <string name="cardless">Cardless Transactions</string>
     <string name="keterangan">Description</string>
     <string name="body_resi_cardless">Use the code below to make cardless transactions at available ATMs. Do not share this number with others.</string>
-    <string name="headline_cardless">Thank you for entrusting your banking transactions to XYZ Bank. Use the XYZ Mobile Banking App for a profitable transaction experience. <b>Resi Digital Form has been sent to your email address</b> Please check your email.</string>
+    <string name="headline_cardless">Thank you for your entrusted to using transaction with XYZ Bank. Use the XYZ Mobile Banking App for a profitable transaction experience. <b>Resi Digital Form has been sent to your email address</b> Please check your email.</string>
     <string name="unduh_resi">Download Receipt</string>
     <string name="alamat_penerima">Recipient Address</string>
     <string name="no_cif">No. CIF</string>
@@ -277,7 +277,7 @@
     <string name="accept_state">Please agree with the statement</string>
     <string name="title_safe_complaint">SAFE!\nYour Complaint Was Successfully Recorded.</string>
     <string name="body_complaint">Your complaint has been successfully registered &amp; we will deal with it immediately. The following is your complaint ticket number.</string>
-    <string name="body2_complaint">Thank you for entrusting your banking transactions to XYZ Bank. This receipt has been sent to your email address. Please check your email.</string>
+    <string name="body2_complaint">Thank you for your entrusted to using transaction with XYZ Bank. This receipt has been sent to your email address. Please check your email.</string>
     <string name="badan_usaha">Business Entity</string>
     <string name="join_account">Join Account</string>
     <string name="join_account_and">Join Account (AND)</string>

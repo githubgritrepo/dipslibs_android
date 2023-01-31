@@ -97,6 +97,10 @@ public interface ApiService {
     Call<JsonObject> createAccount(@Body RequestBody body);
 
     @Headers("Content-Type: "+ MyConstants.CONTENT_TYPE)
+    @POST("client-rabbit/get-ticket")
+    Call<JsonObject> getTicketV2(@Body RequestBody body);
+
+    @Headers("Content-Type: "+ MyConstants.CONTENT_TYPE)
     @GET
     Call<JsonObject> setBarcode(
             @Url String url

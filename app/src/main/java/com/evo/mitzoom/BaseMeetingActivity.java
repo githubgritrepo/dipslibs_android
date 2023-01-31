@@ -10,7 +10,11 @@ import android.app.Service;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.ColorStateList;
 import android.content.res.Configuration;
+import android.content.res.Resources;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Build;
@@ -18,7 +22,10 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.provider.Settings;
+import android.text.Spannable;
+import android.text.SpannableStringBuilder;
 import android.text.TextUtils;
+import android.text.style.ForegroundColorSpan;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Display;
@@ -43,11 +50,13 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.evo.mitzoom.API.ApiService;
 import com.evo.mitzoom.API.Server;
+import com.evo.mitzoom.Adapter.ChatMsgAdapter;
 import com.evo.mitzoom.Adapter.UserVideoAdapter;
 import com.evo.mitzoom.Fragments.frag_chat;
 import com.evo.mitzoom.Fragments.frag_conferee_agree;
@@ -64,6 +73,8 @@ import com.evo.mitzoom.util.ErrorMsgUtil;
 import com.evo.mitzoom.util.UserHelper;
 import com.evo.mitzoom.util.ZMAdapterOsBugHelper;
 import com.evo.mitzoom.view.KeyBoardLayout;
+import com.google.android.material.bottomsheet.BottomSheetBehavior;
+import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.gson.JsonObject;
 
 import org.json.JSONArray;
@@ -116,7 +127,7 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
 
     protected static final String TAG = "CEK_BaseMeetingActivity";
     public static final int RENDER_TYPE_ZOOMRENDERER = 0;
-
+    private BottomSheetDialog bottomSheetDialog;
     public static final int RENDER_TYPE_OPENGLES = 1;
 
     public final static int REQUEST_SHARE_SCREEN_PERMISSION = 1001;
@@ -179,10 +190,22 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
     private LinearLayout iconBubble;
     private boolean flagShowLeave = false;
 
+    private ImageView btnClose, btnSend;
+    private EditText InputChat;
+    private String Chat;
+    private ChatMsgAdapter chatMsgAdapter;
+    protected RecyclerView chatListView;
+    private List<CharSequence> list = new ArrayList<>();
+    private List<Boolean> isSelf = new ArrayList<>();
+    private List<Boolean> isHost = new ArrayList<>();
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         mContext = this;
-
+        if (bottomSheetDialog == null) {
+            bottomSheetDialog = new BottomSheetDialog(this, R.style.BottomSheetDialog);
+        }
+        chatMsgAdapter = new ChatMsgAdapter(this, list,isHost, isSelf);
         sessions = new SessionManager(mContext);
         lang = sessions.getLANG();
         setLocale(this,lang);
@@ -214,8 +237,7 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
                     WindowManager.LayoutParams.FLAG_ALLOW_LOCK_WHILE_SCREEN_ON);
         }
 
-        getWindow().addFlags(WindowManager.LayoutParams.
-                FLAG_KEEP_SCREEN_ON);
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         setContentView(getLayout());
         display = ((WindowManager) getSystemService(Service.WINDOW_SERVICE)).getDefaultDisplay();
         displayMetrics = new DisplayMetrics();
@@ -265,6 +287,93 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
         });
     }
 
+    private void bottomSheetChat(){
+        LayoutInflater inflater = LayoutInflater.from(this);
+        View v = inflater.inflate(R.layout.frag_chat, null);
+        bottomSheetDialog.setContentView(v);
+        InputChat = v.findViewById(R.id.et_input_chat);
+        btnSend = v.findViewById(R.id.btn_send_chat);
+        chatListView = v.findViewById(R.id.chat_list);
+        FrameLayout frameLayout = bottomSheetDialog.findViewById(com.google.android.material.R.id.design_bottom_sheet);
+        if (frameLayout != null) {
+            BottomSheetBehavior<FrameLayout> bottomSheetBehavior = BottomSheetBehavior.from(frameLayout);
+            bottomSheetBehavior.setPeekHeight(500);
+            bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+        }
+        bottomSheetDialog.show();
+        btnSend.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Chat = InputChat.getText().toString();
+                ZoomVideoSDK.getInstance().getChatHelper().sendChatToAll(Chat);
+                InputChat.setText("");
+            }
+        });
+        chatListView.setLayoutManager(new LinearLayoutManager(this, RecyclerView.VERTICAL, false));
+//        if (sessions.getKEY_CHAT() != null){
+//            String dataChat = sessions.getKEY_CHAT();
+//            Log.d("CEK START PESAN ",dataChat);
+//            try {
+//                JSONArray jsonArray2 = new JSONArray(dataChat);
+//                int panjang = jsonArray2.length();
+//                for (int a=0;a<panjang;a++){
+//                    String dataChat2 = jsonArray2.get(a).toString();
+//                    JSONObject jsonObject = new JSONObject(dataChat2);
+//                    boolean isSelf2 = jsonObject.getBoolean("isSelf");
+//                    boolean isHost2 = jsonObject.getBoolean("isHost");
+//                    String message = jsonObject.getString("message");
+//
+//                    String [] message2 = message.split("\n");
+//                    String SenderName = message2[0]+"\n";
+//                    String content = message2[1];
+//                    SpannableStringBuilder builder = new SpannableStringBuilder();
+//                    builder.append(SenderName).append(content);
+//                    builder.setSpan(new ForegroundColorSpan(Color.parseColor("#000000")),0,SenderName.length(), Spannable.SPAN_EXCLUSIVE_INCLUSIVE);
+//                    builder.setSpan(new ForegroundColorSpan(Color.parseColor("#000000")),SenderName.length(), builder.length(), Spannable.SPAN_EXCLUSIVE_INCLUSIVE); //设置前面的字体颜色
+//
+//                    isSelf.add(isSelf2);
+//                    isHost.add(isHost2);
+//                    list.add(builder);
+//
+//                }
+//            } catch (JSONException e) {
+//                e.printStackTrace();
+//            }
+//        }
+//        else {
+//            Log.d("CEK START PESAN ","MASUK ELSE");
+//        }
+        chatListView.setAdapter(chatMsgAdapter);
+        //updateChatLayoutParams();
+        if (!bottomSheetDialog.isShowing()){
+            SavedInstanceChat();
+        }
+    }
+    private void updateChatLayoutParams() {
+        if (chatMsgAdapter.getItemCount() > 0) {
+            chatListView.scrollToPosition(chatMsgAdapter.getItemCount() - 1);
+        }
+    }
+
+    private void SavedInstanceChat(){
+        JSONArray jsonArray = new JSONArray();
+        for (int i =0; i < list.size(); i++){
+            JSONObject jsons = new JSONObject();
+            try {
+                jsons.put("isSelf",isSelf.get(i));
+                jsons.put("isHost",isHost.get(i));
+                jsons.put("message",list.get(i));
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+            jsonArray.put(jsons);
+        }
+        String dataArr = jsonArray.toString();
+        sessions.saveChat(dataArr);
+        Log.d("CEK PESAN ARRAY",dataArr);
+    }
     private void getFragmentPage(Fragment fragment){
         getSupportFragmentManager()
                 .beginTransaction()
@@ -839,7 +948,9 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
                 Log.d("MIRROR","Mirroring Sukses");
                 Intent serviceIntent = new Intent(mContext, OutboundServiceNew.class);
-                startForegroundService(serviceIntent);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    startForegroundService(serviceIntent);
+                }
             }
 
             @Override
@@ -852,7 +963,8 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
     public void onClickChat(View view) {
         btnChat.setFocusable(true);
         iconBubble.setVisibility(View.GONE);
-        getFragmentPage(new frag_chat());
+        //getFragmentPage(new frag_chat());
+        bottomSheetChat();
     }
     public void onClickFile(View view) {
         getFragmentPage(new frag_file());
@@ -1246,7 +1358,14 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
     @Override
     public void onChatNewMessageNotify(ZoomVideoSDKChatHelper zoomVideoSDKChatHelper, ZoomVideoSDKChatMessage messageItem) {
         Log.d(TAG, "onChatNewMessageNotify ");
-        iconBubble.setVisibility(View.VISIBLE);
+        chatMsgAdapter.onReceive(messageItem);
+        if(bottomSheetDialog.isShowing()){
+            iconBubble.setVisibility(View.GONE);
+        }
+        else{
+            iconBubble.setVisibility(View.VISIBLE);
+        }
+        Log.d("CEK PESAN",messageItem.getContent());
     }
 
     @Override

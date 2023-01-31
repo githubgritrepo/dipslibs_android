@@ -3,10 +3,12 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:tools="http://schemas.android.com/tools"
-    android:background="@color/bg"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@drawable/rounded_chat"
     android:theme="@style/Theme.MaterialComponents.Light.DarkActionBar">
 
     <RelativeLayout
+        android:visibility="gone"
         android:gravity="end"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -24,25 +26,24 @@
     </RelativeLayout>
 
     <RelativeLayout
+        android:layout_marginTop="10dp"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginTop="30dp"
+        android:layout_height="wrap_content"
         android:isScrollContainer="true">
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/chat_list"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginStart="8dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginBottom="74dp"
-            tools:listitem="@layout/item_chat_msg">
-
-        </androidx.recyclerview.widget.RecyclerView>
+            android:layout_height="420dp"
+            android:scrollbars="vertical"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="10dp"
+            android:layout_marginBottom="10dp"
+            tools:listitem="@layout/item_chat_msg"/>
 
         <LinearLayout
-            android:layout_alignParentBottom="true"
-            android:background="@color/input_chat"
+            android:layout_below="@+id/chat_list"
+            android:background="@color/bg_agenchat"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal">
@@ -52,18 +53,22 @@
                 android:layout_weight="1"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="10dp"
+                app:hintEnabled="false"
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
 
                 <EditText
                     android:id="@+id/et_input_chat"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:autofillHints="@string/enter_your_message"
+                    android:hint="@string/enter_your_message"
                     android:background="@drawable/oval_background_10dp"
-                    android:inputType="text"
+                    android:inputType="textMultiLine"
+                    android:gravity="top"
+                    android:scrollbars="vertical"
+                    android:maxLines="4"
                     android:padding="10dp"
                     android:textColor="@color/black"
-                    android:textSize="19dp" />
+                    android:textSize="13dp" />
             </com.google.android.material.textfield.TextInputLayout>
             <ImageView
                 android:backgroundTint="@color/Blue"
@@ -72,7 +77,9 @@
                 android:layout_width="0dp"
                 android:layout_weight="0.2"
                 android:layout_height="35dp"
-                android:src="@drawable/ic_baseline_send_24"/>
+                android:src="@drawable/ic_baseline_send_24"
+                android:tint="@color/white"
+                tools:ignore="UseAppTint" />
         </LinearLayout>
 
     </RelativeLayout>

@@ -27,11 +27,7 @@ import cn.pedant.SweetAlert.SweetAlertDialog;
 public class DipsSplashScreen extends AppCompatActivity {
 
     private static String TAG = "CEK_DipsSplashScreen";
-    private Context mContext;
-    private ImageView imgSplash;
     private TextView tvVersion;
-    private SessionManager sessions;
-    private SweetAlertDialog sweetAlertDialog = null;
     private RelativeLayout rlBGTransparant;
 
     @Override
@@ -39,71 +35,56 @@ public class DipsSplashScreen extends AppCompatActivity {
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
         super.onCreate(savedInstanceState);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
-
         setContentView(R.layout.activity_dips_splash_screen);
-
         Log.e(TAG,"MASUK onCreate");
-
-        imgSplash = (ImageView) findViewById(R.id.imgSplash);
         tvVersion = (TextView) findViewById(R.id.tvVersion);
         rlBGTransparant = (RelativeLayout) findViewById(R.id.rlBGTransparant);
-        //getSupportActionBar().hide();
-
-        mContext = this;
-
+        //Untuk mengambil version dari Apps
         try {
-            PackageInfo info = mContext.getPackageManager().getPackageInfo(mContext.getPackageName(),0);
+            PackageInfo info = this.getPackageManager().getPackageInfo(this.getPackageName(),0);
             String version = info.versionName;
             version = "V "+version;
             tvVersion.setText(version);
-        } catch (PackageManager.NameNotFoundException e) {
+        }
+        catch (PackageManager.NameNotFoundException e) {
             e.printStackTrace();
         }
-
-        sessions = new SessionManager(mContext);
-
+        //Cek balikan dari liveness
         boolean cekConstain = getIntent().hasExtra("RESPONSECODE");
         if (cekConstain) {
+            //Jika ada, maka muncul pop up untuk nasabah yang ditolak
             rlBGTransparant.setVisibility(View.VISIBLE);
             dialogShowError();
-        } else {
+        }
+        else {
             processNext();
         }
-
     }
 
     private void dialogShowError() {
         String bankName = getString(R.string.bank_name);
-
         LayoutInflater inflater = getLayoutInflater();
         View dialogView = inflater.inflate(R.layout.layout_dialog_sweet, null);
-
         ImageView imgDialog = (ImageView) dialogView.findViewById(R.id.imgDialog);
         TextView tvTitleDialog = (TextView) dialogView.findViewById(R.id.tvTitleDialog);
         TextView tvBodyDialog = (TextView) dialogView.findViewById(R.id.tvBodyDialog);
         Button btnCancelDialog = (Button) dialogView.findViewById(R.id.btnCancelDialog);
         Button btnConfirmDialog = (Button) dialogView.findViewById(R.id.btnConfirmDialog);
-
         btnCancelDialog.setVisibility(View.VISIBLE);
-
         String tvBody1 = getString(R.string.warn_not_use_app);
         String tvBody2 = getString(R.string.warn_hub_calcenter);
-
         String bodyGab = tvBody1 + "\n\n" + tvBody2;
         bodyGab = bodyGab.replace("Bank XYZ",bankName).replace("XYZ Bank", bankName);
-
         imgDialog.setImageDrawable(getDrawable(R.drawable.v_dialog_warning));
         tvTitleDialog.setText(getString(R.string.failed));
         tvBodyDialog.setText(bodyGab);
         btnCancelDialog.setText(getString(R.string.call_center));
         btnConfirmDialog.setText(getString(R.string.exit));
-
-        SweetAlertDialog sweetAlertDialog = new SweetAlertDialog(mContext, SweetAlertDialog.NORMAL_TYPE);
+        SweetAlertDialog sweetAlertDialog = new SweetAlertDialog(this, SweetAlertDialog.NORMAL_TYPE);
         sweetAlertDialog.setCustomView(dialogView);
         sweetAlertDialog.hideConfirmButton();
         sweetAlertDialog.setCancelable(false);
         sweetAlertDialog.show();
-
         btnCancelDialog.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -114,7 +95,6 @@ public class DipsSplashScreen extends AppCompatActivity {
                 finishAffinity();
             }
         });
-
         btnConfirmDialog.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -155,15 +135,5 @@ public class DipsSplashScreen extends AppCompatActivity {
         Log.e(TAG,"startApp");
         startActivity(new Intent(DipsSplashScreen.this, DipsChooseLanguage.class));
         finishAffinity();
-    }
-
-    private void doWork() {
-        for (int progress=0; progress<=100; progress+=20) {
-            try {
-                Thread.sleep(800);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
     }
 }

@@ -79,9 +79,6 @@ public class DipsChooseLanguage extends AppCompatActivity {
     public static final int REQUEST_CAMERA = 781;
     public static final int WRITE_EXTERNAL_STORAGE = 782;
     public static final int REQUEST_WRITE_PERMISSION = 786;
-    public static final int REQUEST_READ_PERMISSION = 787;
-    private static final int MY_CAMERA_PERMISSION_CODE = 100;
-    private static final int REQUEST_READ_PHONE_STATE = 787;
     private static final int ATTACHMENT_MANAGE_ALL_FILE = 308;
     protected static final int REQUEST_BATTERY_OP = 0x49ff;
     private static final int REQUEST_ALL = 888;
@@ -92,8 +89,6 @@ public class DipsChooseLanguage extends AppCompatActivity {
     private TextView tvVersion;
     private RelativeLayout rlload;
     private String idDips;
-    private String dataTnC = "";
-    private boolean flagViewTNC = false;
     private boolean isFlagALL_FILES_ACCESS = false;
 
     @Override
@@ -243,10 +238,6 @@ public class DipsChooseLanguage extends AppCompatActivity {
     }
 
     private void startApp() {
-        /*Intent intent = new Intent(mContext,DipsCapture.class);
-        startActivity(intent);
-        finishAffinity();*/
-
         String licenseAI = sessions.getAuthAdvanceAI();
         Log.e(TAG,"licenseAI : "+licenseAI);
         if (licenseAI != null) {
@@ -433,19 +424,12 @@ public class DipsChooseLanguage extends AppCompatActivity {
                 Bitmap livenessBitmap = LivenessResult.getLivenessBitmap();// picture
                 String imgBase64 = imgtoBase64(livenessBitmap);
                 byte[] bytePhoto = Base64.decode(imgBase64, Base64.NO_WRAP);
-
-                //processCaptureIdentifyAuth(imgBase64);
                 sessions.saveNoCIF(null);
-
                 Intent intent = new Intent(mContext, DipsLivenessResult.class);
                 intent.putExtra("RESULT_IMAGE_AI",bytePhoto);
                 intent.putExtra("idDips", idDips);
                 startActivity(intent);
                 finishAffinity();
-
-                /*rlload.setVisibility(View.VISIBLE);
-                String livenessId = LivenessResult.getLivenessId();// livenessId
-                processCaptureIdentify(imgBase64);*/
             } else {// Failure
                 rlload.setVisibility(View.GONE);
                 //String errorCode = LivenessResult.getErrorCode();// error code
@@ -466,8 +450,7 @@ public class DipsChooseLanguage extends AppCompatActivity {
 
     protected boolean isOptimizingBattery() {
         final PowerManager pm = (PowerManager) getSystemService(POWER_SERVICE);
-        return pm != null
-                && !pm.isIgnoringBatteryOptimizations(getPackageName());
+        return pm != null && !pm.isIgnoringBatteryOptimizations(getPackageName());
     }
 
     private String getBatteryOptimizationPreferenceKey() {
@@ -497,12 +480,9 @@ public class DipsChooseLanguage extends AppCompatActivity {
             e.printStackTrace();
         }
 
-        String AccessKey = "9daf9d6e9dfe6cdd";//bankvictoria_ebd
-        //String AccessKey = "75140e9a1d9c161f";//evolusi_test
-
+        String AccessKey = "9daf9d6e9dfe6cdd";
         Log.e(TAG,"REUQEST AUTH AI : "+jsons.toString());
         RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), jsons.toString());
-
         Server.getAPIServiceAdvanceAI().AuthLicenseLiveness(requestBody,AccessKey).enqueue(new Callback<JsonObject>() {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
@@ -528,150 +508,6 @@ public class DipsChooseLanguage extends AppCompatActivity {
                 Log.e(TAG,"onFailure AUTH AI : "+t.getMessage());
             }
         });
-    }
-
-    private class AsyncProcess extends AsyncTask<Void,Void,Void> {
-
-        @Override
-        protected Void doInBackground(Void... voids) {
-            processGetTNC();
-            return null;
-        }
-    }
-
-    private void processGetTNC() {
-        Server.getAPIService().getTNC(1).enqueue(new Callback<JsonObject>() {
-            @Override
-            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
-                if (response.isSuccessful()) {
-                    String dataS = response.body().toString();
-                    try {
-                        JSONObject dataObj = new JSONObject(dataS);
-                        String cekdataTnC = dataObj.getJSONObject("data").getString("data");
-                        if (cekdataTnC.contains("{")) {
-                            JSONObject labelTNC = new JSONObject(cekdataTnC);
-                            String language = sessions.getLANG();
-                            if (language.equals("id")) {
-                                dataTnC = labelTNC.getString("labelIdn");
-                            } else {
-                                dataTnC = labelTNC.getString("labelEng");
-                            }
-                        } else {
-                            dataTnC = cekdataTnC;
-                        }
-
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                } else {
-                    String msg = "";
-                    if (response.body() != null) {
-                        String dataS = response.body().toString();
-                        try {
-                            JSONObject dataObj = new JSONObject(dataS);
-                            msg = dataObj.getString("message");
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                    } else {
-                        if (response.errorBody().toString().isEmpty()) {
-                            String dataS = response.errorBody().toString();
-                            try {
-                                JSONObject dataObj = new JSONObject(dataS);
-                                msg = dataObj.getString("message");
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            }
-                        } else {
-                            String dataS = null;
-                            try {
-                                dataS = response.errorBody().string();
-                                JSONObject dataObj = new JSONObject(dataS);
-                                msg = dataObj.getString("message");
-                            } catch (IOException | JSONException e) {
-                                e.printStackTrace();
-                            }
-                        }
-                    }
-                    Toast.makeText(mContext,msg,Toast.LENGTH_SHORT).show();
-                }
-            }
-
-            @Override
-            public void onFailure(Call<JsonObject> call, Throwable t) {
-                Toast.makeText(mContext,t.getMessage(),Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
-
-    private void PopUpTnc(){
-        flagViewTNC = true;
-        Log.e(TAG,"MASUK PopUpTnc");
-        LayoutInflater inflater = ((Activity) mContext).getLayoutInflater();
-        //if (sweetAlertDialogTNC == null) {
-        View dialogView = inflater.inflate(R.layout.item_tnc, null);
-        SweetAlertDialog sweetAlertDialogTNC = new SweetAlertDialog(mContext, SweetAlertDialog.NORMAL_TYPE);
-        sweetAlertDialogTNC.setCustomView(dialogView);
-        sweetAlertDialogTNC.hideConfirmButton();
-        sweetAlertDialogTNC.setCancelable(true);
-        //}
-        TextView tvBody = (TextView) dialogView.findViewById(R.id.tvBody);
-        CheckBox checkBox = dialogView.findViewById(R.id.checktnc);
-        Button btn = dialogView.findViewById(R.id.btnnexttnc);
-
-        if (!dataTnC.isEmpty()) {
-            tvBody.setText(Html.fromHtml(dataTnC, Html.FROM_HTML_MODE_LEGACY, new Html.ImageGetter() {
-                @Override
-                public Drawable getDrawable(String source) {
-                    int idx = source.indexOf(",");
-                    idx += 1;
-                    String new_source = source.substring(idx);
-                    byte[] data = Base64.decode(new_source, Base64.NO_WRAP);
-                    Bitmap bitmap = BitmapFactory.decodeByteArray(data, 0, data.length);
-                    Drawable d = new BitmapDrawable(((Activity) mContext).getResources(), bitmap);
-                    int intH = d.getIntrinsicHeight();
-                    int intW = d.getIntrinsicWidth();
-                    d.setBounds(0, 0, intW, intH);
-                    return d;
-                }
-            }, null));
-        }
-        btn.setClickable(false);
-
-        sweetAlertDialogTNC.show();
-
-        int width = (int)(((Activity)mContext).getResources().getDisplayMetrics().widthPixels);
-        int height = (int)(((Activity)mContext).getResources().getDisplayMetrics().heightPixels);
-
-        Log.e(TAG,"PopUpTnc width : "+width+" | height : "+height);
-        int newWidth = (int)(width*0.8);
-        int newHeight = (int)(height*0.85);
-        Log.e(TAG,"PopUpTnc newWidth : "+newWidth+" | newHeight : "+newHeight);
-
-        //sweetAlertDialogTNC.getWindow().setGravity(Gravity.CENTER_HORIZONTAL);
-        sweetAlertDialogTNC.getWindow().setLayout(newWidth,newHeight);
-        sweetAlertDialogTNC.setOnDismissListener(new DialogInterface.OnDismissListener() {
-            @Override
-            public void onDismiss(DialogInterface dialogInterface) {
-                Log.e(TAG,"onDismiss");
-                flagViewTNC = false;
-            }
-        });
-        sweetAlertDialogTNC.setOnCancelListener(new DialogInterface.OnCancelListener() {
-            @Override
-            public void onCancel(DialogInterface dialogInterface) {
-                Log.e(TAG,"onCancel");
-                flagViewTNC = false;
-            }
-        });
-
-        btn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                sweetAlertDialogTNC.dismissWithAnimation();
-            }
-        });
-
     }
 
 }

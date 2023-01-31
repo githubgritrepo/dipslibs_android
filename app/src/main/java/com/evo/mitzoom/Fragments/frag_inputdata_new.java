@@ -21,6 +21,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
@@ -167,8 +169,11 @@ public class frag_inputdata_new extends Fragment {
         btnNext.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                /* hide keyboard */
+                Log.d("CEk Button","");
+                ((InputMethodManager) getActivity().getSystemService(Activity.INPUT_METHOD_SERVICE))
+                        .toggleSoftInput(InputMethodManager.SHOW_IMPLICIT, 0);
                 int child = llFormBuild.getChildCount();
-                
                 if (child > 0 && idElement.length() > 0) {
                     boolean flagNext = true;
                     for (int i = 0; i < child; i++) {

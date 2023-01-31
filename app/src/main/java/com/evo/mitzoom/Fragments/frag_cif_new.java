@@ -30,6 +30,7 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
@@ -414,7 +415,8 @@ public class frag_cif_new extends Fragment {
                         sessions.saveIsSwafoto(isSwafoto);
                     } else if (formCode == 6) {
                         IMG_BYTE = imageBytes;
-                    } else if (formCode == 7) {
+                    }
+                    else if (formCode == 7) {
                         IMG_BYTE = imageBytes;
                     }
 
@@ -2800,6 +2802,7 @@ public class frag_cif_new extends Fragment {
             @Override
             public void onClick(View v) {
                 if (seconds==0){
+                    otp.setText("");
                     resendOTP();
                 }
             }
