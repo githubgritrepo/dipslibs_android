@@ -91,14 +91,8 @@ public class DipsLivenessResult extends AppCompatActivity {
             String imgBase64 = Base64.encodeToString(resultImage, Base64.NO_WRAP);
             Bitmap bitmap = BitmapFactory.decodeByteArray(resultImage, 0, resultImage.length);
             mask_view.setImageBitmap(bitmap);
-            //processCaptureIdentifyAuth(imgBase64);
             processH5Advance(imgBase64);
         }
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
     }
 
     @Override
@@ -211,9 +205,6 @@ public class DipsLivenessResult extends AppCompatActivity {
                             String custName = dataCustomer.getString("namaLengkap");
                             String idDipsNew = dataCustomer.getString("idDips");
                             Log.e("CEK", "idDipsNew : " + idDipsNew + " | idDips : " + idDips);
-                        /*if (idDips != null && OutboundService.mSocket != null && idDipsNew != idDips) {
-                            OutboundService.leaveOutbound(idDips);
-                        }*/
                             String accessToken = dataToken.getString("accessToken");
 
                             sessions.saveIdDips(idDipsNew);
@@ -280,18 +271,16 @@ public class DipsLivenessResult extends AppCompatActivity {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-
         Log.e("CEK","processH5Advance");
-
         RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), jsons.toString());
-
         Server.getAPIService().H5Advance(requestBody).enqueue(new Callback<JsonObject>() {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
                 Log.e("CEK","processH5Advance code : "+response.code());
                 if (response.isSuccessful()) {
                     processCaptureIdentifyAuth(imgBase64);
-                } else {
+                }
+                else {
                     String msg = "";
                     if (response.errorBody().toString().isEmpty()) {
                         String dataS = response.errorBody().toString();
@@ -301,7 +290,8 @@ public class DipsLivenessResult extends AppCompatActivity {
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
-                    } else {
+                    }
+                    else {
                         String dataS = null;
                         try {
                             dataS = response.errorBody().string();

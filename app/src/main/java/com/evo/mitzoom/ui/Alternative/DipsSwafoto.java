@@ -111,21 +111,15 @@ public class DipsSwafoto extends AppCompatActivity implements com.wdullaer.mater
         sessions = new SessionManager(mContext);
         String lang = sessions.getLANG();
         setLocale(this,lang);
-        //LocaleHelper.setLocale(this,lang);
-
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.activity_dips_swafoto);
-
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        //getSupportActionBar().hide();
 
         sessions.saveRTGS(null);
         sessions.saveCSID(null);
         sessions.saveIsSwafoto(false);
         idDips = sessions.getKEY_IdDips();
         isCust = sessions.getKEY_iSCust();
-
 
         CardView cardSurf = (CardView) findViewById(R.id.cardSurf);
         preview = (CircularSurfaceView) findViewById(R.id.mySurface);
@@ -134,16 +128,6 @@ public class DipsSwafoto extends AppCompatActivity implements com.wdullaer.mater
         rlprogress = (RelativeLayout) findViewById(R.id.rlprogress);
 
         previewHolder();
-
-        /*displayMetrics = new DisplayMetrics();
-        getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
-        int widthDisp = displayMetrics.widthPixels;
-        int dyWidth = (int) Math.ceil(widthDisp / 2);
-
-        ViewGroup.LayoutParams lp = cardSurf.getLayoutParams();
-        Log.e("CEK","dyWidth : "+dyWidth);*/
-        /*lp.width = dyWidth;
-        cardSurf.setLayoutParams(lp);*/
 
         Intent intent = getIntent();
         useFacing = intent.getIntExtra(KEY_USE_FACING, Camera.CameraInfo.CAMERA_FACING_FRONT);
@@ -194,7 +178,7 @@ public class DipsSwafoto extends AppCompatActivity implements com.wdullaer.mater
         btnEndCall.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                onClickClose();
+                OutApps();
             }
         });
 
@@ -694,49 +678,6 @@ public class DipsSwafoto extends AppCompatActivity implements com.wdullaer.mater
         }
     }
 
-    private void optimalCamera() {
-        if (camera != null) {
-            if (inPreview) {
-                camera.stopPreview();
-            }
-            camera.release();
-
-            if (useFacing != null) {
-                if (useFacing == Camera.CameraInfo.CAMERA_FACING_FRONT) {
-                    useFacing = Camera.CameraInfo.CAMERA_FACING_FRONT;
-                } else {
-                    useFacing = Camera.CameraInfo.CAMERA_FACING_BACK;
-                }
-
-                isConfigure = false;
-                camera = Camera.open(useFacing);
-                startPreview();
-
-                try {
-                    camera.setPreviewDisplay(previewHolder);
-                    //camera.setDisplayOrientation(90);
-                    CameraManager manager = (CameraManager) getSystemService(Context.CAMERA_SERVICE);
-                    if (manager == null) {
-                        Log.i("CEK", "camera manager is null");
-                        return;
-                    }
-                    try {
-                        for (String id: manager.getCameraIdList()) {
-                            CAM_ID = Integer.valueOf(id);
-                            setCameraDisplayOrientation();
-                        }
-                    } catch (CameraAccessException e) {
-                        e.printStackTrace();
-                    }
-
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-
-        }
-    }
-
     private Camera.Size getOptimalPreviewSize(List<Camera.Size> sizes, int w, int h) {
         final double ASPECT_TOLERANCE = 0.1;
         double targetRatio=(double)h / w;
@@ -809,10 +750,6 @@ public class DipsSwafoto extends AppCompatActivity implements com.wdullaer.mater
             return true;
         }
         return false;
-    }
-
-    private void onClickClose() {
-        OutApps();
     }
 
     private void OutApps(){

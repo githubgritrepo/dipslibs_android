@@ -55,7 +55,7 @@ public class ChatMsgAdapter extends RecyclerView.Adapter<ChatMsgAdapter.MsgHolde
         SpannableStringBuilder builder = new SpannableStringBuilder();
         builder.append(SenderName).append(content);
         builder.setSpan(new ForegroundColorSpan(Color.parseColor("#000000")),0,SenderName.length(), Spannable.SPAN_EXCLUSIVE_INCLUSIVE);
-        builder.setSpan(new ForegroundColorSpan(Color.parseColor("#FFFFFF")),SenderName.length(), builder.length(), Spannable.SPAN_EXCLUSIVE_INCLUSIVE); //设置前面的字体颜色
+        builder.setSpan(new ForegroundColorSpan(Color.parseColor("#000000")),SenderName.length(), builder.length(), Spannable.SPAN_EXCLUSIVE_INCLUSIVE); //设置前面的字体颜色
         list.add(builder);
         notifyItemInserted(list.size());
         SavedInstanceChat();
@@ -74,11 +74,11 @@ public class ChatMsgAdapter extends RecyclerView.Adapter<ChatMsgAdapter.MsgHolde
 
         if (isSelf.get(position) == true && isHost.get(position) == false) {
             holder.LLChat.setGravity(Gravity.RIGHT);
-            holder.chatBubble.setBackgroundTintList(ctx.getResources().getColorStateList(R.color.teal_200));
+            holder.chatBubble.setBackgroundTintList(ctx.getResources().getColorStateList(R.color.bg_mychat));
             holder.chatBubble.setBackground(ContextCompat.getDrawable(ctx,R.drawable.chat_drawable));
         } else {
             holder.LLChat.setGravity(Gravity.LEFT);
-            holder.chatBubble.setBackgroundTintList(ctx.getResources().getColorStateList(R.color.bg_cif));
+            holder.chatBubble.setBackgroundTintList(ctx.getResources().getColorStateList(R.color.bg_agenchat));
             holder.chatBubble.setBackground(ContextCompat.getDrawable(ctx,R.drawable.chat_drawable2));
         }
         holder.chatMsg.setText(item);

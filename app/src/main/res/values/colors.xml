@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <color name="bg_mychat">#EEF6FF</color>
+    <color name="bg_agenchat">#E34243</color>
     <color name="btnFalse">#C8CDD1</color>
     <color name="bg_cif">#50A0FF</color>
     <color name="bg_cif_success">#40BC21</color>

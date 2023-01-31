@@ -513,8 +513,7 @@ public class DipsWaitingRoom extends AppCompatActivity implements DatePickerDial
         publishQSTicketThread.start();
     }
 
-    void subscribe()
-    {
+    void subscribe() {
         subscribeThread = new Thread(new Runnable() {
             @Override
             public void run() {
@@ -561,6 +560,7 @@ public class DipsWaitingRoom extends AppCompatActivity implements DatePickerDial
                     try {
                         Thread.sleep(4000); //sleep and then try again
                         subscribe();
+                        getNewMyTicketsV2();
                     } catch (InterruptedException e) {
                     }
                 }
@@ -569,8 +569,40 @@ public class DipsWaitingRoom extends AppCompatActivity implements DatePickerDial
         subscribeThread.start();
     }
 
-    void subscribeReqTicket()
-    {
+    private void getNewMyTicketsV2(){
+        JSONObject jsons = new JSONObject();
+        try {
+            jsons.put("custId",idDips);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), jsons.toString());
+        ApiService API = Server.getAPIService();
+        Call<JsonObject> call = API.getTicketV2(requestBody);
+        call.enqueue(new Callback<JsonObject>() {
+            @Override
+            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                if (response.isSuccessful()) {
+                    String dataS = response.body().toString();
+                    try {
+                        JSONObject dataObj = new JSONObject(dataS);
+                        String ticket = dataObj.getString("ticket");
+                        Log.d("Ticket",""+ticket);
+
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<JsonObject> call, Throwable t) {
+
+            }
+        });
+    }
+
+    void subscribeReqTicket() {
         subscribeReqTicketThread = new Thread(new Runnable() {
             @Override
             public void run() {
@@ -607,6 +639,7 @@ public class DipsWaitingRoom extends AppCompatActivity implements DatePickerDial
 
                             subscribeCall(); //RabbitMQ
                             subscribe(); //RabbitMQ
+                            getNewMyTicketsV2();
                             //subscribeAllTicketInfo(); //RabbitMQ
                         }
                     }, new CancelCallback() {
@@ -630,8 +663,7 @@ public class DipsWaitingRoom extends AppCompatActivity implements DatePickerDial
         subscribeReqTicketThread.start();
     }
 
-    void subscribeCall()
-    {
+    void subscribeCall() {
         subscribeThreadCall = new Thread(new Runnable() {
             @Override
             public void run() {
@@ -734,8 +766,7 @@ public class DipsWaitingRoom extends AppCompatActivity implements DatePickerDial
         subscribeThreadCall.start();
     }
 
-    void subscribeAllTicketInfo()
-    {
+    void subscribeAllTicketInfo() {
         subscribeAllTicketInfoCall = new Thread(new Runnable() {
             @Override
             public void run() {
