@@ -175,6 +175,7 @@ public class frag_cif_new extends Fragment {
     private int loopStatus = 0;
     private int getRequestCode = 0;
     private File mediaFilePhoto = null;
+    private File mediaFilePhotoCropSwafoto = null;
     private JSONArray idElement;
     JSONObject objEl = new JSONObject();
     private TextView tvSavedImg;
@@ -3636,6 +3637,7 @@ public class frag_cif_new extends Fragment {
 
                 try {
                     mediaFilePhoto = createTemporaryFile(resultCamera);
+                    mediaFilePhotoCropSwafoto = createTemporaryFile(resultCropCamera);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -3650,8 +3652,76 @@ public class frag_cif_new extends Fragment {
                 chooseImage.setVisibility(View.GONE);
                 viewImage.setImageBitmap(bitmap);
                 processSendImage(bitmap);
+                ((Activity)mContext).runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (isSessionZoom) {
+                            BaseMeetingActivity.showProgress(true);
+                        } else {
+                            DipsSwafoto.showProgress(true);
+                        }
+                    }
+                });
+                processSwafotoCheck();
             }
         }
+    }
+
+    private void processSwafotoCheck() {
+        RequestBody requestFile = RequestBody.create(MediaType.parse("image/jpeg"), mediaFilePhoto);
+        RequestBody requestFileCrop = RequestBody.create(MediaType.parse("image/jpeg"), mediaFilePhotoCropSwafoto);
+
+        ApiService API = Server.getAPIService2();
+        Call<JsonObject> call = null;
+        MultipartBody multipartBody = null;
+        String contentType = "";
+
+        multipartBody = new MultipartBody.Builder()
+                .addPart(MultipartBody.Part.createFormData("firstImage", mediaFilePhoto.getName(), requestFile))
+                .addPart(MultipartBody.Part.createFormData("secondImage", mediaFilePhotoCropSwafoto.getName(), requestFileCrop))
+                .build();
+        contentType = "multipart/form-data; charset=utf-8; boundary=" + multipartBody.boundary();
+
+        call = API.swafotoCheck(contentType, multipartBody);
+
+        Log.e("CEK", "processSwafotoCheck call url : " + call.request().url());
+
+        call.enqueue(new Callback<JsonObject>() {
+            @Override
+            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                Log.e("CEK","processSwafotoCheck response code : "+response.code());
+                ((Activity)mContext).runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (isSessionZoom) {
+                            BaseMeetingActivity.showProgress(false);
+                        } else {
+                            DipsSwafoto.showProgress(false);
+                        }
+                    }
+                });
+                if (response.isSuccessful()) {
+                    String dataS = response.body().toString();
+                    Log.e("CEK","processFormDataAttachment : "+dataS);
+                } else {
+                    Toast.makeText(mContext, R.string.capture_back,Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<JsonObject> call, Throwable t) {
+                ((Activity)mContext).runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (isSessionZoom) {
+                            BaseMeetingActivity.showProgress(false);
+                        } else {
+                            DipsSwafoto.showProgress(false);
+                        }
+                    }
+                });
+            }
+        });
     }
 
     private File createTemporaryFile(byte[] byteImage) throws Exception {

@@ -223,6 +223,10 @@ public interface ApiService {
                                          @Header("X-ADVAI-KEY") String authHeader
     );
 
+    @POST("form-data-swafoto/check")
+    Call<JsonObject> swafotoCheck(@Header("Content-Type") String contentType,
+                                    @Body RequestBody body);
+
     @POST("form-data/data-diri")
     Call<JsonObject> formAttachment(@Header("Content-Type") String contentType,
                                     @Body RequestBody body);

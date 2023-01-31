@@ -309,4 +309,5 @@
     <string name="invalidate_email">Invalid email address</string>
     <string name="calling">Calling...</string>
     <string name="incoming_call_from">Incoming call from</string>
+    <string name="capture_back">Sorry, please take the Photo/Image back</string>
 </resources>

@@ -560,7 +560,7 @@ public class DipsWaitingRoom extends AppCompatActivity implements DatePickerDial
                     try {
                         Thread.sleep(4000); //sleep and then try again
                         subscribe();
-                        getNewMyTicketsV2();
+                        //getNewMyTicketsV2();
                     } catch (InterruptedException e) {
                     }
                 }
@@ -639,7 +639,7 @@ public class DipsWaitingRoom extends AppCompatActivity implements DatePickerDial
 
                             subscribeCall(); //RabbitMQ
                             subscribe(); //RabbitMQ
-                            getNewMyTicketsV2();
+                            //getNewMyTicketsV2();
                             //subscribeAllTicketInfo(); //RabbitMQ
                         }
                     }, new CancelCallback() {
