@@ -299,7 +299,7 @@ public class DipsCameraSource extends AppCompatActivity implements CameraSource.
                     Bitmap bitmap = BitmapFactory.decodeByteArray(bytePhoto, 0, bytePhoto.length);
 
                     byte[] shape_bytePhoto = Base64.decode(imgBase64Shape, Base64.NO_WRAP);
-                    createTemporaryFile(shape_bytePhoto);
+                    File mediaFileCrop = createTemporaryFile(shape_bytePhoto);
 
                     if (mediaFile.exists()) {
                         try {
@@ -312,8 +312,20 @@ public class DipsCameraSource extends AppCompatActivity implements CameraSource.
                         }
                     }
 
+                    if (mediaFileCrop.exists()) {
+                        try {
+                            mediaFileCrop.getCanonicalFile().delete();
+                            if (mediaFileCrop.exists()) {
+                                getApplicationContext().deleteFile(mediaFileCrop.getName());
+                            }
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+
                     Intent returnIntent = getIntent();
                     returnIntent.putExtra("result_camera", bytePhoto);
+                    returnIntent.putExtra("result_cropImage", shape_bytePhoto);
                     setResult(Activity.RESULT_OK, returnIntent);
                     finish();
                 }

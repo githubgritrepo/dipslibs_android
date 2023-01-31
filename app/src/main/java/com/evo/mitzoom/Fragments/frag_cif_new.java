@@ -3628,6 +3628,7 @@ public class frag_cif_new extends Fragment {
             } else if (requestCode == REQUESTCODE_SWAFOTO){
                 sessions.saveFlagUpDoc(true);
                 byte[] resultCamera = data.getByteArrayExtra("result_camera");
+                byte[] resultCropCamera = data.getByteArrayExtra("result_cropImage");
                 Bitmap bitmap = BitmapFactory.decodeByteArray(resultCamera, 0, resultCamera.length);
 
                 try {
