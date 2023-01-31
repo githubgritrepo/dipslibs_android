@@ -312,5 +312,5 @@
     <string name="invalidate_email">Alamat email tidak sah</string>
     <string name="calling">Memanggil...</string>
     <string name="incoming_call_from">Panggilan Masuk dari</string>
-    <string name="capture_back">Maaf, tolong mengambil Foto/Gambar kembali</string>
+    <string name="capture_back">Foto Anda gagal diproses, silahkan ulangi ambil gambar</string>
 </resources>

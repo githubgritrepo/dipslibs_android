@@ -2646,7 +2646,21 @@ public class frag_cif_new extends Fragment {
                             }
                         }
                     }
-                } else {
+
+                    if (mediaFilePhotoCropSwafoto != null) {
+                        if (mediaFilePhotoCropSwafoto.exists()) {
+                            try {
+                                mediaFilePhotoCropSwafoto.getCanonicalFile().delete();
+                                if (mediaFilePhotoCropSwafoto.exists()) {
+                                    getActivity().getApplicationContext().deleteFile(mediaFilePhotoCropSwafoto.getName());
+                                }
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }
+                }
+                else {
                     if (fieldName.equals("ktp")) {
                         IMG_BYTE = new byte[0];
                     }
@@ -3632,17 +3646,24 @@ public class frag_cif_new extends Fragment {
             }
             else if (requestCode == REQUESTCODE_SWAFOTO){
                 sessions.saveFlagUpDoc(true);
-                byte[] resultCamera = data.getByteArrayExtra("result_camera");
+                /*byte[] resultCamera = data.getByteArrayExtra("result_camera");
                 byte[] resultCropCamera = data.getByteArrayExtra("result_cropImage");
-                Bitmap bitmap = BitmapFactory.decodeByteArray(resultCamera, 0, resultCamera.length);
+                Bitmap bitmap = BitmapFactory.decodeByteArray(resultCamera, 0, resultCamera.length);*/
+                String filePaths = data.getStringExtra("result_camera");
+                String filePathsCrop = data.getStringExtra("result_cropImage");
+                Bitmap bitmap = BitmapFactory.decodeFile(filePaths);
 
-                try {
+                mediaFilePhoto = new File(filePaths);
+                mediaFilePhotoCropSwafoto = new File(filePathsCrop);
+
+                /*try {
                     mediaFilePhoto = createTemporaryFile(resultCamera);
                     mediaFilePhotoCropSwafoto = createTemporaryFile(resultCropCamera);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-                picturePath = mediaFilePhoto.getAbsolutePath();
+                picturePath = mediaFilePhoto.getAbsolutePath();*/
+                picturePath = filePaths;
 
                 LL.setBackgroundResource(0);
                 btnNext.setVisibility(View.VISIBLE);
@@ -3702,9 +3723,13 @@ public class frag_cif_new extends Fragment {
                     }
                 });
                 if (response.isSuccessful()) {
+                    btnNext.setClickable(true);
+                    btnNext.setBackgroundTintList(mContext.getResources().getColorStateList(R.color.button_end_call));
                     String dataS = response.body().toString();
                     Log.e("CEK","processFormDataAttachment : "+dataS);
                 } else {
+                    btnNext.setClickable(false);
+                    btnNext.setBackgroundTintList(mContext.getResources().getColorStateList(R.color.btnFalse));
                     Toast.makeText(mContext, R.string.capture_back,Toast.LENGTH_SHORT).show();
                 }
             }

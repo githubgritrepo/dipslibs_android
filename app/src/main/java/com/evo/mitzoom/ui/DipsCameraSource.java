@@ -299,7 +299,14 @@ public class DipsCameraSource extends AppCompatActivity implements CameraSource.
                     Bitmap bitmap = BitmapFactory.decodeByteArray(bytePhoto, 0, bytePhoto.length);
 
                     byte[] shape_bytePhoto = Base64.decode(imgBase64Shape, Base64.NO_WRAP);
-                    File mediaFileCrop = createTemporaryFile(shape_bytePhoto);
+
+                    File fileImage = createTemporaryFile(bytePhoto);
+                    File fileImageCrop = createTemporaryFile(shape_bytePhoto);
+
+                    String filePath = fileImage.getAbsolutePath();
+                    String filePathCrop = fileImageCrop.getAbsolutePath();
+                    Log.e("CEK","filePath : "+filePath);
+                    Log.e("CEK","filePathCrop : "+filePathCrop);
 
                     if (mediaFile.exists()) {
                         try {
@@ -312,20 +319,9 @@ public class DipsCameraSource extends AppCompatActivity implements CameraSource.
                         }
                     }
 
-                    if (mediaFileCrop.exists()) {
-                        try {
-                            mediaFileCrop.getCanonicalFile().delete();
-                            if (mediaFileCrop.exists()) {
-                                getApplicationContext().deleteFile(mediaFileCrop.getName());
-                            }
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                    Log.d("Size Byte Arr","Hasil Camera : "+bytePhoto.length+" | Hasil Crop : "+shape_bytePhoto.length);
                     Intent returnIntent = getIntent();
-                    returnIntent.putExtra("result_camera", bytePhoto);
-                    returnIntent.putExtra("result_cropImage", shape_bytePhoto);
+                    returnIntent.putExtra("result_camera", filePath);
+                    returnIntent.putExtra("result_cropImage", filePathCrop);
                     setResult(Activity.RESULT_OK, returnIntent);
                     finish();
                 }
