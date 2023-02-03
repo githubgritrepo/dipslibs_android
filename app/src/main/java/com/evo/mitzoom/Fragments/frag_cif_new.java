@@ -897,7 +897,8 @@ public class frag_cif_new extends Fragment {
                                         }
                                     });
                                     objEl.put(nameDataEl, "");
-                                } else if (llFormBuild.getChildAt(i) instanceof RadioGroup) {
+                                }
+                                else if (llFormBuild.getChildAt(i) instanceof RadioGroup) {
                                     objEl.put(nameDataEl, "");
 
                                     RadioGroup rg = (RadioGroup) llFormBuild.getChildAt(i);
@@ -923,7 +924,8 @@ public class frag_cif_new extends Fragment {
                                     });
 
                                     break;
-                                } else if (llFormBuild.getChildAt(i) instanceof CheckBox) {
+                                }
+                                else if (llFormBuild.getChildAt(i) instanceof CheckBox) {
                                     objEl.put(nameDataEl, false);
 
                                     CheckBox chk = (CheckBox) llFormBuild.getChildAt(i);
@@ -1779,7 +1781,8 @@ public class frag_cif_new extends Fragment {
                                     EditText ed = (EditText) llFormBuild.getChildAt(i);
                                     String valEl = objEl.getString(nameDataEl);
                                     ed.setText(valEl);
-                                } else if (llFormBuild.getChildAt(i) instanceof RadioGroup) {
+                                }
+                                else if (llFormBuild.getChildAt(i) instanceof RadioGroup) {
                                     RadioGroup rg = (RadioGroup) llFormBuild.getChildAt(i);
 
                                     for(int ch = 0; ch < rg.getChildCount(); ch++) {
@@ -1817,7 +1820,8 @@ public class frag_cif_new extends Fragment {
                                         }
                                     }
                                     break;
-                                } else if (llFormBuild.getChildAt(i) instanceof CheckBox) {
+                                }
+                                else if (llFormBuild.getChildAt(i) instanceof CheckBox) {
                                     CheckBox chk = (CheckBox) llFormBuild.getChildAt(i);
                                     String labelCheck = chk.getText().toString();
                                     if (objEl.has(nameDataEl)) {
@@ -1828,7 +1832,8 @@ public class frag_cif_new extends Fragment {
                                         chk.setChecked(valEl);
                                     }
                                     break;
-                                } else if (llFormBuild.getChildAt(i) instanceof Spinner) {
+                                }
+                                else if (llFormBuild.getChildAt(i) instanceof Spinner) {
                                     Spinner spin = (Spinner) llFormBuild.getChildAt(i);
                                     String valEl = objEl.getString(nameDataEl);
                                     for (int ch = 0; ch < spin.getCount(); ch++) {
@@ -1838,7 +1843,8 @@ public class frag_cif_new extends Fragment {
                                         }
                                     }
                                     break;
-                                } else if (llFormBuild.getChildAt(i) instanceof AutoCompleteTextView) {
+                                }
+                                else if (llFormBuild.getChildAt(i) instanceof AutoCompleteTextView) {
                                     AutoCompleteTextView autoText = (AutoCompleteTextView) llFormBuild.getChildAt(i);
                                     String valEl = objEl.getString(nameDataEl);
                                     autoText.setText(valEl);
@@ -1874,6 +1880,7 @@ public class frag_cif_new extends Fragment {
             String agamaOCR = dataObjOCR.getString("agama");
             String kawinOCR = dataObjOCR.getString("statusperkawinan");
             String wargaOCR = dataObjOCR.getString("kewarganegaraan");
+            String namaIbuKandung = dataObjOCR.getString("namaibukandung");
 
             String tgllahirOCR = "";
             if (ttlOCR.contains(",")) {
@@ -1902,17 +1909,26 @@ public class frag_cif_new extends Fragment {
                     }
                     if (key.contains("nama") && key.contains("identitas")) {
                         objEl.put(key, namaOCR);
-                    } else if (key.contains("provinsi")) {
+                    }
+                    else if (key.contains("ibu")){
+                        objEl.put(key, namaIbuKandung);
+                    }
+                    else if (key.contains("provinsi")) {
                         objEl.put(key, provinsiOCR);
-                    } else if (key.contains("kabupaten") || key.contains("kota")) {
+                    }
+                    else if (key.contains("kabupaten") || key.contains("kota")) {
                         objEl.put(key, kabkotOCR);
-                    } else if (key.contains("noidentitas") || key.contains("nomoridentitas")) {
+                    }
+                    else if (key.contains("noidentitas") || key.contains("nomoridentitas")) {
                         objEl.put(key, nikOCR);
-                    } else if (key.contains("tempat") && key.contains("lahir")) {
+                    }
+                    else if (key.contains("tempat") && key.contains("lahir")) {
                         objEl.put(key, tempatlahirOCR);
-                    } else if (key.contains("tanggal") && key.contains("lahir")) {
+                    }
+                    else if (key.contains("tanggal") && key.contains("lahir")) {
                         objEl.put(key, tgllahirOCR);
-                    } else if (key.contains("kelamin")) {
+                    }
+                    else if (key.contains("kelamin")) {
                         if (sessions.getLANG().equals("en")) {
                             if (jeniskelaminOCR.toLowerCase().contains("laki")) {
                                 objEl.put(key, "Male");
@@ -1922,7 +1938,8 @@ public class frag_cif_new extends Fragment {
                         } else {
                             objEl.put(key, jeniskelaminOCR);
                         }
-                    } else if (key.contains("alamat") && key.contains("identitas")) {
+                    }
+                    else if (key.contains("alamat") && key.contains("identitas")) {
                         objEl.put(key, alamatOCR);
                     } else if (key.equals("rt" + valKurung)) {
                         objEl.put(key, rtOCR);
@@ -2692,16 +2709,7 @@ public class frag_cif_new extends Fragment {
                 sweetAlertDialog.cancel();
                 sweetAlertDialog.dismissWithAnimation();
                 if (kasus.equals("Dukcapil")){
-                    LL.setBackground(mContext.getResources().getDrawable(R.drawable.bg));
-                    btnNext.setVisibility(View.GONE);
-                    btnNext.setClickable(false);
-                    viewImage.setVisibility(View.GONE);
-                    chooseImage.setVisibility(View.VISIBLE);
-                    if (formCode == 22) {
-                        llOR.setVisibility(View.GONE);
-                        btnGallery.setVisibility(View.GONE);
-                    }
-                    imgDelete.setVisibility(View.GONE);
+                   PopUpOCR();
                 }
                 else{
                     int ret = ZoomVideoSDK.getInstance().leaveSession(false);

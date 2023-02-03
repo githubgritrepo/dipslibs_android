@@ -21,7 +21,7 @@ public class Server {
 
     public static final String BASE_URL_API = "https://diops.victoriabank.co.id/gwnode/api/"; //ip bank victoria
     public static final String BASE_URL_API2 = "https://diops.victoriabank.co.id/gwnode/"; //ip bank victoria
-    public static final String BASE_URL_RABBITMQ = "amqp://dips361:dips2022@103.140.90.42:6004"; //rabbit mq
+    public static final String BASE_URL_RABBITMQ = "amqp://dips361:dips2022@202.157.186.65:5672"; //rabbit mq
     public static final String RABBITMQ_USERNAME = "dips361";
     public static final String RABBITMQ_PASSWORD = "dips2022";
     public static final String RABBITMQ_IP = "103.140.90.42";
