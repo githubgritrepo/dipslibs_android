@@ -301,6 +301,30 @@
             android:layout_marginBottom="10dp"
             tools:ignore="SpeakableTextPresentCheck" />
 
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/nama_ibu_kandung"
+            android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+            android:textSize="15dp" />
+        <EditText
+            android:padding="10dp"
+            android:id="@+id/et_nama_ibu_kandung"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_textinput"
+            android:inputType="text"
+            android:textSize="12dp"
+            tools:ignore="SpeakableTextPresentCheck" />
+        <TextView
+            android:textColor="@color/red_btn_bg_color"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/required"
+            android:layout_marginBottom="10dp"
+            android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+            android:textSize="15dp" />
+
         <LinearLayout
             android:layout_margin="10dp"
             android:layout_width="match_parent"

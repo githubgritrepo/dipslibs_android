@@ -253,7 +253,7 @@ public class DipsCameraSource extends AppCompatActivity implements CameraSource.
                     }
                 });
             }
-        }, 200);
+        }, 300);
     }
 
     @Override

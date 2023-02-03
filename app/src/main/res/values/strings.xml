@@ -273,7 +273,7 @@
     <string name="inter_bank_transaction">Transaksi Inter Bank</string>
     <string name="alert_ktp">Pastikan gambar atau foto KTP sudah jelas (tidak buram, rusak, atau tertutup jari/pantulan cahaya)</string>
     <string name="alert_swafoto">Pastikan wajah dan KTP Anda terlihat jelas dan tidak buram.</string>
-    <string name="alert_npwp">Pastikan gambar atau foto NPWP sudah jelas dan tidak buram.</string>
+    <string name="alert_npwp">Pastikan gambar atau foto NPWP sudah jelas dan tidak buram. Lewati jika tidak memiliki NPWP</string>
     <string name="alert_ttd">Pastikan gambar atau foto Tanda Tangan sudah jelas dan tidak buram.</string>
     <string name="state_complaint">Saya menyatakan bahwa seluruh data yang saya berikan di formulir keluhan  ini benar.</string>
     <string name="accept_state">Mohon untuk menyetujui pernyataan</string>
@@ -312,5 +312,9 @@
     <string name="invalidate_email">Alamat email tidak sah</string>
     <string name="calling">Memanggil...</string>
     <string name="incoming_call_from">Panggilan Masuk dari</string>
+    <string name="required">*Wajib diisi</string>
     <string name="capture_back">Foto Anda gagal diproses, silahkan ulangi ambil gambar</string>
+    <string name="validate_dukcapil">Data KTP tidak Valid. Pastikan KTP yang Anda gunakan Benar dan Terdaftar</string>
+    <string name="btn_validate_dukcapil">Masukkan Ulang KTP</string>
+    <string name="validate_dtott">Maaf Anda Tidak Dapat Menggunakan Layanan Digital Operations Bank Victoria. Untuk info lebih lanjut silakan menghubungi Call Center Bank Victoria.</string>
 </resources>

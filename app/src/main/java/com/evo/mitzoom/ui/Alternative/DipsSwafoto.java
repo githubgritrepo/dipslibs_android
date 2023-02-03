@@ -397,14 +397,11 @@ public class DipsSwafoto extends AppCompatActivity implements com.wdullaer.mater
                 }
                 Calendar[] weekdayDays = weekdays.toArray(new Calendar[weekdays.size()]);
                 dpd.setSelectableDays(weekdayDays);
-
                 //dpd.setMaxDate(day);
-
                 dpd.setOnCancelListener(dialog -> {
                     Log.e("DatePickerDialog", "Dialog was cancelled");
                     dpd = null;
                 });
-
                 dpd.show(getSupportFragmentManager(), "Datepickerdialog");
 
             }

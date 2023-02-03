@@ -266,4 +266,11 @@ public interface ApiService {
     @POST("rating-app")
     Call<JsonObject> RateApp(@Body RequestBody body);
 
+    @Headers("Content-Type: "+ MyConstants.CONTENT_TYPE)
+    @POST("customer-portfolio/validasi/dukcapil-v2")
+    Call<JsonObject> validasiDukcapil(@Body RequestBody body);
+
+    @Headers("Content-Type: "+ MyConstants.CONTENT_TYPE)
+    @POST("customer-portfolio/validasi/dttot-v2")
+    Call<JsonObject> validasiDttot(@Body RequestBody body);
 }

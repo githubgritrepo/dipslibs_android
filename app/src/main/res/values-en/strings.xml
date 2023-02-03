@@ -271,7 +271,7 @@
     <string name="inter_bank_transaction">Inter Bank Transactions</string>
     <string name="alert_ktp">Make sure the picture or photo of the KTP is clear (not blurry, damaged, or covered with fingers/light reflections)</string>
     <string name="alert_swafoto">Make sure your face and ID card are clear and not blurry.</string>
-    <string name="alert_npwp">Make sure the NPWP image or photo is clear and not blurry.</string>
+    <string name="alert_npwp">Make sure the NPWP image or photo is clear and not blurry. Pass this step if didn\'t have NPSP</string>
     <string name="alert_ttd">Make sure the signature image or photo is clear and not blurry.</string>
     <string name="state_complaint">I certify that all the data I have provided in this complaint form is correct.</string>
     <string name="accept_state">Please agree with the statement</string>
@@ -312,5 +312,8 @@
     <string name="invalidate_email">Invalid email address</string>
     <string name="calling">Calling...</string>
     <string name="incoming_call_from">Incoming call from</string>
+    <string name="required">*Required</string>
     <string name="capture_back">Failed to process your photo, please retake photo</string>
+    <string name="validate_dukcapil">Invalid KTP Data. Make sure the KTP you use is correct and registered</string>
+    <string name="btn_validate_dukcapil">Re-Take KTP</string>
 </resources>
