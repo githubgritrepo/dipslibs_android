@@ -1657,14 +1657,16 @@ public class frag_cif_new extends Fragment {
                                         idProv = valSpinProv.getInt("province");
                                     }
                                     String idSpin = String.valueOf(idProv);
-                                    String urlNew = urlPath.replace(":id_provinsi",idSpin);
+                                    if (idProv != 0) {
+                                        String urlNew = urlPath.replace(":id_provinsi", idSpin);
 
-                                    Log.e("CEK", "urlNew : "+urlNew);
+                                        Log.e("CEK", "urlNew : " + urlNew);
 
-                                    RelativeLayout rl = (RelativeLayout) llFormBuild.getChildAt(i);
-                                    if (rl.getChildAt(0) instanceof Spinner) {
-                                        Spinner spin = (Spinner) rl.getChildAt(0);
-                                        processGetDynamicURL(spin, urlNew, getnameDataEl);
+                                        RelativeLayout rl = (RelativeLayout) llFormBuild.getChildAt(i);
+                                        if (rl.getChildAt(0) instanceof Spinner) {
+                                            Spinner spin = (Spinner) rl.getChildAt(0);
+                                            processGetDynamicURL(spin, urlNew, getnameDataEl);
+                                        }
                                     }
                                 }
                             } else if ((nameDataEl.contains("kabupaten") || nameDataEl.contains("district") || nameDataEl.contains("kota") || nameDataEl.contains("city"))
@@ -1699,11 +1701,12 @@ public class frag_cif_new extends Fragment {
                                     String urlNew = urlPath.replace(":id_provinsi",idSpin).replace(":id_kabupaten",idSpin2);
 
                                     Log.e("CEK", "urlNew : "+urlNew);
-
-                                    RelativeLayout rl = (RelativeLayout) llFormBuild.getChildAt(i);
-                                    if (rl.getChildAt(0) instanceof Spinner) {
-                                        Spinner spin = (Spinner) rl.getChildAt(0);
-                                        processGetDynamicURL(spin, urlNew, getnameDataEl);
+                                    if (idKabKot != 0) {
+                                        RelativeLayout rl = (RelativeLayout) llFormBuild.getChildAt(i);
+                                        if (rl.getChildAt(0) instanceof Spinner) {
+                                            Spinner spin = (Spinner) rl.getChildAt(0);
+                                            processGetDynamicURL(spin, urlNew, getnameDataEl);
+                                        }
                                     }
                                 }
                             } else if ((nameDataEl.contains("kecamatan") || nameDataEl.contains("subdistrict"))
@@ -1733,7 +1736,7 @@ public class frag_cif_new extends Fragment {
                                     } else if (valSpinProv.has("citydistrict")) {
                                         idKabKot = valSpinProv.getInt("citydistrict");
                                     }
-                                    int idKec = valSpinProv.getInt("kecamatan");
+                                    int idKec = 0;
                                     if (valSpinProv.has("kecamatan")) {
                                         idKec = valSpinProv.getInt("kecamatan");
                                     } else if (valSpinProv.has("subdistrict")) {
@@ -1746,10 +1749,12 @@ public class frag_cif_new extends Fragment {
 
                                     Log.e("CEK", "urlNew : "+urlNew);
 
-                                    RelativeLayout rl = (RelativeLayout) llFormBuild.getChildAt(i);
-                                    if (rl.getChildAt(0) instanceof Spinner) {
-                                        Spinner spin = (Spinner) rl.getChildAt(0);
-                                        processGetDynamicURL(spin, urlNew, getnameDataEl);
+                                    if (idKec != 0) {
+                                        RelativeLayout rl = (RelativeLayout) llFormBuild.getChildAt(i);
+                                        if (rl.getChildAt(0) instanceof Spinner) {
+                                            Spinner spin = (Spinner) rl.getChildAt(0);
+                                            processGetDynamicURL(spin, urlNew, getnameDataEl);
+                                        }
                                     }
                                 }
                             } else {
