@@ -867,8 +867,12 @@ public class frag_service_item extends Fragment {
                         ArrayList<FormSpin> dataDropDown = new ArrayList<>();
                         if (nameOpr.equals("GetList")) {
                             for (int i = 0; i < dataArr.length(); i++) {
-                                int idData = dataArr.getJSONObject(i).getInt("id");
-                                String idJenis = dataArr.getJSONObject(i).getString("idJenis");
+                                int idData = 0;
+                                String idJenis = "0";
+                                if (dataArr.getJSONObject(i).has("id")) {
+                                    idData = dataArr.getJSONObject(i).getInt("id");
+                                    idJenis = dataArr.getJSONObject(i).getString("idJenis");
+                                }
                                 JSONObject jenisObj = dataArr.getJSONObject(i).getJSONObject("jenis");
                                 String labelIdn = jenisObj.getString("labelIdn");
                                 String labelEng = jenisObj.getString("labelEng");
@@ -877,7 +881,10 @@ public class frag_service_item extends Fragment {
                             flagStuckSpin = true;
                         } else {
                             for (int i = 0; i < dataArr.length(); i++) {
-                                int idData = dataArr.getJSONObject(i).getInt("id");
+                                int idData = 0;
+                                if (dataArr.getJSONObject(i).has("id")) {
+                                    idData = dataArr.getJSONObject(i).getInt("id");
+                                }
                                 String labelIdn = dataArr.getJSONObject(i).getString("labelIdn");
                                 String labelEng = dataArr.getJSONObject(i).getString("labelEng");
                                 dataDropDown.add(new FormSpin(idData, labelIdn, labelIdn, labelEng));
