@@ -1593,12 +1593,15 @@ public class frag_cif_new extends Fragment {
                         for (int i = 0; i < dataArr.length(); i++) {
                             int idData = 0;
                             String idSData = "";
-                            if (dataArr.getJSONObject(i).has("ids")) {
-                                idSData = dataArr.getJSONObject(i).getString("ids").trim();
-                                idData = Integer.parseInt(idSData);
-                            } else {
-                                idData = dataArr.getJSONObject(i).getInt("id");
+                            if (i > 0){
+                                if (dataArr.getJSONObject(i).has("ids")) {
+                                    idSData = dataArr.getJSONObject(i).getString("ids").trim();
+                                    idData = Integer.parseInt(idSData);
+                                } else {
+                                    idData = dataArr.getJSONObject(i).getInt("id");
+                                }
                             }
+
                             String labelIdn = dataArr.getJSONObject(i).getString("labelIdn");
                             String labelEng = dataArr.getJSONObject(i).getString("labelEng");
                             dataDropDown.add(new FormSpin(idData,labelIdn,labelIdn,labelEng));
@@ -2043,6 +2046,7 @@ public class frag_cif_new extends Fragment {
         et_status_kawin.setText(status_perkawinan);
         et_warga.setText(kewarganegaraan);
         et_work.setText(pekerjaan);
+        et_nama_ibuKandung.setText(namaIbuKandung);
 
         Calendar currentTimeOCR = Calendar.getInstance();
 
