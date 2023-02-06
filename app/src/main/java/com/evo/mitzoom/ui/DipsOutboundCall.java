@@ -65,6 +65,7 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
@@ -568,11 +569,19 @@ public class DipsOutboundCall extends AppCompatActivity implements DatePickerDia
     }
 
     private void setupConnectionFactory() {
-        connectionFactory.setUsername(Server.RABBITMQ_USERNAME);
-        connectionFactory.setPassword(Server.RABBITMQ_PASSWORD);
-        connectionFactory.setHost(Server.RABBITMQ_IP);
-        connectionFactory.setPort(Server.RABBITMQ_PORT);
-        connectionFactory.setAutomaticRecoveryEnabled(false);
+//        connectionFactory.setUsername(Server.RABBITMQ_USERNAME);
+//        connectionFactory.setPassword(Server.RABBITMQ_PASSWORD);
+//        connectionFactory.setHost(Server.RABBITMQ_IP);
+//        connectionFactory.setPort(Server.RABBITMQ_PORT);
+//        connectionFactory.setAutomaticRecoveryEnabled(false);
+
+        String uriRabbit = Server.BASE_URL_RABBITMQ;
+        try {
+            connectionFactory.setAutomaticRecoveryEnabled(true);
+            connectionFactory.setUri(uriRabbit);
+        } catch (URISyntaxException | NoSuchAlgorithmException | KeyManagementException e) {
+            e.printStackTrace();
+        }
 
     }
 

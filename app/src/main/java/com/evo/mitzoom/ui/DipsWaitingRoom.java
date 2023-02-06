@@ -76,6 +76,8 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -365,19 +367,19 @@ public class DipsWaitingRoom extends AppCompatActivity implements DatePickerDial
     }
 
     private void setupConnectionFactory() {
-        connectionFactory.setUsername(Server.RABBITMQ_USERNAME);
-        connectionFactory.setPassword(Server.RABBITMQ_PASSWORD);
-        connectionFactory.setHost(Server.RABBITMQ_IP);
-        connectionFactory.setPort(Server.RABBITMQ_PORT);
-        connectionFactory.setAutomaticRecoveryEnabled(false);
+//        connectionFactory.setUsername(Server.RABBITMQ_USERNAME);
+//        connectionFactory.setPassword(Server.RABBITMQ_PASSWORD);
+//        connectionFactory.setHost(Server.RABBITMQ_IP);
+//        connectionFactory.setPort(Server.RABBITMQ_PORT);
+//        connectionFactory.setAutomaticRecoveryEnabled(false);
 
-        /*String uriRabbit = Server.BASE_URL_RABBITMQ;
+        String uriRabbit = Server.BASE_URL_RABBITMQ;
         try {
             connectionFactory.setAutomaticRecoveryEnabled(true);
             connectionFactory.setUri(uriRabbit);
         } catch (URISyntaxException | NoSuchAlgorithmException | KeyManagementException e) {
             e.printStackTrace();
-        }*/
+        }
     }
 
     private JSONObject dataGetTicket() {

@@ -182,7 +182,7 @@ public class frag_cif_new extends Fragment {
     JSONObject objEl = new JSONObject();
     private TextView tvSavedImg;
     private TextView tvSavedFile;
-    private String npwp = "";
+    private String npwp = "-";
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -1593,13 +1593,13 @@ public class frag_cif_new extends Fragment {
                         for (int i = 0; i < dataArr.length(); i++) {
                             int idData = 0;
                             String idSData = "";
-                            if (i > 0){
-                                if (dataArr.getJSONObject(i).has("ids")) {
-                                    idSData = dataArr.getJSONObject(i).getString("ids").trim();
-                                    idData = Integer.parseInt(idSData);
-                                } else {
-                                    idData = dataArr.getJSONObject(i).getInt("id");
-                                }
+
+                            if (dataArr.getJSONObject(i).has("ids")) {
+                                idSData = dataArr.getJSONObject(i).getString("ids").trim();
+                                idData = Integer.parseInt(idSData);
+                            } else if (dataArr.getJSONObject(i).has("id")) {
+                                idData = dataArr.getJSONObject(i).getInt("id");
+
                             }
 
                             String labelIdn = dataArr.getJSONObject(i).getString("labelIdn");
@@ -1660,14 +1660,16 @@ public class frag_cif_new extends Fragment {
                                         idProv = valSpinProv.getInt("province");
                                     }
                                     String idSpin = String.valueOf(idProv);
-                                    String urlNew = urlPath.replace(":id_provinsi",idSpin);
+                                    if (idProv != 0) {
+                                        String urlNew = urlPath.replace(":id_provinsi", idSpin);
 
-                                    Log.e("CEK", "urlNew : "+urlNew);
+                                        Log.e("CEK", "urlNew : " + urlNew);
 
-                                    RelativeLayout rl = (RelativeLayout) llFormBuild.getChildAt(i);
-                                    if (rl.getChildAt(0) instanceof Spinner) {
-                                        Spinner spin = (Spinner) rl.getChildAt(0);
-                                        processGetDynamicURL(spin, urlNew, getnameDataEl);
+                                        RelativeLayout rl = (RelativeLayout) llFormBuild.getChildAt(i);
+                                        if (rl.getChildAt(0) instanceof Spinner) {
+                                            Spinner spin = (Spinner) rl.getChildAt(0);
+                                            processGetDynamicURL(spin, urlNew, getnameDataEl);
+                                        }
                                     }
                                 }
                             } else if ((nameDataEl.contains("kabupaten") || nameDataEl.contains("district") || nameDataEl.contains("kota") || nameDataEl.contains("city"))
@@ -1702,11 +1704,12 @@ public class frag_cif_new extends Fragment {
                                     String urlNew = urlPath.replace(":id_provinsi",idSpin).replace(":id_kabupaten",idSpin2);
 
                                     Log.e("CEK", "urlNew : "+urlNew);
-
-                                    RelativeLayout rl = (RelativeLayout) llFormBuild.getChildAt(i);
-                                    if (rl.getChildAt(0) instanceof Spinner) {
-                                        Spinner spin = (Spinner) rl.getChildAt(0);
-                                        processGetDynamicURL(spin, urlNew, getnameDataEl);
+                                    if (idKabKot != 0) {
+                                        RelativeLayout rl = (RelativeLayout) llFormBuild.getChildAt(i);
+                                        if (rl.getChildAt(0) instanceof Spinner) {
+                                            Spinner spin = (Spinner) rl.getChildAt(0);
+                                            processGetDynamicURL(spin, urlNew, getnameDataEl);
+                                        }
                                     }
                                 }
                             } else if ((nameDataEl.contains("kecamatan") || nameDataEl.contains("subdistrict"))
@@ -1736,7 +1739,7 @@ public class frag_cif_new extends Fragment {
                                     } else if (valSpinProv.has("citydistrict")) {
                                         idKabKot = valSpinProv.getInt("citydistrict");
                                     }
-                                    int idKec = valSpinProv.getInt("kecamatan");
+                                    int idKec = 0;
                                     if (valSpinProv.has("kecamatan")) {
                                         idKec = valSpinProv.getInt("kecamatan");
                                     } else if (valSpinProv.has("subdistrict")) {
@@ -1749,10 +1752,12 @@ public class frag_cif_new extends Fragment {
 
                                     Log.e("CEK", "urlNew : "+urlNew);
 
-                                    RelativeLayout rl = (RelativeLayout) llFormBuild.getChildAt(i);
-                                    if (rl.getChildAt(0) instanceof Spinner) {
-                                        Spinner spin = (Spinner) rl.getChildAt(0);
-                                        processGetDynamicURL(spin, urlNew, getnameDataEl);
+                                    if (idKec != 0) {
+                                        RelativeLayout rl = (RelativeLayout) llFormBuild.getChildAt(i);
+                                        if (rl.getChildAt(0) instanceof Spinner) {
+                                            Spinner spin = (Spinner) rl.getChildAt(0);
+                                            processGetDynamicURL(spin, urlNew, getnameDataEl);
+                                        }
                                     }
                                 }
                             } else {
@@ -2028,6 +2033,9 @@ public class frag_cif_new extends Fragment {
         if (ttl.indexOf(",") > 0) {
             String[] sp = ttl.split(",");
             tglLahir = sp[1].toString().trim();
+        }
+        else{
+            tglLahir = ttl;
         }
 
         NIK.setText(nik);
@@ -4001,7 +4009,7 @@ public class frag_cif_new extends Fragment {
                 });
                 if (response.isSuccessful()) {
                     btnNext.setClickable(true);
-                    btnNext.setBackgroundTintList(mContext.getResources().getColorStateList(R.color.button_end_call));
+                    btnNext.setBackgroundTintList(mContext.getResources().getColorStateList(R.color.zm_button));
                     String dataS = response.body().toString();
                     Log.e("CEK","processFormDataAttachment : "+dataS);
                 } else {

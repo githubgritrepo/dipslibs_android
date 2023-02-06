@@ -656,7 +656,7 @@ public class frag_inputdata_new extends Fragment {
                             if (dataArr.getJSONObject(i).has("ids")) {
                                 idSData = dataArr.getJSONObject(i).getString("ids").trim();
                                 idData = Integer.parseInt(idSData);
-                            } else {
+                            } else if (dataArr.getJSONObject(i).has("id")) {
                                 idData = dataArr.getJSONObject(i).getInt("id");
                             }
                             String labelIdn = dataArr.getJSONObject(i).getString("labelIdn");

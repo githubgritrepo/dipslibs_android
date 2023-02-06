@@ -1611,7 +1611,10 @@ public class frag_ready_account extends Fragment {
                             }
                         } else {
                             for (int i = 0; i < dataArr.length(); i++) {
-                                int idData = dataArr.getJSONObject(i).getInt("id");
+                                int idData = 0;
+                                if (dataArr.getJSONObject(i).has("id")) {
+                                    idData = dataArr.getJSONObject(i).getInt("id");
+                                }
                                 String labelIdn = dataArr.getJSONObject(i).getString("labelIdn");
                                 String labelEng = dataArr.getJSONObject(i).getString("labelEng");
                                 dataDropDown.add(new FormSpin(idData, labelIdn, labelIdn, labelEng));
