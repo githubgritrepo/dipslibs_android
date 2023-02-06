@@ -140,6 +140,10 @@ public interface ApiService {
     Call<JsonObject> ResendOTP(@Body RequestBody body);
 
     @Headers("Content-Type: "+ MyConstants.CONTENT_TYPE)
+    @POST("kodepos/get-by-wilayah")
+    Call<JsonObject> getKodePos(@Body RequestBody body);
+
+    @Headers("Content-Type: "+ MyConstants.CONTENT_TYPE)
     @POST("middleware/send-otp")
     Call<JsonObject> SendOTP(@Body RequestBody body);
 

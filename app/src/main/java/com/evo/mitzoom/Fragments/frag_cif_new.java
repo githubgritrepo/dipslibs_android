@@ -155,7 +155,7 @@ public class frag_cif_new extends Fragment {
     private String encodedImage;
     private boolean flagOCR = false;
     private String tmptLahir = "-";
-    private String provinsi, kota_kabupaten, nik, nama, ttl, jeniskelamin, golongan_darah, alamat, rtrw, desa_kelurahan, kecamatan, agama, status_perkawinan, kewarganegaraan, pekerjaan = "", namaIbuKandung = "";
+    private String provinsi,kodepos="",kota_kabupaten, nik, nama, ttl, jeniskelamin, golongan_darah, alamat, rtrw, desa_kelurahan, kecamatan, agama, status_perkawinan, kewarganegaraan, pekerjaan = "", namaIbuKandung = "";
     private JSONObject datasReqOCR = null;
     private int lasLenChar;
     private boolean backSpaceChar;
@@ -808,8 +808,7 @@ public class frag_cif_new extends Fragment {
                         rabbitMirroring.MirroringSendKey(reqFormMirroring);
                         if (formCode == 8) {
                             if (sessions.getOCR() != null) {
-                                processMatchData();
-                                processDataFromOCR();
+                                getKodePos();
                             }
 
                         }
@@ -1386,9 +1385,11 @@ public class frag_cif_new extends Fragment {
         Call<JsonObject> call = null;
         if (formCode == 8 || formCode == 801) {
             call = API.AddDataSelf(requestBody);
-        } else if (formCode == 802) {
+        }
+        else if (formCode == 802) {
             call = API.AddDataWork(requestBody);
-        } else if (formCode == 803) {
+        }
+        else if (formCode == 803) {
             call = API.AddDataFinance(requestBody);
         }
 
@@ -1885,6 +1886,59 @@ public class frag_cif_new extends Fragment {
         }
     }
 
+    private void getKodePos(){
+        JSONObject json = new JSONObject();
+        Log.e("CEK","MASUK GETKODEPOS");
+        String dataOCR = sessions.getOCR();
+        Log.e("CEK","dataOCR : "+dataOCR.toString());
+        try {
+            JSONObject dataObjOCR = new JSONObject(dataOCR);
+            desa_kelurahan = dataObjOCR.getString("desakelurahan");
+            kecamatan = dataObjOCR.getString("kecamatan");
+            kota_kabupaten = dataObjOCR.getString("kotakabupaten");
+            provinsi = dataObjOCR.getString("provinsi");
+            json.put("kelurahan", desa_kelurahan);
+            json.put("kecamatan", kecamatan);
+            json.put("kabupaten", kota_kabupaten);
+            json.put("provinsi",provinsi);
+        }
+        catch (JSONException e) {
+            e.printStackTrace();
+        }
+        Log.e("CEK","Kelurahan : "+desa_kelurahan+" | kecamatan : "+kecamatan+" | kabupaten : "+kota_kabupaten+" | provinsi : "+provinsi);
+        Log.e("CEK","PAYLOAD GET KODE POS "+json.toString());
+        RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), json.toString());
+        Log.e("CEK","PAYLOAD GET KODE POS 2"+requestBody);
+        ApiService API = Server.getAPIService();
+        Call<JsonObject> call = API.getKodePos(requestBody);
+        call.enqueue(new Callback<JsonObject>() {
+            @Override
+            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                if (response.isSuccessful()){
+                    String dataS = response.body().toString();
+                    Log.d("CEK RESPONSE Berhasil",""+dataS);
+                    try {
+                        JSONObject dataObj = new JSONObject(dataS);
+                        kodepos = dataObj.getJSONObject("data").getString("kodepos");
+                        Log.e("INI KODE POS",""+kodepos);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+                else {
+                    Log.e("CEK RESPONSE GAGAL",""+response);
+                }
+                processMatchData();
+                processDataFromOCR();
+            }
+            @Override
+            public void onFailure(Call<JsonObject> call, Throwable t) {
+                Log.e("CEK RESPONSE GAGAL",""+t.getMessage());
+                processMatchData();
+                processDataFromOCR();
+            }
+        });
+    }
     private void processMatchData() {
         Log.e("CEK","processMatchData");
         String dataOCR = sessions.getOCR();
@@ -1938,6 +1992,9 @@ public class frag_cif_new extends Fragment {
                     else if (key.contains("ibu")){
                         objEl.put(key, namaIbuKandung);
                     }
+                    else if(key.contains("kode") && key.contains("pos")){
+                        objEl.put(key,kodepos);
+                    }
                     else if (key.contains("provinsi")) {
                         objEl.put(key, provinsiOCR);
                     }
@@ -1966,36 +2023,46 @@ public class frag_cif_new extends Fragment {
                     }
                     else if (key.contains("alamat") && key.contains("identitas")) {
                         objEl.put(key, alamatOCR);
-                    } else if (key.equals("rt" + valKurung)) {
+                    }
+                    else if (key.equals("rt" + valKurung)) {
                         objEl.put(key, rtOCR);
-                    } else if (key.equals("rw" + valKurung)) {
+                    }
+                    else if (key.equals("rw" + valKurung)) {
                         objEl.put(key, rwOCR);
-                    } else if (key.contains("kelurahan") || key.contains("desa")) {
+                    }
+                    else if (key.contains("kelurahan") || key.contains("desa")) {
                         objEl.put(key, desaOCR);
-                    } else if (key.contains("kecamatan")) {
+                    }
+                    else if (key.contains("kecamatan")) {
                         objEl.put(key, kecamatanOCR);
-                    } else if (key.contains("agama")) {
+                    }
+                    else if (key.contains("agama")) {
                         objEl.put(key, agamaOCR);
-                    } else if (key.contains("nikah") || key.contains("menikah")) {
+                    }
+                    else if (key.contains("nikah") || key.contains("menikah")) {
                         objEl.put(key, kawinOCR);
-                    } else if (key.contains("warganegara")) {
+                    }
+                    else if (key.contains("warganegara")) {
                         if (sessions.getLANG().equals("en")) {
                             objEl.put(key, "Indonesian citizens");
                         } else {
                             objEl.put(key, wargaOCR);
                         }
-                    } else if (key.contains("jenisidentitas")) {
+                    }
+                    else if (key.contains("jenisidentitas")) {
                         if (sessions.getLANG().equals("en")) {
                             objEl.put(key, "ID card");
                         } else {
                             objEl.put(key, "KTP");
                         }
-                    } else if (key.contains("negara") && wargaOCR.equals("WNI")) {
+                    }
+                    else if (key.contains("negara") && wargaOCR.equals("WNI")) {
                         objEl.put(key, "Indonesia");
                     }
                 }
             }
-        } catch (JSONException e) {
+        }
+        catch (JSONException e) {
             e.printStackTrace();
         }
     }
