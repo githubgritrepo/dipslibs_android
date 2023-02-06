@@ -17,14 +17,15 @@
             android:orientation="vertical">
 
             <ImageView
-                android:layout_marginTop="10dp"
-                android:layout_marginStart="20dp"
-                android:layout_marginEnd="20dp"
-                android:layout_gravity="center"
                 android:layout_width="match_parent"
                 android:layout_height="100dp"
+                android:layout_gravity="center"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginEnd="20dp"
+                android:scaleType="fitCenter"
                 android:src="@drawable/logo_bank_victoria"
-                android:scaleType="fitCenter"/>
+                tools:src="@drawable/logo_bank_victoria" />
             <TextView
                 android:layout_marginStart="20dp"
                 android:layout_marginEnd="20dp"
