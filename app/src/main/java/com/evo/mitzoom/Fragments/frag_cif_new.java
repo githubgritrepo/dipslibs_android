@@ -286,7 +286,15 @@ public class frag_cif_new extends Fragment {
             tvFotoKTP.setText(R.string.ktp_swafoto);
         }
         else {
-            tvFotoKTP.setText(getString(R.string.pembukaan_akun));
+            if (isSessionZoom) {
+                tvFotoKTP.setText(getString(R.string.pembukaan_akun));
+            } else {
+                if (formCode == 22) {
+                    tvFotoKTP.setText(getString(R.string.ktp_swafoto));
+                } else {
+                    tvFotoKTP.setText(getString(R.string.Photo_ktp));
+                }
+            }
         }
 
         if (isSessionZoom) {
@@ -599,6 +607,15 @@ public class frag_cif_new extends Fragment {
                                                 objEl.put(nameDataEl, results);
                                             }
                                             break;
+                                        } else if (llFormBuild.getChildAt(i) instanceof RelativeLayout) {
+                                            RelativeLayout rl = (RelativeLayout) llFormBuild.getChildAt(i);
+                                            if (rl.getChildAt(0) instanceof Spinner) {
+                                                if (objEl.getString(nameDataEl).toLowerCase().contains("pilih")) {
+                                                    Toast.makeText(mContext, labelDataEl + " harus diisi/dipilih", Toast.LENGTH_SHORT).show();
+                                                    checkEmpty = true;
+                                                }
+                                                break;
+                                            }
                                         } else if (llFormBuild.getChildAt(i) instanceof AutoCompleteTextView) {
                                             AutoCompleteTextView autoText = (AutoCompleteTextView) llFormBuild.getChildAt(i);
                                             String results = autoText.getText().toString();

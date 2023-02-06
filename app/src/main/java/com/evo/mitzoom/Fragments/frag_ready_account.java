@@ -510,6 +510,15 @@ public class frag_ready_account extends Fragment {
                                                 objEl.put(nameDataEl, results);
                                             }
                                             break;
+                                        } else if (llFormBuild.getChildAt(i) instanceof RelativeLayout) {
+                                            RelativeLayout rl = (RelativeLayout) llFormBuild.getChildAt(i);
+                                            if (rl.getChildAt(0) instanceof Spinner) {
+                                                if (objEl.getString(nameDataEl).toLowerCase().contains("pilih")) {
+                                                    Toast.makeText(mContext, labelDataEl + " harus diisi/dipilih", Toast.LENGTH_SHORT).show();
+                                                    checkEmpty = true;
+                                                }
+                                                break;
+                                            }
                                         } else if (llFormBuild.getChildAt(i) instanceof AutoCompleteTextView) {
                                             AutoCompleteTextView autoText = (AutoCompleteTextView) llFormBuild.getChildAt(i);
                                             String results = autoText.getText().toString();

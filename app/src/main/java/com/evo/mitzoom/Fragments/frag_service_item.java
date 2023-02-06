@@ -348,6 +348,15 @@ public class frag_service_item extends Fragment {
                                                 objEl.put(nameDataEl, results);
                                             }
                                             break;
+                                        } else if (llFormBuild.getChildAt(i) instanceof RelativeLayout) {
+                                            RelativeLayout rl = (RelativeLayout) llFormBuild.getChildAt(i);
+                                            if (rl.getChildAt(0) instanceof Spinner) {
+                                                if (objEl.getString(nameDataEl).toLowerCase().contains("pilih")) {
+                                                    Toast.makeText(mContext, labelDataEl + " harus diisi/dipilih", Toast.LENGTH_SHORT).show();
+                                                    checkEmpty = true;
+                                                }
+                                                break;
+                                            }
                                         } else if (llFormBuild.getChildAt(i) instanceof AutoCompleteTextView) {
                                             Log.e("CEK", "MASUK AutoCompleteTextView ke-" + i);
                                             AutoCompleteTextView autoText = (AutoCompleteTextView) llFormBuild.getChildAt(i);

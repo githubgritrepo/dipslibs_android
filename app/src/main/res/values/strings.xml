@@ -45,6 +45,7 @@
     <string name="terms_condition2"><![CDATA[Syarat dan Ketentuan]]></string>
     <string name="checkbox_tnc">Saya menyetujui syarat dan ketentuan</string>
     <string name="tnc_content">Syarat dan Ketentuan Umum PT Bank XYZ mengatur mengenai hubungan hukum antara PT XYZ dengan individu/korporasi yang menggunakan jasa/layanan PT Bank XYZ yang merupakan calon atau pemilik rekening di PT Bank XYZ sehubungan dengan segala produk, fasilitas dan/atau layanan yang tersedia bagi nasabah. Berikut ini merupakan poin - poin yang perlu diperhatikan sebelum melakukan pendaftaran ataupun transaksi.\n\n<ol><li><![CDATA[Hanya untuk nasabah perorangan Warga Negara Indonesia dan tidak berlaku Rekening Join]]></li>\n\n<li><![CDATA[Setoran awal pembukaan rekening Rp 20.000,-]]></li>\n\n<li><![CDATA[Setoran tunai selanjutnya Rp 10.000,-]]></li>\n\n<li><![CDATA[Saldo minimum rekening Rp 20.000,-]]></li>\n\n<li><![CDATA[Biaya apabila rekening tidak aktif Rp 2.000,- per bulan]]></li>\n\n<li><![CDATA[Apabila saldo rekening kurang dari Rp 20.000,- maka rekening akan ditutup secara otomatis oleh sistem]]></li>\n\n<li><![CDATA[Biaya penutupan rekening Rp 20.000,-]]></li>\n\n<li><![CDATA[Jumlah minimum penarikan di teller Rp 100.000,- kecuali pada saat nasabah ingin tutup rekening]]></li></ol></string>
+    <string name="Photo_ktp">Foto KTP</string>
     <string name="Photo_nktp">Foto\nKTP</string>
     <string name="photo_nnpwp">Foto\nNPWP</string>
     <string name="foto_ntanda_ntangan">Foto\nTanda\nTangan</string>
@@ -263,7 +264,7 @@
     <string name="prepare_id_card">Harap untuk menyiapkan Kartu Tanda Penduduk (KTP) Anda.</string>
     <string name="open_account">Buka Rekening</string>
     <string name="ktp_swafoto">Foto diri dengan KTP</string>
-    <string name="photo_swafoto">Foto Diri\n&amp;\nKTP</string>
+    <string name="photo_swafoto">Foto Diri\ndengan\nKTP</string>
     <string name="bank_name">Bank Victoria</string>
     <string name="warn_not_use_app">Maaf Anda tidak dapat menggunakan layanan Digital Operations Bank XYZ</string>
     <string name="warn_hub_calcenter">Untuk info lebih lanjut silakan menghubungi Call Center Bank XYZ</string>
