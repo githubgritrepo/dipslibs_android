@@ -314,6 +314,7 @@
     <string name="calling">Calling...</string>
     <string name="incoming_call_from">Incoming call from</string>
     <string name="required">*Required</string>
+    <string name="validate_nama_ibu">Please fill your mother's name</string>
     <string name="capture_back">Failed to process your photo, please retake photo</string>
     <string name="validate_dukcapil">Invalid KTP Data. Make sure the KTP you use is correct and registered</string>
     <string name="btn_validate_dukcapil">Re-Take KTP</string>

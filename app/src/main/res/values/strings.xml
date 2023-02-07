@@ -317,5 +317,6 @@
     <string name="capture_back">Foto Anda gagal diproses, silahkan ulangi ambil gambar</string>
     <string name="validate_dukcapil">Data KTP tidak Valid. Pastikan KTP yang Anda gunakan Benar dan Terdaftar</string>
     <string name="btn_validate_dukcapil">Masukkan Ulang KTP</string>
+    <string name="validate_nama_ibu">Silahkan masukkan nama ibu kandung</string>
     <string name="validate_dtott">Maaf Anda Tidak Dapat Menggunakan Layanan Digital Operations Bank Victoria. Untuk info lebih lanjut silakan menghubungi Call Center Bank Victoria.</string>
 </resources>

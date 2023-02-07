@@ -2661,7 +2661,7 @@ public class frag_cif_new extends Fragment {
                 tmptLahir = TTL.getText().toString().trim();
                 ttl = TTL2.getText().toString().trim();
                 Log.e("CEK","picturePath : "+picturePath);
-                if (!picturePath.isEmpty() && !et_nama_ibuKandung.getText().toString().trim().isEmpty()) {
+                if (!picturePath.isEmpty() && !namaIbuKandung.isEmpty()) {
                     String fieldName = "ktp";
                     ((Activity)mContext).runOnUiThread(new Runnable() {
                         @Override
@@ -2675,6 +2675,9 @@ public class frag_cif_new extends Fragment {
                     });
                     dataReqOCR();
                     processDukcapil(fieldName,picturePath);
+                }
+                else{
+                    Toast.makeText(mContext, ""+getString(R.string.validate_nama_ibu), Toast.LENGTH_SHORT).show();
                 }
                 sweetAlertDialog.cancel();
                 sweetAlertDialog.dismissWithAnimation();
