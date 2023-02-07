@@ -143,7 +143,7 @@ public class MyParserFormBuilder {
                         case "input":
                             JSONObject dataObjEl = new JSONObject();
                             if (compType.equals("text") || compType.equals("date")) {
-                                if (!compLabel.isEmpty()) {
+                                if (!compLabel.isEmpty() && !compName.equals("checkbox") && !compName.equals("radiobutton")) {
                                     LinearLayout.LayoutParams lpTv = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,LinearLayout.LayoutParams.WRAP_CONTENT);
                                     lpTv.setMargins(0,15,0,0);
                                     TextView tv = new TextView(mContext);
@@ -223,8 +223,6 @@ public class MyParserFormBuilder {
                                         ed.setInputType(InputType.TYPE_TEXT_FLAG_CAP_WORDS);
                                     }
                                 }
-                                ed.setLayoutParams(lp);
-                                llFormBuild.addView(ed);
 
                                 int ids = ed.getId();
                                 String elName = "";
@@ -236,10 +234,23 @@ public class MyParserFormBuilder {
                                     String compLabelGabIndo = parentLabelIndo+keyLabel;
                                     elName = compLabelGab.toLowerCase().replace(" ", "").replace("-", "").replace("/", "").replace(".", "");
                                     keyLabelInd = compLabelGabIndo.toLowerCase().replace(" ", "").replace("-", "").replace("/", "").replace(".", "");
+                                    ed.setEnabled(false);
+                                    ed.setClickable(false);
+                                } if (compName.equals("radiobutton")) {
+                                    compLabelGab2 = parentLabel+" "+compLabel;
+                                    String compLabelGab = parentLabel+compLabel;
+                                    String compLabelGabIndo = parentLabelIndo+keyLabel;
+                                    elName = compLabelGab.toLowerCase().replace(" ", "").replace("-", "").replace("/", "").replace(".", "");
+                                    keyLabelInd = compLabelGabIndo.toLowerCase().replace(" ", "").replace("-", "").replace("/", "").replace(".", "");
+                                    ed.setEnabled(false);
+                                    ed.setClickable(false);
                                 } else {
                                     elName = compLabel.toLowerCase().replace(" ", "").replace("-", "").replace("/", "").replace(".", "");
                                     keyLabelInd = keyLabel.toLowerCase().replace(" ", "").replace("-", "").replace("/", "").replace(".", "");
                                 }
+
+                                ed.setLayoutParams(lp);
+                                llFormBuild.addView(ed);
 
                                 Log.e("CEK","compName : "+elName+" | ids : "+ids);
                                 dataObjEl.put("id",ids);
@@ -285,6 +296,8 @@ public class MyParserFormBuilder {
 
                             } else if (compType.equals("radio")) {
                                 if (!compLabel.isEmpty()) {
+                                    parentLabel = compLabel;
+                                    parentLabelIndo = keyLabel;
                                     finishRad = false;
                                     jkRad = 0;
                                     radB = 0;
@@ -371,10 +384,25 @@ public class MyParserFormBuilder {
                                 if (finishRad && radB == jkRad-1) {
                                     llFormBuild.addView(radioGroup);
 
+                                    String compLabelGabIndo = "-";
+                                    if (compLen -1 > radB) {
+                                        String compSGab = components.get(j).toString();
+                                        JSONObject compObjGab = new JSONObject(compSGab);
+                                        String compLabelGab = compObjGab.getString("label");
+                                        String keyLabelGab = "";
+                                        if (compLabelGab.contains("{")) {
+                                            JSONObject labelObj = compObjGab.getJSONObject("label");
+                                            String pcIdn = labelObj.getString("labelIdn");
+                                            keyLabelGab = pcIdn;
+                                        }
+                                        compLabelGabIndo = parentLabelIndo+keyLabelGab;
+                                    }
+
                                     int ids = radioGroup.getId();
                                     Log.e("CEK","compName : "+elNameRad+" | ids : "+ids);
                                     dataObjEl.put("id",ids);
                                     dataObjEl.put("name",keyLabelIndRad);
+                                    dataObjEl.put("nameGab",compLabelGabIndo);
                                     dataObjEl.put("required",compRequired);
                                     dataObjEl.put("keyIndo",keyLabelIndRad);
                                     dataObjEl.put("label",compLabelRad);

@@ -925,6 +925,7 @@ public class frag_cif_new extends Fragment {
                                             if (selectedId > 0 || selectedId < -1) {
                                                 RadioButton rb = (RadioButton) rg.findViewById(selectedId);
                                                 String results = rb.getText().toString();
+                                                processEnableComp(results);
                                                 try {
                                                     objEl.put(nameDataEl, results);
                                                     dataFormCIF.put(keysData,objEl);
@@ -1140,6 +1141,47 @@ public class frag_cif_new extends Fragment {
                             }
                         } catch (JSONException e) {
                             e.printStackTrace();
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private void processEnableComp(String results) {
+        int child = llFormBuild.getChildCount();
+
+        if (child > 0 && idElement.length() > 0) {
+            for (int i = 0; i < child; i++) {
+                int idEl = llFormBuild.getChildAt(i).getId();
+                if (idEl > 0 || idEl < -1) {
+                    for (int j = 0; j < idElement.length(); j++) {
+                        try {
+                            int idDataEl = idElement.getJSONObject(j).getInt("id");
+                            String nameDataEl = idElement.getJSONObject(j).getString("name");
+                            String nameDataElGab = "";
+                            if (idElement.getJSONObject(j).has("nameGab")) {
+                                nameDataElGab = idElement.getJSONObject(j).getString("nameGab");
+                            }
+                            if (idEl == idDataEl) {
+                                if (llFormBuild.getChildAt(i) instanceof EditText) {
+                                    Log.e("CEK","processEnableComp nameDataEl : "+nameDataEl+" | nameDataElGab : "+nameDataElGab);
+                                    EditText ed = (EditText) llFormBuild.getChildAt(i);
+                                    if (!nameDataElGab.isEmpty()) {
+                                        if (nameDataElGab.equals(nameDataEl)) {
+                                            if (results.toLowerCase().contains("lain") || results.toLowerCase().contains("other")) {
+                                                ed.setEnabled(true);
+                                                ed.setClickable(true);
+                                            } else {
+                                                ed.setEnabled(false);
+                                                ed.setClickable(false);
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        } catch (JSONException e) {
+                            throw new RuntimeException(e);
                         }
                     }
                 }
