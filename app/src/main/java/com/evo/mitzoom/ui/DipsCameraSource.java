@@ -372,7 +372,7 @@ public class DipsCameraSource extends AppCompatActivity implements CameraSource.
         Log.e("CEK","diffH : "+diffH+" | sx : "+sx+" | sy : "+sy+" | cx : "+cx+" | cy : "+cy);
         Log.e("CEK","Width Change : "+widthChange+" | Height Change : "+HeightChange);
         Bitmap resizedBitmap  = Bitmap.createBitmap(
-                bm, cx, cy, widthChange-700, HeightChange-450, matrix, false);
+                bm, cx, cy, widthChange-700, HeightChange, matrix, false);
 
         return resizedBitmap;
     }
