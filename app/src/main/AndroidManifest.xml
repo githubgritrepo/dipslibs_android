@@ -90,6 +90,7 @@
         <activity
             android:name=".ui.RatingActivity"
             android:exported="false"
+            android:configChanges="screenSize|orientation|keyboardHidden|keyboard"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.MITZoom"
             android:windowSoftInputMode="adjustResize"/>
