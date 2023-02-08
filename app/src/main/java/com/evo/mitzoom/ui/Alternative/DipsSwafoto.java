@@ -233,6 +233,7 @@ public class DipsSwafoto extends AppCompatActivity implements com.wdullaer.mater
             camera.release();
             camera = null;
             inPreview = false;
+            cameraConfigured = false;
         }
 
         super.onPause();

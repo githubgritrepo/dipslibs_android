@@ -164,6 +164,10 @@ public class DipsCameraSource extends AppCompatActivity implements CameraSource.
         }
     };
 
+    private int posCX = 0;
+    private int posCY = 0;
+    private int posWidth = 0;
+    private int posHeight = 0;
     SurfaceHolder.Callback surfaceCallbackTrans = new SurfaceHolder.Callback() {
         @Override
         public void surfaceCreated(@NonNull SurfaceHolder holder) {
@@ -204,6 +208,10 @@ public class DipsCameraSource extends AppCompatActivity implements CameraSource.
             surfRight = (width-diffw);
             surfBottom = (height-200);
 
+            posCX = (int) diffw;
+            posCY = (int) surfRight;
+            posWidth = (int) diffH;
+            posHeight = (int) surfBottom;
             Log.e("CEK","surfaceChanged diffw : "+diffw+" | diffH : "+diffH+" | surfRight : "+surfRight+" | surfBottom : "+surfBottom);
 
             RectF rect = new RectF((float) diffw,(float) diffH,(float) surfRight,(float) surfBottom);
@@ -363,7 +371,6 @@ public class DipsCameraSource extends AppCompatActivity implements CameraSource.
 
         Matrix matrix = new Matrix();
         // RESIZE THE BIT MAP
-        matrix.postScale(-1, 1);
 
         int widthChange = (int) width - cx;
         int HeightChange = height;
@@ -371,8 +378,24 @@ public class DipsCameraSource extends AppCompatActivity implements CameraSource.
         // "RECREATE" THE NEW BITMAP
         Log.e("CEK","diffH : "+diffH+" | sx : "+sx+" | sy : "+sy+" | cx : "+cx+" | cy : "+cy);
         Log.e("CEK","Width Change : "+widthChange+" | Height Change : "+HeightChange);
-        Bitmap resizedBitmap  = Bitmap.createBitmap(
-                bm, cx, cy, widthChange-700, HeightChange, matrix, false);
+        Bitmap resizedBitmap = null;
+        if (width < height) {
+            matrix.postScale(-1, 1);
+            resizedBitmap = Bitmap.createBitmap(
+                    bm, cx, cy, widthChange - 700, HeightChange - 450, matrix, false);
+        } else {
+            matrix.postScale(1, -1);
+            Log.e("CEK","posCX : "+posCX+" | posCY : "+posCY+" | posWidth : "+posWidth+" | posHeight : "+posHeight);
+            int cxW = (int) (posWidth / 1.8);
+            int cxH = (int) (posHeight / 2);
+            if ("xiaomi".equals(Build.MANUFACTURER.toLowerCase(Locale.ROOT))) {
+                cxW = (int) (posWidth / 1.2);
+                cxH = (int) (posHeight / 1.2);
+            }
+            Log.e("CEK","cxW : "+cxW+" | cxH : "+cxH);
+            resizedBitmap = Bitmap.createBitmap(
+                    bm, posCX, posCY, cxW, cxH, matrix, false);
+        }
 
         return resizedBitmap;
     }

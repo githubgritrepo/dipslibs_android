@@ -14,6 +14,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.provider.OpenableColumns;
+import android.text.AutoText;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Base64;
@@ -450,60 +451,97 @@ public class frag_inputdata_new extends Fragment {
                                 urlPath = idElement.getJSONObject(j).getString("url");
                             }
                             if (idEl == idDataEl) {
+                                Log.e("CEK","idEl : "+idEl+" | idDataEl : "+idDataEl);
                                 String finalValKurung = valKurung;
                                 if (llFormBuild.getChildAt(i) instanceof EditText) {
-                                    EditText ed = (EditText) llFormBuild.getChildAt(i);
-                                    ed.addTextChangedListener(new TextWatcher() {
-                                        @Override
-                                        public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                                            if (nameDataEl.equals("npwp"+ finalValKurung)) {
-                                                lasLenChar = charSequence.length();
+                                    Log.e("CEK","MASUK EditText : "+nameDataEl);
+                                    if (!urlPath.isEmpty()) {
+                                        AutoCompleteTextView AutoText = (AutoCompleteTextView) llFormBuild.getChildAt(i);
+                                        boolean flagDot = false;
+                                        if (!urlPath.isEmpty()) {
+                                            String[] spUrl = urlPath.split("/");
+                                            int indexs = spUrl.length - 1;
+                                            String check = spUrl[indexs];
+                                            if (check.isEmpty()) {
+                                                indexs = spUrl.length - 2;
+                                                check = spUrl[indexs];
+                                            }
+                                            if (check.contains(":")) {
+                                                flagDot = true;
+                                            }
+                                            if (!flagDot) {
+                                                processGetDynamicURLAutoComplete(AutoText, urlPath, nameDataEl);
                                             }
                                         }
-
-                                        @Override
-                                        public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                                            try {
-                                                objEl.put(nameDataEl, charSequence);
-                                                objEl.put("idDips",idDips);
-                                            } catch (JSONException e) {
-                                                e.printStackTrace();
+                                        AutoText.setOnClickListener(new View.OnClickListener() {
+                                            @Override
+                                            public void onClick(View v) {
+                                                Log.e("CEK","MASUK AutoText ONCLOCK");
                                             }
+                                        });
+                                        AutoText.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                                            @Override
+                                            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                                                Log.e("CEK","MASUK AutoText ONCLOCK");
+                                            }
+                                        });
+                                    } else {
+                                        EditText ed = (EditText) llFormBuild.getChildAt(i);
+                                        ed.addTextChangedListener(new TextWatcher() {
+                                            @Override
+                                            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                                                if (nameDataEl.equals("npwp" + finalValKurung)) {
+                                                    lasLenChar = charSequence.length();
+                                                }
+                                            }
+
+                                            @Override
+                                            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                                                try {
+                                                    objEl.put(nameDataEl, charSequence);
+                                                    objEl.put("idDips", idDips);
+                                                } catch (JSONException e) {
+                                                    e.printStackTrace();
+                                                }
                                             /*if (isSessionZoom) {
                                                 rabbitMirroring.MirroringSendKey(objEl);
                                             }*/
-                                        }
-
-                                        @Override
-                                        public void afterTextChanged(Editable s) {
-                                            if (nameDataEl.equals("npwp"+ finalValKurung)) {
-                                                ed.removeTextChangedListener(this);
-                                                backSpaceChar = lasLenChar > s.length();
-                                                if (!backSpaceChar) {
-                                                    String dataNPWP = s.toString();
-                                                    Log.e("CEK", "dataNPWP : " + dataNPWP);
-                                                    String formatNPWP = "";
-                                                    if (dataNPWP.length() == 2 || dataNPWP.length() == 6 || dataNPWP.length() == 10 || dataNPWP.length() == 16) {
-                                                        formatNPWP = ".";
-                                                    } else if (dataNPWP.length() == 12) {
-                                                        formatNPWP = "-";
-                                                    }
-                                                    String cekBuilder = new StringBuilder(dataNPWP).insert(dataNPWP.length(), formatNPWP).toString();
-                                                    ed.setText(cekBuilder);
-                                                    ed.setSelection(cekBuilder.length());
-                                                }
-                                                ed.addTextChangedListener(this);
                                             }
-                                        }
-                                    });
+
+                                            @Override
+                                            public void afterTextChanged(Editable s) {
+                                                if (nameDataEl.equals("npwp" + finalValKurung)) {
+                                                    ed.removeTextChangedListener(this);
+                                                    backSpaceChar = lasLenChar > s.length();
+                                                    if (!backSpaceChar) {
+                                                        String dataNPWP = s.toString();
+                                                        Log.e("CEK", "dataNPWP : " + dataNPWP);
+                                                        String formatNPWP = "";
+                                                        if (dataNPWP.length() == 2 || dataNPWP.length() == 6 || dataNPWP.length() == 10 || dataNPWP.length() == 16) {
+                                                            formatNPWP = ".";
+                                                        } else if (dataNPWP.length() == 12) {
+                                                            formatNPWP = "-";
+                                                        }
+                                                        String cekBuilder = new StringBuilder(dataNPWP).insert(dataNPWP.length(), formatNPWP).toString();
+                                                        ed.setText(cekBuilder);
+                                                        ed.setSelection(cekBuilder.length());
+                                                    }
+                                                    ed.addTextChangedListener(this);
+                                                }
+                                            }
+                                        });
+                                    }
                                     objEl.put(nameDataEl, "");
                                 } else if (llFormBuild.getChildAt(i) instanceof RadioGroup) {
+                                    Log.e("CEK","MASUK RadioGroup");
                                     objEl.put(nameDataEl, "");
                                     break;
                                 } else if (llFormBuild.getChildAt(i) instanceof CheckBox) {
+                                    Log.e("CEK","MASUK CheckBox");
                                     objEl.put(nameDataEl, false);
                                     break;
                                 } else if (llFormBuild.getChildAt(i) instanceof Spinner) {
+                                    Log.e("CEK","MASUK Spinner");
                                     objEl.put(nameDataEl, "");
                                     Spinner spin = (Spinner) llFormBuild.getChildAt(i);
                                     spin.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -524,6 +562,7 @@ public class frag_inputdata_new extends Fragment {
                                     });
                                     break;
                                 } else if (llFormBuild.getChildAt(i) instanceof RelativeLayout) {
+                                    Log.e("CEK","MASUK RelativeLayout");
                                     RelativeLayout rl = (RelativeLayout) llFormBuild.getChildAt(i);
                                     if (rl.getChildAt(0) instanceof Spinner) {
                                         Spinner spin = (Spinner) rl.getChildAt(0);
@@ -579,7 +618,25 @@ public class frag_inputdata_new extends Fragment {
                                         break;
                                     }
                                 } else if (llFormBuild.getChildAt(i) instanceof AutoCompleteTextView) {
+                                    Log.e("CEK","MASUK AutoCompleteTextView");
                                     objEl.put(nameDataEl, "");
+                                    AutoCompleteTextView AutoText = (AutoCompleteTextView) llFormBuild.getChildAt(i);
+                                    boolean flagDot = false;
+                                    if (!urlPath.isEmpty()) {
+                                        String[] spUrl = urlPath.split("/");
+                                        int indexs = spUrl.length - 1;
+                                        String check = spUrl[indexs];
+                                        if (check.isEmpty()) {
+                                            indexs = spUrl.length - 2;
+                                            check = spUrl[indexs];
+                                        }
+                                        if (check.contains(":")) {
+                                            flagDot = true;
+                                        }
+                                        if (!flagDot) {
+                                            processGetDynamicURLAutoComplete(AutoText, urlPath, nameDataEl);
+                                        }
+                                    }
                                     break;
                                 } else if (llFormBuild.getChildAt(i) instanceof LinearLayout) {
                                     LinearLayout ll = (LinearLayout) llFormBuild.getChildAt(i);
@@ -636,6 +693,47 @@ public class frag_inputdata_new extends Fragment {
         }
     }
 
+    private void processGetDynamicURLAutoComplete(AutoCompleteTextView autoText, String urlPath, String nameDataEl) {
+        Log.e("CEK","processGetDynamicURLAutoComplete : "+urlPath);
+        Server.getAPIService().getDynamicUrl(urlPath).enqueue(new Callback<JsonObject>() {
+            @Override
+            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                Log.e("CEK","processGetDynamicURL code : "+response.code());
+                if (response.isSuccessful()) {
+                    String dataS = response.body().toString();
+                    Log.e("CEK", "processGetDynamicURL dataS : " + dataS);
+                    try {
+                        JSONObject dataObj = new JSONObject(dataS);
+                        String nameOpr = dataObj.getString("name");
+                        JSONArray dataArr = dataObj.getJSONArray("data");
+                        ArrayList<FormSpin> dataDropDown = new ArrayList<>();
+                        if (nameOpr.equals("GetList")) {
+                            for (int i = 0; i < dataArr.length(); i++) {
+                                int idData = 0;
+                                String idJenis = "0";
+                                if (dataArr.getJSONObject(i).has("id")) {
+                                    idData = dataArr.getJSONObject(i).getInt("id");
+                                    idJenis = dataArr.getJSONObject(i).getString("idJenis");
+                                }
+                                String jenisLabel = dataArr.getJSONObject(i).getString("jenis");
+                                dataDropDown.add(new FormSpin(idData, idJenis, jenisLabel, jenisLabel));
+                            }
+                        }
+                        ArrayAdapter<FormSpin> adapter2 = new ArrayAdapter<FormSpin>(mContext, android.R.layout.simple_spinner_dropdown_item, dataDropDown);
+                        autoText.setAdapter(adapter2);
+                    } catch (JSONException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<JsonObject> call, Throwable t) {
+
+            }
+        });
+    }
+
     private void processGetDynamicURL(Spinner spin, String urlPath, String nameDataEl) {
         flagStuckSpin = false;
         Log.e("CEK","processGetDynamicURL : "+urlPath);
@@ -648,29 +746,47 @@ public class frag_inputdata_new extends Fragment {
                     Log.e("CEK","processGetDynamicURL dataS : "+dataS);
                     try {
                         JSONObject dataObj = new JSONObject(dataS);
+                        String nameOpr = dataObj.getString("name");
                         JSONArray dataArr = dataObj.getJSONArray("data");
                         ArrayList<FormSpin> dataDropDown = new ArrayList<>();
-                        for (int i = 0; i < dataArr.length(); i++) {
-                            int idData = 0;
-                            String idSData = "";
-                            if (dataArr.getJSONObject(i).has("ids")) {
-                                idSData = dataArr.getJSONObject(i).getString("ids").trim();
-                                idData = Integer.parseInt(idSData);
-                            } else if (dataArr.getJSONObject(i).has("id")) {
-                                idData = dataArr.getJSONObject(i).getInt("id");
-                            }
-                            String labelIdn = dataArr.getJSONObject(i).getString("labelIdn");
-                            String labelEng = dataArr.getJSONObject(i).getString("labelEng");
-                            dataDropDown.add(new FormSpin(idData,labelIdn,labelIdn,labelEng));
-                            if (i == 0) {
-                                if (nameDataEl.contains("provinsi") || nameDataEl.contains("kabupaten") || nameDataEl.contains("kota") || nameDataEl.contains("kecamatan") || (nameDataEl.contains("kelurahan") || nameDataEl.contains("desa"))) {
-                                    valSpinProv.put(nameDataEl,idData);
-                                } else {
-                                    valSpin.put(nameDataEl, idData);
+                        if (nameOpr.equals("GetList")) {
+                            for (int i = 0; i < dataArr.length(); i++) {
+                                int idData = 0;
+                                String idJenis = "0";
+                                if (dataArr.getJSONObject(i).has("id")) {
+                                    idData = dataArr.getJSONObject(i).getInt("id");
+                                    idJenis = dataArr.getJSONObject(i).getString("idJenis");
                                 }
-                                processGetSpinChild(nameDataEl);
-                                if ((nameDataEl.contains("kelurahan") || nameDataEl.contains("desa"))) {
-                                    flagStuckSpin = true;
+                                String jenisLabel = dataArr.getJSONObject(i).getString("jenis");
+                                String labelIdn = jenisLabel;
+                                String labelEng = jenisLabel;
+                                if (jenisLabel.contains("{")) {
+                                    JSONObject jenisObj = dataArr.getJSONObject(i).getJSONObject("jenis");
+                                    labelIdn = jenisObj.getString("labelIdn");
+                                    labelEng = jenisObj.getString("labelEng");
+                                }
+                                dataDropDown.add(new FormSpin(idData, idJenis, labelIdn, labelEng));
+                            }
+                            flagStuckSpin = true;
+                        } else {
+                            for (int i = 0; i < dataArr.length(); i++) {
+                                int idData = 0;
+                                if (dataArr.getJSONObject(i).has("id")) {
+                                    idData = dataArr.getJSONObject(i).getInt("id");
+                                }
+                                String labelIdn = dataArr.getJSONObject(i).getString("labelIdn");
+                                String labelEng = dataArr.getJSONObject(i).getString("labelEng");
+                                dataDropDown.add(new FormSpin(idData, labelIdn, labelIdn, labelEng));
+                                if (i == 0) {
+                                    if (nameDataEl.contains("provinsi") || nameDataEl.contains("kabupaten") || nameDataEl.contains("kota") || nameDataEl.contains("kecamatan") || (nameDataEl.contains("kelurahan") || nameDataEl.contains("desa"))) {
+                                        valSpinProv.put(nameDataEl,idData);
+                                    } else {
+                                        valSpin.put(nameDataEl, idData);
+                                    }
+                                    processGetSpinChild(nameDataEl);
+                                    if ((nameDataEl.contains("kelurahan") || nameDataEl.contains("desa"))) {
+                                        flagStuckSpin = true;
+                                    }
                                 }
                             }
                         }

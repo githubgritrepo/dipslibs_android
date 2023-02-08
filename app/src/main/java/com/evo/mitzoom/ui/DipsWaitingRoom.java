@@ -269,6 +269,7 @@ public class DipsWaitingRoom extends AppCompatActivity implements DatePickerDial
             camera.release();
             camera = null;
             inPreview = false;
+            cameraConfigured = false;
         }
 
         Log.e(TAG,"inPreview : "+inPreview+" | camera : "+camera);

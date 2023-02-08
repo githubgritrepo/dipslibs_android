@@ -259,6 +259,39 @@ public class MyParserFormBuilder {
                                 dataObjEl.put("label",compLabelGab2);
                                 dataObjEl.put("required",compRequired);
                                 dataArrElement.put(dataObjEl);
+                            } else if (compType.equals("email")) {
+                                if (!compLabel.isEmpty()) {
+                                    LinearLayout.LayoutParams lpTv = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,LinearLayout.LayoutParams.WRAP_CONTENT);
+                                    lpTv.setMargins(0,15,0,0);
+                                    TextView tv = new TextView(mContext);
+                                    tv.setText(compLabel);
+                                    tv.setLayoutParams(lpTv);
+                                    llFormBuild.addView(tv);
+                                }
+
+                                int intAplhabet = randomId();
+                                EditText ed = new EditText(mContext);
+                                ed.setId(intAplhabet);
+                                ed.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
+                                ed.setGravity(Gravity.CENTER_VERTICAL);
+                                ed.setIncludeFontPadding(false);
+                                ed.setBackground(mContext.getDrawable(R.drawable.bg_textinput));
+                                ed.setPadding(20,20,20,20);
+                                ed.setHint(compPlaceholder);
+                                ed.setInputType(InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
+                                ed.setLayoutParams(lp);
+                                llFormBuild.addView(ed);
+
+                                int ids = ed.getId();
+                                String elName = compLabel.toLowerCase().replace(" ", "").replace("-", "").replace("/", "").replace(".", "");
+                                String keyLabelInd = keyLabel.toLowerCase().replace(" ", "").replace("-", "").replace("/", "").replace(".", "");
+                                Log.e("CEK","compName : "+elName+" | ids : "+ids);
+                                dataObjEl.put("id",ids);
+                                dataObjEl.put("name",keyLabelInd);
+                                dataObjEl.put("required",compRequired);
+                                dataObjEl.put("label",compLabel);
+                                dataObjEl.put("keyIndo",keyLabelInd);
+                                dataArrElement.put(dataObjEl);
                             } else if (compType.equals("number")) {
                                 if (!compLabel.isEmpty()) {
                                     LinearLayout.LayoutParams lpTv = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,LinearLayout.LayoutParams.WRAP_CONTENT);
@@ -682,6 +715,7 @@ public class MyParserFormBuilder {
                             dataObjElAuto.put("id",idsAuto);
                             dataObjElAuto.put("name",keyLabelIndAuto);
                             dataObjElAuto.put("required",compRequired);
+                            dataObjElAuto.put("url",urlPath);
                             dataObjElAuto.put("keyIndo",keyLabelIndAuto);
                             dataObjElAuto.put("label",compLabel);
                             dataArrElement.put(dataObjElAuto);
