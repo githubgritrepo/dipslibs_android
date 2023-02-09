@@ -34,8 +34,8 @@ public class DipsSplashScreen extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
         super.onCreate(savedInstanceState);
-        getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_dips_splash_screen);
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
         Log.e(TAG,"MASUK onCreate");
         tvVersion = (TextView) findViewById(R.id.tvVersion);
         rlBGTransparant = (RelativeLayout) findViewById(R.id.rlBGTransparant);

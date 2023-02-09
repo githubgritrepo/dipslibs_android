@@ -8,11 +8,13 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.PixelFormat;
 import android.hardware.Camera;
+import android.hardware.SensorManager;
 import android.hardware.camera2.CameraAccessException;
 import android.hardware.camera2.CameraManager;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -69,6 +71,7 @@ import retrofit2.Response;
 public class DipsSwafoto extends AppCompatActivity implements com.wdullaer.materialdatetimepicker.date.DatePickerDialog.OnDateSetListener {
 
     private Context mContext;
+    SensorManager sm;
     public static final int REQUEST_WRITE_PERMISSION = 786;
     private static final int MY_CAMERA_PERMISSION_CODE = 100;
     private CircularSurfaceView preview = null;
@@ -102,6 +105,7 @@ public class DipsSwafoto extends AppCompatActivity implements com.wdullaer.mater
     private Button btnSchedule2;
     public static RelativeLayout rlprogress;
     Camera.Parameters parameters;
+    public boolean surfaceCreated = false;
     private boolean isConfigure;
 
     @Override
@@ -187,15 +191,17 @@ public class DipsSwafoto extends AppCompatActivity implements com.wdullaer.mater
     @Override
     protected void onResume() {
         super.onResume();
-
-        isConfigure = false;
-
-        Log.d("CEK","MASUK onResume");
-
-        if (checkSelfPermission(Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
-            requestPermissions(new String[]{Manifest.permission.CAMERA}, MY_CAMERA_PERMISSION_CODE);
-        } else {
-            requestPermission();
+        try {
+            Log.e("CEK","CAMERA IS"+cameraConfigured);
+            isConfigure = false;
+            Log.d("CEK","MASUK onResume");
+            if (checkSelfPermission(Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+                requestPermissions(new String[]{Manifest.permission.CAMERA}, MY_CAMERA_PERMISSION_CODE);
+            } else {
+                requestPermission();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
@@ -224,20 +230,28 @@ public class DipsSwafoto extends AppCompatActivity implements com.wdullaer.mater
 
     @Override
     protected void onPause() {
-        Log.e("CEK","MASUK ONPAUSE");
-        if (inPreview) {
-            camera.stopPreview();
-        }
-
-        if (camera != null) {
-            camera.release();
-            camera = null;
-            inPreview = false;
-            cameraConfigured = false;
-        }
-
         super.onPause();
+        try {
+            Log.e("CEK","MASUK ONPAUSE");
+            if (inPreview) {
+                camera.stopPreview();
+            }
+
+            Log.e("CEK INPREVIEW",""+inPreview);
+            Log.e("CEK CAMERA pause",""+camera);
+
+            if (camera != null) {
+                camera.release();
+                camera = null;
+                inPreview = false;
+                cameraConfigured = false;
+                surfaceCreated = false;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
+    
 
     private void requestPermission() {
         Log.e("CEK","requestPermission");
@@ -605,7 +619,8 @@ public class DipsSwafoto extends AppCompatActivity implements com.wdullaer.mater
     SurfaceHolder.Callback surfaceCallback = new SurfaceHolder.Callback() {
         @Override
         public void surfaceCreated(@NonNull SurfaceHolder holder) {
-
+            Log.e("CEK","surfaceCreated");
+            surfaceCreated = true;
         }
 
         @Override
@@ -617,7 +632,7 @@ public class DipsSwafoto extends AppCompatActivity implements com.wdullaer.mater
 
         @Override
         public void surfaceDestroyed(@NonNull SurfaceHolder holder) {
-
+            Log.e("CEK","surfaceDestroyed");
         }
     };
 
@@ -659,8 +674,23 @@ public class DipsSwafoto extends AppCompatActivity implements com.wdullaer.mater
         }
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        sm = (SensorManager) mContext.getSystemService(Context.SENSOR_SERVICE);
+    }
+
     private void startPreview() {
+        Log.e("CEK CAMERA",""+camera);
         if (cameraConfigured && camera != null) {
+            try
+            {
+                Thread.sleep(20);
+            }
+            catch (Exception e)
+            {
+                e.printStackTrace();
+            }
             camera.startPreview();
             parameters = camera.getParameters();
             if (parameters.getSupportedFocusModes().contains(
@@ -669,15 +699,21 @@ public class DipsSwafoto extends AppCompatActivity implements com.wdullaer.mater
             }
             camera.setParameters(parameters);
             inPreview = true;
-//            if (isConfigure) {
-//                Log.d("CEK","MASUK isConfigure");
-//                try {
-//                    Thread.sleep(500);
-//                    optimalCamera();
-//                } catch (InterruptedException e) {
-//                    e.printStackTrace();
-//                }
-//            }
+        }
+        else{
+            final Handler handler = new Handler();
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    if (!surfaceCreated){
+                        previewHolder.addCallback(surfaceCallback);
+                        cameraConfigured = true;
+                        previewHolder();
+                        startPreview();
+                        Log.e("Masuk sini","");
+                    }
+                }
+            }, 1000);
         }
     }
 

@@ -3,6 +3,7 @@ package com.evo.mitzoom.Fragments;
 import static android.app.Activity.RESULT_CANCELED;
 import static android.app.Activity.RESULT_OK;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -170,10 +171,6 @@ public class frag_inputdata_new extends Fragment {
         btnNext.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                /* hide keyboard */
-                Log.d("CEk Button","");
-                ((InputMethodManager) getActivity().getSystemService(Activity.INPUT_METHOD_SERVICE))
-                        .toggleSoftInput(InputMethodManager.SHOW_IMPLICIT, 0);
                 int child = llFormBuild.getChildCount();
                 if (child > 0 && idElement.length() > 0) {
                     boolean flagNext = true;
@@ -185,6 +182,7 @@ public class frag_inputdata_new extends Fragment {
                                 try {
                                     int idDataEl = idElement.getJSONObject(j).getInt("id");
                                     String nameDataEl = idElement.getJSONObject(j).getString("name");
+                                    String label = idElement.getJSONObject(j).getString("label");
                                     boolean requiredDataEl = idElement.getJSONObject(j).getBoolean("required");
                                     if (idEl == idDataEl) {
 
@@ -193,9 +191,14 @@ public class frag_inputdata_new extends Fragment {
                                             EditText ed = (EditText) llFormBuild.getChildAt(i);
                                             String results = ed.getText().toString();
                                             if (requiredDataEl && results.isEmpty()) {
-                                                Toast.makeText(mContext, nameDataEl + " harus diisi/dipilih", Toast.LENGTH_SHORT).show();
+                                                Toast.makeText(mContext, label+" "+getResources().getString(R.string.error_field), Toast.LENGTH_SHORT).show();
                                                 checkEmpty = true;
-                                            } else if (nameDataEl.contains("email")) {
+                                            }
+                                            else if (results.isEmpty()){
+                                                Toast.makeText(mContext, label+" "+getResources().getString(R.string.error_field), Toast.LENGTH_SHORT).show();
+                                                checkEmpty = true;
+                                            }
+                                            else if (nameDataEl.contains("email")) {
                                                 boolean cekFlag = validationEmail(results);
                                                 if (!cekFlag) {
                                                     checkEmpty = true;
@@ -203,7 +206,8 @@ public class frag_inputdata_new extends Fragment {
                                             }
                                             objEl.put(nameDataEl, results);
                                             break;
-                                        } else if (llFormBuild.getChildAt(i) instanceof RadioGroup) {
+                                        }
+                                        else if (llFormBuild.getChildAt(i) instanceof RadioGroup) {
                                             RadioGroup rg = (RadioGroup) llFormBuild.getChildAt(i);
                                             int selectedId = rg.getCheckedRadioButtonId();
                                             Log.e("CEK", "MASUK RadioGroup ke-" + i+" | selectedId : "+selectedId+" | requiredDataEl  : "+requiredDataEl);
@@ -212,16 +216,17 @@ public class frag_inputdata_new extends Fragment {
                                                 String results = rb.getText().toString();
                                                 Log.e("CEK","RadioGroup results : "+results+" | requiredDataEl : "+requiredDataEl);
                                                 if (requiredDataEl && results.isEmpty()) {
-                                                    Toast.makeText(mContext, nameDataEl + " harus diisi/dipilih", Toast.LENGTH_SHORT).show();
+                                                    Toast.makeText(mContext, nameDataEl+" "+getResources().getString(R.string.error_field), Toast.LENGTH_SHORT).show();
                                                     checkEmpty = true;
                                                 }
                                                 objEl.put(nameDataEl, results);
                                             } else if (requiredDataEl) {
-                                                Toast.makeText(mContext, nameDataEl + " harus diisi/dipilih", Toast.LENGTH_SHORT).show();
+                                                Toast.makeText(mContext, nameDataEl+" "+getResources().getString(R.string.error_field), Toast.LENGTH_SHORT).show();
                                                 checkEmpty = true;
                                             }
                                             break;
-                                        } else if (llFormBuild.getChildAt(i) instanceof CheckBox) {
+                                        }
+                                        else if (llFormBuild.getChildAt(i) instanceof CheckBox) {
                                             Log.e("CEK", "MASUK CheckBox ke-" + i);
                                             CheckBox chk = (CheckBox) llFormBuild.getChildAt(i);
                                             boolean isChk = chk.isChecked();
@@ -229,30 +234,33 @@ public class frag_inputdata_new extends Fragment {
                                                 objEl.put(nameDataEl, isChk);
                                             }
                                             break;
-                                        } else if (llFormBuild.getChildAt(i) instanceof Spinner) {
+                                        }
+                                        else if (llFormBuild.getChildAt(i) instanceof Spinner) {
                                             Log.e("CEK", "MASUK Spinner ke-" + i);
                                             Spinner spin = (Spinner) llFormBuild.getChildAt(i);
                                             if (spin.isSelected()) {
                                                 String results = spin.getSelectedItem().toString();
                                                 if (requiredDataEl && results.isEmpty()) {
-                                                    Toast.makeText(mContext, nameDataEl + " harus diisi/dipilih", Toast.LENGTH_SHORT).show();
+                                                    Toast.makeText(mContext, nameDataEl+" "+getResources().getString(R.string.error_field), Toast.LENGTH_SHORT).show();
                                                     checkEmpty = true;
                                                 }
                                                 objEl.put(nameDataEl, results);
                                             }
                                             break;
-                                        } else if (llFormBuild.getChildAt(i) instanceof AutoCompleteTextView) {
+                                        }
+                                        else if (llFormBuild.getChildAt(i) instanceof AutoCompleteTextView) {
                                             Log.e("CEK", "MASUK AutoCompleteTextView ke-" + i);
                                             AutoCompleteTextView autoText = (AutoCompleteTextView) llFormBuild.getChildAt(i);
                                             String results = autoText.getText().toString();
                                             if (requiredDataEl && results.isEmpty()) {
-                                                Toast.makeText(mContext, nameDataEl + " harus diisi/dipilih", Toast.LENGTH_SHORT).show();
+                                                Toast.makeText(mContext, nameDataEl+" "+getResources().getString(R.string.error_field), Toast.LENGTH_SHORT).show();
                                                 checkEmpty = true;
                                                 break;
                                             }
                                             objEl.put(nameDataEl, results);
                                             break;
-                                        } else if (llFormBuild.getChildAt(i) instanceof LinearLayout) {
+                                        }
+                                        else if (llFormBuild.getChildAt(i) instanceof LinearLayout) {
                                             Log.e("CEK", "MASUK LinearLayout ke-" + i);
                                             LinearLayout ll = (LinearLayout) llFormBuild.getChildAt(i);
                                             Log.e("CEK", "LinearLayout getChildCount : " + ll.getChildCount());
@@ -329,7 +337,9 @@ public class frag_inputdata_new extends Fragment {
                         if (validate) {
                             if (isSessionZoom) {
                                 BaseMeetingActivity.showProgress(true);
+                                keyboard(mContext);
                             } else {
+                                keyboard(mContext);
                                 DipsSwafoto.showProgress(true);
                             }
                             CekDataByNIK(objEl);
@@ -342,6 +352,15 @@ public class frag_inputdata_new extends Fragment {
             }
         });
     }
+
+    private void keyboard(Context context){
+        InputMethodManager imm = (InputMethodManager) context.getSystemService(Activity.INPUT_METHOD_SERVICE);
+        if (imm.isAcceptingText()){
+            ((InputMethodManager) getActivity().getSystemService(Activity.INPUT_METHOD_SERVICE))
+                    .toggleSoftInput(InputMethodManager.SHOW_IMPLICIT, 0);
+        }
+    }
+
 
     @Override
     public void onDestroy() {
@@ -1159,7 +1178,7 @@ public class frag_inputdata_new extends Fragment {
                 if (uri != null) {
                     Cursor c = mContext.getContentResolver().query(uri,null, null, null, null);
                     c.moveToFirst();
-                    String fileName = c.getString(c.getColumnIndex(OpenableColumns.DISPLAY_NAME));
+                    @SuppressLint("Range") String fileName = c.getString(c.getColumnIndex(OpenableColumns.DISPLAY_NAME));
                     tvSavedFile.setText("filename : "+fileName);
                     Log.e("CEK","RESULT fileName : "+fileName);
                     c.close();
