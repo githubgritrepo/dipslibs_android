@@ -1530,6 +1530,7 @@ public class frag_cif_new extends Fragment {
                                     }
 
                                     String keyNoponsel = "noponsel";
+                                    String keyGelar = "";
                                     String keyNamaIdentitas = "";
                                     String keyNoIdentitas = "";
                                     for(Iterator<String> iter = getObjEl.keys(); iter.hasNext();) {
@@ -1547,8 +1548,10 @@ public class frag_cif_new extends Fragment {
                                                 }
                                             } else if (key.contains("nama") && key.contains("identitas"+valKurung)) {
                                                 keyNamaIdentitas = key;
-                                            } else if ((key.contains("no") || key.contains("nomor")) && key.contains("identitas"+valKurung)) {
+                                            } else if (key.contains("noidentitas"+valKurung) || key.contains("nomoridentitas"+valKurung)) {
                                                 keyNoIdentitas = key;
+                                            } else if (key.contains("gelar"+valKurung)) {
+                                                keyGelar = key;
                                             }
                                         }
                                     }
@@ -1563,9 +1566,14 @@ public class frag_cif_new extends Fragment {
                                     if (!keyNoIdentitas.isEmpty()) {
                                         noIdentitas = getObjEl.getString(keyNoIdentitas);
                                     }
+                                    String gelar = "";
+                                    if (!keyGelar.isEmpty()) {
+                                        gelar = getObjEl.getString(keyGelar);
+                                    }
                                     dataNasabahObj.put("noHp",no_handphone);
                                     dataNasabahObj.put("namaLengkap",namaIdentitas);
                                     dataNasabahObj.put("nik",noIdentitas);
+                                    dataNasabahObj.put("gelar",gelar);
                                     Log.e("CEK","dataNasabahObj : "+dataNasabahObj.toString());
                                     sessions.saveNasabah(dataNasabahObj.toString());
 
@@ -3618,6 +3626,15 @@ public class frag_cif_new extends Fragment {
             thumbnail = getResizedBitmap(thumbnail, (thumbnail.getWidth() / perDiff), (thumbnail.getHeight() / perDiff));
         }
 
+        /*try {
+            byte[] downsizedImageBytes = getDownsizedImageBytes(thumbnail, thumbnail.getWidth(), thumbnail.getHeight());
+            File mediaFile2 = createTemporaryFile(downsizedImageBytes);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }*/
+
         Log.e("CEK", "bitmapCrop.getWidth() : "+thumbnail.getWidth()+" | bitmapCrop.getHeight() : "+thumbnail.getHeight());
         if (thumbnail.getWidth() < 256 || thumbnail.getHeight() < 256) {
             perDiff--;
@@ -3625,6 +3642,19 @@ public class frag_cif_new extends Fragment {
         }
 
         return thumbnail;
+    }
+
+    public byte[] getDownsizedImageBytes(Bitmap fullBitmap, int scaleWidth, int scaleHeight) throws IOException {
+        Bitmap scaledBitmap = Bitmap.createScaledBitmap(fullBitmap, scaleWidth, scaleHeight, true);
+
+        Log.e("CEK", "scaledBitmap.getWidth() : "+scaledBitmap.getWidth()+" | scaledBitmap.getHeight() : "+scaledBitmap.getHeight());
+
+        // 2. Instantiate the downsized image content as a byte[]
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        scaledBitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+        byte[] downsizedImageBytes = baos.toByteArray();
+
+        return downsizedImageBytes;
     }
 
     public Bitmap getResizedBitmap(Bitmap bm, int newWidth, int newHeight) {
@@ -4061,9 +4091,9 @@ public class frag_cif_new extends Fragment {
                         chooseImage.setVisibility(View.GONE);
                     }
                     imgtoBase64(thumbnail);
-                    if (formCode == 4) {
+                    /*if (formCode == 4) {
                         imgtoBase64OCR();
-                    }
+                    }*/
                 }
             }
             else if (requestCode == REQUESTCODE_SWAFOTO){

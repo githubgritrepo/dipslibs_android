@@ -18,6 +18,7 @@ import android.util.Base64;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -42,8 +43,11 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
+import java.util.Locale;
 import java.util.Random;
 
 public class MyParserFormBuilder {
@@ -247,6 +251,14 @@ public class MyParserFormBuilder {
                                 } else {
                                     elName = compLabel.toLowerCase().replace(" ", "").replace("-", "").replace("/", "").replace(".", "");
                                     keyLabelInd = keyLabel.toLowerCase().replace(" ", "").replace("-", "").replace("/", "").replace(".", "");
+                                }
+
+                                if (compType.equals("date")) {
+                                    if (keyLabelInd.contains("tanggal") && (keyLabelInd.contains("pengaduan") || keyLabelInd.contains("komplain") )) {
+                                        String timeDate = new SimpleDateFormat("dd-MM-yyyy",
+                                                Locale.getDefault()).format(new Date());
+                                        ed.setText(timeDate);
+                                    }
                                 }
 
                                 ed.setLayoutParams(lp);
@@ -484,53 +496,70 @@ public class MyParserFormBuilder {
 
                                 lp.setMargins(0,10,0,10);
                                 LinearLayout ln = new LinearLayout(mContext);
-                                ln.setId(intAplhabet);
-                                ln.setLayoutParams(lp);
-                                ln.setOrientation(LinearLayout.VERTICAL);
 
-                                int intLinear = randomId();
-                                LinearLayout ln2 = new LinearLayout(mContext);
-                                LinearLayout.LayoutParams lpLL = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,LinearLayout.LayoutParams.WRAP_CONTENT);;
-                                lpLL.setMargins(0,0,0,5);
-                                ln2.setId(intLinear);
-                                ln2.setLayoutParams(lpLL);
-                                ln2.setOrientation(LinearLayout.HORIZONTAL);
-                                ln2.setGravity(Gravity.CENTER);
-                                ln2.setBackground(mContext.getDrawable(R.drawable.oval_background_10dp));
-                                ln2.setBackgroundTintList(ColorStateList.valueOf(mContext.getColor(R.color.color_6b6b6b)));
+                                String elName = compLabel.toLowerCase().replace(" ", "").replace("-", "").replace("/", "").replace(".", "");
+                                String keyLabelInd = keyLabel.toLowerCase().replace(" ", "").replace("-", "").replace("/", "").replace(".", "");
 
-                                LinearLayout.LayoutParams lpImg = new LinearLayout.LayoutParams(30,30);
-                                ImageView img = new ImageView(mContext);
-                                img.setLayoutParams(lpImg);
-                                img.setImageDrawable(mContext.getDrawable(R.drawable.galeri));
-                                ln2.addView(img);
+                                if (keyLabelInd.indexOf("gambar") > 0 || keyLabelInd.indexOf("image") > 0 || keyLabelInd.indexOf("tangan") > 0) {
+                                    if (!compLabel.isEmpty()) {
+                                        parentLabel = compLabel;
+                                        parentLabelIndo = keyLabel;
+                                        TextView tv = new TextView(mContext);
+                                        tv.setText(compLabel);
+                                        tv.setLayoutParams(lp);
+                                        llFormBuild.addView(tv);
+                                    }
+                                    LayoutInflater inflater = LayoutInflater.from(mContext);
+                                    ln = (LinearLayout) inflater.inflate(R.layout.layout_capture_gallery, null, false);
+                                } else {
 
-                                lp2.gravity = Gravity.CENTER_VERTICAL;
-                                lp2.setMarginStart(10);
-                                lp2.setMarginEnd(10);
-                                TextView tv = new TextView(mContext);
-                                tv.setText(compLabel);
-                                tv.setLayoutParams(lp2);
-                                tv.setTextColor(Color.WHITE);
-                                tv.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 15);
-                                ln2.addView(tv);
-                                ln.addView(ln2);
+                                    ln.setId(intAplhabet);
+                                    ln.setLayoutParams(lp);
+                                    ln.setOrientation(LinearLayout.VERTICAL);
 
-                                int inttvSaved = randomId();
-                                LinearLayout.LayoutParams lptv = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,LinearLayout.LayoutParams.WRAP_CONTENT);
-                                lptv.setMargins(0,0,0,10);
-                                TextView tvSaved = new TextView(mContext);
-                                tvSaved.setId(inttvSaved);
-                                tvSaved.setTextColor(Color.BLACK);
-                                tvSaved.setLayoutParams(lptv);
-                                tvSaved.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
-                                ln.addView(tvSaved);
+                                    int intLinear = randomId();
+                                    LinearLayout ln2 = new LinearLayout(mContext);
+                                    LinearLayout.LayoutParams lpLL = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+                                    lpLL.setMargins(0, 0, 0, 5);
+                                    ln2.setId(intLinear);
+                                    ln2.setLayoutParams(lpLL);
+                                    ln2.setOrientation(LinearLayout.HORIZONTAL);
+                                    ln2.setGravity(Gravity.CENTER);
+                                    ln2.setBackground(mContext.getDrawable(R.drawable.oval_background_10dp));
+                                    ln2.setBackgroundTintList(ColorStateList.valueOf(mContext.getColor(R.color.color_6b6b6b)));
+
+                                    LinearLayout.LayoutParams lpImg = new LinearLayout.LayoutParams(30, 30);
+                                    ImageView img = new ImageView(mContext);
+                                    img.setLayoutParams(lpImg);
+                                    img.setImageDrawable(mContext.getDrawable(R.drawable.galeri));
+                                    ln2.addView(img);
+
+                                    lp2.gravity = Gravity.CENTER_VERTICAL;
+                                    lp2.setMarginStart(10);
+                                    lp2.setMarginEnd(10);
+                                    TextView tv = new TextView(mContext);
+                                    tv.setText(compLabel);
+                                    tv.setLayoutParams(lp2);
+                                    tv.setTextColor(Color.WHITE);
+                                    tv.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 15);
+                                    ln2.addView(tv);
+                                    ln.addView(ln2);
+
+                                    int inttvSaved = randomId();
+                                    LinearLayout.LayoutParams lptv = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+                                    lptv.setMargins(0, 0, 0, 10);
+                                    TextView tvSaved = new TextView(mContext);
+                                    tvSaved.setId(inttvSaved);
+                                    tvSaved.setTextColor(Color.BLACK);
+                                    tvSaved.setLayoutParams(lptv);
+                                    tvSaved.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
+                                    ln.addView(tvSaved);
+                                }
 
                                 llFormBuild.addView(ln);
 
                                 int ids = ln.getId();
-                                String elName = compLabel.toLowerCase().replace(" ", "").replace("-", "").replace("/", "").replace(".", "");
-                                String keyLabelInd = keyLabel.toLowerCase().replace(" ", "").replace("-", "").replace("/", "").replace(".", "");
+
                                 Log.e("CEK","compName : "+elName+" | ids : "+ids);
                                 dataObjEl.put("id",ids);
                                 dataObjEl.put("name",keyLabelInd);

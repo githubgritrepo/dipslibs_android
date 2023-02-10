@@ -131,6 +131,7 @@ public class frag_ready_account extends Fragment {
     private String transactionId = "";
     private int loopStatus = 0;
     private JSONObject dataNasabahObj = null;
+    String gelar = "";
     String namaLengkap = "";
     String alamat = "";
     String nik = "";
@@ -152,6 +153,9 @@ public class frag_ready_account extends Fragment {
         if (!dataNasabah.isEmpty()) {
             try {
                 dataNasabahObj = new JSONObject(dataNasabah);
+                if (dataNasabahObj.has("gelar")) {
+                    gelar = dataNasabahObj.getString("gelar");
+                }
                 if (dataNasabahObj.has("namaLengkap")) {
                     namaLengkap = dataNasabahObj.getString("namaLengkap");
                 }
@@ -426,9 +430,31 @@ public class frag_ready_account extends Fragment {
                     }
 
                 } else if (formCode == 156) {
-                    bundle.putInt("form_id",30);
+                    /*bundle.putInt("form_id",30);
                     sessions.saveFormCOde(155);
-                    rabbitMirroring.MirroringSendEndpoint(155);
+                    rabbitMirroring.MirroringSendEndpoint(155);*/
+                    String tiperekening = "";
+                    if (dataFormObj.has("tiperekening")) {
+                        try {
+                            tiperekening = dataFormObj.getString("tiperekening");
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+
+                    if (tiperekening.toLowerCase().trim().equals("tabungan")) {
+                        bundle.putInt("form_id", 21);
+                        sessions.saveFormCOde(153);
+                        rabbitMirroring.MirroringSendEndpoint(153);
+                    } else if (tiperekening.toLowerCase().trim().equals("giro")) {
+                        bundle.putInt("form_id",20);
+                        sessions.saveFormCOde(152);
+                        rabbitMirroring.MirroringSendEndpoint(152);
+                    } else if (tiperekening.toLowerCase().trim().contains("jangka")) {
+                        bundle.putInt("form_id",22);
+                        sessions.saveFormCOde(154);
+                        rabbitMirroring.MirroringSendEndpoint(154);
+                    }
                 } else {
                     fragment = new frag_open_account_product();
                     sessions.saveFormCOde(201);
@@ -592,21 +618,21 @@ public class frag_ready_account extends Fragment {
                 }
             } else if (formCode == 152) {
                 bundle.putInt("form_id",30);
-                sessions.saveFormCOde(155);
-                rabbitMirroring.MirroringSendEndpoint(155);
+                sessions.saveFormCOde(156);
+                rabbitMirroring.MirroringSendEndpoint(156);
             } else if (formCode == 153) {
                 bundle.putInt("form_id",30);
-                sessions.saveFormCOde(155);
-                rabbitMirroring.MirroringSendEndpoint(155);
+                sessions.saveFormCOde(156);
+                rabbitMirroring.MirroringSendEndpoint(156);
             } else if (formCode == 154) {
                 bundle.putInt("form_id",30);
-                sessions.saveFormCOde(155);
-                rabbitMirroring.MirroringSendEndpoint(155);
-            } else if (formCode == 155) {
+                sessions.saveFormCOde(156);
+                rabbitMirroring.MirroringSendEndpoint(156);
+            } /*else if (formCode == 155) {
                 bundle.putInt("form_id",35);
                 sessions.saveFormCOde(156);
                 rabbitMirroring.MirroringSendEndpoint(156);
-            }
+            }*/
 
             sendDataFragment(bundle, fragment);
         } else {
@@ -1174,9 +1200,9 @@ public class frag_ready_account extends Fragment {
                 }
                 Log.e("CEK","key : "+key+" | valKurung : "+valKurung);
                 try {
-                    if (key.toLowerCase().contains("nama") && key.toLowerCase().contains("identitas"+valKurung)) {
+                    if (key.toLowerCase().contains("gelar"+valKurung)) {
                         Log.e("CEK","MASUK IF");
-                        objEl.put(key, namaLengkap);
+                        objEl.put(key, gelar);
                     } else if (key.toLowerCase().contains("cif"+valKurung)) {
                         Log.e("CEK","MASUK IF 2");
                         objEl.put(key, NoCIF);

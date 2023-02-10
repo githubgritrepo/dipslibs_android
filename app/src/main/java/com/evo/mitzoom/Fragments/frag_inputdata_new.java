@@ -12,6 +12,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.provider.OpenableColumns;
 import android.text.AutoText;
@@ -30,6 +31,7 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
@@ -52,6 +54,7 @@ import com.evo.mitzoom.Model.FormSpin;
 import com.evo.mitzoom.R;
 import com.evo.mitzoom.Session.SessionManager;
 import com.evo.mitzoom.ui.Alternative.DipsSwafoto;
+import com.evo.mitzoom.ui.DipsCameraActivity;
 import com.evo.mitzoom.ui.DipsWaitingRoom;
 import com.google.gson.JsonObject;
 
@@ -63,9 +66,14 @@ import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.InputStreamReader;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Iterator;
+import java.util.Locale;
+import java.util.regex.Pattern;
 
 import cn.pedant.SweetAlert.SweetAlertDialog;
 import okhttp3.MediaType;
@@ -77,6 +85,7 @@ import us.zoom.sdk.ZoomVideoSDK;
 
 public class frag_inputdata_new extends Fragment {
 
+    private int REQUESTCODE_CAPTURE = 1;
     private Context mContext;
     private boolean isCust;
     public int seconds = 0;
@@ -98,6 +107,8 @@ public class frag_inputdata_new extends Fragment {
     JSONObject objEl = new JSONObject();
     JSONObject valSpinProv = new JSONObject();
     JSONObject valSpin = new JSONObject();
+    JSONObject valSpinLabel = new JSONObject();
+    JSONObject valSpinAutoComplete = new JSONObject();
     private RabbitMirroring rabbitMirroring;
     private int lasLenChar;
     private boolean backSpaceChar;
@@ -111,6 +122,10 @@ public class frag_inputdata_new extends Fragment {
     final String STATE_ELEMENTARRAY = "elementArray";
     final String STATE_ELEMENTObj = "elementObj";
     private boolean flagStuckSpin = false;
+    private ImageView viewImage = null;
+    private LinearLayout llFileGallery = null;
+    private ImageView imgBin = null;
+    private LinearLayout chooseImage = null;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -377,7 +392,13 @@ public class frag_inputdata_new extends Fragment {
     }
 
     private boolean validationEmail(String data) {
-        String emailPattern = "[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+";
+        return Pattern.compile("^(([\\w-]+\\.)+[\\w-]+|([a-zA-Z]{1}|[\\w-]{2,}))@"
+                + "((([0-1]?[0-9]{1,2}|25[0-5]|2[0-4][0-9])\\.([0-1]?"
+                + "[0-9]{1,2}|25[0-5]|2[0-4][0-9])\\."
+                + "([0-1]?[0-9]{1,2}|25[0-5]|2[0-4][0-9])\\.([0-1]?"
+                + "[0-9]{1,2}|25[0-5]|2[0-4][0-9])){1}|"
+                + "([a-zA-Z]+[\\w-]+\\.)+[a-zA-Z]{2,4})$").matcher(data).matches();
+        /*String emailPattern = "[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+";
 
         boolean flag = false;
         // onClick of button perform this simplest code.
@@ -391,7 +412,7 @@ public class frag_inputdata_new extends Fragment {
             flag = false;
         }
 
-        return flag;
+        return flag;*/
     }
 
     private void processGetForm() {
@@ -451,7 +472,6 @@ public class frag_inputdata_new extends Fragment {
                                 urlPath = idElement.getJSONObject(j).getString("url");
                             }
                             if (idEl == idDataEl) {
-                                Log.e("CEK","idEl : "+idEl+" | idDataEl : "+idDataEl);
                                 String finalValKurung = valKurung;
                                 if (llFormBuild.getChildAt(i) instanceof EditText) {
                                     Log.e("CEK","MASUK EditText : "+nameDataEl);
@@ -473,20 +493,37 @@ public class frag_inputdata_new extends Fragment {
                                                 processGetDynamicURLAutoComplete(AutoText, urlPath, nameDataEl);
                                             }
                                         }
-                                        AutoText.setOnClickListener(new View.OnClickListener() {
-                                            @Override
-                                            public void onClick(View v) {
-                                                Log.e("CEK","MASUK AutoText ONCLOCK");
-                                            }
-                                        });
                                         AutoText.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                                             @Override
                                             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                                                Log.e("CEK","MASUK AutoText ONCLOCK");
+                                                Log.e("CEK","MASUK AutoText setOnItemClickListener");
+                                                String txt = AutoText.getText().toString().trim();
+                                                Log.e("CEK","MASUK AutoText setOnItemClickListener txt : "+txt+" | getItemAtPosition : "+parent.getItemAtPosition(position));
+                                                FormSpin dataSpin = (FormSpin) parent.getItemAtPosition(position);
+                                                int idData = dataSpin.getId();
+                                                String results = dataSpin.getName();
+                                                Log.e("CEK","dataSpin.getId() : "+idData+" | results : "+results);
+                                                try {
+                                                    objEl.put(nameDataEl, results);
+                                                    if (nameDataEl.contains("jenis") && (nameDataEl.contains("pengaduan") || nameDataEl.contains("komplain"))) {
+                                                        valSpinAutoComplete.put(nameDataEl, results);
+                                                    }
+                                                } catch (JSONException e) {
+                                                    e.printStackTrace();
+                                                }
+
+                                                processGetSpinChildAutoComplete(nameDataEl);
+                                            }
+                                        });
+                                        AutoText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+                                            @Override
+                                            public void onFocusChange(View view, boolean b) {
+                                                Log.e("CEK","onFocusChange : "+b);
                                             }
                                         });
                                     } else {
                                         EditText ed = (EditText) llFormBuild.getChildAt(i);
+
                                         ed.addTextChangedListener(new TextWatcher() {
                                             @Override
                                             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
@@ -599,6 +636,10 @@ public class frag_inputdata_new extends Fragment {
                                                         valSpinProv.put(nameDataEl,idData);
                                                     } else {
                                                         valSpin.put(nameDataEl, idData);
+                                                        if (nameDataEl.contains("jenis") && (nameDataEl.contains("pengaduan") || nameDataEl.contains("komplain"))) {
+                                                            String resultsEng = dataSpin.getNameEng();
+                                                            valSpinLabel.put(nameDataEl, resultsEng);
+                                                        }
                                                     }
                                                 } catch (JSONException e) {
                                                     e.printStackTrace();
@@ -642,31 +683,32 @@ public class frag_inputdata_new extends Fragment {
                                     LinearLayout ll = (LinearLayout) llFormBuild.getChildAt(i);
                                     Log.e("CEK", "LinearLayout getChildCount : " + ll.getChildCount());
                                     if (ll.getChildCount() > 1) {
-                                        if (ll.getChildAt(0) instanceof LinearLayout) {
-                                            LinearLayout ll2 = (LinearLayout) ll.getChildAt(0);
-                                            Log.e("CEK", "MASUK LinearLayout CHILD ke-" + i);
+                                        if (ll.getChildAt(1) instanceof TextView) {
+                                            if (ll.getChildAt(0) instanceof LinearLayout) {
+                                                LinearLayout ll2 = (LinearLayout) ll.getChildAt(0);
+                                                Log.e("CEK", "MASUK LinearLayout CHILD ke-" + i);
 
-                                            TextView tvll = (TextView) ll2.getChildAt(1);
-                                            String txt = tvll.getText().toString();
-                                            Log.e("CEK", "tvll : " + txt);
-                                            if (txt.toLowerCase().indexOf("gambar") > 0 || txt.toLowerCase().indexOf("image") > 0 || txt.toLowerCase().indexOf("tangan") > 0) {
-                                                tvSavedImg = (TextView) ll.getChildAt(1);
-                                                ll2.setOnClickListener(new View.OnClickListener() {
-                                                    @Override
-                                                    public void onClick(View view) {
-                                                        chooseFromSD();
-                                                    }
-                                                });
-                                            } else {
-                                                tvSavedFile = (TextView) ll.getChildAt(1);
-                                                ll2.setOnClickListener(new View.OnClickListener() {
-                                                    @Override
-                                                    public void onClick(View view) {
-                                                        Intent intent = new Intent();
-                                                        intent.setType("*/*");
-                                                        intent.setAction(Intent.ACTION_OPEN_DOCUMENT);
-                                                        intent.addCategory(Intent.CATEGORY_OPENABLE);
-                                                        String[] mimetypes = { "application/pdf", "application/doc", "text/*", "image/jpeg", "image/png" };
+                                                TextView tvll = (TextView) ll2.getChildAt(1);
+                                                String txt = tvll.getText().toString();
+                                                Log.e("CEK", "tvll : " + txt);
+                                                if (txt.toLowerCase().indexOf("gambar") > 0 || txt.toLowerCase().indexOf("image") > 0 || txt.toLowerCase().indexOf("tangan") > 0) {
+                                                    tvSavedImg = (TextView) ll.getChildAt(1);
+                                                    ll2.setOnClickListener(new View.OnClickListener() {
+                                                        @Override
+                                                        public void onClick(View view) {
+                                                            chooseFromSD();
+                                                        }
+                                                    });
+                                                } else {
+                                                    tvSavedFile = (TextView) ll.getChildAt(1);
+                                                    ll2.setOnClickListener(new View.OnClickListener() {
+                                                        @Override
+                                                        public void onClick(View view) {
+                                                            Intent intent = new Intent();
+                                                            intent.setType("*/*");
+                                                            intent.setAction(Intent.ACTION_OPEN_DOCUMENT);
+                                                            intent.addCategory(Intent.CATEGORY_OPENABLE);
+                                                            String[] mimetypes = { "application/pdf", "application/doc", "text/*", "image/jpeg", "image/png" };
                                                     /*String[] mimeTypes =
                                                             {"application/msword", "application/vnd.openxmlformats-officedocument.wordprocessingml.document", // .doc & .docx
                                                                     "application/vnd.ms-powerpoint", "application/vnd.openxmlformats-officedocument.presentationml.presentation", // .ppt & .pptx
@@ -675,11 +717,54 @@ public class frag_inputdata_new extends Fragment {
                                                                     "application/pdf",
                                                                     "application/zip", "application/vnd.android.package-archive"};*/
 
-                                                        intent.putExtra(Intent.EXTRA_MIME_TYPES, mimetypes);
-                                                        startActivityForResult(intent, 202);
-                                                    }
-                                                });
+                                                            intent.putExtra(Intent.EXTRA_MIME_TYPES, mimetypes);
+                                                            startActivityForResult(intent, 202);
+                                                        }
+                                                    });
+                                                }
                                             }
+                                        } else {
+                                            Log.e("CEK","MASUK UPLOAD GALLERY");
+                                            ImageView btnCamera = (ImageView) ll.findViewById(R.id.choose_camera);
+                                            chooseImage = (LinearLayout) ll.findViewById(R.id.Choose_Image);
+                                            LinearLayout btnGallery = (LinearLayout) ll.findViewById(R.id.choose_gallery);
+                                            llFileGallery = (LinearLayout) ll.findViewById(R.id.llFileGallery);
+                                            imgBin = (ImageView) ll.findViewById(R.id.imgBin);
+                                            tvSavedImg = (TextView) ll.findViewById(R.id.tvNameGallery);
+                                            viewImage = (ImageView) ll.findViewById(R.id.Imageview);
+
+                                            imgBin.setOnClickListener(new View.OnClickListener() {
+                                                @Override
+                                                public void onClick(View v) {
+                                                    viewImage.setVisibility(View.GONE);
+                                                    chooseImage.setVisibility(View.VISIBLE);
+                                                    llFileGallery.setVisibility(View.GONE);
+                                                }
+                                            });
+                                            btnCamera.setOnClickListener(new View.OnClickListener() {
+                                                @Override
+                                                public void onClick(View v) {
+                                                    /*if (!requestPermission()) {
+                                                        Toast.makeText(mContext, "Permission denied", Toast.LENGTH_SHORT).show();
+                                                        return;
+                                                    }*/
+                                                    session.saveMedia(1);
+                                                    Intent intent = new Intent(mContext, DipsCameraActivity.class);
+                                                    intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                                                    startActivityForResult(intent, REQUESTCODE_CAPTURE);
+                                                }
+                                            });
+                                            btnGallery.setOnClickListener(new View.OnClickListener() {
+                                                @Override
+                                                public void onClick(View v) {
+                                                    /*if (!requestPermission()) {
+                                                        Toast.makeText(mContext, "Permission denied", Toast.LENGTH_SHORT).show();
+                                                        return;
+                                                    }*/
+                                                    session.saveMedia(2);
+                                                    chooseFromSD();
+                                                }
+                                            });
                                         }
                                     }
                                 }
@@ -782,6 +867,7 @@ public class frag_inputdata_new extends Fragment {
                                         valSpinProv.put(nameDataEl,idData);
                                     } else {
                                         valSpin.put(nameDataEl, idData);
+                                        valSpinLabel.put(nameDataEl,labelEng);
                                     }
                                     processGetSpinChild(nameDataEl);
                                     if ((nameDataEl.contains("kelurahan") || nameDataEl.contains("desa"))) {
@@ -805,6 +891,45 @@ public class frag_inputdata_new extends Fragment {
                 Toast.makeText(mContext,t.getMessage(),Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    private void processGetSpinChildAutoComplete(String nameDataEl) {
+        Log.e("CEK","processGetSpinChildAutoComplete nameDataEl : "+nameDataEl);
+        int child = llFormBuild.getChildCount();
+        for (int i = 0; i < child; i++) {
+            int idEl = llFormBuild.getChildAt(i).getId();
+            for (int j = 0; j < idElement.length(); j++) {
+                try {
+                    int idDataEl = idElement.getJSONObject(j).getInt("id");
+                    String getnameDataEl = idElement.getJSONObject(j).getString("name");
+                    String urlPath = "";
+                    if (idElement.getJSONObject(j).has("url")) {
+                        urlPath = idElement.getJSONObject(j).getString("url");
+                    }
+
+                    if (idEl == idDataEl) {
+                        if (llFormBuild.getChildAt(i) instanceof EditText) {
+                            Log.e("CEK", "MASUK EditText : " + nameDataEl);
+                            if ((nameDataEl.contains("jenis") && (nameDataEl.contains("pengaduan") || nameDataEl.contains("komplain"))) &&
+                                    (getnameDataEl.contains("hal") && (getnameDataEl.contains("pengaduan") || getnameDataEl.contains("komplain")))) {
+                                if (!urlPath.isEmpty()) {
+                                    AutoCompleteTextView AutoText = (AutoCompleteTextView) llFormBuild.getChildAt(i);
+                                    if (!urlPath.isEmpty()) {
+                                        String typeComplaint = valSpinAutoComplete.getString(nameDataEl);
+                                        String urlNew = urlPath.replace(":jenisPengaduan",typeComplaint);
+
+                                        Log.e("CEK", "urlNew : "+urlNew);
+                                        processGetDynamicURLAutoComplete(AutoText, urlPath, nameDataEl);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                } catch (JSONException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        }
     }
 
     private void processGetSpinChild(String nameDataEl) {
@@ -876,6 +1001,22 @@ public class frag_inputdata_new extends Fragment {
 
                                     Log.e("CEK", "urlNew : "+urlNew);
 
+                                    RelativeLayout rl = (RelativeLayout) llFormBuild.getChildAt(i);
+                                    if (rl.getChildAt(0) instanceof Spinner) {
+                                        Spinner spin = (Spinner) rl.getChildAt(0);
+                                        processGetDynamicURL(spin, urlNew, getnameDataEl);
+                                    }
+                                }
+                            } if ((nameDataEl.contains("jenis") && (nameDataEl.contains("pengaduan") || nameDataEl.contains("komplain"))) &&
+                                    (getnameDataEl.contains("hal") && (getnameDataEl.contains("pengaduan") || getnameDataEl.contains("komplain")))) {
+
+                                int idJenis = 0;
+                                idJenis = valSpin.getInt(nameDataEl);
+                                if (idJenis != 0) {
+                                    String typeComplaint = valSpinLabel.getString(nameDataEl);
+                                    String urlNew = urlPath.replace(":jenisPengaduan", typeComplaint);
+
+                                    Log.e("CEK", "urlNew : " + urlNew);
                                     RelativeLayout rl = (RelativeLayout) llFormBuild.getChildAt(i);
                                     if (rl.getChildAt(0) instanceof Spinner) {
                                         Spinner spin = (Spinner) rl.getChildAt(0);
@@ -1117,13 +1258,27 @@ public class frag_inputdata_new extends Fragment {
         super.onActivityResult(requestCode, resultCode, data);
         Log.e("CEK","onActivityResult : "+resultCode);
         if (resultCode == RESULT_OK && data != null) {
-            if (requestCode == 1) {
+            if (requestCode == REQUESTCODE_CAPTURE) {
                 Log.e("CEK","RETURN CAMERA");
                 session.saveFlagUpDoc(true);
                 byte[] resultCamera = data.getByteArrayExtra("result_camera");
                 Bitmap bitmap = BitmapFactory.decodeByteArray(resultCamera, 0, resultCamera.length);
 
-                if (data.getExtras() != null) {
+                if (llFileGallery != null) {
+                    llFileGallery.setVisibility(View.VISIBLE);
+                    viewImage.setVisibility(View.VISIBLE);
+                    chooseImage.setVisibility(View.GONE);
+
+                    try {
+                        File mediaFile = createTemporaryFile(resultCamera);
+                        String fileName = mediaFile.getName();
+                        tvSavedImg.setText(fileName);
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+                imgtoBase64(bitmap);
+                /*if (data.getExtras() != null) {
                     int resultCekData = data.getExtras().getInt("result_cek_data");
                     if (resultCekData == 0){
                         PopUpTnc();
@@ -1137,8 +1292,9 @@ public class frag_inputdata_new extends Fragment {
                             getFragmentPageDefault(new frag_portfolio_new());
                         }
                     }
-                }
+                }*/
             } else if (requestCode == 201) {
+                session.saveFlagUpDoc(true);
                 Log.e("CEK","RESULT GAMBAR");
                 Uri selectedImage = data.getData();
                 String[] filePath = { MediaStore.Images.Media.DATA };
@@ -1150,9 +1306,14 @@ public class frag_inputdata_new extends Fragment {
                 String fileName = files.getName().toString();
                 Log.e("CEK","RESULT picturePath : "+picturePath);
                 Log.e("CEK","RESULT files.getName : "+fileName);
-                tvSavedImg.setText("filename : "+fileName);
+                tvSavedImg.setText(fileName);
                 c.close();
                 prosesOptimalImage(picturePath);
+                if (llFileGallery != null) {
+                    llFileGallery.setVisibility(View.VISIBLE);
+                    viewImage.setVisibility(View.VISIBLE);
+                    chooseImage.setVisibility(View.GONE);
+                }
             } else if (requestCode == 202) {
                 Log.e("CEK","RESULT FILE");
                 Uri uri = data.getData();
@@ -1173,6 +1334,29 @@ public class frag_inputdata_new extends Fragment {
         } else if (resultCode == RESULT_CANCELED) {
             session.saveFlagUpDoc(true);
         }
+    }
+
+    private File createTemporaryFile(byte[] byteImage) throws Exception {
+        String appName = getString(R.string.app_name_dips);
+        String IMAGE_DIRECTORY_NAME = appName;
+        File mediaStorageDir = new File(
+                Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), IMAGE_DIRECTORY_NAME);
+        if (!mediaStorageDir.exists()) {
+            if (!mediaStorageDir.mkdirs()) {
+                return null;
+            }
+        }
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss",
+                Locale.getDefault()).format(new Date());
+        File mediaFile;
+        mediaFile = new File(mediaStorageDir.getPath() + File.separator +
+                "IMG_" + timeStamp + ".jpg");
+
+        FileOutputStream fos = new FileOutputStream(mediaFile);
+        fos.write(byteImage);
+        fos.close();
+
+        return mediaFile;
     }
 
     private void prosesOptimalImage(String picturePath) {
@@ -1219,6 +1403,9 @@ public class frag_inputdata_new extends Fragment {
     private void imgtoBase64(Bitmap bitmap) {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         bitmap.compress(Bitmap.CompressFormat.JPEG,100, baos);
+        if (viewImage != null) {
+            viewImage.setImageBitmap(bitmap);
+        }
         imageBytes = baos.toByteArray();
         imgBase64 = Base64.encodeToString(imageBytes, Base64.NO_WRAP);
         if (isSessionZoom && !imgBase64.isEmpty()) {
