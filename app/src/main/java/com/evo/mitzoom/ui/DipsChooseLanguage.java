@@ -468,9 +468,45 @@ public class DipsChooseLanguage extends AppCompatActivity {
 
         @Override
         protected Void doInBackground(Void... voids) {
-            processGetAuthAdvanceAI();
+            //processGetAuthAdvanceAI();
+            processAPIGetAuthAdvanceAI();
             return null;
         }
+    }
+
+    private void processAPIGetAuthAdvanceAI() {
+        JSONObject jsons = new JSONObject();
+        try {
+            jsons.put("applicationId","default,com.evo.mitzoom");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        Log.e(TAG,"APIGetAuthAdvanceAI : "+jsons.toString());
+
+        RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), jsons.toString());
+        Server.getAPIService().APIAuthLicenseLiveness(requestBody).enqueue(new Callback<JsonObject>() {
+            @Override
+            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                Log.e(TAG,"RESPONSE AUTH API AI : "+response.code());
+                if (response.isSuccessful()) {
+                    Log.e(TAG,"RESPONSE AUTH API AI BODY : "+response.body().toString());
+                    try {
+                        JSONObject dataObj = new JSONObject(response.body().toString());
+                        String dataLicense = dataObj.getJSONObject("data").getString("license");
+                        long expireTimestamp = dataObj.getJSONObject("data").getLong("expireTimestamp");
+                        sessions.saveAuthAdvanceAI(dataLicense,expireTimestamp);
+                    } catch (JSONException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<JsonObject> call, Throwable t) {
+
+            }
+        });
     }
 
     private void processGetAuthAdvanceAI() {

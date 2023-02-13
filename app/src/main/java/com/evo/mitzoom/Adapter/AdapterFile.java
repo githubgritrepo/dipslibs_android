@@ -33,12 +33,22 @@ public class AdapterFile extends RecyclerView.Adapter<AdapterFile.ItemHolder> {
 
     @Override
     public void onBindViewHolder(AdapterFile.ItemHolder holder, int position) {
+        int pos = position;
         holder.Nama_File.setText(dataList.get(position).getNamaFile());
-        holder.item.setBackgroundColor(ctx.getResources().getColor(dataList.get(position).getColorItem()));
+        //holder.item.setBackgroundColor(ctx.getResources().getColor(dataList.get(position).getColorItem()));
         holder.ic_unduh_.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Toast.makeText(ctx, "Download File "+holder.Nama_File.getText().toString(), Toast.LENGTH_SHORT).show();
+            }
+        });
+        holder.imgBin.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dataList.remove(pos);
+                notifyItemRemoved(pos);
+                notifyItemRangeChanged(pos, dataList.size());
+                notifyDataSetChanged();
             }
         });
     }
@@ -49,12 +59,14 @@ public class AdapterFile extends RecyclerView.Adapter<AdapterFile.ItemHolder> {
     }
 
     public class ItemHolder extends RecyclerView.ViewHolder{
+        private ImageView imgBin;
         private TextView Nama_File;
         private ImageView ic_unduh_;
         private LinearLayout item;
 
         public ItemHolder(View itemView) {
             super(itemView);
+            imgBin = itemView.findViewById(R.id.imgBin);
             Nama_File = itemView.findViewById(R.id.nama_file);
             ic_unduh_ = itemView.findViewById(R.id.icon_unduh);
             item = itemView.findViewById(R.id.item_file_bg);

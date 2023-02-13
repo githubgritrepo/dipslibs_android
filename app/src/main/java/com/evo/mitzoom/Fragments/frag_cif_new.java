@@ -184,6 +184,8 @@ public class frag_cif_new extends Fragment {
     private TextView tvSavedImg;
     private TextView tvSavedFile;
     private String npwp = "-";
+    private EditText edKodePos = null;
+    JSONObject dataObjProDesa = new JSONObject();
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -450,6 +452,14 @@ public class frag_cif_new extends Fragment {
                         if (flagOCR) {
                             IMG_BYTE = imageBytes;
                             PopUpOCR();
+                            JSONObject dataReq = dataReqOCR2();
+                            JSONObject reqOCR = new JSONObject();
+                            try {
+                                reqOCR.put("ocr",dataReq);
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                            rabbitMirroring.MirroringSendKey(reqOCR);
                         } else {
                             Toast.makeText(mContext, "Maaf, OCR masih dalam proses...!!!", Toast.LENGTH_SHORT).show();
                         }
@@ -458,6 +468,7 @@ public class frag_cif_new extends Fragment {
                         Bundle bundle = new Bundle();
                         bundle.putString("NPWP",npwp);
                         sessions.saveFormCOde(7);
+                        rabbitMirroring.MirroringSendEndpoint(7);
                         sendDataFragment(bundle, new frag_cif_new());
                     }
                     else {
@@ -518,12 +529,17 @@ public class frag_cif_new extends Fragment {
     }
 
     private boolean validationEmail(String data) {
-        return Pattern.compile("^(([\\w-]+\\.)+[\\w-]+|([a-zA-Z]{1}|[\\w-]{2,}))@"
+        boolean flag = Pattern.compile("^(([\\w-]+\\.)+[\\w-]+|([a-zA-Z]{1}|[\\w-]{2,}))@"
                     + "((([0-1]?[0-9]{1,2}|25[0-5]|2[0-4][0-9])\\.([0-1]?"
                     + "[0-9]{1,2}|25[0-5]|2[0-4][0-9])\\."
                     + "([0-1]?[0-9]{1,2}|25[0-5]|2[0-4][0-9])\\.([0-1]?"
                     + "[0-9]{1,2}|25[0-5]|2[0-4][0-9])){1}|"
                     + "([a-zA-Z]+[\\w-]+\\.)+[a-zA-Z]{2,4})$").matcher(data).matches();
+
+        if (!flag) {
+            Toast.makeText(mContext, getString(R.string.invalidate_email), Toast.LENGTH_SHORT).show();
+        }
+        return flag;
 
         /*String emailPattern = "[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+";
 
@@ -816,7 +832,18 @@ public class frag_cif_new extends Fragment {
                         rabbitMirroring.MirroringSendKey(reqFormMirroring);
                         if (formCode == 8) {
                             if (sessions.getOCR() != null) {
-                                getKodePos();
+                                String dataOCR = sessions.getOCR();
+                                Log.e("CEK","dataOCR : "+dataOCR.toString());
+                                try {
+                                    JSONObject dataObjOCR = new JSONObject(dataOCR);
+                                    desa_kelurahan = dataObjOCR.getString("desakelurahan");
+                                    kecamatan = dataObjOCR.getString("kecamatan");
+                                    kota_kabupaten = dataObjOCR.getString("kotakabupaten");
+                                    provinsi = dataObjOCR.getString("provinsi");
+                                    getKodePos();
+                                } catch (JSONException e) {
+
+                                }
                             }
 
                         }
@@ -865,6 +892,9 @@ public class frag_cif_new extends Fragment {
                                     EditText ed = (EditText) llFormBuild.getChildAt(i);
                                     if (nameDataEl.contains("npwp") && !npwp.isEmpty()) {
                                         ed.setText(npwp);
+                                    }
+                                    else if (nameDataEl.contains("kode") || nameDataEl.contains("pos")){
+                                        edKodePos = ed;
                                     }
                                     ed.setOnFocusChangeListener(new View.OnFocusChangeListener() {
                                         @Override
@@ -985,7 +1015,8 @@ public class frag_cif_new extends Fragment {
                                     });
 
                                     break;
-                                } else if (llFormBuild.getChildAt(i) instanceof Spinner) {
+                                }
+                                else if (llFormBuild.getChildAt(i) instanceof Spinner) {
                                     objEl.put(nameDataEl, "");
                                     Spinner spin = (Spinner) llFormBuild.getChildAt(i);
                                     spin.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -1010,7 +1041,8 @@ public class frag_cif_new extends Fragment {
                                         }
                                     });
                                     break;
-                                } else if (llFormBuild.getChildAt(i) instanceof RelativeLayout) {
+                                }
+                                else if (llFormBuild.getChildAt(i) instanceof RelativeLayout) {
                                     RelativeLayout rl = (RelativeLayout) llFormBuild.getChildAt(i);
                                     if (rl.getChildAt(0) instanceof Spinner) {
                                         objEl.put(nameDataEl, "");
@@ -1045,7 +1077,24 @@ public class frag_cif_new extends Fragment {
                                                     dataFormCIF.put(keysData,objEl);
                                                     if (nameDataEl.contains("provinsi") || nameDataEl.contains("kabupaten") || nameDataEl.contains("kota") || nameDataEl.contains("kecamatan") || (nameDataEl.contains("kelurahan") || nameDataEl.contains("desa"))) {
                                                         valSpinProv.put(nameDataEl,idData);
-                                                    } else {
+                                                        if (nameDataEl.contains("provinsi")){
+                                                            provinsi = results;
+                                                            kodepos = "";
+                                                        } else if (nameDataEl.contains("kabupaten") || nameDataEl.contains("kota")) {
+                                                            kota_kabupaten = results;
+                                                            kodepos = "";
+                                                        }
+                                                        else if(nameDataEl.contains("kecamatan")){
+                                                            kecamatan = results;
+                                                            kodepos = "";
+                                                        }
+                                                        else if (nameDataEl.contains("kelurahan") || nameDataEl.contains("desa")){
+                                                            desa_kelurahan = results;
+                                                            kodepos = "";
+                                                            getKodePos();
+                                                        }
+                                                    }
+                                                    else {
                                                         valSpin.put(nameDataEl, idData);
                                                     }
                                                     if (isSessionZoom) {
@@ -1068,7 +1117,8 @@ public class frag_cif_new extends Fragment {
                                         });
                                         break;
                                     }
-                                } else if (llFormBuild.getChildAt(i) instanceof AutoCompleteTextView) {
+                                }
+                                else if (llFormBuild.getChildAt(i) instanceof AutoCompleteTextView) {
                                     objEl.put(nameDataEl, "");
 
                                     AutoCompleteTextView autoText = (AutoCompleteTextView) llFormBuild.getChildAt(i);
@@ -1106,7 +1156,8 @@ public class frag_cif_new extends Fragment {
                                     });
 
                                     break;
-                                } else if (llFormBuild.getChildAt(i) instanceof LinearLayout) {
+                                }
+                                else if (llFormBuild.getChildAt(i) instanceof LinearLayout) {
                                     LinearLayout ll = (LinearLayout) llFormBuild.getChildAt(i);
                                     Log.e("CEK", "LinearLayout getChildCount : " + ll.getChildCount());
                                     if (ll.getChildCount() > 1) {
@@ -1155,7 +1206,98 @@ public class frag_cif_new extends Fragment {
             }
         }
     }
+    private void setKodepos(){
+        int child = llFormBuild.getChildCount();
 
+        if (child > 0 && idElement.length() > 0) {
+            for (int i = 0; i < child; i++) {
+                int idEl = llFormBuild.getChildAt(i).getId();
+                if (idEl > 0 || idEl < -1) {
+                    for (int j = 0; j < idElement.length(); j++) {
+                        try {
+                            int idDataEl = idElement.getJSONObject(j).getInt("id");
+                            String nameDataEl = idElement.getJSONObject(j).getString("name");
+                            String valKurung = "";
+                            int indx = nameDataEl.indexOf("(");
+                            if (indx >= 0) {
+                                valKurung = nameDataEl.substring(indx);
+                            }
+                            String urlPath = "";
+                            if (idElement.getJSONObject(j).has("url")) {
+                                urlPath = idElement.getJSONObject(j).getString("url");
+                            }
+                            if (idEl == idDataEl) {
+                                String finalValKurung = valKurung;
+                                if (llFormBuild.getChildAt(i) instanceof EditText) {
+                                    EditText ed = (EditText) llFormBuild.getChildAt(i);
+                                    if (nameDataEl.contains("kode") && nameDataEl.contains("pos")) {
+                                        ed.setText(kodepos);
+                                    }
+                                    ed.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+                                        @Override
+                                        public void onFocusChange(View view, boolean b) {
+                                            Log.e("CEK","onFocusChange : "+b);
+                                            if (isSessionZoom) {
+                                                reqFormMirroring = dataReqFormMirroring();
+                                                rabbitMirroring.MirroringSendKey(reqFormMirroring);
+                                            }
+                                        }
+                                    });
+                                    ed.addTextChangedListener(new TextWatcher() {
+                                        @Override
+                                        public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                                            if (nameDataEl.equals("npwp"+finalValKurung)) {
+                                                lasLenChar = charSequence.length();
+                                            }
+                                        }
+
+                                        @Override
+                                        public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                                            Log.e("CEK",nameDataEl+" : "+charSequence);
+                                            try {
+                                                objEl.put(nameDataEl, charSequence);
+                                                dataFormCIF.put(keysData,objEl);
+                                            } catch (JSONException e) {
+                                                e.printStackTrace();
+                                            }
+                                            /*if (isSessionZoom) {
+                                                rabbitMirroring.MirroringSendKey(dataFormCIF);
+                                            }*/
+                                        }
+
+                                        @Override
+                                        public void afterTextChanged(Editable s) {
+                                            if (nameDataEl.equals("npwp"+finalValKurung)) {
+                                                ed.removeTextChangedListener(this);
+                                                backSpaceChar = lasLenChar > s.length();
+                                                if (!backSpaceChar) {
+                                                    String dataNPWP = s.toString();
+                                                    Log.e("CEK", "dataNPWP : " + dataNPWP);
+                                                    String formatNPWP = "";
+                                                    if (dataNPWP.length() == 2 || dataNPWP.length() == 6 || dataNPWP.length() == 10 || dataNPWP.length() == 16) {
+                                                        formatNPWP = ".";
+                                                    } else if (dataNPWP.length() == 12) {
+                                                        formatNPWP = "-";
+                                                    }
+                                                    String cekBuilder = new StringBuilder(dataNPWP).insert(dataNPWP.length(), formatNPWP).toString();
+                                                    ed.setText(cekBuilder);
+                                                    ed.setSelection(cekBuilder.length());
+                                                }
+                                                ed.addTextChangedListener(this);
+                                            }
+                                        }
+                                    });
+                                    objEl.put(nameDataEl, "");
+                                }
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            }
+        }
+    }
     private void processEnableComp(String results) {
         int child = llFormBuild.getChildCount();
 
@@ -1570,6 +1712,10 @@ public class frag_cif_new extends Fragment {
                                     if (!keyGelar.isEmpty()) {
                                         gelar = getObjEl.getString(keyGelar);
                                     }
+
+                                    Log.e("CEK","no_handphone : "+no_handphone+" | namaIdentitas : "+namaIdentitas);
+                                    Log.e("CEK","noIdentitas : "+noIdentitas+" | gelar : "+gelar);
+
                                     dataNasabahObj.put("noHp",no_handphone);
                                     dataNasabahObj.put("namaLengkap",namaIdentitas);
                                     dataNasabahObj.put("nik",noIdentitas);
@@ -1748,8 +1894,8 @@ public class frag_cif_new extends Fragment {
                                         }
                                     }
                                 }
-                            } else if ((nameDataEl.contains("kabupaten") || nameDataEl.contains("district") || nameDataEl.contains("kota") || nameDataEl.contains("city"))
-                                    && (getnameDataEl.contains("kecamatan") || getnameDataEl.contains("subdistrict"))) {
+                            }
+                            else if ((nameDataEl.contains("kabupaten") || nameDataEl.contains("district") || nameDataEl.contains("kota") || nameDataEl.contains("city")) && (getnameDataEl.contains("kecamatan") || getnameDataEl.contains("subdistrict"))) {
                                 if (!urlPath.isEmpty()) {
                                     int idProv = 0;
                                     if (valSpinProv.has("provinsi")) {
@@ -1788,8 +1934,8 @@ public class frag_cif_new extends Fragment {
                                         }
                                     }
                                 }
-                            } else if ((nameDataEl.contains("kecamatan") || nameDataEl.contains("subdistrict"))
-                                    && (getnameDataEl.contains("kelurahan") || getnameDataEl.contains("urbanvillage") || getnameDataEl.contains("desa") || getnameDataEl.contains("village"))) {
+                            }
+                            else if ((nameDataEl.contains("kecamatan") || nameDataEl.contains("subdistrict")) && (getnameDataEl.contains("kelurahan") || getnameDataEl.contains("urbanvillage") || getnameDataEl.contains("desa") || getnameDataEl.contains("village"))) {
                                 if (!urlPath.isEmpty()) {
                                     int idProv = 0;
                                     if (valSpinProv.has("provinsi")) {
@@ -1836,7 +1982,8 @@ public class frag_cif_new extends Fragment {
                                         }
                                     }
                                 }
-                            } else {
+                            }
+                            else {
                                 flagStuckSpin = true;
                             }
                         }
@@ -1947,14 +2094,7 @@ public class frag_cif_new extends Fragment {
     private void getKodePos(){
         JSONObject json = new JSONObject();
         Log.e("CEK","MASUK GETKODEPOS");
-        String dataOCR = sessions.getOCR();
-        Log.e("CEK","dataOCR : "+dataOCR.toString());
         try {
-            JSONObject dataObjOCR = new JSONObject(dataOCR);
-            desa_kelurahan = dataObjOCR.getString("desakelurahan");
-            kecamatan = dataObjOCR.getString("kecamatan");
-            kota_kabupaten = dataObjOCR.getString("kotakabupaten");
-            provinsi = dataObjOCR.getString("provinsi");
             json.put("kelurahan", desa_kelurahan);
             json.put("kecamatan", kecamatan);
             json.put("kabupaten", kota_kabupaten);
@@ -1986,14 +2126,25 @@ public class frag_cif_new extends Fragment {
                 else {
                     Log.e("CEK RESPONSE GAGAL",""+response);
                 }
-                processMatchData();
-                processDataFromOCR();
+                if (formCode == 8){
+                    processMatchData();
+                    processDataFromOCR();
+                }
+                else {
+                    edKodePos.setText(kodepos);
+                    //setKodepos();
+                }
             }
             @Override
             public void onFailure(Call<JsonObject> call, Throwable t) {
                 Log.e("CEK RESPONSE GAGAL",""+t.getMessage());
-                processMatchData();
-                processDataFromOCR();
+                if (formCode == 8){
+                    processMatchData();
+                    processDataFromOCR();
+                }
+                else {
+                    //setKodepos();
+                }
             }
         });
     }
@@ -2235,7 +2386,7 @@ public class frag_cif_new extends Fragment {
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 if (isSessionZoom) {
                     nik = s.toString();
-                    JSONObject dataReq = dataReqOCR();
+                    JSONObject dataReq = dataReqOCR2();
                     JSONObject reqOCR = new JSONObject();
                     try {
                         reqOCR.put("ocr",dataReq);
@@ -2261,7 +2412,7 @@ public class frag_cif_new extends Fragment {
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 if (isSessionZoom) {
                     nama = s.toString();
-                    JSONObject dataReq = dataReqOCR();
+                    JSONObject dataReq = dataReqOCR2();
                     JSONObject reqOCR = new JSONObject();
                     try {
                         reqOCR.put("ocr",dataReq);
@@ -2287,7 +2438,7 @@ public class frag_cif_new extends Fragment {
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 if (isSessionZoom) {
                     tmptLahir = s.toString();
-                    JSONObject dataReq = dataReqOCR();
+                    JSONObject dataReq = dataReqOCR2();
                     JSONObject reqOCR = new JSONObject();
                     try {
                         reqOCR.put("ocr",dataReq);
@@ -2313,7 +2464,7 @@ public class frag_cif_new extends Fragment {
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 if (isSessionZoom) {
                     ttl = s.toString();
-                    JSONObject dataReq = dataReqOCR();
+                    JSONObject dataReq = dataReqOCR2();
                     JSONObject reqOCR = new JSONObject();
                     try {
                         reqOCR.put("ocr",dataReq);
@@ -2339,7 +2490,7 @@ public class frag_cif_new extends Fragment {
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 if (isSessionZoom) {
                     jeniskelamin = s.toString();
-                    JSONObject dataReq = dataReqOCR();
+                    JSONObject dataReq = dataReqOCR2();
                     JSONObject reqOCR = new JSONObject();
                     try {
                         reqOCR.put("ocr",dataReq);
@@ -2365,7 +2516,7 @@ public class frag_cif_new extends Fragment {
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 if (isSessionZoom) {
                     golongan_darah = s.toString();
-                    JSONObject dataReq = dataReqOCR();
+                    JSONObject dataReq = dataReqOCR2();
                     JSONObject reqOCR = new JSONObject();
                     try {
                         reqOCR.put("ocr",dataReq);
@@ -2391,7 +2542,7 @@ public class frag_cif_new extends Fragment {
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 if (isSessionZoom) {
                     alamat = s.toString();
-                    JSONObject dataReq = dataReqOCR();
+                    JSONObject dataReq = dataReqOCR2();
                     JSONObject reqOCR = new JSONObject();
                     try {
                         reqOCR.put("ocr",dataReq);
@@ -2417,7 +2568,7 @@ public class frag_cif_new extends Fragment {
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 if (isSessionZoom) {
                     rtrw = s.toString();
-                    JSONObject dataReq = dataReqOCR();
+                    JSONObject dataReq = dataReqOCR2();
                     JSONObject reqOCR = new JSONObject();
                     try {
                         reqOCR.put("ocr",dataReq);
@@ -2443,7 +2594,7 @@ public class frag_cif_new extends Fragment {
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 if (isSessionZoom) {
                     provinsi = s.toString();
-                    JSONObject dataReq = dataReqOCR();
+                    JSONObject dataReq = dataReqOCR2();
                     JSONObject reqOCR = new JSONObject();
                     try {
                         reqOCR.put("ocr",dataReq);
@@ -2469,7 +2620,7 @@ public class frag_cif_new extends Fragment {
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 if (isSessionZoom) {
                     kota_kabupaten = s.toString();
-                    JSONObject dataReq = dataReqOCR();
+                    JSONObject dataReq = dataReqOCR2();
                     JSONObject reqOCR = new JSONObject();
                     try {
                         reqOCR.put("ocr",dataReq);
@@ -2495,7 +2646,7 @@ public class frag_cif_new extends Fragment {
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 if (isSessionZoom) {
                     kecamatan = s.toString();
-                    JSONObject dataReq = dataReqOCR();
+                    JSONObject dataReq = dataReqOCR2();
                     JSONObject reqOCR = new JSONObject();
                     try {
                         reqOCR.put("ocr",dataReq);
@@ -2521,7 +2672,7 @@ public class frag_cif_new extends Fragment {
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 if (isSessionZoom) {
                     desa_kelurahan = s.toString();
-                    JSONObject dataReq = dataReqOCR();
+                    JSONObject dataReq = dataReqOCR2();
                     JSONObject reqOCR = new JSONObject();
                     try {
                         reqOCR.put("ocr",dataReq);
@@ -2547,7 +2698,7 @@ public class frag_cif_new extends Fragment {
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 if (isSessionZoom) {
                     agama = s.toString();
-                    JSONObject dataReq = dataReqOCR();
+                    JSONObject dataReq = dataReqOCR2();
                     JSONObject reqOCR = new JSONObject();
                     try {
                         reqOCR.put("ocr",dataReq);
@@ -2573,7 +2724,7 @@ public class frag_cif_new extends Fragment {
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 if (isSessionZoom) {
                     status_perkawinan = s.toString();
-                    JSONObject dataReq = dataReqOCR();
+                    JSONObject dataReq = dataReqOCR2();
                     JSONObject reqOCR = new JSONObject();
                     try {
                         reqOCR.put("ocr",dataReq);
@@ -2599,7 +2750,7 @@ public class frag_cif_new extends Fragment {
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 if (isSessionZoom) {
                     kewarganegaraan = s.toString();
-                    JSONObject dataReq = dataReqOCR();
+                    JSONObject dataReq = dataReqOCR2();
                     JSONObject reqOCR = new JSONObject();
                     try {
                         reqOCR.put("ocr",dataReq);
@@ -2625,7 +2776,7 @@ public class frag_cif_new extends Fragment {
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 if (isSessionZoom) {
                     pekerjaan = s.toString();
-                    JSONObject dataReq = dataReqOCR();
+                    JSONObject dataReq = dataReqOCR2();
                     JSONObject reqOCR = new JSONObject();
                     try {
                         reqOCR.put("ocr",dataReq);
@@ -2651,7 +2802,7 @@ public class frag_cif_new extends Fragment {
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
                 if (isSessionZoom) {
                     namaIbuKandung = charSequence.toString();
-                    JSONObject dataReq = dataReqOCR();
+                    JSONObject dataReq = dataReqOCR2();
                     JSONObject reqOCR = new JSONObject();
                     try {
                         reqOCR.put("ocr",dataReq);
@@ -2678,6 +2829,8 @@ public class frag_cif_new extends Fragment {
                 ttl = TTL2.getText().toString().trim();
                 Log.e("CEK","picturePath : "+picturePath);
                 if (!picturePath.isEmpty() && !namaIbuKandung.isEmpty()) {
+                    sweetAlertDialog.cancel();
+                    sweetAlertDialog.dismissWithAnimation();
                     String fieldName = "ktp";
                     ((Activity)mContext).runOnUiThread(new Runnable() {
                         @Override
@@ -2690,13 +2843,18 @@ public class frag_cif_new extends Fragment {
                         }
                     });
                     dataReqOCR();
+                    JSONObject reqOCR = new JSONObject();
+                    try {
+                        reqOCR.put("startValidasi",true);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                    rabbitMirroring.MirroringSendKey(reqOCR);
                     processDukcapil(fieldName,picturePath);
                 }
                 else{
                     Toast.makeText(mContext, ""+getString(R.string.validate_nama_ibu), Toast.LENGTH_SHORT).show();
                 }
-                sweetAlertDialog.cancel();
-                sweetAlertDialog.dismissWithAnimation();
             }
         });
         btnOCRCancel.setOnClickListener(new View.OnClickListener() {
@@ -2721,28 +2879,71 @@ public class frag_cif_new extends Fragment {
 
     }
 
+    private JSONObject dataReqOCR2() {
+        String[] pisahrtrw = rtrw.split("/");
+        String rt = pisahrtrw[0];
+        String rw = pisahrtrw[1];
+
+        String tglLahir = "-";
+        if (ttl.indexOf(",") > 0) {
+            String[] sp = ttl.split(",");
+            tglLahir = sp[1].toString().trim();
+        }
+        else{
+            tglLahir = ttl;
+        }
+
+        JSONObject datasReqOCR2 = new JSONObject();
+        try {
+            datasReqOCR2.put("noidentitas",nik);
+            datasReqOCR2.put("kecamatan",kecamatan);
+            datasReqOCR2.put("agama",agama);
+            datasReqOCR2.put("jeniskelamin",jeniskelamin);
+            datasReqOCR2.put("statusmenikah",status_perkawinan);
+            datasReqOCR2.put("golongandarah",golongan_darah);
+            datasReqOCR2.put("pekerjaan",pekerjaan);
+            datasReqOCR2.put("alamatsesuaiidentitas",alamat);
+            datasReqOCR2.put("kewarganegaraan",kewarganegaraan);
+            datasReqOCR2.put("rt",rt);
+            datasReqOCR2.put("rw",rw);
+            datasReqOCR2.put("kelurahandesa",desa_kelurahan);
+            datasReqOCR2.put("kabupaten",kota_kabupaten);
+            datasReqOCR2.put("namasesuaiidentitas",nama);
+            datasReqOCR2.put("provinsi",provinsi);
+            datasReqOCR2.put("tempatlahir",tmptLahir);
+            datasReqOCR2.put("tanggallahir",tglLahir);
+            datasReqOCR2.put("namaibukandung",namaIbuKandung);
+        }
+        catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        Log.e("CEK","datasReqOCR2 : "+datasReqOCR2.toString());
+
+        return datasReqOCR2;
+    }
     private JSONObject dataReqOCR() {
         try {
-            datasReqOCR.put("nik",nik);
+            datasReqOCR.put("noidentitas",nik);
+            datasReqOCR.put("kecamatan",kecamatan);
+            datasReqOCR.put("agama",agama);
+            datasReqOCR.put("jeniskelamin",jeniskelamin);
+            datasReqOCR.put("statusperkawinan",status_perkawinan);
             datasReqOCR.put("nama",nama);
             datasReqOCR.put("tempatlahir",tmptLahir);
             datasReqOCR.put("ttl",ttl);
             datasReqOCR.put("idDips", idDips);
-            datasReqOCR.put("code", 5);
             datasReqOCR.put("provinsi",provinsi);
             datasReqOCR.put("kotakabupaten",kota_kabupaten);
-            datasReqOCR.put("jeniskelamin",jeniskelamin);
             datasReqOCR.put("golongandarah",golongan_darah);
             datasReqOCR.put("alamat",alamat);
             datasReqOCR.put("rtrw",rtrw);
             datasReqOCR.put("desakelurahan",desa_kelurahan);
-            datasReqOCR.put("kecamatan",kecamatan);
-            datasReqOCR.put("agama",agama);
-            datasReqOCR.put("statusperkawinan",status_perkawinan);
             datasReqOCR.put("kewarganegaraan",kewarganegaraan);
             datasReqOCR.put("pekerjaan",pekerjaan);
             datasReqOCR.put("namaibukandung",namaIbuKandung);
-        } catch (JSONException e) {
+        }
+        catch (JSONException e) {
             e.printStackTrace();
         }
 
@@ -2811,10 +3012,42 @@ public class frag_cif_new extends Fragment {
                         e.printStackTrace();
                     }
                 }
+                else {
+                    try {
+                        ((Activity)mContext).runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                if (isSessionZoom) {
+                                    BaseMeetingActivity.showProgress(false);
+                                } else {
+                                    DipsSwafoto.showProgress(false);
+                                }
+                            }
+                        });
+                        String dataS = response.body().toString();
+                        Log.d("HASIL VALIDASI DUKCAPIL",""+dataS);
+                        JSONObject dataObj = new JSONObject(dataS);
+                        String status = dataObj.getString("status");
+                        String msg = dataObj.getString("message");
+                        Toast.makeText(mContext, "Failed "+status+","+msg, Toast.LENGTH_SHORT).show();
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
             }
 
             @Override
             public void onFailure(Call<JsonObject> call, Throwable t) {
+                ((Activity)mContext).runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (isSessionZoom) {
+                            BaseMeetingActivity.showProgress(false);
+                        } else {
+                            DipsSwafoto.showProgress(false);
+                        }
+                    }
+                });
                 Toast.makeText(mContext, ""+t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
@@ -2853,6 +3086,13 @@ public class frag_cif_new extends Fragment {
         btnCancelDialog.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                JSONObject reqOCR = new JSONObject();
+                try {
+                    reqOCR.put("startValidasi",false);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                rabbitMirroring.MirroringSendKey(reqOCR);
                 sweetAlertDialog.cancel();
                 sweetAlertDialog.dismissWithAnimation();
                 Intent dialPhoneIntent = new Intent(Intent.ACTION_DIAL, Uri.parse("tel:1500977"));
@@ -2863,6 +3103,13 @@ public class frag_cif_new extends Fragment {
         btnConfirmDialog.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                JSONObject reqOCR = new JSONObject();
+                try {
+                    reqOCR.put("startValidasi",false);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                rabbitMirroring.MirroringSendKey(reqOCR);
                 sweetAlertDialog.cancel();
                 sweetAlertDialog.dismissWithAnimation();
                 if (kasus.equals("Dukcapil")){
@@ -2935,6 +3182,28 @@ public class frag_cif_new extends Fragment {
                         e.printStackTrace();
                     }
                 }
+                else{
+                    try {
+                        ((Activity)mContext).runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                if (isSessionZoom) {
+                                    BaseMeetingActivity.showProgress(false);
+                                } else {
+                                    DipsSwafoto.showProgress(false);
+                                }
+                            }
+                        });
+                        String dataS = response.body().toString();
+                        Log.d("HASIL VALIDASI DUKCAPIL",""+dataS);
+                        JSONObject dataObj = new JSONObject(dataS);
+                        String status = dataObj.getString("status");
+                        String msg = dataObj.getString("message");
+                        Toast.makeText(mContext, "Failed "+status+","+msg, Toast.LENGTH_SHORT).show();
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
             }
 
             @Override
@@ -2986,7 +3255,7 @@ public class frag_cif_new extends Fragment {
                         if (errCode == 200 || errCode == 202) {
                             if (isSessionZoom) {
                                 if (formCode == 4 && flagOCR) {
-                                    JSONObject dataReq = dataReqOCR();
+                                    JSONObject dataReq = dataReqOCR2();
                                     JSONObject reqOCR = new JSONObject();
                                     try {
                                         reqOCR.put("ocr", dataReq);
@@ -4188,6 +4457,7 @@ public class frag_cif_new extends Fragment {
 
             @Override
             public void onFailure(Call<JsonObject> call, Throwable t) {
+                Toast.makeText(mContext, ""+t.getMessage(), Toast.LENGTH_SHORT).show();
                 ((Activity)mContext).runOnUiThread(new Runnable() {
                     @Override
                     public void run() {

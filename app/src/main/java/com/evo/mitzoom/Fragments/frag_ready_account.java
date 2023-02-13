@@ -405,7 +405,7 @@ public class frag_ready_account extends Fragment {
                     bundle.putInt("form_id",29);
                     sessions.saveFormCOde(151);
                     rabbitMirroring.MirroringSendEndpoint(151);
-                } else if (formCode == 155) {
+                } /*else if (formCode == 155) {
                     String tiperekening = "";
                     if (dataFormObj.has("tiperekening")) {
                         try {
@@ -429,7 +429,7 @@ public class frag_ready_account extends Fragment {
                         rabbitMirroring.MirroringSendEndpoint(154);
                     }
 
-                } else if (formCode == 156) {
+                }*/ else if (formCode == 156) {
                     /*bundle.putInt("form_id",30);
                     sessions.saveFormCOde(155);
                     rabbitMirroring.MirroringSendEndpoint(155);*/
@@ -617,15 +617,15 @@ public class frag_ready_account extends Fragment {
                     rabbitMirroring.MirroringSendEndpoint(154);
                 }
             } else if (formCode == 152) {
-                bundle.putInt("form_id",30);
+                bundle.putInt("form_id",35);
                 sessions.saveFormCOde(156);
                 rabbitMirroring.MirroringSendEndpoint(156);
             } else if (formCode == 153) {
-                bundle.putInt("form_id",30);
+                bundle.putInt("form_id",35);
                 sessions.saveFormCOde(156);
                 rabbitMirroring.MirroringSendEndpoint(156);
             } else if (formCode == 154) {
-                bundle.putInt("form_id",30);
+                bundle.putInt("form_id",35);
                 sessions.saveFormCOde(156);
                 rabbitMirroring.MirroringSendEndpoint(156);
             } /*else if (formCode == 155) {
@@ -1206,6 +1206,9 @@ public class frag_ready_account extends Fragment {
                     } else if (key.toLowerCase().contains("cif"+valKurung)) {
                         Log.e("CEK","MASUK IF 2");
                         objEl.put(key, NoCIF);
+                    } else if (key.toLowerCase().contains("nama") && key.toLowerCase().contains("identitas"+valKurung)) {
+                        Log.e("CEK","MASUK IF identitas");
+                        objEl.put(key, namaLengkap);
                     } else if (key.toLowerCase().contains("nama") && key.toLowerCase().contains("nasabah"+valKurung)) {
                         Log.e("CEK","MASUK IF 3");
                         objEl.put(key, namaLengkap);

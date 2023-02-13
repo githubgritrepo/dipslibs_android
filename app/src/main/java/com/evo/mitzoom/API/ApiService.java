@@ -227,6 +227,10 @@ public interface ApiService {
                                          @Header("X-ADVAI-KEY") String authHeader
     );
 
+    @Headers("Content-Type: "+ MyConstants.CONTENT_TYPE)
+    @POST("credential/advance-licence")
+    Call<JsonObject> APIAuthLicenseLiveness(@Body RequestBody body);
+
     @POST("form-data-swafoto/check")
     Call<JsonObject> swafotoCheck(@Header("Content-Type") String contentType,
                                     @Body RequestBody body);
@@ -247,9 +251,16 @@ public interface ApiService {
     @GET("form-generator/formkomplain/{noComplaint}")
     Call<JsonObject> getResiComplaint(@Path("noComplaint") String noComplaint);
 
+    @Headers("Content-Type: "+ MyConstants.CONTENT_TYPE)
     @POST("form-data/komplain")
-    Call<JsonObject> formComplaint(@Header("Content-Type") String contentType,
-                                    @Body RequestBody body);
+    Call<JsonObject> formComplaint(@Body RequestBody body);
+    @POST("form-data/komplain-old")
+    Call<JsonObject> formComplaintOld(@Header("Content-Type") String contentType,
+                                   @Body RequestBody body);
+
+    @POST("form-data-komplain/add-media")
+    Call<JsonObject> formComplaintMedia(@Header("Content-Type") String contentType,
+                                        @Body RequestBody body);
 
     @Headers("Content-Type: "+ MyConstants.CONTENT_TYPE)
     @GET("approval/status/{idForm}")

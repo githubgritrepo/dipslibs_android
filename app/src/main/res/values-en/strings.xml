@@ -318,4 +318,7 @@
     <string name="capture_back">Failed to process your photo, please retake photo</string>
     <string name="validate_dukcapil">Invalid KTP Data. Make sure the KTP you use is correct and registered</string>
     <string name="btn_validate_dukcapil">Re-Take KTP</string>
+    <string name="max_upfile">Max 3 file</string>
+    <string name="alert_upimage">Please upload a photo.</string>
+    <string name="alert_upfile">Please upload a File.</string>
 </resources>

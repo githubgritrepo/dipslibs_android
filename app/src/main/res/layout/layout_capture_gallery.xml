@@ -116,7 +116,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/dp_5"
-            tools:text="filename"/>
+            tools:text="filename"
+            android:textColor="@color/bg_cif"/>
     </LinearLayout>
 
 </LinearLayout>

@@ -14,6 +14,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.provider.MediaStore;
 import android.provider.OpenableColumns;
@@ -58,6 +59,7 @@ import com.evo.mitzoom.Model.FormSpin;
 import com.evo.mitzoom.R;
 import com.evo.mitzoom.Session.SessionManager;
 import com.evo.mitzoom.ui.Alternative.DipsSwafoto;
+import com.evo.mitzoom.ui.DipsCameraActivity;
 import com.google.gson.JsonObject;
 
 import org.json.JSONArray;
@@ -68,8 +70,11 @@ import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.InputStreamReader;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.Locale;
 
@@ -138,6 +143,10 @@ public class frag_service_item extends Fragment {
     private String noPengaduan;
     private String keyUpload = "";
     private JSONObject dataNasabahObj;
+    private ImageView viewImage = null;
+    private LinearLayout llFileGallery = null;
+    private ImageView imgBin = null;
+    private LinearLayout chooseImage = null;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -368,19 +377,6 @@ public class frag_service_item extends Fragment {
                                             }
                                             objEl.put(nameDataEl, results);
                                             break;
-                                        } else if (llFormBuild.getChildAt(i) instanceof LinearLayout) {
-                                            Log.e("CEK", "MASUK LinearLayout ke-" + i);
-                                            LinearLayout ll = (LinearLayout) llFormBuild.getChildAt(i);
-                                            Log.e("CEK", "LinearLayout getChildCount : " + ll.getChildCount());
-                                            if (ll.getChildCount() > 1) {
-                                                if (ll.getChildAt(0) instanceof LinearLayout) {
-                                                    LinearLayout ll2 = (LinearLayout) ll.getChildAt(0);
-                                                    TextView tvll = (TextView) ll2.getChildAt(1);
-                                                    String txt = tvll.getText().toString();
-                                                    Log.e("CEK", "tvll : " + txt);
-                                                    //objEl.put(nameDataEl, imgBase64);
-                                                }
-                                            }
                                         }
                                     }
                                 } catch (JSONException e) {
@@ -463,7 +459,7 @@ public class frag_service_item extends Fragment {
         String contentType = "multipart/form-data; charset=utf-8; boundary=" + multipartBody.boundary();
 
         ApiService API = Server.getAPIService2();
-        Call<JsonObject> call = API.formComplaint(contentType,multipartBody);
+        Call<JsonObject> call = API.formComplaintOld(contentType,multipartBody);
         Log.e("CEK","processSendFormCompaint call : "+call.request());
         call.enqueue(new Callback<JsonObject>() {
             @Override
@@ -812,40 +808,89 @@ public class frag_service_item extends Fragment {
                                     LinearLayout ll = (LinearLayout) llFormBuild.getChildAt(i);
                                     Log.e("CEK", "LinearLayout getChildCount : " + ll.getChildCount());
                                     if (ll.getChildCount() > 1) {
-                                        if (ll.getChildAt(0) instanceof LinearLayout) {
-                                            LinearLayout ll2 = (LinearLayout) ll.getChildAt(0);
-                                            Log.e("CEK", "MASUK LinearLayout CHILD ke-" + i);
+                                        if (ll.getChildAt(1) instanceof TextView) {
+                                            if (ll.getChildAt(0) instanceof LinearLayout) {
+                                                LinearLayout ll2 = (LinearLayout) ll.getChildAt(0);
+                                                Log.e("CEK", "MASUK LinearLayout CHILD ke-" + i);
 
-                                            TextView tvll = (TextView) ll2.getChildAt(1);
-                                            String txt = tvll.getText().toString();
-                                            Log.e("CEK", "tvll : " + txt);
-                                            if (nameDataEl.toLowerCase().indexOf("gambar") > 0 || nameDataEl.toLowerCase().indexOf("image") > 0 || nameDataEl.toLowerCase().indexOf("tangan") > 0) {
-                                                tvSavedImg = (TextView) ll.getChildAt(1);
-                                                ll2.setOnClickListener(new View.OnClickListener() {
-                                                    @Override
-                                                    public void onClick(View view) {
-                                                        REQUESTCODE_GALLERY = 201;
-                                                        keyUpload = nameDataEl;
-                                                        sessions.saveMedia(2);
-                                                        chooseFromSD();
-                                                    }
-                                                });
-                                            } else {
-                                                tvSavedFile = (TextView) ll.getChildAt(1);
-                                                ll2.setOnClickListener(new View.OnClickListener() {
-                                                    @Override
-                                                    public void onClick(View view) {
-                                                        Intent intent = new Intent();
-                                                        intent.setType("*/*");
-                                                        intent.setAction(Intent.ACTION_OPEN_DOCUMENT);
-                                                        intent.addCategory(Intent.CATEGORY_OPENABLE);
-                                                        String[] mimetypes = { "application/pdf", "application/doc", "text/*" };
+                                                TextView tvll = (TextView) ll2.getChildAt(1);
+                                                String txt = tvll.getText().toString();
+                                                Log.e("CEK", "tvll : " + txt);
+                                                if (txt.toLowerCase().indexOf("gambar") > 0 || txt.toLowerCase().indexOf("image") > 0 || txt.toLowerCase().indexOf("tangan") > 0) {
+                                                    tvSavedImg = (TextView) ll.getChildAt(1);
+                                                    ll2.setOnClickListener(new View.OnClickListener() {
+                                                        @Override
+                                                        public void onClick(View view) {
+                                                            chooseFromSD();
+                                                        }
+                                                    });
+                                                } else {
+                                                    tvSavedFile = (TextView) ll.getChildAt(1);
+                                                    ll2.setOnClickListener(new View.OnClickListener() {
+                                                        @Override
+                                                        public void onClick(View view) {
+                                                            Intent intent = new Intent();
+                                                            intent.setType("*/*");
+                                                            intent.setAction(Intent.ACTION_OPEN_DOCUMENT);
+                                                            intent.addCategory(Intent.CATEGORY_OPENABLE);
+                                                            String[] mimetypes = { "application/pdf", "application/doc", "text/*", "image/jpeg", "image/png" };
+                                                    /*String[] mimeTypes =
+                                                            {"application/msword", "application/vnd.openxmlformats-officedocument.wordprocessingml.document", // .doc & .docx
+                                                                    "application/vnd.ms-powerpoint", "application/vnd.openxmlformats-officedocument.presentationml.presentation", // .ppt & .pptx
+                                                                    "application/vnd.ms-excel", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", // .xls & .xlsx
+                                                                    "text/plain",
+                                                                    "application/pdf",
+                                                                    "application/zip", "application/vnd.android.package-archive"};*/
 
-                                                        intent.putExtra(Intent.EXTRA_MIME_TYPES, mimetypes);
-                                                        startActivityForResult(intent, REQUESTCODE_FILE);
-                                                    }
-                                                });
+                                                            intent.putExtra(Intent.EXTRA_MIME_TYPES, mimetypes);
+                                                            startActivityForResult(intent, 202);
+                                                        }
+                                                    });
+                                                }
                                             }
+                                        } else {
+                                            keyUpload = nameDataEl;
+                                            Log.e("CEK","MASUK UPLOAD GALLERY");
+                                            ImageView btnCamera = (ImageView) ll.findViewById(R.id.choose_camera);
+                                            chooseImage = (LinearLayout) ll.findViewById(R.id.Choose_Image);
+                                            LinearLayout btnGallery = (LinearLayout) ll.findViewById(R.id.choose_gallery);
+                                            llFileGallery = (LinearLayout) ll.findViewById(R.id.llFileGallery);
+                                            imgBin = (ImageView) ll.findViewById(R.id.imgBin);
+                                            tvSavedImg = (TextView) ll.findViewById(R.id.tvNameGallery);
+                                            viewImage = (ImageView) ll.findViewById(R.id.Imageview);
+
+                                            imgBin.setOnClickListener(new View.OnClickListener() {
+                                                @Override
+                                                public void onClick(View v) {
+                                                    viewImage.setVisibility(View.GONE);
+                                                    chooseImage.setVisibility(View.VISIBLE);
+                                                    llFileGallery.setVisibility(View.GONE);
+                                                }
+                                            });
+                                            btnCamera.setOnClickListener(new View.OnClickListener() {
+                                                @Override
+                                                public void onClick(View v) {
+                                                    /*if (!requestPermission()) {
+                                                        Toast.makeText(mContext, "Permission denied", Toast.LENGTH_SHORT).show();
+                                                        return;
+                                                    }*/
+                                                    sessions.saveMedia(1);
+                                                    Intent intent = new Intent(mContext, DipsCameraActivity.class);
+                                                    intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                                                    startActivityForResult(intent, REQUESTCODE_CAPTURE);
+                                                }
+                                            });
+                                            btnGallery.setOnClickListener(new View.OnClickListener() {
+                                                @Override
+                                                public void onClick(View v) {
+                                                    /*if (!requestPermission()) {
+                                                        Toast.makeText(mContext, "Permission denied", Toast.LENGTH_SHORT).show();
+                                                        return;
+                                                    }*/
+                                                    sessions.saveMedia(2);
+                                                    chooseFromSD();
+                                                }
+                                            });
                                         }
                                     }
                                 }
@@ -1025,11 +1070,27 @@ public class frag_service_item extends Fragment {
         super.onActivityResult(requestCode, resultCode, data);
         Log.e("CEK","onActivityResult : "+resultCode);
         if (resultCode == RESULT_OK && data != null) {
-            if (requestCode == 1) {
+            if (requestCode == REQUESTCODE_CAPTURE) {
                 Log.e("CEK","RETURN CAMERA");
                 sessions.saveFlagUpDoc(true);
                 byte[] resultCamera = data.getByteArrayExtra("result_camera");
                 Bitmap bitmap = BitmapFactory.decodeByteArray(resultCamera, 0, resultCamera.length);
+
+                if (llFileGallery != null) {
+                    llFileGallery.setVisibility(View.VISIBLE);
+                    viewImage.setVisibility(View.VISIBLE);
+                    chooseImage.setVisibility(View.GONE);
+
+                    try {
+                        File mediaFile = createTemporaryFile(resultCamera);
+                        FilePaths = mediaFile.getAbsolutePath();
+                        String fileName = mediaFile.getName();
+                        tvSavedImg.setText(fileName);
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+                imgtoBase64(bitmap);
 
             } else if (requestCode == REQUESTCODE_GALLERY) {
                 Log.e("CEK","RESULT GAMBAR");
@@ -1050,6 +1111,11 @@ public class frag_service_item extends Fragment {
                 tvSavedImg.setText("filename : "+fileName);
                 c.close();
                 prosesOptimalImage(picturePath);
+                if (llFileGallery != null) {
+                    llFileGallery.setVisibility(View.VISIBLE);
+                    viewImage.setVisibility(View.VISIBLE);
+                    chooseImage.setVisibility(View.GONE);
+                }
             } else if (requestCode == REQUESTCODE_FILE) {
                 Log.e("CEK","RESULT FILE");
                 Uri uri = data.getData();
@@ -1071,6 +1137,29 @@ public class frag_service_item extends Fragment {
         } else if (resultCode == RESULT_CANCELED) {
             sessions.saveFlagUpDoc(true);
         }
+    }
+
+    private File createTemporaryFile(byte[] byteImage) throws Exception {
+        String appName = getString(R.string.app_name_dips);
+        String IMAGE_DIRECTORY_NAME = appName;
+        File mediaStorageDir = new File(
+                Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), IMAGE_DIRECTORY_NAME);
+        if (!mediaStorageDir.exists()) {
+            if (!mediaStorageDir.mkdirs()) {
+                return null;
+            }
+        }
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss",
+                Locale.getDefault()).format(new Date());
+        File mediaFile;
+        mediaFile = new File(mediaStorageDir.getPath() + File.separator +
+                "IMG_" + timeStamp + ".jpg");
+
+        FileOutputStream fos = new FileOutputStream(mediaFile);
+        fos.write(byteImage);
+        fos.close();
+
+        return mediaFile;
     }
 
     private void processSendOTP() {

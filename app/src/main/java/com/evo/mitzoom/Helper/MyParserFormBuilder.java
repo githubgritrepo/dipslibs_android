@@ -421,6 +421,7 @@ public class MyParserFormBuilder {
                                 rb.setLayoutParams(lp2);
                                 rb.setId(intAplhabet);
                                 rb.setText(compPlaceholder);
+                                rb.setButtonTintList(ColorStateList.valueOf(mContext.getColor(R.color.zm_button)));
 
                                 radioGroup.addView(rb);
 
@@ -500,20 +501,25 @@ public class MyParserFormBuilder {
                                 String elName = compLabel.toLowerCase().replace(" ", "").replace("-", "").replace("/", "").replace(".", "");
                                 String keyLabelInd = keyLabel.toLowerCase().replace(" ", "").replace("-", "").replace("/", "").replace(".", "");
 
+                                if (!compLabel.isEmpty()) {
+                                    parentLabel = compLabel;
+                                    parentLabelIndo = keyLabel;
+                                    TextView tv = new TextView(mContext);
+                                    tv.setText(compLabel);
+                                    tv.setLayoutParams(lp);
+                                    llFormBuild.addView(tv);
+                                }
                                 if (keyLabelInd.indexOf("gambar") > 0 || keyLabelInd.indexOf("image") > 0 || keyLabelInd.indexOf("tangan") > 0) {
-                                    if (!compLabel.isEmpty()) {
-                                        parentLabel = compLabel;
-                                        parentLabelIndo = keyLabel;
-                                        TextView tv = new TextView(mContext);
-                                        tv.setText(compLabel);
-                                        tv.setLayoutParams(lp);
-                                        llFormBuild.addView(tv);
-                                    }
                                     LayoutInflater inflater = LayoutInflater.from(mContext);
                                     ln = (LinearLayout) inflater.inflate(R.layout.layout_capture_gallery, null, false);
                                 } else {
+                                    LayoutInflater inflater = LayoutInflater.from(mContext);
+                                    ln = (LinearLayout) inflater.inflate(R.layout.layout_upload_file, null, false);
 
-                                    ln.setId(intAplhabet);
+                                    TextView nama_file = (TextView) ln.findViewById(R.id.labelFile);
+                                    nama_file.setText(compLabel);
+
+                                    /*ln.setId(intAplhabet);
                                     ln.setLayoutParams(lp);
                                     ln.setOrientation(LinearLayout.VERTICAL);
 
@@ -553,7 +559,7 @@ public class MyParserFormBuilder {
                                     tvSaved.setTextColor(Color.BLACK);
                                     tvSaved.setLayoutParams(lptv);
                                     tvSaved.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
-                                    ln.addView(tvSaved);
+                                    ln.addView(tvSaved);*/
                                 }
 
                                 llFormBuild.addView(ln);

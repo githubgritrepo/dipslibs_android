@@ -481,6 +481,7 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
         isActivityPaused = true;
         unSubscribe();
         adapter.clear(false);
+        gifLoading.setVisibility(View.GONE);
     }
 
     @Override

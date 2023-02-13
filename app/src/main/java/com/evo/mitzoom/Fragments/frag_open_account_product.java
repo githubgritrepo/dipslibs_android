@@ -84,7 +84,7 @@ public class frag_open_account_product extends Fragment {
             rabbitMirroring = new RabbitMirroring(mContext);
         }
 
-        Log.e("CEK","getNoCIF : "+sessions.getNoCIF());
+        Log.e("CEK_FRAG_OPEN","getNoCIF : "+sessions.getNoCIF());
 
     }
 

@@ -107,6 +107,7 @@ public class RatingActivity extends AppCompatActivity {
            @Override
            public void onClick(View v) {
                Log.e(TAG,"thumb : "+thumb+" | rating getNumStars : "+rating.getNumStars()+" | rating getRating : "+rating.getRating());
+               Log.e(TAG,"idDips : "+idDips+" | idAgent : "+idAgent);
                if (idDips != null && idAgent != null) {
                    showProgress(true);
                    new AsyncRating().execute();
