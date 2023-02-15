@@ -84,7 +84,7 @@ public class frag_cif_resi extends Fragment {
         if (dataCIF != null) {
             try {
                 objValCIF = new JSONObject(dataCIF);
-                Log.e("CEK", "CIF FULL objValCIF : " + objValCIF.toString());
+                Log.e("CEK", "CIF FULL objValCIF : " + objValCIF);
             /*JSONObject objEl = objValCIF.getJSONObject("datadiri");
             no_handphone = objEl.getString("noponsel");*/
             } catch (JSONException e) {
@@ -107,13 +107,13 @@ public class frag_cif_resi extends Fragment {
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_frag_new_resi, container, false);
 
-        tvTitle = (TextView) v.findViewById(R.id.tvTitle);
-        tvSubTitle = (TextView) v.findViewById(R.id.tvSubTitle);
-        swipe = (SwipeRefreshLayout) v.findViewById(R.id.swipe);
-        imgResume = (PhotoView) v.findViewById(R.id.imgResume);
-        tvMsgThanks = (TextView) v.findViewById(R.id.tvMsgThanks);
+        tvTitle = v.findViewById(R.id.tvTitle);
+        tvSubTitle = v.findViewById(R.id.tvSubTitle);
+        swipe = v.findViewById(R.id.swipe);
+        imgResume = v.findViewById(R.id.imgResume);
+        tvMsgThanks = v.findViewById(R.id.tvMsgThanks);
         btnOK = v.findViewById(R.id.btnSelesai);
-        btnUnduh = (Button) v.findViewById(R.id.btnUnduh);
+        btnUnduh = v.findViewById(R.id.btnUnduh);
 
         return v;
     }
@@ -159,7 +159,7 @@ public class frag_cif_resi extends Fragment {
             @Override
             public void onClick(View v) {
                 Log.e("CEK","MASUK BUTTON OK");
-                rabbitMirroring.MirroringSendEndpoint(14);
+                RabbitMirroring.MirroringSendEndpoint(14);
                 sessions.clearCIF();
                 sessions.clearPartData();
                 bytePhoto = null;

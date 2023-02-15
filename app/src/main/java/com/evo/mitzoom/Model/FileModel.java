@@ -1,10 +1,10 @@
 package com.evo.mitzoom.Model;
 
 public class FileModel {
-    private String id;
-    private String namaFile;
-    private String url;
-    private int colorItem;
+    private final String id;
+    private final String namaFile;
+    private final String url;
+    private final int colorItem;
 
     public FileModel (String id, String namaFile, int colorItem, String url){
         this.id = id;

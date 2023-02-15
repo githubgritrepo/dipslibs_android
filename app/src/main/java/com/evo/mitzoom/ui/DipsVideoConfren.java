@@ -48,7 +48,7 @@ public class DipsVideoConfren extends BaseMeetingActivity {
 
     private FrameLayout videoContain;
     private AudioRawDataUtil audioRawDataUtil;
-    private CmdHandler mFeedbackPushHandler = new CmdHandler() {
+    private final CmdHandler mFeedbackPushHandler = new CmdHandler() {
         @Override
         public void onCmdReceived(CmdRequest request) {
             if (request instanceof CmdFeedbackPushRequest) {

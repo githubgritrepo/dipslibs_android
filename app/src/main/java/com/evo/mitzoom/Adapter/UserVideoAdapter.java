@@ -34,25 +34,25 @@ public class UserVideoAdapter extends RecyclerView.Adapter<UserVideoAdapter.Base
         void onSingleTap(ZoomVideoSDKUser user);
     }
 
-    private ItemTapListener tapListener;
+    private final ItemTapListener tapListener;
 
-    private List<ZoomVideoSDKUser> userList = new ArrayList<>();
+    private final List<ZoomVideoSDKUser> userList = new ArrayList<>();
 
-    private Context context;
+    private final Context context;
 
-    private int renderType;
-    private int dyWidth;
+    private final int renderType;
+    private final int dyWidth;
 
     private ZoomVideoSDKUser selectedVideoUser;
 
     private List<ZoomVideoSDKUser> activeAudioList;
 
     @NonNull
-    private List<CmdReactionRequest> emojiActiveList = new ArrayList<>();
+    private final List<CmdReactionRequest> emojiActiveList = new ArrayList<>();
 
-    private Handler handler = new Handler();
+    private final Handler handler = new Handler();
 
-    private Runnable emojiTimerRunnable = new Runnable() {
+    private final Runnable emojiTimerRunnable = new Runnable() {
 
         final List<CmdReactionRequest> timeOutEmoji = new ArrayList<>();
         final List<CmdReactionRequest> handRaisedList = new ArrayList<>();
@@ -156,9 +156,7 @@ public class UserVideoAdapter extends RecyclerView.Adapter<UserVideoAdapter.Base
         List<ZoomVideoSDKUser> all = UserHelper.getAllUsers();
         if (all.size() != userList.size()) {
             userList.clear();
-            for (ZoomVideoSDKUser userInfo : all) {
-                userList.add(userInfo);
-            }
+            userList.addAll(all);
             notifyDataSetChanged();
         }
     }

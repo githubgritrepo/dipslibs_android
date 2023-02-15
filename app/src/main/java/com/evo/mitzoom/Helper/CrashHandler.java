@@ -9,7 +9,7 @@ import androidx.annotation.NonNull;
 public class CrashHandler implements Thread.UncaughtExceptionHandler {
     private static final String TAG = CrashHandler.class.getSimpleName();
 
-    private static CrashHandler sInstance = new CrashHandler();
+    private static final CrashHandler sInstance = new CrashHandler();
 
     private Thread.UncaughtExceptionHandler mDefaultCrashHandler;
 

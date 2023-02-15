@@ -75,7 +75,7 @@ public class frag_new_resi extends Fragment {
 
         imgResume = v.findViewById(R.id.imgResume);
         btnOK = v.findViewById(R.id.btnSelesai);
-        btnUnduhResi = (Button) v.findViewById(R.id.btnUnduhResi);
+        btnUnduhResi = v.findViewById(R.id.btnUnduh);
 
         return v;
     }
@@ -224,7 +224,7 @@ public class frag_new_resi extends Fragment {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        Log.e("CEK","PARAM MIRRORING : "+jsons.toString());
+        Log.e("CEK","PARAM MIRRORING : "+ jsons);
         RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), jsons.toString());
         ApiService API = Server.getAPIService();
         Call<JsonObject> call = API.Mirroring(requestBody);
@@ -266,24 +266,21 @@ public class frag_new_resi extends Fragment {
 
                     int index = 5;
                     String etc = " ";
-                    if (sourceTypeService.trim().toLowerCase().equals("rtgs")) {
+                    if (sourceTypeService.trim().equalsIgnoreCase("rtgs")) {
                         index = 3;
-                    } else if (sourceTypeService.trim().toLowerCase().equals("setoran")) {
+                    } else if (sourceTypeService.trim().equalsIgnoreCase("setoran")) {
                         index = 0;
-                    } else if (sourceTypeService.trim().toLowerCase().equals("pemindahbukuan")) {
+                    } else if (sourceTypeService.trim().equalsIgnoreCase("pemindahbukuan")) {
                         index = 1;
-                    } else if (sourceTypeService.trim().toLowerCase().equals("kliring")) {
+                    } else if (sourceTypeService.trim().equalsIgnoreCase("kliring")) {
                         index = 2;
-                    } else if (sourceTypeService.trim().toLowerCase().equals("inkaso")) {
+                    } else if (sourceTypeService.trim().equalsIgnoreCase("inkaso")) {
                         index = 4;
                     } else {
                         etc = sourceTypeService.trim();
                     }
 
-                    boolean penduduk = true;
-                    if (sourcePopulation.trim().toLowerCase().indexOf("bukan") > -1) {
-                        penduduk = false;
-                    }
+                    boolean penduduk = sourcePopulation.trim().toLowerCase().indexOf("bukan") <= -1;
 
                     String noRek = "";
                     String namaRek = "";
@@ -313,7 +310,7 @@ public class frag_new_resi extends Fragment {
                     ApiService API = Server.getAPIService();
                     Call<JsonObject> call = API.GetResumeTransaction(index,etc,idForm,penduduk,namaRek,alamatNasabah,no_handphone,noRek,nominal,biaya,
                             nama_penerima,alamat_penerima,sourceBank,rek_penerima,berita,"Hadi");
-                    Log.e("CEK","request : "+call.request().toString());
+                    Log.e("CEK","request : "+ call.request());
                     String linkResi = call.request().url().toString();
                     Log.e("CEK","request 2 : "+linkResi);
                     String URLServ = Server.BASE_URL_API;
@@ -324,7 +321,7 @@ public class frag_new_resi extends Fragment {
                         @Override
                         public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
                             if (response.body() != null) {
-                                Log.e("CEK", "response : " + response.body().toString());
+                                Log.e("CEK", "response : " + response.body());
                             }
                             if (response.isSuccessful()) {
                                 btnUnduhResi.setEnabled(true);

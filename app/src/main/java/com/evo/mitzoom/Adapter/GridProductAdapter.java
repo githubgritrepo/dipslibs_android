@@ -52,7 +52,7 @@ public class GridProductAdapter extends RecyclerView.Adapter<GridProductAdapter.
     private LayoutInflater inflater;
     private View dialogView;
     private SweetAlertDialog sweetAlertDialogTNC;
-    private List<JSONObject> dataProduct;
+    private final List<JSONObject> dataProduct;
     private ImageView adsImg;
 
     public GridProductAdapter(Context ctx, int[] gambar, List<JSONObject> newDataProd) {
@@ -90,27 +90,7 @@ public class GridProductAdapter extends RecyclerView.Adapter<GridProductAdapter.
             @Override
             public void onClick(View v) {
                 PopUPData(finalNamaProduk, finalDataBody);
-                /*if (pos == 0) {
-                    ((FragmentActivity)ctx).getSupportFragmentManager()
-                            .beginTransaction()
-                            .replace(R.id.layout_frame, new FormRtgs())
-                            .addToBackStack(null)
-                            .commit();
-                }
-                else if (pos == 1){
-                    PopUpTnc();
-                }
-                else if (pos == 2){
-                    Fragment fragment;
-                    fragment = new frag_form_komplain();
-                    Bundle bundle = new Bundle();
-                    bundle.putInt("state",1);
-                    fragment.setArguments(bundle);
-                    getFragmentPage(fragment);
-                }
-                else {
-                    popUpAds();
-                }*/
+
             }
         });
     }
@@ -120,8 +100,8 @@ public class GridProductAdapter extends RecyclerView.Adapter<GridProductAdapter.
 
         View views = LayoutInflater.from(ctx).inflate(R.layout.item_ads,null);
 
-        TextView tvContent = (TextView) views.findViewById(R.id.tvContents);
-        Button btnBack = (Button) views.findViewById(R.id.btnback);
+        TextView tvContent = views.findViewById(R.id.tvContents);
+        Button btnBack = views.findViewById(R.id.btnback);
 
         tvContent.setText(Html.fromHtml(finalDataBody, Html.FROM_HTML_MODE_LEGACY, new Html.ImageGetter() {
             @Override
@@ -131,7 +111,7 @@ public class GridProductAdapter extends RecyclerView.Adapter<GridProductAdapter.
                 String new_source = source.substring(idx);
                 byte[] data = Base64.decode(new_source, Base64.NO_WRAP);
                 Bitmap bitmap = BitmapFactory.decodeByteArray(data, 0, data.length);
-                Drawable d = new BitmapDrawable(((Activity)ctx).getResources(), bitmap);
+                Drawable d = new BitmapDrawable(ctx.getResources(), bitmap);
                 int intH = d.getIntrinsicHeight();
                 int intW = d.getIntrinsicWidth();
                 d.setBounds(0,0,intW,intH);
@@ -152,8 +132,8 @@ public class GridProductAdapter extends RecyclerView.Adapter<GridProductAdapter.
             }
         });
 
-        int width = (int)(((Activity)ctx).getResources().getDisplayMetrics().widthPixels);
-        int height = (int)(((Activity)ctx).getResources().getDisplayMetrics().heightPixels);
+        int width = ctx.getResources().getDisplayMetrics().widthPixels;
+        int height = ctx.getResources().getDisplayMetrics().heightPixels;
 
         Log.e("CEK","PopUpTnc width : "+width+" | height : "+height);
         int newWidth = (int)(width*0.8);
@@ -214,7 +194,7 @@ public class GridProductAdapter extends RecyclerView.Adapter<GridProductAdapter.
         ImageView ads;
         public GriViewHolder(@NonNull View itemView) {
             super(itemView);
-            ads = (ImageView) itemView.findViewById(R.id.ads);
+            ads = itemView.findViewById(R.id.ads);
         }
     }
     private void PopUpTnc(){

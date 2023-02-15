@@ -77,7 +77,10 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -94,9 +97,9 @@ import retrofit2.Response;
 import us.zoom.sdk.ZoomVideoSDK;
 
 public class frag_service_item_new extends Fragment {
-    private int REQUESTCODE_CAPTURE = 1;
-    private int REQUESTCODE_FILE = 202;
-    private int REQUESTCODE_GALLERY = 2;
+    private final int REQUESTCODE_CAPTURE = 1;
+    private final int REQUESTCODE_FILE = 202;
+    private final int REQUESTCODE_GALLERY = 2;
 
     private Context mContext;
     private SessionManager sessions;
@@ -135,7 +138,8 @@ public class frag_service_item_new extends Fragment {
     private byte[] imageBytes = new byte[0];
     private BroadcastReceiver smsReceiver = null;
     private PinView otp;
-    private String namaLengkap;
+    private String namaLengkap = "";
+    private String email = "";
     private String no_handphone = "";
     private String numberOTP = "";
     private JSONObject dataNasabahObj;
@@ -179,6 +183,12 @@ public class frag_service_item_new extends Fragment {
                 if (dataNasabahObj.has("namaLengkap")) {
                     namaLengkap = dataNasabahObj.getString("namaLengkap");
                 }
+                if (dataNasabahObj.has("email")) {
+                    email = dataNasabahObj.getString("email");
+                    if (email == "null") {
+                        email = "";
+                    }
+                }
                 /*if (dataNasabahObj.has("alamat")) {
                     alamat = dataNasabahObj.getString("alamat");
                 }*/
@@ -219,7 +229,7 @@ public class frag_service_item_new extends Fragment {
                 String dataSMS = intent.getExtras().getString("smsMessage");
                 String[] sp = dataSMS.split(" ");
                 for (int i = 0; i < sp.length; i++) {
-                    String word = sp[i].toString();
+                    String word = sp[i];
                     if(word.matches("\\d+(?:\\.\\d+)?")) {
                         numberOTP = word.replaceAll("[^0-9]", "");
                         if (numberOTP.length() == 6) {
@@ -238,22 +248,22 @@ public class frag_service_item_new extends Fragment {
                              Bundle savedInstanceState) {
         View views = inflater.inflate(R.layout.fragment_dynamic_layout, container, false);
 
-        btnBack = (ImageView) views.findViewById(R.id.btnBack);
-        tvTitleService = (TextView) views.findViewById(R.id.tvTitleService);
-        swipe = (SwipeRefreshLayout) views.findViewById(R.id.swipe);
+        btnBack = views.findViewById(R.id.btnBack);
+        tvTitleService = views.findViewById(R.id.tvTitleService);
+        swipe = views.findViewById(R.id.swipe);
 
-        llFormBuild = (LinearLayout) views.findViewById(R.id.llFormBuild);
+        llFormBuild = views.findViewById(R.id.llFormBuild);
 
-        scrollOTP = (NestedScrollView) views.findViewById(R.id.scrollOTP);
+        scrollOTP = views.findViewById(R.id.scrollOTP);
         inclOTP = views.findViewById(R.id.inclOTP);
-        imgDialog = (ImageView) views.findViewById(R.id.imgDialog);
-        textTitleOTP = (TextView) views.findViewById(R.id.textIBMB);
-        btnVerifikasi = (Button) views.findViewById(R.id.btnVerifikasi);
-        TimerOTP = (TextView) views.findViewById(R.id.timer_otp);
-        Resend_Otp = (TextView) views.findViewById(R.id.btn_resend_otp);
-        otp = (PinView) views.findViewById(R.id.otp);
+        imgDialog = views.findViewById(R.id.imgDialog);
+        textTitleOTP = views.findViewById(R.id.textIBMB);
+        btnVerifikasi = views.findViewById(R.id.btnVerifikasi);
+        TimerOTP = views.findViewById(R.id.timer_otp);
+        Resend_Otp = views.findViewById(R.id.btn_resend_otp);
+        otp = views.findViewById(R.id.otp);
 
-        btnProses = (Button) views.findViewById(R.id.btnProses);
+        btnProses = views.findViewById(R.id.btnProses);
 
         return views;
     }
@@ -263,7 +273,7 @@ public class frag_service_item_new extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         String headlines = "";
-        if (formCode == 35) {
+        if (formCode == 359) {
             headlines = getString(R.string.formulir_komplain);
             keys = "komplain";
         }
@@ -283,7 +293,7 @@ public class frag_service_item_new extends Fragment {
         btnBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                rabbitMirroring.MirroringSendEndpoint(14);
+                RabbitMirroring.MirroringSendEndpoint(15);
                 getFragmentPage(new frag_service_new());
             }
         });
@@ -328,7 +338,7 @@ public class frag_service_item_new extends Fragment {
                                             RadioGroup rg = (RadioGroup) llFormBuild.getChildAt(i);
                                             int selectedId = rg.getCheckedRadioButtonId();
                                             if (selectedId > 0 || selectedId < -1) {
-                                                RadioButton rb = (RadioButton) rg.findViewById(selectedId);
+                                                RadioButton rb = rg.findViewById(selectedId);
                                                 String results = rb.getText().toString();
                                                 if (requiredDataEl && results.isEmpty()) {
                                                     Toast.makeText(mContext, labelDataEl + " harus diisi/dipilih", Toast.LENGTH_SHORT).show();
@@ -346,11 +356,7 @@ public class frag_service_item_new extends Fragment {
                                                 @Override
                                                 public void onClick(View view) {
                                                     boolean isChk = chk.isChecked();
-                                                    if (isChk) {
-                                                        checkEmpty2[0] = false;
-                                                    } else {
-                                                        checkEmpty2[0] = true;
-                                                    }
+                                                    checkEmpty2[0] = !isChk;
                                                 }
                                             });
                                             break;
@@ -457,7 +463,7 @@ public class frag_service_item_new extends Fragment {
                 objData.remove("idDips");
             }
 
-            objAPI.put("idJenis",id_Perihal);
+            objAPI.put("idPerihal",id_Perihal);
             objAPI.put("tanggal",timeStamp);
             objAPI.put("idDips",idDips);
             objAPI.put("data",objData);
@@ -465,7 +471,7 @@ public class frag_service_item_new extends Fragment {
             throw new RuntimeException(e);
         }
 
-        Log.e("CEK","PAYLOAD API KOMPLAIN : "+objAPI.toString());
+        Log.e("CEK","PAYLOAD API KOMPLAIN : "+ objAPI);
 
         return objAPI;
     }
@@ -490,11 +496,11 @@ public class frag_service_item_new extends Fragment {
                         String dataForm = dataObjForm.getString("data");
                         Log.e("CEK","dataForm : "+dataForm);
                         MyParserFormBuilder parseForm = new MyParserFormBuilder(mContext, dataForm, llFormBuild);
-                        idElement = parseForm.getForm();
-                        Log.e("CEK","dataElement : "+idElement.toString());
+                        idElement = MyParserFormBuilder.getForm();
+                        Log.e("CEK","dataElement : "+ idElement);
                         processValidationActionForm();
                         Log.e("CEK","DATA FORM : "+dataForms.toString());
-                        rabbitMirroring.MirroringSendKey(dataForms);
+                        RabbitMirroring.MirroringSendKey(dataForms);
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
@@ -553,7 +559,7 @@ public class frag_service_item_new extends Fragment {
                                                 objEl.put(nameDataEl, charSequence);
                                                 dataForms.put(keys,objEl);
                                                 if (isSessionZoom) {
-                                                    rabbitMirroring.MirroringSendKey(dataForms);
+                                                    RabbitMirroring.MirroringSendKey(dataForms);
                                                 }
                                             } catch (JSONException e) {
                                                 e.printStackTrace();
@@ -589,9 +595,24 @@ public class frag_service_item_new extends Fragment {
                                     if (nameDataEl.contains("nama")) {
                                         Log.e("CEK","MASUK IF identitas");
                                         objEl.put(nameDataEl, namaLengkap);
+                                        dataForms.put(keys,objEl);
+                                        ed.setText(namaLengkap);
+                                    } else if (nameDataEl.contains("email")) {
+                                        Log.e("CEK","MASUK IF Email");
+                                        objEl.put(nameDataEl, email);
+                                        dataForms.put(keys,objEl);
+                                        ed.setText(email);
                                     } else if ((nameDataEl.contains("no") || nameDataEl.contains("nomor")) && nameDataEl.contains("telepon"+valKurung)) {
                                         Log.e("CEK","MASUK IF 4");
                                         objEl.put(nameDataEl, no_handphone);
+                                        dataForms.put(keys,objEl);
+                                        ed.setText(no_handphone);
+                                    } else if (nameDataEl.contains("tanggal") && (nameDataEl.contains("pengaduan") || nameDataEl.contains("komplain") )) {
+                                        String dates = ed.getText().toString();
+                                        if (!dates.isEmpty()) {
+                                            objEl.put(nameDataEl, dates);
+                                            dataForms.put(keys,objEl);
+                                        }
                                     }
                                 } else if (llFormBuild.getChildAt(i) instanceof RadioGroup) {
                                     objEl.put(nameDataEl, "");
@@ -602,13 +623,13 @@ public class frag_service_item_new extends Fragment {
                                         public void onCheckedChanged(RadioGroup radioGroup, int i) {
                                             int selectedId = rg.getCheckedRadioButtonId();
                                             if (selectedId > 0 || selectedId < -1) {
-                                                RadioButton rb = (RadioButton) rg.findViewById(selectedId);
+                                                RadioButton rb = rg.findViewById(selectedId);
                                                 String results = rb.getText().toString();
                                                 try {
                                                     objEl.put(nameDataEl, results);
                                                     dataForms.put(keys,objEl);
                                                     if (isSessionZoom) {
-                                                        rabbitMirroring.MirroringSendKey(dataForms);
+                                                        RabbitMirroring.MirroringSendKey(dataForms);
                                                     }
                                                 } catch (JSONException e) {
                                                     e.printStackTrace();
@@ -646,7 +667,7 @@ public class frag_service_item_new extends Fragment {
                                                 e.printStackTrace();
                                             }
                                             if (isSessionZoom) {
-                                                rabbitMirroring.MirroringSendKey(dataForms);
+                                                RabbitMirroring.MirroringSendKey(dataForms);
                                             }
                                         }
                                     });
@@ -663,7 +684,7 @@ public class frag_service_item_new extends Fragment {
                                                 objEl.put(nameDataEl, results);
                                                 dataForms.put(keys,objEl);
                                                 if (isSessionZoom) {
-                                                    rabbitMirroring.MirroringSendKey(dataForms);
+                                                    RabbitMirroring.MirroringSendKey(dataForms);
                                                 }
                                             } catch (JSONException e) {
                                                 e.printStackTrace();
@@ -697,6 +718,22 @@ public class frag_service_item_new extends Fragment {
                                             if (!flagDot) {
                                                 processGetDynamicURL(spin, urlPath, nameDataEl);
                                             }
+                                        } else if (sessions.getRekNasabah() != null) {
+                                            Log.e("CEK","sessions.getRekNasabah()");
+                                            if (nameDataEl.contains("nomor") && nameDataEl.contains("rekening")) {
+                                                Log.e("CEK","no rekening");
+                                                String getListRekNasabah = sessions.getRekNasabah();
+                                                JSONArray listRekNasabah = new JSONArray(getListRekNasabah);
+                                                ArrayList<FormSpin> dataDropDown = new ArrayList<>();
+                                                for (int ij = 0; ij < listRekNasabah.length(); ij++) {
+                                                    String accountNo = listRekNasabah.getJSONObject(ij).getString("accountNo");
+                                                    String accountName = listRekNasabah.getJSONObject(ij).getString("accountName");
+                                                    String labelGab = accountNo;
+                                                    dataDropDown.add(new FormSpin(ij, accountNo, labelGab, labelGab));
+                                                }
+                                                ArrayAdapter<FormSpin> adapter2 = new ArrayAdapter<FormSpin>(mContext, R.layout.simple_spinner_dropdown_customitem, dataDropDown);
+                                                spin.setAdapter(adapter2);
+                                            }
                                         }
 
                                         spin.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -724,7 +761,7 @@ public class frag_service_item_new extends Fragment {
                                                     e.printStackTrace();
                                                 }
                                                 if (isSessionZoom) {
-                                                    rabbitMirroring.MirroringSendKey(dataForms);
+                                                    RabbitMirroring.MirroringSendKey(dataForms);
                                                 }
                                                 Log.e("CEK","flagStuckSpin : "+flagStuckSpin);
                                                 if (flagStuckSpin) {
@@ -751,7 +788,7 @@ public class frag_service_item_new extends Fragment {
                                                 objEl.put(nameDataEl, results);
                                                 dataForms.put(keys,objEl);
                                                 if (isSessionZoom) {
-                                                    rabbitMirroring.MirroringSendKey(dataForms);
+                                                    RabbitMirroring.MirroringSendKey(dataForms);
                                                 }
                                             } catch (JSONException e) {
                                                 e.printStackTrace();
@@ -766,7 +803,7 @@ public class frag_service_item_new extends Fragment {
                                                 objEl.put(nameDataEl, results);
                                                 dataForms.put(keys,objEl);
                                                 if (isSessionZoom) {
-                                                    rabbitMirroring.MirroringSendKey(dataForms);
+                                                    RabbitMirroring.MirroringSendKey(dataForms);
                                                 }
                                             } catch (JSONException e) {
                                                 e.printStackTrace();
@@ -818,8 +855,8 @@ public class frag_service_item_new extends Fragment {
                                         } else if (ll.getChildAt(1) instanceof RecyclerView) {
                                             keyUpFile = nameDataEl;
                                             Log.e("CEK","MASUK UPLOAD FILE RecyclerView");
-                                            LinearLayout llUploadFile = (LinearLayout) ll.findViewById(R.id.llUploadFile);
-                                            rv_item_file = (RecyclerView) ll.findViewById(R.id.rv_item_file);
+                                            LinearLayout llUploadFile = ll.findViewById(R.id.llUploadFile);
+                                            rv_item_file = ll.findViewById(R.id.rv_item_file);
                                             rv_item_file.setHasFixedSize(false);
 
                                             llUploadFile.setOnClickListener(new View.OnClickListener() {
@@ -850,13 +887,13 @@ public class frag_service_item_new extends Fragment {
                                         } else {
                                             keyUpImage = nameDataEl;
                                             Log.e("CEK","MASUK UPLOAD GALLERY");
-                                            ImageView btnCamera = (ImageView) ll.findViewById(R.id.choose_camera);
-                                            chooseImage = (LinearLayout) ll.findViewById(R.id.Choose_Image);
-                                            LinearLayout btnGallery = (LinearLayout) ll.findViewById(R.id.choose_gallery);
-                                            llFileGallery = (LinearLayout) ll.findViewById(R.id.llFileGallery);
-                                            imgBin = (ImageView) ll.findViewById(R.id.imgBin);
-                                            tvSavedImg = (TextView) ll.findViewById(R.id.tvNameGallery);
-                                            viewImage = (ImageView) ll.findViewById(R.id.Imageview);
+                                            ImageView btnCamera = ll.findViewById(R.id.choose_camera);
+                                            chooseImage = ll.findViewById(R.id.Choose_Image);
+                                            LinearLayout btnGallery = ll.findViewById(R.id.choose_gallery);
+                                            llFileGallery = ll.findViewById(R.id.llFileGallery);
+                                            imgBin = ll.findViewById(R.id.imgBin);
+                                            tvSavedImg = ll.findViewById(R.id.tvNameGallery);
+                                            viewImage = ll.findViewById(R.id.Imageview);
 
                                             imgBin.setOnClickListener(new View.OnClickListener() {
                                                 @Override
@@ -904,13 +941,17 @@ public class frag_service_item_new extends Fragment {
     }
 
     private void processSendFormCompaint(JSONObject objAPI) {
+        Log.e("CEK","processSendFormCompaint : "+objAPI.toString());
         RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), objAPI.toString());
 
         ApiService API = Server.getAPIService();
         Call<JsonObject> call = API.formComplaint(requestBody);
+        Log.e("CEK","processSendFormCompaint call : "+call.request().url());
+        Log.e("CEK","processSendFormCompaint call body : "+call.request().body().toString());
         call.enqueue(new Callback<JsonObject>() {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                Log.e("CEK","processSendFormCompaint response : "+response.code());
                 if (response.isSuccessful()) {
                     String dataS = response.body().toString();
                     Log.e("CEK","processSendFormCompaint dataS : "+dataS);
@@ -929,11 +970,45 @@ public class frag_service_item_new extends Fragment {
                     } else {
                         DipsSwafoto.showProgress(false);
                     }
+                    String msg = "";
+                    if (response.body() != null) {
+                        String dataS = response.body().toString();
+                        Log.e("CEK","dataS : "+dataS);
+                        try {
+                            JSONObject dataObj = new JSONObject(dataS);
+                            msg = dataObj.getString("message");
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    } else {
+                        if (response.errorBody().toString().isEmpty()) {
+                            String dataS = response.errorBody().toString();
+                            Log.e("CEK","dataS : "+dataS);
+                            try {
+                                JSONObject dataObj = new JSONObject(dataS);
+                                msg = dataObj.getString("message");
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                        } else {
+                            String dataS = null;
+                            try {
+                                dataS = response.errorBody().string();
+                                Log.e("CEK","dataS : "+dataS);
+                                JSONObject dataObj = new JSONObject(dataS);
+                                msg = dataObj.getString("message");
+                            } catch (IOException | JSONException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }
+                    Log.e("CEK","SELAIN 200-300 : "+msg);
                 }
             }
 
             @Override
             public void onFailure(Call<JsonObject> call, Throwable t) {
+                Log.e("CEK","processSendFormCompaint onFailure : "+t.getMessage());
                 if (isSessionZoom) {
                     BaseMeetingActivity.showProgress(false);
                 } else {
@@ -955,12 +1030,20 @@ public class frag_service_item_new extends Fragment {
 
         MultipartBody multipartBody = null;
         if (lenMedia == 1) {
-            File fileMedia = new File(dataFilesMedia.get(0).toString());
-            String type = null;
-            String extension = MimeTypeMap.getFileExtensionFromUrl(fileMedia.getPath().toString());
-            if (extension != null) {
-                type = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension);
+            Uri uri = (Uri) dataFilesMedia.get(0);
+            File fileMedia = null;
+            try {
+                fileMedia = fromUri(uri);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
             }
+            Log.e("CEK","processSendComplainMedia fileMedia.getPath : "+ fileMedia.getPath());
+            String extension = fileMedia.getPath().substring(fileMedia.getPath().lastIndexOf(".") );
+            Log.e("CEK","processSendComplainMedia extension : "+extension);
+            String mimeTypeMap =MimeTypeMap.getFileExtensionFromUrl(extension);
+            Log.e("CEK","processSendComplainMedia mimeTypeMap : "+mimeTypeMap);
+            String type = MimeTypeMap.getSingleton().getMimeTypeFromExtension(mimeTypeMap);
+            Log.e("CEK","processSendComplainMedia type : "+type);
             RequestBody requestFileMedia = RequestBody.create(MediaType.parse(type),fileMedia);
 
             multipartBody = new MultipartBody.Builder()
@@ -969,20 +1052,28 @@ public class frag_service_item_new extends Fragment {
                     .addPart(MultipartBody.Part.createFormData("buktiPendukung1", null, requestFileMedia))
                     .build();
         } else if (lenMedia == 2) {
-            File fileMedia = new File(dataFilesMedia.get(0).toString());
-            String type = null;
-            String extension = MimeTypeMap.getFileExtensionFromUrl(fileMedia.getPath().toString());
-            if (extension != null) {
-                type = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension);
+            Uri uri = (Uri) dataFilesMedia.get(0);
+            File fileMedia = null;
+            try {
+                fileMedia = fromUri(uri);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
             }
+            String extension = fileMedia.getPath().substring(fileMedia.getPath().lastIndexOf(".") );
+            String mimeTypeMap =MimeTypeMap.getFileExtensionFromUrl(extension);
+            String type = MimeTypeMap.getSingleton().getMimeTypeFromExtension(mimeTypeMap);
             RequestBody requestFileMedia = RequestBody.create(MediaType.parse(type),fileMedia);
 
-            File fileMedia2 = new File(dataFilesMedia.get(1).toString());
-            String type2 = null;
-            String extension2 = MimeTypeMap.getFileExtensionFromUrl(fileMedia2.getPath().toString());
-            if (extension != null) {
-                type2 = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension2);
+            Uri uri2 = (Uri) dataFilesMedia.get(1);
+            File fileMedia2 = null;
+            try {
+                fileMedia2 = fromUri(uri2);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
             }
+            String extension2 = fileMedia2.getPath().substring(fileMedia2.getPath().lastIndexOf(".") );
+            String mimeTypeMap2 =MimeTypeMap.getFileExtensionFromUrl(extension2);
+            String type2 = MimeTypeMap.getSingleton().getMimeTypeFromExtension(mimeTypeMap2);
             RequestBody requestFileMedia2 = RequestBody.create(MediaType.parse(type2),fileMedia2);
 
             multipartBody = new MultipartBody.Builder()
@@ -992,28 +1083,40 @@ public class frag_service_item_new extends Fragment {
                     .addPart(MultipartBody.Part.createFormData("buktiPendukung2", null, requestFileMedia2))
                     .build();
         } else if (lenMedia == 3) {
-            File fileMedia = new File(dataFilesMedia.get(0).toString());
-            String type = null;
-            String extension = MimeTypeMap.getFileExtensionFromUrl(fileMedia.getPath().toString());
-            if (extension != null) {
-                type = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension);
+            Uri uri = (Uri) dataFilesMedia.get(0);
+            File fileMedia = null;
+            try {
+                fileMedia = fromUri(uri);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
             }
+            String extension = fileMedia.getPath().substring(fileMedia.getPath().lastIndexOf(".") );
+            String mimeTypeMap =MimeTypeMap.getFileExtensionFromUrl(extension);
+            String type = MimeTypeMap.getSingleton().getMimeTypeFromExtension(mimeTypeMap);
             RequestBody requestFileMedia = RequestBody.create(MediaType.parse(type),fileMedia);
 
-            File fileMedia2 = new File(dataFilesMedia.get(1).toString());
-            String type2 = null;
-            String extension2 = MimeTypeMap.getFileExtensionFromUrl(fileMedia2.getPath().toString());
-            if (extension != null) {
-                type2 = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension2);
+            Uri uri2 = (Uri) dataFilesMedia.get(1);
+            File fileMedia2 = null;
+            try {
+                fileMedia2 = fromUri(uri2);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
             }
+            String extension2 = fileMedia2.getPath().substring(fileMedia2.getPath().lastIndexOf(".") );
+            String mimeTypeMap2 =MimeTypeMap.getFileExtensionFromUrl(extension2);
+            String type2 = MimeTypeMap.getSingleton().getMimeTypeFromExtension(mimeTypeMap2);
             RequestBody requestFileMedia2 = RequestBody.create(MediaType.parse(type2),fileMedia2);
 
-            File fileMedia3 = new File(dataFilesMedia.get(1).toString());
-            String type3 = null;
-            String extension3 = MimeTypeMap.getFileExtensionFromUrl(fileMedia3.getPath().toString());
-            if (extension != null) {
-                type3 = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension3);
+            Uri uri3 = (Uri) dataFilesMedia.get(2);
+            File fileMedia3 = null;
+            try {
+                fileMedia3 = fromUri(uri3);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
             }
+            String extension3 = fileMedia3.getPath().substring(fileMedia3.getPath().lastIndexOf(".") );
+            String mimeTypeMap3 =MimeTypeMap.getFileExtensionFromUrl(extension3);
+            String type3 = MimeTypeMap.getSingleton().getMimeTypeFromExtension(mimeTypeMap3);
             RequestBody requestFileMedia3 = RequestBody.create(MediaType.parse(type3),fileMedia3);
 
             multipartBody = new MultipartBody.Builder()
@@ -1053,9 +1156,75 @@ public class frag_service_item_new extends Fragment {
         });
     }
 
+    private File fromUri(Uri uri) throws IOException {
+        InputStream inputStream = mContext.getContentResolver().openInputStream(uri);
+        Cursor c = mContext.getContentResolver().query(uri,null, null, null, null);
+        c.moveToFirst();
+        @SuppressLint("Range") String fileName = c.getString(c.getColumnIndex(OpenableColumns.DISPLAY_NAME));
+        String[] splitName = splitFileName(fileName);
+        File tempFile = File.createTempFile(splitName[0], splitName[1]);
+        Log.e("CEK","tempFile : "+tempFile.getPath());
+        tempFile = rename(tempFile, fileName);
+        tempFile.deleteOnExit();
+        FileOutputStream out = null;
+        try {
+            out = new FileOutputStream(tempFile);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        if (inputStream != null) {
+            copy(inputStream, out);
+            inputStream.close();
+        }
+
+        if (out != null) {
+            out.close();
+        }
+
+        return tempFile;
+    }
+
+    private static String[] splitFileName(String fileName) {
+        String name = fileName;
+        String extension = "";
+        int i = fileName.lastIndexOf(".");
+        if (i != -1) {
+            name = fileName.substring(0, i);
+            extension = fileName.substring(i);
+        }
+
+        return new String[]{name, extension};
+    }
+
+    private static long copy(InputStream input, OutputStream output) throws IOException {
+        int EOF = -1;
+        int DEFAULT_BUFFER_SIZE = 1024 * 4;
+        long count = 0;
+        int n;
+        byte[] buffer = new byte[DEFAULT_BUFFER_SIZE];
+        while (EOF != (n = input.read(buffer))) {
+            output.write(buffer, 0, n);
+            count += n;
+        }
+        return count;
+    }
+
+    private static File rename(File file, String newName) {
+        File newFile = new File(file.getParent(), newName);
+        if (!newFile.equals(file)) {
+            if (newFile.exists() && newFile.delete()) {
+                Log.d("FileUtil", "Delete old " + newName + " file");
+            }
+            if (file.renameTo(newFile)) {
+                Log.d("FileUtil", "Rename file to " + newName);
+            }
+        }
+        return newFile;
+    }
+
     private void processSendOTP() {
         String noHp = no_handphone;
-        if (noHp.substring(0,1).equals("0")) {
+        if (noHp.charAt(0) == '0') {
             noHp = "62"+no_handphone.substring(1);
         }
         JSONObject dataObjOTP = new JSONObject();
@@ -1066,7 +1235,7 @@ public class frag_service_item_new extends Fragment {
             e.printStackTrace();
         }
 
-        Log.e("CEK","processSendOTP : "+dataObjOTP.toString());
+        Log.e("CEK","processSendOTP : "+ dataObjOTP);
 
         RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), dataObjOTP.toString());
 
@@ -1085,7 +1254,7 @@ public class frag_service_item_new extends Fragment {
                     try {
                         JSONObject dataObj = new JSONObject(dataS);
                         transactionId = dataObj.getJSONObject("data").getString("transactionId");
-                        rabbitMirroring.MirroringSendEndpoint(11);
+                        RabbitMirroring.MirroringSendEndpoint(11);
                         pageOTP();
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -1117,7 +1286,7 @@ public class frag_service_item_new extends Fragment {
             e.printStackTrace();
         }
 
-        Log.e("CEK","processValidateOTP : "+dataObjOTP.toString());
+        Log.e("CEK","processValidateOTP : "+ dataObjOTP);
 
         RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), dataObjOTP.toString());
         Server.getAPIService().ValidateOTP(requestBody).enqueue(new Callback<JsonObject>() {
@@ -1132,8 +1301,12 @@ public class frag_service_item_new extends Fragment {
                 if (response.isSuccessful()) {
                     String dataS = response.body().toString();
                     Log.e("CEK","processValidateOTP : "+dataS);
-                    rabbitMirroring.MirroringSendEndpoint(130);
-                    getFragmentPage(new frag_service_resi());
+                    RabbitMirroring.MirroringSendEndpoint(130);
+                    Bundle bundle = new Bundle();
+                    bundle.putBoolean("newComplain",true);
+                    Fragment fragment = new frag_service_resi();
+                    fragment.setArguments(bundle);
+                    getFragmentPage(fragment);
                 } else {
                     imgDialog.setImageDrawable(AppCompatResources.getDrawable(mContext,R.drawable.v_dialog_failed));
                     textTitleOTP.setText(R.string.titleWrongOTP);
@@ -1192,7 +1365,7 @@ public class frag_service_item_new extends Fragment {
                     try {
                         Log.e("CEK","numberOTP : "+numberOTP);
                         otpObj.put("otp",numberOTP);
-                        rabbitMirroring.MirroringSendKey(otpObj);
+                        RabbitMirroring.MirroringSendKey(otpObj);
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
@@ -1340,7 +1513,7 @@ public class frag_service_item_new extends Fragment {
                                 }
                             }
                         }
-                        ArrayAdapter<FormSpin> adapter2 = new ArrayAdapter<FormSpin>(mContext, android.R.layout.simple_spinner_dropdown_item, dataDropDown);
+                        ArrayAdapter<FormSpin> adapter2 = new ArrayAdapter<FormSpin>(mContext, R.layout.simple_spinner_dropdown_customitem, dataDropDown);
                         spin.setAdapter(adapter2);
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -1549,7 +1722,7 @@ public class frag_service_item_new extends Fragment {
                 FilePaths = picturePath;
 
                 File files = new File(picturePath);
-                String fileName = files.getName().toString();
+                String fileName = files.getName();
                 Log.e("CEK","RESULT picturePath : "+picturePath);
                 Log.e("CEK","RESULT files.getName : "+fileName);
                 tvSavedImg.setText(fileName);
@@ -1571,7 +1744,9 @@ public class frag_service_item_new extends Fragment {
                 if (uri != null) {
                     dataFilesMedia = new ArrayList();
                     String paths = uri.getPath();
-                    dataFilesMedia.add(paths);
+                    Log.e("CEK","uri.getPath : "+paths);
+                    //dataFilesMedia.add(paths);
+                    dataFilesMedia.add(uri);
                     Cursor c = mContext.getContentResolver().query(uri,null, null, null, null);
                     c.moveToFirst();
                     @SuppressLint("Range") String fileName = c.getString(c.getColumnIndex(OpenableColumns.DISPLAY_NAME));
@@ -1580,7 +1755,11 @@ public class frag_service_item_new extends Fragment {
                         tvSavedFile.setText(fileName);
                         if (!keyUpFile.isEmpty()) {
                             try {
-                                objEl.put(keyUpFile,fileName);
+                                JSONArray fileArr = new JSONArray();
+                                fileArr.put(fileName);
+                                objEl.put(keyUpFile,fileArr);
+                                dataForms.put(keys,objEl);
+                                RabbitMirroring.MirroringSendKey(dataForms);
                             } catch (JSONException e) {
                                 throw new RuntimeException(e);
                             }
@@ -1594,7 +1773,11 @@ public class frag_service_item_new extends Fragment {
                         setRecyler();
                         if (!keyUpFile.isEmpty()) {
                             try {
-                                objEl.put(keyUpFile,fileName);
+                                JSONArray fileArr = new JSONArray();
+                                fileArr.put(fileName);
+                                objEl.put(keyUpFile,fileArr);
+                                dataForms.put(keys,objEl);
+                                RabbitMirroring.MirroringSendKey(dataForms);
                             } catch (JSONException e) {
                                 throw new RuntimeException(e);
                             }
@@ -1613,6 +1796,7 @@ public class frag_service_item_new extends Fragment {
                     dataFilesMedia = new ArrayList();
                     Log.e("CEK","MULTI uri : "+data.getClipData().getItemCount());
 
+                    JSONArray fileArr = new JSONArray();
                     for(int i = 0; i < data.getClipData().getItemCount(); i++) {
                         Uri uriFile = data.getClipData().getItemAt(i).getUri();
                         Log.e("CEK","uriFile : "+uriFile.toString());
@@ -1621,19 +1805,25 @@ public class frag_service_item_new extends Fragment {
                         @SuppressLint("Range") String fileName = c.getString(c.getColumnIndex(OpenableColumns.DISPLAY_NAME));
                         Log.e("CEK","RESULT fileName : "+fileName);
                         if (rv_item_file != null) {
+                            dataFilesMedia.add(uriFile);
                             String paths = uriFile.getPath();
-                            dataFilesMedia.add(paths);
+                            Log.e("CEK","uriFile paths : "+paths);
+                            //dataFilesMedia.add(paths);
                             dataFiles.add(new FileModel("1", fileName, R.color.item_file_silver, ""));
                         }
                         c.close();
-                        int intk = i + 1;
+
                         if (!keyUpFile.isEmpty()) {
-                            try {
-                                objEl.put(keyUpFile+intk,fileName);
-                            } catch (JSONException e) {
-                                throw new RuntimeException(e);
-                            }
+                            fileArr.put(fileName);
                         }
+                    }
+
+                    try {
+                        objEl.put(keyUpFile,fileArr);
+                        dataForms.put(keys,objEl);
+                        RabbitMirroring.MirroringSendKey(dataForms);
+                    } catch (JSONException e) {
+                        throw new RuntimeException(e);
                     }
 
                     if (rv_item_file != null) {

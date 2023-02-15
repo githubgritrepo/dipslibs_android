@@ -25,8 +25,8 @@ public class ShareToolbar {
 
     private View contentView;
 
-    private Listener mListener;
-    private Display mDisplay;
+    private final Listener mListener;
+    private final Display mDisplay;
 
     float mLastRawX = -1f;
     float mLastRawY = -1f;

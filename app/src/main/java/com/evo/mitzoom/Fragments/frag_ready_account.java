@@ -70,10 +70,10 @@ import us.zoom.sdk.ZoomVideoSDK;
 
 public class frag_ready_account extends Fragment {
 
-    private int REQUEST_WRITE_PERMISSION = 786;
-    private int REQUESTCODE_CAPTURE = 1;
-    private int REQUESTCODE_FILE = 202;
-    private int REQUESTCODE_SWAFOTO = 10;
+    private final int REQUEST_WRITE_PERMISSION = 786;
+    private final int REQUESTCODE_CAPTURE = 1;
+    private final int REQUESTCODE_FILE = 202;
+    private final int REQUESTCODE_SWAFOTO = 10;
     private int REQUESTCODE_GALLERY = 2;
 
     private Context mContext;
@@ -96,9 +96,9 @@ public class frag_ready_account extends Fragment {
     private PinView otp;
     private String no_handphone = "";
     private String numberOTP = "";
-    private String newString = "";
-    private Handler handler = null;
-    private Runnable myRunnable = null;
+    private final String newString = "";
+    private final Handler handler = null;
+    private final Runnable myRunnable = null;
     private int getMinutes = 2;
     private int seconds = 60;
     private boolean running = true;
@@ -202,7 +202,7 @@ public class frag_ready_account extends Fragment {
                 Log.e("CEK","MASUK dataSMS : "+dataSMS);
                 String[] sp = dataSMS.split(" ");
                 for (int i = 0; i < sp.length; i++) {
-                    String word = sp[i].toString();
+                    String word = sp[i];
                     if(word.matches("\\d+(?:\\.\\d+)?")) {
                         numberOTP = word.replaceAll("[^0-9]", "");
                         if (numberOTP.length() == 6) {
@@ -221,29 +221,29 @@ public class frag_ready_account extends Fragment {
                              Bundle savedInstanceState) {
         View views = inflater.inflate(R.layout.frag_ready_account, container, false);
 
-        TopBar = (LinearLayout) views.findViewById(R.id.TopBar);
-        ll_head = (LinearLayout) views.findViewById(R.id.ll_head);
-        tvFotoKTP = (TextView) views.findViewById(R.id.tvFotoKTP);
-        iconCircle1 = (LinearLayout) views.findViewById(R.id.iconCircle1);
-        iconCircle2 = (LinearLayout) views.findViewById(R.id.iconCircle2);
-        iconCircle3 = (LinearLayout) views.findViewById(R.id.iconCircle3);
-        iconCircle4 = (LinearLayout) views.findViewById(R.id.iconCircle4);
+        TopBar = views.findViewById(R.id.TopBar);
+        ll_head = views.findViewById(R.id.ll_head);
+        tvFotoKTP = views.findViewById(R.id.tvFotoKTP);
+        iconCircle1 = views.findViewById(R.id.iconCircle1);
+        iconCircle2 = views.findViewById(R.id.iconCircle2);
+        iconCircle3 = views.findViewById(R.id.iconCircle3);
+        iconCircle4 = views.findViewById(R.id.iconCircle4);
 
-        btn_back = (ImageView) views.findViewById(R.id.btn_back);
-        tvTitleReady = (TextView) views.findViewById(R.id.tvTitleReady);
-        llFormBuild = (LinearLayout) views.findViewById(R.id.llFormBuild);
-        btnProses = (Button) views.findViewById(R.id.btnProses);
+        btn_back = views.findViewById(R.id.btn_back);
+        tvTitleReady = views.findViewById(R.id.tvTitleReady);
+        llFormBuild = views.findViewById(R.id.llFormBuild);
+        btnProses = views.findViewById(R.id.btnProses);
 
-        swipe = (SwipeRefreshLayout) views.findViewById(R.id.swipe);
+        swipe = views.findViewById(R.id.swipe);
 
-        scrollOTP = (NestedScrollView) views.findViewById(R.id.scrollOTP);
+        scrollOTP = views.findViewById(R.id.scrollOTP);
         inclOTP = views.findViewById(R.id.inclOTP);
-        imgDialog = (ImageView) views.findViewById(R.id.imgDialog);
-        textTitleOTP = (TextView) views.findViewById(R.id.textIBMB);
-        btnVerifikasi = (Button) views.findViewById(R.id.btnVerifikasi);
-        TimerOTP = (TextView) views.findViewById(R.id.timer_otp);
-        Resend_Otp = (TextView) views.findViewById(R.id.btn_resend_otp);
-        otp = (PinView) views.findViewById(R.id.otp);
+        imgDialog = views.findViewById(R.id.imgDialog);
+        textTitleOTP = views.findViewById(R.id.textIBMB);
+        btnVerifikasi = views.findViewById(R.id.btnVerifikasi);
+        TimerOTP = views.findViewById(R.id.timer_otp);
+        Resend_Otp = views.findViewById(R.id.btn_resend_otp);
+        otp = views.findViewById(R.id.otp);
         
         return views;
     }
@@ -392,19 +392,19 @@ public class frag_ready_account extends Fragment {
                 if (formCode == 151) {
                     bundle.putInt("form_id",19);
                     sessions.saveFormCOde(150);
-                    rabbitMirroring.MirroringSendEndpoint(150);
+                    RabbitMirroring.MirroringSendEndpoint(150);
                 } else if (formCode == 152) {
                     bundle.putInt("form_id",29);
                     sessions.saveFormCOde(151);
-                    rabbitMirroring.MirroringSendEndpoint(151);
+                    RabbitMirroring.MirroringSendEndpoint(151);
                 } else if (formCode == 153) {
                     bundle.putInt("form_id",29);
                     sessions.saveFormCOde(151);
-                    rabbitMirroring.MirroringSendEndpoint(151);
+                    RabbitMirroring.MirroringSendEndpoint(151);
                 } else if (formCode == 154) {
                     bundle.putInt("form_id",29);
                     sessions.saveFormCOde(151);
-                    rabbitMirroring.MirroringSendEndpoint(151);
+                    RabbitMirroring.MirroringSendEndpoint(151);
                 } /*else if (formCode == 155) {
                     String tiperekening = "";
                     if (dataFormObj.has("tiperekening")) {
@@ -445,20 +445,20 @@ public class frag_ready_account extends Fragment {
                     if (tiperekening.toLowerCase().trim().equals("tabungan")) {
                         bundle.putInt("form_id", 21);
                         sessions.saveFormCOde(153);
-                        rabbitMirroring.MirroringSendEndpoint(153);
+                        RabbitMirroring.MirroringSendEndpoint(153);
                     } else if (tiperekening.toLowerCase().trim().equals("giro")) {
                         bundle.putInt("form_id",20);
                         sessions.saveFormCOde(152);
-                        rabbitMirroring.MirroringSendEndpoint(152);
+                        RabbitMirroring.MirroringSendEndpoint(152);
                     } else if (tiperekening.toLowerCase().trim().contains("jangka")) {
                         bundle.putInt("form_id",22);
                         sessions.saveFormCOde(154);
-                        rabbitMirroring.MirroringSendEndpoint(154);
+                        RabbitMirroring.MirroringSendEndpoint(154);
                     }
                 } else {
                     fragment = new frag_open_account_product();
                     sessions.saveFormCOde(201);
-                    rabbitMirroring.MirroringSendEndpoint(201);
+                    RabbitMirroring.MirroringSendEndpoint(201);
                 }
 
                 sendDataFragment(bundle, fragment);
@@ -504,7 +504,7 @@ public class frag_ready_account extends Fragment {
                                             RadioGroup rg = (RadioGroup) llFormBuild.getChildAt(i);
                                             int selectedId = rg.getCheckedRadioButtonId();
                                             if (selectedId > 0 || selectedId < -1) {
-                                                RadioButton rb = (RadioButton) rg.findViewById(selectedId);
+                                                RadioButton rb = rg.findViewById(selectedId);
                                                 String results = rb.getText().toString();
                                                 if (requiredDataEl && results.isEmpty()) {
                                                     Toast.makeText(mContext, labelDataEl + " harus diisi/dipilih", Toast.LENGTH_SHORT).show();
@@ -594,7 +594,7 @@ public class frag_ready_account extends Fragment {
             if (formCode == 150) {
                 bundle.putInt("form_id",29);
                 sessions.saveFormCOde(151);
-                rabbitMirroring.MirroringSendEndpoint(151);
+                RabbitMirroring.MirroringSendEndpoint(151);
             } else if (formCode == 151) {
                 String tiperekening = "";
                 try {
@@ -606,28 +606,28 @@ public class frag_ready_account extends Fragment {
                 if (tiperekening.toLowerCase().trim().equals("tabungan")) {
                     bundle.putInt("form_id", 21);
                     sessions.saveFormCOde(153);
-                    rabbitMirroring.MirroringSendEndpoint(153);
+                    RabbitMirroring.MirroringSendEndpoint(153);
                 } else if (tiperekening.toLowerCase().trim().equals("giro")) {
                     bundle.putInt("form_id",20);
                     sessions.saveFormCOde(152);
-                    rabbitMirroring.MirroringSendEndpoint(152);
+                    RabbitMirroring.MirroringSendEndpoint(152);
                 } else if (tiperekening.toLowerCase().trim().contains("jangka")) {
                     bundle.putInt("form_id",22);
                     sessions.saveFormCOde(154);
-                    rabbitMirroring.MirroringSendEndpoint(154);
+                    RabbitMirroring.MirroringSendEndpoint(154);
                 }
             } else if (formCode == 152) {
                 bundle.putInt("form_id",35);
                 sessions.saveFormCOde(156);
-                rabbitMirroring.MirroringSendEndpoint(156);
+                RabbitMirroring.MirroringSendEndpoint(156);
             } else if (formCode == 153) {
                 bundle.putInt("form_id",35);
                 sessions.saveFormCOde(156);
-                rabbitMirroring.MirroringSendEndpoint(156);
+                RabbitMirroring.MirroringSendEndpoint(156);
             } else if (formCode == 154) {
                 bundle.putInt("form_id",35);
                 sessions.saveFormCOde(156);
-                rabbitMirroring.MirroringSendEndpoint(156);
+                RabbitMirroring.MirroringSendEndpoint(156);
             } /*else if (formCode == 155) {
                 bundle.putInt("form_id",35);
                 sessions.saveFormCOde(156);
@@ -661,7 +661,7 @@ public class frag_ready_account extends Fragment {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        Log.e("CEK", "APISaveForm : " + dataObjCIF.toString());
+        Log.e("CEK", "APISaveForm : " + dataObjCIF);
 
         RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), dataObjCIF.toString());
         Server.getAPIService().saveForm(requestBody).enqueue(new Callback<JsonObject>() {
@@ -723,7 +723,7 @@ public class frag_ready_account extends Fragment {
 
     private void processSendOTP() {
         String noHp = no_handphone;
-        if (noHp.substring(0,1).equals("0")) {
+        if (noHp.charAt(0) == '0') {
             noHp = "62"+no_handphone.substring(1);
         }
         JSONObject dataObjOTP = new JSONObject();
@@ -734,7 +734,7 @@ public class frag_ready_account extends Fragment {
             e.printStackTrace();
         }
 
-        Log.e("CEK","processSendOTP : "+dataObjOTP.toString());
+        Log.e("CEK","processSendOTP : "+ dataObjOTP);
 
         RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), dataObjOTP.toString());
 
@@ -758,7 +758,7 @@ public class frag_ready_account extends Fragment {
                     try {
                         JSONObject dataObj = new JSONObject(dataS);
                         transactionId = dataObj.getJSONObject("data").getString("transactionId");
-                        rabbitMirroring.MirroringSendEndpoint(11);
+                        RabbitMirroring.MirroringSendEndpoint(11);
                         pageOTP();
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -825,7 +825,7 @@ public class frag_ready_account extends Fragment {
                     try {
                         Log.e("CEK","numberOTP : "+numberOTP);
                         otpObj.put("otp",numberOTP);
-                        rabbitMirroring.MirroringSendKey(otpObj);
+                        RabbitMirroring.MirroringSendKey(otpObj);
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
@@ -879,7 +879,7 @@ public class frag_ready_account extends Fragment {
             e.printStackTrace();
         }
 
-        Log.e("CEK","processValidateOTP : "+dataObjOTP.toString());
+        Log.e("CEK","processValidateOTP : "+ dataObjOTP);
 
         RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), dataObjOTP.toString());
         Server.getAPIService().ValidateOTP(requestBody).enqueue(new Callback<JsonObject>() {
@@ -900,8 +900,8 @@ public class frag_ready_account extends Fragment {
 
                         reqFormSend.put("pembukaanakun", dataObjAccount);
 
-                        Log.e("CEK","dataObjAccount : "+dataObjAccount.toString());
-                        rabbitMirroring.MirroringSendKey(reqFormSend);
+                        Log.e("CEK","dataObjAccount : "+ dataObjAccount);
+                        RabbitMirroring.MirroringSendKey(reqFormSend);
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
@@ -980,7 +980,7 @@ public class frag_ready_account extends Fragment {
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
-                    rabbitMirroring.MirroringSendEndpoint(131);
+                    RabbitMirroring.MirroringSendEndpoint(131);
                     Bundle bundle = new Bundle();
                     bundle.putInt("formCode",131);
                     bundle.putString("idForm", finalIdForm);
@@ -1164,8 +1164,8 @@ public class frag_ready_account extends Fragment {
                         String dataForm = dataObjForm.getString("data");
                         Log.e("CEK","dataForm : "+dataForm);
                         MyParserFormBuilder parseForm = new MyParserFormBuilder(mContext, dataForm, llFormBuild);
-                        idElement = parseForm.getForm();
-                        Log.e("CEK","dataElement : "+idElement.toString());
+                        idElement = MyParserFormBuilder.getForm();
+                        Log.e("CEK","dataElement : "+ idElement);
                         processValidationActionForm();
                         processMatchData();
                         Log.e("CEK","AFTER processMatchData : "+objEl.toString());
@@ -1253,7 +1253,7 @@ public class frag_ready_account extends Fragment {
 
                                     for(int ch = 0; ch < rg.getChildCount(); ch++) {
                                         int idRad = rg.getChildAt(ch).getId();
-                                        RadioButton rb = (RadioButton) rg.findViewById(idRad);
+                                        RadioButton rb = rg.findViewById(idRad);
                                         String labelRad = rb.getText().toString();
                                         String valEl = objEl.getString(nameDataEl);
                                         String valRad = valEl.toLowerCase();
@@ -1351,7 +1351,7 @@ public class frag_ready_account extends Fragment {
                                         public void onFocusChange(View view, boolean b) {
                                             Log.e("CEK","onFocusChange : "+b);
                                             if (isSessionZoom) {
-                                                rabbitMirroring.MirroringSendKey(dataFormObj);
+                                                RabbitMirroring.MirroringSendKey(dataFormObj);
                                             }
                                         }
                                     });
@@ -1409,13 +1409,13 @@ public class frag_ready_account extends Fragment {
                                         public void onCheckedChanged(RadioGroup radioGroup, int i) {
                                             int selectedId = rg.getCheckedRadioButtonId();
                                             if (selectedId > 0 || selectedId < -1) {
-                                                RadioButton rb = (RadioButton) rg.findViewById(selectedId);
+                                                RadioButton rb = rg.findViewById(selectedId);
                                                 String results = rb.getText().toString();
                                                 try {
                                                     objEl.put(nameDataEl, results);
                                                     dataFormObj = dataReqForm();
                                                     if (isSessionZoom) {
-                                                        rabbitMirroring.MirroringSendKey(dataFormObj);
+                                                        RabbitMirroring.MirroringSendKey(dataFormObj);
                                                     }
                                                 } catch (JSONException e) {
                                                     e.printStackTrace();
@@ -1450,7 +1450,7 @@ public class frag_ready_account extends Fragment {
                                             dataFormObj = dataReqForm();
 
                                             if (isSessionZoom) {
-                                                rabbitMirroring.MirroringSendKey(dataFormObj);
+                                                RabbitMirroring.MirroringSendKey(dataFormObj);
                                             }
                                         }
                                     });
@@ -1467,7 +1467,7 @@ public class frag_ready_account extends Fragment {
                                                 objEl.put(nameDataEl, results);
                                                 dataFormObj = dataReqForm();
                                                 if (isSessionZoom) {
-                                                    rabbitMirroring.MirroringSendKey(dataFormObj);
+                                                    RabbitMirroring.MirroringSendKey(dataFormObj);
                                                 }
                                             } catch (JSONException e) {
                                                 e.printStackTrace();
@@ -1520,7 +1520,7 @@ public class frag_ready_account extends Fragment {
                                                         valSpin.put(nameDataEl, idData);
                                                     }
                                                     if (isSessionZoom) {
-                                                        rabbitMirroring.MirroringSendKey(dataFormObj);
+                                                        RabbitMirroring.MirroringSendKey(dataFormObj);
                                                     }
                                                     Log.e("CEK","flagStuckSpin : "+flagStuckSpin);
                                                     if (flagStuckSpin) {
@@ -1550,7 +1550,7 @@ public class frag_ready_account extends Fragment {
                                                 objEl.put(nameDataEl, results);
                                                 dataFormObj = dataReqForm();
                                                 if (isSessionZoom) {
-                                                    rabbitMirroring.MirroringSendKey(dataFormObj);
+                                                    RabbitMirroring.MirroringSendKey(dataFormObj);
                                                 }
                                             } catch (JSONException e) {
                                                 e.printStackTrace();
@@ -1565,7 +1565,7 @@ public class frag_ready_account extends Fragment {
                                                 objEl.put(nameDataEl, results);
                                                 dataFormObj = dataReqForm();
                                                 if (isSessionZoom) {
-                                                    rabbitMirroring.MirroringSendKey(dataFormObj);
+                                                    RabbitMirroring.MirroringSendKey(dataFormObj);
                                                 }
                                             } catch (JSONException e) {
                                                 e.printStackTrace();
@@ -1641,11 +1641,16 @@ public class frag_ready_account extends Fragment {
                         JSONArray dataArr = dataObj.getJSONArray("data");
                         if (nameAction.equals("ProdukDropdown")) {
                             for (int i = 0; i < dataArr.length(); i++) {
-                                int idData = dataArr.getJSONObject(i).getInt("id");
-                                String kode = dataArr.getJSONObject(i).getString("kode");
-                                String namaProduk = dataArr.getJSONObject(i).getString("namaProduk");
+                                int idData = 0;
+                                String kode = "";
+                                if (dataArr.getJSONObject(i).has("id")) {
+                                    idData = dataArr.getJSONObject(i).getInt("id");
+                                    kode = dataArr.getJSONObject(i).getString("kode");
+                                }
+                                String labelIdn = dataArr.getJSONObject(i).getString("labelIdn");
+                                String labelEng = dataArr.getJSONObject(i).getString("labelEng");
 
-                                dataDropDown.add(new FormSpin(idData, kode, namaProduk, namaProduk));
+                                dataDropDown.add(new FormSpin(idData, kode, labelIdn, labelEng));
                             }
                         } else {
                             for (int i = 0; i < dataArr.length(); i++) {
@@ -1669,7 +1674,7 @@ public class frag_ready_account extends Fragment {
                                 }
                             }
                         }
-                        ArrayAdapter<FormSpin> adapter2 = new ArrayAdapter<FormSpin>(mContext, android.R.layout.simple_spinner_dropdown_item, dataDropDown);
+                        ArrayAdapter<FormSpin> adapter2 = new ArrayAdapter<FormSpin>(mContext, R.layout.simple_spinner_dropdown_customitem, dataDropDown);
                         spin.setAdapter(adapter2);
                     } catch (JSONException e) {
                         e.printStackTrace();

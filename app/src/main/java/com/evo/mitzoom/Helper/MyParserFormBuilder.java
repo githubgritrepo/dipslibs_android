@@ -59,11 +59,11 @@ public class MyParserFormBuilder {
     private static String language;
 
     public MyParserFormBuilder(Context mContext, String dataForm, LinearLayout llFormBuild) throws JSONException {
-        this.dataArrObj = new JSONArray(dataForm);
-        this.mContext = mContext;
-        this.llFormBuild = llFormBuild;
-        this.sessions = new SessionManager(mContext);
-        this.language = sessions.getLANG();
+        dataArrObj = new JSONArray(dataForm);
+        MyParserFormBuilder.mContext = mContext;
+        MyParserFormBuilder.llFormBuild = llFormBuild;
+        sessions = new SessionManager(mContext);
+        language = sessions.getLANG();
         Log.e("CEK","language : "+language);
     }
 
@@ -239,7 +239,7 @@ public class MyParserFormBuilder {
                                     elName = compLabelGab.toLowerCase().replace(" ", "").replace("-", "").replace("/", "").replace(".", "");
                                     keyLabelInd = compLabelGabIndo.toLowerCase().replace(" ", "").replace("-", "").replace("/", "").replace(".", "");
                                     ed.setEnabled(false);
-                                    ed.setClickable(false);
+                                    ed.setFocusable(false);
                                 } if (compName.equals("radiobutton")) {
                                     compLabelGab2 = parentLabel+" "+compLabel;
                                     String compLabelGab = parentLabel+compLabel;
@@ -247,7 +247,7 @@ public class MyParserFormBuilder {
                                     elName = compLabelGab.toLowerCase().replace(" ", "").replace("-", "").replace("/", "").replace(".", "");
                                     keyLabelInd = compLabelGabIndo.toLowerCase().replace(" ", "").replace("-", "").replace("/", "").replace(".", "");
                                     ed.setEnabled(false);
-                                    ed.setClickable(false);
+                                    ed.setFocusable(false);
                                 } else {
                                     elName = compLabel.toLowerCase().replace(" ", "").replace("-", "").replace("/", "").replace(".", "");
                                     keyLabelInd = keyLabel.toLowerCase().replace(" ", "").replace("-", "").replace("/", "").replace(".", "");
@@ -516,7 +516,7 @@ public class MyParserFormBuilder {
                                     LayoutInflater inflater = LayoutInflater.from(mContext);
                                     ln = (LinearLayout) inflater.inflate(R.layout.layout_upload_file, null, false);
 
-                                    TextView nama_file = (TextView) ln.findViewById(R.id.labelFile);
+                                    TextView nama_file = ln.findViewById(R.id.labelFile);
                                     nama_file.setText(compLabel);
 
                                     /*ln.setId(intAplhabet);
@@ -663,7 +663,7 @@ public class MyParserFormBuilder {
                             spinner.setFocusable(false);
                             spinner.setGravity(Gravity.CENTER_VERTICAL);
                             spinner.setPadding(0,0,20,0);
-                            ArrayAdapter<FormSpin> adapter2 = new ArrayAdapter<FormSpin>(mContext, android.R.layout.simple_spinner_dropdown_item, dataDropDown);
+                            ArrayAdapter<FormSpin> adapter2 = new ArrayAdapter<FormSpin>(mContext, R.layout.simple_spinner_dropdown_customitem, dataDropDown);
                             spinner.setAdapter(adapter2);
                             relativeLayout.addView(spinner);
 
@@ -737,7 +737,7 @@ public class MyParserFormBuilder {
                                     }
                                 }
                             });
-                            ArrayAdapter<FormSpin> adapterAuto = new ArrayAdapter<FormSpin>(mContext, android.R.layout.simple_spinner_dropdown_item, dataAuto);
+                            ArrayAdapter<FormSpin> adapterAuto = new ArrayAdapter<FormSpin>(mContext, R.layout.simple_spinner_dropdown_customitem, dataAuto);
                             autoText.setAdapter(adapterAuto);
 
                             llFormBuild.addView(autoText);

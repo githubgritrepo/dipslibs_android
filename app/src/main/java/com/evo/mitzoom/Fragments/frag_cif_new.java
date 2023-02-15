@@ -30,7 +30,6 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
@@ -61,7 +60,6 @@ import com.evo.mitzoom.API.ApiService;
 import com.evo.mitzoom.API.Server;
 import com.evo.mitzoom.BaseMeetingActivity;
 import com.evo.mitzoom.Helper.MyParserFormBuilder;
-import com.evo.mitzoom.Helper.OutboundServiceNew;
 import com.evo.mitzoom.Helper.RabbitMirroring;
 import com.evo.mitzoom.Model.FormSpin;
 import com.evo.mitzoom.R;
@@ -70,7 +68,6 @@ import com.evo.mitzoom.ui.Alternative.DipsSwafoto;
 import com.evo.mitzoom.ui.DipsCameraActivity;
 import com.evo.mitzoom.ui.DipsCameraSource;
 import com.evo.mitzoom.ui.DipsWaitingRoom;
-import com.evo.mitzoom.ui.RatingActivity;
 import com.google.gson.JsonObject;
 
 import org.json.JSONArray;
@@ -100,10 +97,10 @@ import us.zoom.sdk.ZoomVideoSDK;
 
 public class frag_cif_new extends Fragment {
 
-    private int REQUEST_WRITE_PERMISSION = 786;
-    private int REQUESTCODE_CAPTURE = 1;
-    private int REQUESTCODE_FILE = 202;
-    private int REQUESTCODE_SWAFOTO = 10;
+    private final int REQUEST_WRITE_PERMISSION = 786;
+    private final int REQUESTCODE_CAPTURE = 1;
+    private final int REQUESTCODE_FILE = 202;
+    private final int REQUESTCODE_SWAFOTO = 10;
     private int REQUESTCODE_GALLERY = 2;
 
     private View inclHead;
@@ -163,9 +160,9 @@ public class frag_cif_new extends Fragment {
     private JSONObject objValCIF;
     private String no_handphone = "";
     private String numberOTP = "";
-    private String newString = "";
-    private Handler handler = null;
-    private Runnable myRunnable = null;
+    private final String newString = "";
+    private final Handler handler = null;
+    private final Runnable myRunnable = null;
     private int getMinutes = 2;
     private int seconds = 60;
     private boolean running = true;
@@ -215,40 +212,40 @@ public class frag_cif_new extends Fragment {
         Log.e("CEK","frag_cif_new onCreateView");
 
         inclHead = views.findViewById(R.id.inclHead);
-        TopBar = (LinearLayout) views.findViewById(R.id.TopBar);
-        ll_head = (LinearLayout) views.findViewById(R.id.ll_head);
-        tvAlertDoc = (TextView) views.findViewById(R.id.tvAlertDoc);
-        tvFotoKTP = (TextView) views.findViewById(R.id.tvFotoKTP);
-        iconKtp = (LinearLayout) views.findViewById(R.id.icon_ktp);
-        iconSwafoto = (LinearLayout) views.findViewById(R.id.icon_swafoto);
-        iconNpwp = (LinearLayout) views.findViewById(R.id.icon_npwp);
-        iconSignature = (LinearLayout) views.findViewById(R.id.icon_signature);
-        iconForm = (LinearLayout) views.findViewById(R.id.icon_form);
+        TopBar = views.findViewById(R.id.TopBar);
+        ll_head = views.findViewById(R.id.ll_head);
+        tvAlertDoc = views.findViewById(R.id.tvAlertDoc);
+        tvFotoKTP = views.findViewById(R.id.tvFotoKTP);
+        iconKtp = views.findViewById(R.id.icon_ktp);
+        iconSwafoto = views.findViewById(R.id.icon_swafoto);
+        iconNpwp = views.findViewById(R.id.icon_npwp);
+        iconSignature = views.findViewById(R.id.icon_signature);
+        iconForm = views.findViewById(R.id.icon_form);
 
-        swipe = (SwipeRefreshLayout) views.findViewById(R.id.swipe);
+        swipe = views.findViewById(R.id.swipe);
 
         inclBodyUpload = views.findViewById(R.id.inclBodyUpload);
-        btnCamera = (ImageView) views.findViewById(R.id.choose_camera);
-        btnGallery = (LinearLayout) views.findViewById(R.id.choose_gallery);
-        btnNext = (Button) views.findViewById(R.id.btnNext);
-        imgDelete = (ImageView) views.findViewById(R.id.imgDelete);
-        viewImage = (ImageView) views.findViewById(R.id.Imageview);
-        LL = (LinearLayout) views.findViewById(R.id.BackgroundLL);
-        llOR = (LinearLayout) views.findViewById(R.id.llOR);
-        chooseImage = (LinearLayout) views.findViewById(R.id.Choose_Image);
+        btnCamera = views.findViewById(R.id.choose_camera);
+        btnGallery = views.findViewById(R.id.choose_gallery);
+        btnNext = views.findViewById(R.id.btnNext);
+        imgDelete = views.findViewById(R.id.imgDelete);
+        viewImage = views.findViewById(R.id.Imageview);
+        LL = views.findViewById(R.id.BackgroundLL);
+        llOR = views.findViewById(R.id.llOR);
+        chooseImage = views.findViewById(R.id.Choose_Image);
 
-        llFormBuild = (LinearLayout) views.findViewById(R.id.llFormBuild);
+        llFormBuild = views.findViewById(R.id.llFormBuild);
 
-        scrollOTP = (NestedScrollView) views.findViewById(R.id.scrollOTP);
+        scrollOTP = views.findViewById(R.id.scrollOTP);
         inclOTP = views.findViewById(R.id.inclOTP);
-        imgDialog = (ImageView) views.findViewById(R.id.imgDialog);
-        textTitleOTP = (TextView) views.findViewById(R.id.textIBMB);
-        btnVerifikasi = (Button) views.findViewById(R.id.btnVerifikasi);
-        TimerOTP = (TextView) views.findViewById(R.id.timer_otp);
-        Resend_Otp = (TextView) views.findViewById(R.id.btn_resend_otp);
-        otp = (PinView) views.findViewById(R.id.otp);
+        imgDialog = views.findViewById(R.id.imgDialog);
+        textTitleOTP = views.findViewById(R.id.textIBMB);
+        btnVerifikasi = views.findViewById(R.id.btnVerifikasi);
+        TimerOTP = views.findViewById(R.id.timer_otp);
+        Resend_Otp = views.findViewById(R.id.btn_resend_otp);
+        otp = views.findViewById(R.id.otp);
 
-        btnProses = (Button) views.findViewById(R.id.btnProses);
+        btnProses = views.findViewById(R.id.btnProses);
 
         return views;
     }
@@ -459,7 +456,7 @@ public class frag_cif_new extends Fragment {
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             }
-                            rabbitMirroring.MirroringSendKey(reqOCR);
+                            RabbitMirroring.MirroringSendKey(reqOCR);
                         } else {
                             Toast.makeText(mContext, "Maaf, OCR masih dalam proses...!!!", Toast.LENGTH_SHORT).show();
                         }
@@ -468,7 +465,7 @@ public class frag_cif_new extends Fragment {
                         Bundle bundle = new Bundle();
                         bundle.putString("NPWP",npwp);
                         sessions.saveFormCOde(7);
-                        rabbitMirroring.MirroringSendEndpoint(7);
+                        RabbitMirroring.MirroringSendEndpoint(7);
                         sendDataFragment(bundle, new frag_cif_new());
                     }
                     else {
@@ -599,7 +596,7 @@ public class frag_cif_new extends Fragment {
                                             RadioGroup rg = (RadioGroup) llFormBuild.getChildAt(i);
                                             int selectedId = rg.getCheckedRadioButtonId();
                                             if (selectedId > 0 || selectedId < -1) {
-                                                RadioButton rb = (RadioButton) rg.findViewById(selectedId);
+                                                RadioButton rb = rg.findViewById(selectedId);
                                                 String results = rb.getText().toString();
                                                 if (requiredDataEl && results.isEmpty()) {
                                                     Toast.makeText(mContext, labelDataEl + " harus diisi/dipilih", Toast.LENGTH_SHORT).show();
@@ -690,7 +687,7 @@ public class frag_cif_new extends Fragment {
                 Log.e("CEK","MASUK dataSMS : "+dataSMS);
                 String[] sp = dataSMS.split(" ");
                 for (int i = 0; i < sp.length; i++) {
-                    String word = sp[i].toString();
+                    String word = sp[i];
                     if(word.matches("\\d+(?:\\.\\d+)?")) {
                         numberOTP = word.replaceAll("[^0-9]", "");
                         if (numberOTP.length() == 6) {
@@ -710,7 +707,7 @@ public class frag_cif_new extends Fragment {
         super.onDestroy();
 
         if (isSessionZoom) {
-            rabbitMirroring.closeThreadConnection();
+            RabbitMirroring.closeThreadConnection();
         }
     }
 
@@ -765,8 +762,8 @@ public class frag_cif_new extends Fragment {
                 if (pernyataan) {
                     int intLayoutSelf = 801;
                     reqFormMirroring = dataReqFormMirroring();
-                    rabbitMirroring.MirroringSendKey(reqFormMirroring);
-                    rabbitMirroring.MirroringSendEndpoint(intLayoutSelf);
+                    RabbitMirroring.MirroringSendKey(reqFormMirroring);
+                    RabbitMirroring.MirroringSendEndpoint(intLayoutSelf);
                     bundle.putInt("form_id",9);
                     sessions.saveFormCOde(intLayoutSelf);
                     sessions.saveFormReq(reqFormSend.toString());
@@ -822,18 +819,18 @@ public class frag_cif_new extends Fragment {
                         String dataForm = dataObjForm.getString("data");
                         Log.e("CEK","dataForm : "+dataForm);
                         MyParserFormBuilder parseForm = new MyParserFormBuilder(mContext, dataForm, llFormBuild);
-                        idElement = parseForm.getForm();
-                        Log.e("CEK","dataElement : "+idElement.toString());
+                        idElement = MyParserFormBuilder.getForm();
+                        Log.e("CEK","dataElement : "+ idElement);
                         processValidationActionForm();
                         dataFormCIF.put(keysData,objEl);
                         reqFormMirroring = dataReqFormMirroring();
                         Log.e("CEK","DATA dataFormCIF : "+dataFormCIF.toString());
                         Log.e("CEK","DATA reqFormMirroring : "+reqFormMirroring.toString());
-                        rabbitMirroring.MirroringSendKey(reqFormMirroring);
+                        RabbitMirroring.MirroringSendKey(reqFormMirroring);
                         if (formCode == 8) {
                             if (sessions.getOCR() != null) {
                                 String dataOCR = sessions.getOCR();
-                                Log.e("CEK","dataOCR : "+dataOCR.toString());
+                                Log.e("CEK","dataOCR : "+ dataOCR);
                                 try {
                                     JSONObject dataObjOCR = new JSONObject(dataOCR);
                                     desa_kelurahan = dataObjOCR.getString("desakelurahan");
@@ -902,7 +899,7 @@ public class frag_cif_new extends Fragment {
                                             Log.e("CEK","onFocusChange : "+b);
                                             if (isSessionZoom) {
                                                 reqFormMirroring = dataReqFormMirroring();
-                                                rabbitMirroring.MirroringSendKey(reqFormMirroring);
+                                                RabbitMirroring.MirroringSendKey(reqFormMirroring);
                                             }
                                         }
                                     });
@@ -961,7 +958,7 @@ public class frag_cif_new extends Fragment {
                                         public void onCheckedChanged(RadioGroup radioGroup, int i) {
                                             int selectedId = rg.getCheckedRadioButtonId();
                                             if (selectedId > 0 || selectedId < -1) {
-                                                RadioButton rb = (RadioButton) rg.findViewById(selectedId);
+                                                RadioButton rb = rg.findViewById(selectedId);
                                                 String results = rb.getText().toString();
                                                 processEnableComp(results);
                                                 try {
@@ -969,7 +966,7 @@ public class frag_cif_new extends Fragment {
                                                     dataFormCIF.put(keysData,objEl);
                                                     if (isSessionZoom) {
                                                         reqFormMirroring = dataReqFormMirroring();
-                                                        rabbitMirroring.MirroringSendKey(reqFormMirroring);
+                                                        RabbitMirroring.MirroringSendKey(reqFormMirroring);
                                                     }
                                                 } catch (JSONException e) {
                                                     e.printStackTrace();
@@ -1009,7 +1006,7 @@ public class frag_cif_new extends Fragment {
                                             }
                                             if (isSessionZoom) {
                                                 reqFormMirroring = dataReqFormMirroring();
-                                                rabbitMirroring.MirroringSendKey(reqFormMirroring);
+                                                RabbitMirroring.MirroringSendKey(reqFormMirroring);
                                             }
                                         }
                                     });
@@ -1028,7 +1025,7 @@ public class frag_cif_new extends Fragment {
                                                 dataFormCIF.put(keysData,objEl);
                                                 if (isSessionZoom) {
                                                     reqFormMirroring = dataReqFormMirroring();
-                                                    rabbitMirroring.MirroringSendKey(reqFormMirroring);
+                                                    RabbitMirroring.MirroringSendKey(reqFormMirroring);
                                                 }
                                             } catch (JSONException e) {
                                                 e.printStackTrace();
@@ -1099,7 +1096,7 @@ public class frag_cif_new extends Fragment {
                                                     }
                                                     if (isSessionZoom) {
                                                         reqFormMirroring = dataReqFormMirroring();
-                                                        rabbitMirroring.MirroringSendKey(reqFormMirroring);
+                                                        RabbitMirroring.MirroringSendKey(reqFormMirroring);
                                                     }
                                                     Log.e("CEK","flagStuckSpin : "+flagStuckSpin);
                                                     if (flagStuckSpin) {
@@ -1131,7 +1128,7 @@ public class frag_cif_new extends Fragment {
                                                 dataFormCIF.put(keysData,objEl);
                                                 if (isSessionZoom) {
                                                     reqFormMirroring = dataReqFormMirroring();
-                                                    rabbitMirroring.MirroringSendKey(reqFormMirroring);
+                                                    RabbitMirroring.MirroringSendKey(reqFormMirroring);
                                                 }
                                             } catch (JSONException e) {
                                                 e.printStackTrace();
@@ -1147,7 +1144,7 @@ public class frag_cif_new extends Fragment {
                                                 dataFormCIF.put(keysData,objEl);
                                                 if (isSessionZoom) {
                                                     reqFormMirroring = dataReqFormMirroring();
-                                                    rabbitMirroring.MirroringSendKey(reqFormMirroring);
+                                                    RabbitMirroring.MirroringSendKey(reqFormMirroring);
                                                 }
                                             } catch (JSONException e) {
                                                 e.printStackTrace();
@@ -1239,7 +1236,7 @@ public class frag_cif_new extends Fragment {
                                             Log.e("CEK","onFocusChange : "+b);
                                             if (isSessionZoom) {
                                                 reqFormMirroring = dataReqFormMirroring();
-                                                rabbitMirroring.MirroringSendKey(reqFormMirroring);
+                                                RabbitMirroring.MirroringSendKey(reqFormMirroring);
                                             }
                                         }
                                     });
@@ -1321,10 +1318,10 @@ public class frag_cif_new extends Fragment {
                                         if (nameDataElGab.equals(nameDataEl)) {
                                             if (results.toLowerCase().contains("lain") || results.toLowerCase().contains("other")) {
                                                 ed.setEnabled(true);
-                                                ed.setClickable(true);
+                                                ed.setFocusableInTouchMode(true);
                                             } else {
                                                 ed.setEnabled(false);
-                                                ed.setClickable(false);
+                                                ed.setFocusable(false);
                                             }
                                         }
                                     }
@@ -1364,7 +1361,7 @@ public class frag_cif_new extends Fragment {
             String lbpernyataan = "alamatdomisili";
 
             for(Iterator<String> iter = objEl.keys(); iter.hasNext();) {
-                Log.e("CEK","iter : "+iter.toString());
+                Log.e("CEK","iter : "+ iter);
                 Log.e("CEK","iter next : "+iter.next());
                 if(iter.hasNext()) {
                     String key = iter.next();
@@ -1648,8 +1645,8 @@ public class frag_cif_new extends Fragment {
                             }
 
                             reqFormMirroring = dataReqFormMirroring();
-                            rabbitMirroring.MirroringSendKey(reqFormMirroring);
-                            rabbitMirroring.MirroringSendEndpoint(intLayoutWork);
+                            RabbitMirroring.MirroringSendKey(reqFormMirroring);
+                            RabbitMirroring.MirroringSendEndpoint(intLayoutWork);
                             sessions.saveFormCOde(intLayoutWork);
                             if (intLayoutWork == 804 && sessions.getCIF() != null) {
                                 JSONObject dataFinance = dataObj.getJSONObject("data");
@@ -1661,7 +1658,7 @@ public class frag_cif_new extends Fragment {
                                 String valDataCIF = sessions.getCIF();
                                 try {
                                     objValCIF = new JSONObject(valDataCIF);
-                                    Log.e("CEK","CIF FULL objValCIF : "+objValCIF.toString());
+                                    Log.e("CEK","CIF FULL objValCIF : "+ objValCIF);
                                     JSONObject getObjEl = objValCIF.getJSONObject("datadiri");
 
                                     String getDataNasabah = sessions.getNasabah();
@@ -1720,7 +1717,7 @@ public class frag_cif_new extends Fragment {
                                     dataNasabahObj.put("namaLengkap",namaIdentitas);
                                     dataNasabahObj.put("nik",noIdentitas);
                                     dataNasabahObj.put("gelar",gelar);
-                                    Log.e("CEK","dataNasabahObj : "+dataNasabahObj.toString());
+                                    Log.e("CEK","dataNasabahObj : "+ dataNasabahObj);
                                     sessions.saveNasabah(dataNasabahObj.toString());
 
                                 } catch (JSONException e) {
@@ -1839,7 +1836,7 @@ public class frag_cif_new extends Fragment {
                                 }
                             }
                         }
-                        ArrayAdapter<FormSpin> adapter2 = new ArrayAdapter<FormSpin>(mContext, android.R.layout.simple_spinner_dropdown_item, dataDropDown);
+                        ArrayAdapter<FormSpin> adapter2 = new ArrayAdapter<FormSpin>(mContext, R.layout.simple_spinner_dropdown_customitem, dataDropDown);
                         spin.setAdapter(adapter2);
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -2018,7 +2015,7 @@ public class frag_cif_new extends Fragment {
 
                                     for(int ch = 0; ch < rg.getChildCount(); ch++) {
                                         int idRad = rg.getChildAt(ch).getId();
-                                        RadioButton rb = (RadioButton) rg.findViewById(idRad);
+                                        RadioButton rb = rg.findViewById(idRad);
                                         String labelRad = rb.getText().toString();
                                         String valEl = objEl.getString(nameDataEl);
                                         String valRad = valEl.toLowerCase();
@@ -2104,7 +2101,7 @@ public class frag_cif_new extends Fragment {
             e.printStackTrace();
         }
         Log.e("CEK","Kelurahan : "+desa_kelurahan+" | kecamatan : "+kecamatan+" | kabupaten : "+kota_kabupaten+" | provinsi : "+provinsi);
-        Log.e("CEK","PAYLOAD GET KODE POS "+json.toString());
+        Log.e("CEK","PAYLOAD GET KODE POS "+ json);
         RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), json.toString());
         Log.e("CEK","PAYLOAD GET KODE POS 2"+requestBody);
         ApiService API = Server.getAPIService();
@@ -2151,7 +2148,7 @@ public class frag_cif_new extends Fragment {
     private void processMatchData() {
         Log.e("CEK","processMatchData");
         String dataOCR = sessions.getOCR();
-        Log.e("CEK","dataOCR : "+dataOCR.toString());
+        Log.e("CEK","dataOCR : "+ dataOCR);
         try {
             JSONObject dataObjOCR = new JSONObject(dataOCR);
             String namaOCR = dataObjOCR.getString("nama");
@@ -2280,33 +2277,33 @@ public class frag_cif_new extends Fragment {
         LayoutInflater inflater = getLayoutInflater();
         View dialogView = inflater.inflate(R.layout.item_ocr, null);
         SweetAlertDialog sweetAlertDialog = new SweetAlertDialog(mContext, SweetAlertDialog.NORMAL_TYPE);
-        EditText NIK = (EditText) dialogView.findViewById(R.id.et_nik_ocr);
-        EditText Nama = (EditText) dialogView.findViewById(R.id.et_name_ocr);
-        EditText TTL = (EditText) dialogView.findViewById(R.id.et_ttl_ocr);
-        EditText TTL2 = (EditText) dialogView.findViewById(R.id.et_ttl2_ocr);
-        EditText et_gender= (EditText) dialogView.findViewById(R.id.et_gender);
-        EditText et_goldar= (EditText) dialogView.findViewById(R.id.et_goldar);
-        EditText et_address= (EditText) dialogView.findViewById(R.id.et_address);
-        EditText et_rtrw= (EditText) dialogView.findViewById(R.id.et_rtrw);
-        EditText et_provinsi= (EditText) dialogView.findViewById(R.id.et_provinsi);
-        EditText et_kabkot= (EditText) dialogView.findViewById(R.id.et_kabkot);
-        EditText et_kecamatan= (EditText) dialogView.findViewById(R.id.et_kecamatan);
-        EditText et_desa= (EditText) dialogView.findViewById(R.id.et_desa);
-        EditText et_religion= (EditText) dialogView.findViewById(R.id.et_religion);
-        EditText et_status_kawin= (EditText) dialogView.findViewById(R.id.et_status_kawin);
-        EditText et_warga= (EditText) dialogView.findViewById(R.id.et_warga);
-        EditText et_work= (EditText) dialogView.findViewById(R.id.et_work);
-        EditText et_nama_ibuKandung = (EditText) dialogView.findViewById(R.id.et_nama_ibu_kandung);
-        Button btnOCRCancel = (Button) dialogView.findViewById(R.id.btncncl);
-        Button btnOCRNext = (Button) dialogView.findViewById(R.id.btnlnjt);
+        EditText NIK = dialogView.findViewById(R.id.et_nik_ocr);
+        EditText Nama = dialogView.findViewById(R.id.et_name_ocr);
+        EditText TTL = dialogView.findViewById(R.id.et_ttl_ocr);
+        EditText TTL2 = dialogView.findViewById(R.id.et_ttl2_ocr);
+        EditText et_gender= dialogView.findViewById(R.id.et_gender);
+        EditText et_goldar= dialogView.findViewById(R.id.et_goldar);
+        EditText et_address= dialogView.findViewById(R.id.et_address);
+        EditText et_rtrw= dialogView.findViewById(R.id.et_rtrw);
+        EditText et_provinsi= dialogView.findViewById(R.id.et_provinsi);
+        EditText et_kabkot= dialogView.findViewById(R.id.et_kabkot);
+        EditText et_kecamatan= dialogView.findViewById(R.id.et_kecamatan);
+        EditText et_desa= dialogView.findViewById(R.id.et_desa);
+        EditText et_religion= dialogView.findViewById(R.id.et_religion);
+        EditText et_status_kawin= dialogView.findViewById(R.id.et_status_kawin);
+        EditText et_warga= dialogView.findViewById(R.id.et_warga);
+        EditText et_work= dialogView.findViewById(R.id.et_work);
+        EditText et_nama_ibuKandung = dialogView.findViewById(R.id.et_nama_ibu_kandung);
+        Button btnOCRCancel = dialogView.findViewById(R.id.btncncl);
+        Button btnOCRNext = dialogView.findViewById(R.id.btnlnjt);
 
         sweetAlertDialog.setCustomView(dialogView);
         sweetAlertDialog.hideConfirmButton();
         sweetAlertDialog.setCancelable(false);
         sweetAlertDialog.show();
 
-        int width = (int)(((Activity)mContext).getResources().getDisplayMetrics().widthPixels);
-        int height = (int)(((Activity)mContext).getResources().getDisplayMetrics().heightPixels);
+        int width = mContext.getResources().getDisplayMetrics().widthPixels;
+        int height = mContext.getResources().getDisplayMetrics().heightPixels;
 
         Log.e("CEK","PopUpOCR width : "+width+" | height : "+height);
         int newWidth = (int)(width*0.8);
@@ -2325,7 +2322,7 @@ public class frag_cif_new extends Fragment {
         String tglLahir = "-";
         if (ttl.indexOf(",") > 0) {
             String[] sp = ttl.split(",");
-            tglLahir = sp[1].toString().trim();
+            tglLahir = sp[1].trim();
         }
         else{
             tglLahir = ttl;
@@ -2393,7 +2390,7 @@ public class frag_cif_new extends Fragment {
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
-                    rabbitMirroring.MirroringSendKey(reqOCR);
+                    RabbitMirroring.MirroringSendKey(reqOCR);
                 }
             }
 
@@ -2419,7 +2416,7 @@ public class frag_cif_new extends Fragment {
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
-                    rabbitMirroring.MirroringSendKey(reqOCR);
+                    RabbitMirroring.MirroringSendKey(reqOCR);
                 }
             }
 
@@ -2445,7 +2442,7 @@ public class frag_cif_new extends Fragment {
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
-                    rabbitMirroring.MirroringSendKey(reqOCR);
+                    RabbitMirroring.MirroringSendKey(reqOCR);
                 }
             }
 
@@ -2471,7 +2468,7 @@ public class frag_cif_new extends Fragment {
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
-                    rabbitMirroring.MirroringSendKey(reqOCR);
+                    RabbitMirroring.MirroringSendKey(reqOCR);
                 }
             }
 
@@ -2497,7 +2494,7 @@ public class frag_cif_new extends Fragment {
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
-                    rabbitMirroring.MirroringSendKey(reqOCR);
+                    RabbitMirroring.MirroringSendKey(reqOCR);
                 }
             }
 
@@ -2523,7 +2520,7 @@ public class frag_cif_new extends Fragment {
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
-                    rabbitMirroring.MirroringSendKey(reqOCR);
+                    RabbitMirroring.MirroringSendKey(reqOCR);
                 }
             }
 
@@ -2549,7 +2546,7 @@ public class frag_cif_new extends Fragment {
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
-                    rabbitMirroring.MirroringSendKey(reqOCR);
+                    RabbitMirroring.MirroringSendKey(reqOCR);
                 }
             }
 
@@ -2575,7 +2572,7 @@ public class frag_cif_new extends Fragment {
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
-                    rabbitMirroring.MirroringSendKey(reqOCR);
+                    RabbitMirroring.MirroringSendKey(reqOCR);
                 }
             }
 
@@ -2601,7 +2598,7 @@ public class frag_cif_new extends Fragment {
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
-                    rabbitMirroring.MirroringSendKey(reqOCR);
+                    RabbitMirroring.MirroringSendKey(reqOCR);
                 }
             }
 
@@ -2627,7 +2624,7 @@ public class frag_cif_new extends Fragment {
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
-                    rabbitMirroring.MirroringSendKey(reqOCR);
+                    RabbitMirroring.MirroringSendKey(reqOCR);
                 }
             }
 
@@ -2653,7 +2650,7 @@ public class frag_cif_new extends Fragment {
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
-                    rabbitMirroring.MirroringSendKey(reqOCR);
+                    RabbitMirroring.MirroringSendKey(reqOCR);
                 }
             }
 
@@ -2679,7 +2676,7 @@ public class frag_cif_new extends Fragment {
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
-                    rabbitMirroring.MirroringSendKey(reqOCR);
+                    RabbitMirroring.MirroringSendKey(reqOCR);
                 }
             }
 
@@ -2705,7 +2702,7 @@ public class frag_cif_new extends Fragment {
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
-                    rabbitMirroring.MirroringSendKey(reqOCR);
+                    RabbitMirroring.MirroringSendKey(reqOCR);
                 }
             }
 
@@ -2731,7 +2728,7 @@ public class frag_cif_new extends Fragment {
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
-                    rabbitMirroring.MirroringSendKey(reqOCR);
+                    RabbitMirroring.MirroringSendKey(reqOCR);
                 }
             }
 
@@ -2757,7 +2754,7 @@ public class frag_cif_new extends Fragment {
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
-                    rabbitMirroring.MirroringSendKey(reqOCR);
+                    RabbitMirroring.MirroringSendKey(reqOCR);
                 }
             }
 
@@ -2783,7 +2780,7 @@ public class frag_cif_new extends Fragment {
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
-                    rabbitMirroring.MirroringSendKey(reqOCR);
+                    RabbitMirroring.MirroringSendKey(reqOCR);
                 }
             }
 
@@ -2809,7 +2806,7 @@ public class frag_cif_new extends Fragment {
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
-                    rabbitMirroring.MirroringSendKey(reqOCR);
+                    RabbitMirroring.MirroringSendKey(reqOCR);
                 }
             }
 
@@ -2849,7 +2846,7 @@ public class frag_cif_new extends Fragment {
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
-                    rabbitMirroring.MirroringSendKey(reqOCR);
+                    RabbitMirroring.MirroringSendKey(reqOCR);
                     processDukcapil(fieldName,picturePath);
                 }
                 else{
@@ -2887,7 +2884,7 @@ public class frag_cif_new extends Fragment {
         String tglLahir = "-";
         if (ttl.indexOf(",") > 0) {
             String[] sp = ttl.split(",");
-            tglLahir = sp[1].toString().trim();
+            tglLahir = sp[1].trim();
         }
         else{
             tglLahir = ttl;
@@ -2918,7 +2915,7 @@ public class frag_cif_new extends Fragment {
             e.printStackTrace();
         }
 
-        Log.e("CEK","datasReqOCR2 : "+datasReqOCR2.toString());
+        Log.e("CEK","datasReqOCR2 : "+ datasReqOCR2);
 
         return datasReqOCR2;
     }
@@ -3056,11 +3053,11 @@ public class frag_cif_new extends Fragment {
         LayoutInflater inflater = getLayoutInflater();
         View dialogView = inflater.inflate(R.layout.layout_dialog_sweet, null);
 
-        ImageView imgDialog = (ImageView) dialogView.findViewById(R.id.imgDialog);
-        TextView tvTitleDialog = (TextView) dialogView.findViewById(R.id.tvTitleDialog);
-        TextView tvBodyDialog = (TextView) dialogView.findViewById(R.id.tvBodyDialog);
-        Button btnCancelDialog = (Button) dialogView.findViewById(R.id.btnCancelDialog);
-        Button btnConfirmDialog = (Button) dialogView.findViewById(R.id.btnConfirmDialog);
+        ImageView imgDialog = dialogView.findViewById(R.id.imgDialog);
+        TextView tvTitleDialog = dialogView.findViewById(R.id.tvTitleDialog);
+        TextView tvBodyDialog = dialogView.findViewById(R.id.tvBodyDialog);
+        Button btnCancelDialog = dialogView.findViewById(R.id.btnCancelDialog);
+        Button btnConfirmDialog = dialogView.findViewById(R.id.btnConfirmDialog);
         if (kasus.equals("Dukcapil")){
             btnCancelDialog.setVisibility(View.GONE);
             tvTitleDialog.setVisibility(View.GONE);
@@ -3092,7 +3089,7 @@ public class frag_cif_new extends Fragment {
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-                rabbitMirroring.MirroringSendKey(reqOCR);
+                RabbitMirroring.MirroringSendKey(reqOCR);
                 sweetAlertDialog.cancel();
                 sweetAlertDialog.dismissWithAnimation();
                 Intent dialPhoneIntent = new Intent(Intent.ACTION_DIAL, Uri.parse("tel:1500977"));
@@ -3109,7 +3106,7 @@ public class frag_cif_new extends Fragment {
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-                rabbitMirroring.MirroringSendKey(reqOCR);
+                RabbitMirroring.MirroringSendKey(reqOCR);
                 sweetAlertDialog.cancel();
                 sweetAlertDialog.dismissWithAnimation();
                 if (kasus.equals("Dukcapil")){
@@ -3118,7 +3115,7 @@ public class frag_cif_new extends Fragment {
                 else{
                     int ret = ZoomVideoSDK.getInstance().leaveSession(false);
                     sessions.clearPartData();
-                    rabbitMirroring.MirroringSendEndpoint(99);
+                    RabbitMirroring.MirroringSendEndpoint(99);
                     OutApps();
                 }
             }
@@ -3262,14 +3259,14 @@ public class frag_cif_new extends Fragment {
                                     } catch (JSONException e) {
                                         e.printStackTrace();
                                     }
-                                    rabbitMirroring.MirroringSendKey(reqOCR);
-                                    rabbitMirroring.MirroringSendEndpoint(22);
+                                    RabbitMirroring.MirroringSendKey(reqOCR);
+                                    RabbitMirroring.MirroringSendEndpoint(22);
                                 } else if (formCode == 22) {
-                                    rabbitMirroring.MirroringSendEndpoint(6);
+                                    RabbitMirroring.MirroringSendEndpoint(6);
                                 } else if (formCode == 6) {
-                                    rabbitMirroring.MirroringSendEndpoint(7);
+                                    RabbitMirroring.MirroringSendEndpoint(7);
                                 } else if (formCode == 7) {
-                                    rabbitMirroring.MirroringSendEndpoint(8);
+                                    RabbitMirroring.MirroringSendEndpoint(8);
                                 }
                             }
 
@@ -3301,7 +3298,7 @@ public class frag_cif_new extends Fragment {
                                     try {
                                         file.getCanonicalFile().delete();
                                         if (file.exists()) {
-                                            ((Activity) mContext).getApplicationContext().deleteFile(file.getName());
+                                            mContext.getApplicationContext().deleteFile(file.getName());
                                         }
                                     } catch (IOException e) {
                                         e.printStackTrace();
@@ -3356,7 +3353,7 @@ public class frag_cif_new extends Fragment {
                         IMG_BYTE = new byte[0];
                     }
                     if (response.body() != null) {
-                        Log.e("CEK","response body : "+response.body().toString());
+                        Log.e("CEK","response body : "+ response.body());
                     } else {
                         Log.e("CEK","response errorBody : "+response.errorBody().toString());
                     }
@@ -3454,7 +3451,7 @@ public class frag_cif_new extends Fragment {
                     try {
                         Log.e("CEK","numberOTP : "+numberOTP);
                         otpObj.put("otp",numberOTP);
-                        rabbitMirroring.MirroringSendKey(otpObj);
+                        RabbitMirroring.MirroringSendKey(otpObj);
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
@@ -3542,7 +3539,7 @@ public class frag_cif_new extends Fragment {
         JSONObject dataObjCIF = new JSONObject();
         try {
             JSONObject getObjValCIF = new JSONObject(valDataCIF);
-            Log.e("CEK","APISaveForm CIF FULL objValCIF : "+getObjValCIF.toString());
+            Log.e("CEK","APISaveForm CIF FULL objValCIF : "+ getObjValCIF);
             dataObjCIF.put("formCode","Opening Cif");
             dataObjCIF.put("idDips",idDips);
             dataObjCIF.put("payload",getObjValCIF);
@@ -3610,7 +3607,7 @@ public class frag_cif_new extends Fragment {
             e.printStackTrace();
         }
 
-        Log.e("CEK","processValidateOTP : "+dataObjOTP.toString());
+        Log.e("CEK","processValidateOTP : "+ dataObjOTP);
 
         RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), dataObjOTP.toString());
         Server.getAPIService().ValidateOTP(requestBody).enqueue(new Callback<JsonObject>() {
@@ -3620,7 +3617,7 @@ public class frag_cif_new extends Fragment {
                 if (response.isSuccessful()) {
                     String dataS = response.body().toString();
                     Log.e("CEK","processValidateOTP : "+dataS);
-                    rabbitMirroring.MirroringSendKey(idFormObj);
+                    RabbitMirroring.MirroringSendKey(idFormObj);
                     processApprovalStatus();
                 } else {
                     ((Activity)mContext).runOnUiThread(new Runnable() {
@@ -3705,7 +3702,7 @@ public class frag_cif_new extends Fragment {
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
-                    rabbitMirroring.MirroringSendEndpoint(13);
+                    RabbitMirroring.MirroringSendEndpoint(13);
                     Bundle bundle = new Bundle();
                     bundle.putInt("formCode",13);
                     sendDataFragment(bundle,new frag_cif_resi());
@@ -3783,7 +3780,7 @@ public class frag_cif_new extends Fragment {
 
     private void processSendOTP() {
         String noHp = no_handphone;
-        if (noHp.substring(0,1).equals("0")) {
+        if (noHp.charAt(0) == '0') {
             noHp = "62"+no_handphone.substring(1);
         }
         JSONObject dataObjOTP = new JSONObject();
@@ -3794,7 +3791,7 @@ public class frag_cif_new extends Fragment {
             e.printStackTrace();
         }
 
-        Log.e("CEK","processSendOTP : "+dataObjOTP.toString());
+        Log.e("CEK","processSendOTP : "+ dataObjOTP);
 
         RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), dataObjOTP.toString());
 
@@ -3818,7 +3815,7 @@ public class frag_cif_new extends Fragment {
                     try {
                         JSONObject dataObj = new JSONObject(dataS);
                         transactionId = dataObj.getJSONObject("data").getString("transactionId");
-                        rabbitMirroring.MirroringSendEndpoint(11);
+                        RabbitMirroring.MirroringSendEndpoint(11);
                         pageOTP();
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -4173,7 +4170,7 @@ public class frag_cif_new extends Fragment {
 
                             if (ttl.indexOf(",") > 0) {
                                 String[] sp = ttl.split(",");
-                                tmptLahir = sp[0].toString().trim();
+                                tmptLahir = sp[0].trim();
                             }
 
                             datasReqOCR.put("tempatlahir",tmptLahir);

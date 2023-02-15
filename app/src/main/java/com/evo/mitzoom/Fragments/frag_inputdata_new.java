@@ -16,7 +16,6 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.provider.OpenableColumns;
-import android.text.AutoText;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Base64;
@@ -24,7 +23,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -54,7 +52,6 @@ import com.evo.mitzoom.Adapter.AdapterFile;
 import com.evo.mitzoom.BaseMeetingActivity;
 import com.evo.mitzoom.Helper.MyParserFormBuilder;
 import com.evo.mitzoom.Helper.RabbitMirroring;
-import com.evo.mitzoom.ListenerList;
 import com.evo.mitzoom.Model.FileModel;
 import com.evo.mitzoom.Model.FormSpin;
 import com.evo.mitzoom.R;
@@ -78,7 +75,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Locale;
 import java.util.regex.Pattern;
 
@@ -92,8 +88,8 @@ import us.zoom.sdk.ZoomVideoSDK;
 
 public class frag_inputdata_new extends Fragment {
 
-    private int REQUESTCODE_CAPTURE = 1;
-    private int REQUESTCODE_FILE = 202;
+    private final int REQUESTCODE_CAPTURE = 1;
+    private final int REQUESTCODE_FILE = 202;
     private Context mContext;
     private boolean isCust;
     public int seconds = 0;
@@ -106,8 +102,8 @@ public class frag_inputdata_new extends Fragment {
     private View dialogView;
     private SweetAlertDialog sweetAlertDialogTNC;
     private String idDips;
-    private String Nama = "";
-    private String NIK = "";
+    private final String Nama = "";
+    private final String NIK = "";
     private JSONArray idElement = new JSONArray();
     private boolean isSwafoto = false;
     private TextView tvSavedImg = null;
@@ -124,7 +120,7 @@ public class frag_inputdata_new extends Fragment {
     private String imgBase64;
     private byte[] imageBytes;
     private boolean isSessionZoom;
-    private String keys = "";
+    private final String keys = "";
 
     final String STATE_CUSTNAME = "custName";
     final String STATE_ELEMENTARRAY = "elementArray";
@@ -135,7 +131,7 @@ public class frag_inputdata_new extends Fragment {
     private ImageView imgBin = null;
     private LinearLayout chooseImage = null;
     private RecyclerView rv_item_file = null;
-    private ArrayList dataFiles = new ArrayList<>();;
+    private ArrayList dataFiles = new ArrayList<>();
     private String keyUpFile = "";
     private String keyUpImage = "";
     private String id_Perihal = "";
@@ -156,9 +152,9 @@ public class frag_inputdata_new extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.layout_form_builder, container, false);
-        swipe = (SwipeRefreshLayout) view.findViewById(R.id.swipe);
-        llFormBuild = (LinearLayout) view.findViewById(R.id.llFormBuild);
-        btnNext = (Button) view.findViewById(R.id.btnNext);
+        swipe = view.findViewById(R.id.swipe);
+        llFormBuild = view.findViewById(R.id.llFormBuild);
+        btnNext = view.findViewById(R.id.btnNext);
         return view;
     }
 
@@ -239,7 +235,7 @@ public class frag_inputdata_new extends Fragment {
                                             int selectedId = rg.getCheckedRadioButtonId();
                                             Log.e("CEK", "MASUK RadioGroup ke-" + i+" | selectedId : "+selectedId+" | requiredDataEl  : "+requiredDataEl);
                                             if (selectedId > 0 || selectedId < -1) {
-                                                RadioButton rb = (RadioButton) rg.findViewById(selectedId);
+                                                RadioButton rb = rg.findViewById(selectedId);
                                                 String results = rb.getText().toString();
                                                 Log.e("CEK","RadioGroup results : "+results+" | requiredDataEl : "+requiredDataEl);
                                                 if (requiredDataEl && results.isEmpty()) {
@@ -446,7 +442,7 @@ public class frag_inputdata_new extends Fragment {
         super.onDestroy();
 
         if (isSessionZoom) {
-            rabbitMirroring.closeThreadConnection();
+            RabbitMirroring.closeThreadConnection();
         }
     }
 
@@ -521,8 +517,8 @@ public class frag_inputdata_new extends Fragment {
                         String dataForm = dataObjForm.getString("data");
                         Log.e("CEK","dataForm : "+dataForm);
                         MyParserFormBuilder parseForm = new MyParserFormBuilder(mContext, dataForm, llFormBuild);
-                        idElement = parseForm.getForm();
-                        Log.e("CEK","dataElement : "+idElement.toString());
+                        idElement = MyParserFormBuilder.getForm();
+                        Log.e("CEK","dataElement : "+ idElement);
                         processValidationActionForm();
                         Log.e("CEK","DATA FORM : "+objEl.toString());
                     } catch (JSONException e) {
@@ -844,8 +840,8 @@ public class frag_inputdata_new extends Fragment {
                                         } else if (ll.getChildAt(1) instanceof RecyclerView) {
                                             keyUpFile = nameDataEl;
                                             Log.e("CEK","MASUK UPLOAD FILE RecyclerView");
-                                            LinearLayout llUploadFile = (LinearLayout) ll.findViewById(R.id.llUploadFile);
-                                            rv_item_file = (RecyclerView) ll.findViewById(R.id.rv_item_file);
+                                            LinearLayout llUploadFile = ll.findViewById(R.id.llUploadFile);
+                                            rv_item_file = ll.findViewById(R.id.rv_item_file);
                                             rv_item_file.setHasFixedSize(false);
 
                                             llUploadFile.setOnClickListener(new View.OnClickListener() {
@@ -876,13 +872,13 @@ public class frag_inputdata_new extends Fragment {
                                         } else {
                                             keyUpImage = nameDataEl;
                                             Log.e("CEK","MASUK UPLOAD GALLERY");
-                                            ImageView btnCamera = (ImageView) ll.findViewById(R.id.choose_camera);
-                                            chooseImage = (LinearLayout) ll.findViewById(R.id.Choose_Image);
-                                            LinearLayout btnGallery = (LinearLayout) ll.findViewById(R.id.choose_gallery);
-                                            llFileGallery = (LinearLayout) ll.findViewById(R.id.llFileGallery);
-                                            imgBin = (ImageView) ll.findViewById(R.id.imgBin);
-                                            tvSavedImg = (TextView) ll.findViewById(R.id.tvNameGallery);
-                                            viewImage = (ImageView) ll.findViewById(R.id.Imageview);
+                                            ImageView btnCamera = ll.findViewById(R.id.choose_camera);
+                                            chooseImage = ll.findViewById(R.id.Choose_Image);
+                                            LinearLayout btnGallery = ll.findViewById(R.id.choose_gallery);
+                                            llFileGallery = ll.findViewById(R.id.llFileGallery);
+                                            imgBin = ll.findViewById(R.id.imgBin);
+                                            tvSavedImg = ll.findViewById(R.id.tvNameGallery);
+                                            viewImage = ll.findViewById(R.id.Imageview);
 
                                             imgBin.setOnClickListener(new View.OnClickListener() {
                                                 @Override
@@ -955,7 +951,7 @@ public class frag_inputdata_new extends Fragment {
                                 dataDropDown.add(new FormSpin(idData, idJenis, jenisLabel, jenisLabel));
                             }
                         }
-                        ArrayAdapter<FormSpin> adapter2 = new ArrayAdapter<FormSpin>(mContext, android.R.layout.simple_spinner_dropdown_item, dataDropDown);
+                        ArrayAdapter<FormSpin> adapter2 = new ArrayAdapter<FormSpin>(mContext, R.layout.simple_spinner_dropdown_customitem, dataDropDown);
                         autoText.setAdapter(adapter2);
                     } catch (JSONException e) {
                         throw new RuntimeException(e);
@@ -1040,7 +1036,7 @@ public class frag_inputdata_new extends Fragment {
                                 }
                             }
                         }
-                        ArrayAdapter<FormSpin> adapter2 = new ArrayAdapter<FormSpin>(mContext, android.R.layout.simple_spinner_dropdown_item, dataDropDown);
+                        ArrayAdapter<FormSpin> adapter2 = new ArrayAdapter<FormSpin>(mContext, R.layout.simple_spinner_dropdown_customitem, dataDropDown);
                         spin.setAdapter(adapter2);
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -1322,7 +1318,7 @@ public class frag_inputdata_new extends Fragment {
                                     e.printStackTrace();
                                 }
                                 if (isSessionZoom) {
-                                    rabbitMirroring.MirroringSendKey(jsons);
+                                    RabbitMirroring.MirroringSendKey(jsons);
                                 }
                             }
                             isSwafoto = dataObj.getBoolean("isSwafoto");
@@ -1504,7 +1500,7 @@ public class frag_inputdata_new extends Fragment {
                 int columnIndex = c.getColumnIndex(filePath[0]);
                 String picturePath = c.getString(columnIndex);
                 File files = new File(picturePath);
-                String fileName = files.getName().toString();
+                String fileName = files.getName();
                 Log.e("CEK","RESULT picturePath : "+picturePath);
                 Log.e("CEK","RESULT files.getName : "+fileName);
                 tvSavedImg.setText(fileName);
@@ -1602,6 +1598,18 @@ public class frag_inputdata_new extends Fragment {
         } else if (resultCode == RESULT_CANCELED) {
             session.saveFlagUpDoc(true);
         }
+    }
+
+    private static String[] splitFileName(String fileName) {
+        String name = fileName;
+        String extension = "";
+        int i = fileName.lastIndexOf(".");
+        if (i != -1) {
+            name = fileName.substring(0, i);
+            extension = fileName.substring(i);
+        }
+
+        return new String[]{name, extension};
     }
 
     private File createTemporaryFile(byte[] byteImage) throws Exception {

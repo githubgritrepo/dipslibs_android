@@ -86,9 +86,6 @@ import java.util.Map;
 import java.util.concurrent.TimeoutException;
 
 import cn.pedant.SweetAlert.SweetAlertDialog;
-import io.socket.client.IO;
-import io.socket.client.Socket;
-import io.socket.emitter.Emitter;
 import okhttp3.MediaType;
 import okhttp3.RequestBody;
 import retrofit2.Call;
@@ -130,15 +127,14 @@ public class DipsWaitingRoom extends AppCompatActivity implements DatePickerDial
     private static String myTicketNumber;
     boolean isCust;
     String custName;
-    private boolean doubleBackToExitPressedOnce = false;
+    private final boolean doubleBackToExitPressedOnce = false;
     private SessionManager sessions;
     private TextView myTicket, lastTicket;
     private SweetAlertDialog dialogConfirm;
     private DisplayMetrics displayMetrics;
     private int Savewaktu;
     //RabitMQ
-    private static ConnectionFactory connectionFactory = new ConnectionFactory();
-    private Socket mSocket;
+    private static final ConnectionFactory connectionFactory = new ConnectionFactory();
     private Thread subscribeThread;
     private Thread subscribeReqTicketThread;
     public static Thread subscribeThreadCall;
@@ -146,14 +142,17 @@ public class DipsWaitingRoom extends AppCompatActivity implements DatePickerDial
     private Thread publishThread;
     private Thread publishQSTicketThread;
     private static Thread publishCallAcceptThread;
-    private boolean isSwafoto = false;
+    private final boolean isSwafoto = false;
     public static Channel channelCall = null;
 
     ArrayList<String> time = new ArrayList<>();
     List<Integer> periodeInt = new ArrayList<>();
     HashMap<Integer,String> dataPeriode = new HashMap<>();
     HashMap<String,Integer> dataPeriodeId = new HashMap<>();
-    private int year, month, day, waktu_tunggu = 6000;
+    private int year;
+    private int month;
+    private int day;
+    private final int waktu_tunggu = 6000;
     private String tanggal, waktu;
     private String Savetanggal;
     private List<Integer> indeksNotFound;
@@ -166,12 +165,6 @@ public class DipsWaitingRoom extends AppCompatActivity implements DatePickerDial
     public static RelativeLayout rlprogress;
     private boolean isConfigure;
     private boolean flagShowJoin = false;
-
-    {
-        try {
-            mSocket = IO.socket(Server.BASE_URL_API);
-        } catch (URISyntaxException e) {}
-    }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
@@ -198,9 +191,9 @@ public class DipsWaitingRoom extends AppCompatActivity implements DatePickerDial
         myTicket = findViewById(R.id.myticket);
         lastTicket = findViewById(R.id.last_ticket);
         AnimationCall = findViewById(R.id.AnimationCall);
-        CardView cardSurf = (CardView) findViewById(R.id.cardSurf);
-        preview = (CircularSurfaceView) findViewById(R.id.mySurface);
-        rlprogress = (RelativeLayout) findViewById(R.id.rlprogress);
+        CardView cardSurf = findViewById(R.id.cardSurf);
+        preview = findViewById(R.id.mySurface);
+        rlprogress = findViewById(R.id.rlprogress);
 
         /*displayMetrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
@@ -281,10 +274,6 @@ public class DipsWaitingRoom extends AppCompatActivity implements DatePickerDial
     protected void onDestroy() {
         super.onDestroy();
 
-        if (mSocket != null) {
-            mSocket.disconnect();
-            mSocket.off("waiting");
-        }
         if (publishThread != null) {
             publishThread.interrupt();
         }
@@ -538,7 +527,7 @@ public class DipsWaitingRoom extends AppCompatActivity implements DatePickerDial
                                 Log.e(TAG,"subscribeThread getTicket : "+getTicket);
                                 int myTicketInt = Integer.parseInt(getTicket);
                                 Log.e(TAG,"subscribeThread myTicketInt : "+myTicketInt);
-                                myTicketNumber = String.format("%03d", myTicketInt).toString();
+                                myTicketNumber = String.format("%03d", myTicketInt);
                                 Log.e(TAG,"subscribeThread myTicketNumber : "+myTicketNumber);
                                 String myticketContent = myTicketNumber;
                                 runOnUiThread(new Runnable() {
@@ -627,7 +616,7 @@ public class DipsWaitingRoom extends AppCompatActivity implements DatePickerDial
                                 String ticketLast = dataObj.getJSONObject("transaction").getString("ticket");
                                 int ticketLastInt = Integer.parseInt(ticketLast);
                                 Log.e(TAG, "subscribeReqTicket ticketLast : " +ticketLast);
-                                String lastQueue = String.format("%03d", ticketLastInt).toString();
+                                String lastQueue = String.format("%03d", ticketLastInt);
                                 Log.e(TAG, "subscribeReqTicket lastQueue : " +lastQueue);
                                 String lastTicketContent = lastQueue;
                                 runOnUiThread(new Runnable() {
@@ -956,62 +945,6 @@ public class DipsWaitingRoom extends AppCompatActivity implements DatePickerDial
 
     }
 
-    private Emitter.Listener waitingListener = new Emitter.Listener() {
-        @Override
-        public void call(final Object... args) {
-            try {
-                JSONArray dataArr = new JSONArray(args);
-                Log.d(TAG,"dataArr : "+dataArr);
-                //Status
-                int statusCode = dataArr.getInt(0);
-                //Nama Sesi
-                String Session_name = dataArr.getString(1);
-                //Antrian Terakhir
-                String lastQueue = dataArr.getString(2);
-                //Password Session
-                String Session_password = dataArr.getString(3);
-                //Username Agent
-                //String Username_agent = dataArr.getString(4);
-
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (statusCode == 0) {
-                            lastTicket.setText("A"+lastQueue.substring(lastQueue.length()-3,lastQueue.length()));
-                            NameSession = Session_name;
-                            SessionPass = Session_password;
-                            PopUpSucces(null);
-                        } else {
-                              if (lastQueue.trim().equals(myTicketNumber) && Session_name.trim().equals(idDips) ){
-                                lastTicket.setText("A"+lastQueue.substring(lastQueue.length()-3,lastQueue.length()));
-                                NameSession = Session_name;
-                                SessionPass = Session_password;
-                                PopUpSucces(null);
-                            }
-                            else{
-                                //Ambil Data Antrian Terakhir terbaru dari Socket
-                                String NEWQUEUE = lastQueue.substring(lastQueue.length()-3,lastQueue.length());
-
-                                //Ambil Antrian Terakhir Yang Ter set Pada Apps Saat ini
-                                String[] CutLASTQUEUE = lastTicket.getText().toString().split("A");
-                                String RECENTQUEUE = CutLASTQUEUE[1];
-
-                                //Validasi apabila Antrian Terbaru (NEWQUEUE) > Antrian yang Ter set (RECENTQUEUE) maka TextView Update
-                                if (Integer.valueOf(NEWQUEUE) > Integer.valueOf(RECENTQUEUE)){
-                                    lastTicket.setText("A"+lastQueue.substring(lastQueue.length()-3,lastQueue.length()));
-                                }
-                                PopUpWaiting();
-                            }
-                        }
-                    }
-                });
-
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
-    };
-
     private void initPreview(int width, int height, SurfaceHolder holder) {
         if (camera != null && holder.getSurface() != null) {
             try {
@@ -1150,12 +1083,12 @@ public class DipsWaitingRoom extends AppCompatActivity implements DatePickerDial
         LayoutInflater inflater = getLayoutInflater();
         View dialogView = inflater.inflate(R.layout.layout_dialog_sweet, null);
 
-        ImageView imgDialog = (ImageView) dialogView.findViewById(R.id.imgDialog);
-        TextView tvTitleDialog = (TextView) dialogView.findViewById(R.id.tvTitleDialog);
-        TextView tvBodyDialog = (TextView) dialogView.findViewById(R.id.tvBodyDialog);
-        LinearLayout llBtnWaiting = (LinearLayout) dialogView.findViewById(R.id.llBtnWaiting);
-        Button btnCancelDialog = (Button) dialogView.findViewById(R.id.btnCancelDialog);
-        Button btnConfirmDialog = (Button) dialogView.findViewById(R.id.btnConfirmDialog);
+        ImageView imgDialog = dialogView.findViewById(R.id.imgDialog);
+        TextView tvTitleDialog = dialogView.findViewById(R.id.tvTitleDialog);
+        TextView tvBodyDialog = dialogView.findViewById(R.id.tvBodyDialog);
+        LinearLayout llBtnWaiting = dialogView.findViewById(R.id.llBtnWaiting);
+        Button btnCancelDialog = dialogView.findViewById(R.id.btnCancelDialog);
+        Button btnConfirmDialog = dialogView.findViewById(R.id.btnConfirmDialog);
 
         if (sessions.getLANG().equals("en")) {
             llBtnWaiting.setOrientation(LinearLayout.HORIZONTAL);
@@ -1202,9 +1135,9 @@ public class DipsWaitingRoom extends AppCompatActivity implements DatePickerDial
         sweetAlertDialog.hideConfirmButton();
         sweetAlertDialog.show();
 
-        ImageView btnclose = (ImageView) dialogView.findViewById(R.id.btn_close_schedule);
-        et_Date = (EditText) dialogView.findViewById(R.id.et_Date);
-        et_time = (Spinner) dialogView.findViewById(R.id.et_time);
+        ImageView btnclose = dialogView.findViewById(R.id.btn_close_schedule);
+        et_Date = dialogView.findViewById(R.id.et_Date);
+        et_time = dialogView.findViewById(R.id.et_time);
 
         ArrayAdapter<String> adapterTime = new ArrayAdapter<String>(mContext,R.layout.list_item, time);
 
@@ -1332,7 +1265,7 @@ public class DipsWaitingRoom extends AppCompatActivity implements DatePickerDial
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        Log.e(TAG,"PARAMS saveSchedule : "+jsons.toString());
+        Log.e(TAG,"PARAMS saveSchedule : "+ jsons);
         Log.d("PARAMS JADWAL","idDips = "+idDips+", Tanggal = "+Savetanggal);
         RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), jsons.toString());
         ApiService API = Server.getAPIService();
@@ -1342,7 +1275,7 @@ public class DipsWaitingRoom extends AppCompatActivity implements DatePickerDial
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
                 Log.e(TAG,"saveSchedule Respon Code : "+response.code());
                 if (response.isSuccessful() && response.body().size() > 0) {
-                    Log.e(TAG,"saveSchedule Respon : "+response.body().toString());
+                    Log.e(TAG,"saveSchedule Respon : "+ response.body());
 
                     String dataS = response.body().toString();
                     try {
@@ -1365,8 +1298,8 @@ public class DipsWaitingRoom extends AppCompatActivity implements DatePickerDial
                             DipsWaitingRoom.subscribeThreadCall.interrupt();
                         }
                     }
-                    serviceOutbound();
 
+                    serviceOutbound();
                     PopUpEndSchedule();
                 }
             }
@@ -1383,11 +1316,11 @@ public class DipsWaitingRoom extends AppCompatActivity implements DatePickerDial
         LayoutInflater inflater = getLayoutInflater();
         View dialogView = inflater.inflate(R.layout.layout_dialog_sweet, null);
 
-        ImageView imgDialog = (ImageView) dialogView.findViewById(R.id.imgDialog);
-        TextView tvTitleDialog = (TextView) dialogView.findViewById(R.id.tvTitleDialog);
-        TextView tvBodyDialog = (TextView) dialogView.findViewById(R.id.tvBodyDialog);
-        Button btnCancelDialog = (Button) dialogView.findViewById(R.id.btnCancelDialog);
-        Button btnConfirmDialog = (Button) dialogView.findViewById(R.id.btnConfirmDialog);
+        ImageView imgDialog = dialogView.findViewById(R.id.imgDialog);
+        TextView tvTitleDialog = dialogView.findViewById(R.id.tvTitleDialog);
+        TextView tvBodyDialog = dialogView.findViewById(R.id.tvBodyDialog);
+        Button btnCancelDialog = dialogView.findViewById(R.id.btnCancelDialog);
+        Button btnConfirmDialog = dialogView.findViewById(R.id.btnConfirmDialog);
 
         tvTitleDialog.setVisibility(View.GONE);
 
@@ -1415,11 +1348,11 @@ public class DipsWaitingRoom extends AppCompatActivity implements DatePickerDial
         LayoutInflater inflater = getLayoutInflater();
         View dialogView = inflater.inflate(R.layout.layout_dialog_sweet, null);
 
-        ImageView imgDialog = (ImageView) dialogView.findViewById(R.id.imgDialog);
-        TextView tvTitleDialog = (TextView) dialogView.findViewById(R.id.tvTitleDialog);
-        TextView tvBodyDialog = (TextView) dialogView.findViewById(R.id.tvBodyDialog);
-        Button btnCancelDialog = (Button) dialogView.findViewById(R.id.btnCancelDialog);
-        Button btnConfirmDialog = (Button) dialogView.findViewById(R.id.btnConfirmDialog);
+        ImageView imgDialog = dialogView.findViewById(R.id.imgDialog);
+        TextView tvTitleDialog = dialogView.findViewById(R.id.tvTitleDialog);
+        TextView tvBodyDialog = dialogView.findViewById(R.id.tvBodyDialog);
+        Button btnCancelDialog = dialogView.findViewById(R.id.btnCancelDialog);
+        Button btnConfirmDialog = dialogView.findViewById(R.id.btnConfirmDialog);
 
         tvTitleDialog.setVisibility(View.GONE);
         btnCancelDialog.setVisibility(View.VISIBLE);
@@ -1472,11 +1405,11 @@ public class DipsWaitingRoom extends AppCompatActivity implements DatePickerDial
         LayoutInflater inflater = getLayoutInflater();
         View dialogView = inflater.inflate(R.layout.layout_dialog_sweet, null);
 
-        ImageView imgDialog = (ImageView) dialogView.findViewById(R.id.imgDialog);
-        TextView tvTitleDialog = (TextView) dialogView.findViewById(R.id.tvTitleDialog);
-        TextView tvBodyDialog = (TextView) dialogView.findViewById(R.id.tvBodyDialog);
-        Button btnCancelDialog = (Button) dialogView.findViewById(R.id.btnCancelDialog);
-        Button btnConfirmDialog = (Button) dialogView.findViewById(R.id.btnConfirmDialog);
+        ImageView imgDialog = dialogView.findViewById(R.id.imgDialog);
+        TextView tvTitleDialog = dialogView.findViewById(R.id.tvTitleDialog);
+        TextView tvBodyDialog = dialogView.findViewById(R.id.tvBodyDialog);
+        Button btnCancelDialog = dialogView.findViewById(R.id.btnCancelDialog);
+        Button btnConfirmDialog = dialogView.findViewById(R.id.btnConfirmDialog);
 
         tvTitleDialog.setVisibility(View.GONE);
 
@@ -1576,51 +1509,6 @@ public class DipsWaitingRoom extends AppCompatActivity implements DatePickerDial
         processJoinVideo();
     }
 
-    private void processGetTicket(TextView my_Ticket){
-        JSONObject jsons = new JSONObject();
-        try {
-            jsons.put("idDips",idDips);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), jsons.toString());
-        ApiService API = Server.getAPIService();
-        Call<JsonObject> call = API.Ticket(requestBody);
-        call.enqueue(new Callback<JsonObject>() {
-            @Override
-            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
-                if (response.isSuccessful() && response.body().size() > 0) {
-                    String dataS = response.body().toString();
-                    try {
-                        JSONObject jsObj = new JSONObject(dataS);
-                        String idDips = jsObj.getString("idDips");
-                        String queueID = jsObj.getString("queueID").toString();
-                        String lastQueueID = jsObj.getString("lastQueueID");
-                        myTicketNumber = queueID;
-                        my_Ticket.setText(queueID.substring(queueID.length()-3,queueID.length()));
-                        lastTicket.setText(lastQueueID.substring(lastQueueID.length()-3,lastQueueID.length()));
-
-                        JSONObject object = new JSONObject();
-                        try {
-                            object.put("room", queueID);
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                        mSocket.emit("call","join",object);
-
-                        Log.d("CEK DATA","idDips : "+idDips+"\n queueID : "+queueID+"\n lastquueID : "+lastQueueID);
-
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-            @Override
-            public void onFailure(Call<JsonObject> call, Throwable t) {
-                Toast.makeText(mContext,t.getMessage(),Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
     public boolean foregroundServiceRunning(){
         ActivityManager activityManager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
         for(ActivityManager.RunningServiceInfo service: activityManager.getRunningServices(Integer.MAX_VALUE)) {
@@ -1656,7 +1544,7 @@ public class DipsWaitingRoom extends AppCompatActivity implements DatePickerDial
             e.printStackTrace();
         }
 
-        Log.e(TAG,"processSignature REQ : "+jsons.toString());
+        Log.e(TAG,"processSignature REQ : "+ jsons);
 
         RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), jsons.toString());
 
@@ -1844,8 +1732,7 @@ public class DipsWaitingRoom extends AppCompatActivity implements DatePickerDial
         et_Date.setText(tanggal);
 
         if (periodePenuh.length() > 0) {
-            ArrayList<String> times_new = new ArrayList<>();
-            times_new.addAll(time);
+            ArrayList<String> times_new = new ArrayList<>(time);
             for (int i = 0; i < periodePenuh.length(); i++) {
                 try {
                     String tglFull = periodePenuh.getJSONObject(i).getString("tanggal");

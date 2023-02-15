@@ -34,12 +34,11 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 public class AdapterCIF extends RecyclerView.Adapter<AdapterCIF.ViewHolder> {
-    private final RabbitMirroring rabbitMirroring;
     private JSONObject objValCIF;
-    private JSONArray dataList;
-    private Context mContext;
+    private final JSONArray dataList;
+    private final Context mContext;
     private final ExpansionLayoutCollection expansionsCollection = new ExpansionLayoutCollection();
-    private SessionManager sessions;
+    private final SessionManager sessions;
     private JSONArray dataElement;
     int lasLenChar;
     boolean backSpaceChar;
@@ -47,7 +46,6 @@ public class AdapterCIF extends RecyclerView.Adapter<AdapterCIF.ViewHolder> {
     public AdapterCIF(JSONArray dataList, Context mContext, RabbitMirroring rabbitMirroring) {
         this.dataList = dataList;
         this.mContext = mContext;
-        this.rabbitMirroring = rabbitMirroring;
         sessions = new SessionManager(mContext);
         String valDataCIF = sessions.getCIF();
         try {
@@ -73,8 +71,8 @@ public class AdapterCIF extends RecyclerView.Adapter<AdapterCIF.ViewHolder> {
 
             MyParserFormBuilder parseForm = new MyParserFormBuilder(mContext, dataListForm.toString(), holder.container);
             expansionsCollection.add(holder.expansionLayout);
-            dataElement = parseForm.getForm();
-            Log.e("CEK","dataElement : "+dataElement.toString());
+            dataElement = MyParserFormBuilder.getForm();
+            Log.e("CEK","dataElement : "+ dataElement);
             Log.e("CEK","nameForm : "+nameForm);
             holder.tv_nama_product.setText(labelForm);
             JSONObject objEl = objValCIF.getJSONObject(nameForm);
@@ -124,7 +122,7 @@ public class AdapterCIF extends RecyclerView.Adapter<AdapterCIF.ViewHolder> {
                                             } catch (JSONException e) {
                                                 e.printStackTrace();
                                             }
-                                            rabbitMirroring.MirroringSendKey(dataFormCIF);
+                                            RabbitMirroring.MirroringSendKey(dataFormCIF);
                                         }
 
                                         @Override
@@ -156,14 +154,14 @@ public class AdapterCIF extends RecyclerView.Adapter<AdapterCIF.ViewHolder> {
                                         public void onCheckedChanged(RadioGroup radioGroup, int i) {
                                             int selectedId = rg.getCheckedRadioButtonId();
                                             if (selectedId > 0 || selectedId < -1) {
-                                                RadioButton rb = (RadioButton) rg.findViewById(selectedId);
+                                                RadioButton rb = rg.findViewById(selectedId);
                                                 String results = rb.getText().toString();
                                                 try {
                                                     objEl.put(nameDataEl, results);
                                                     dataFormCIF.put(nameForm,objEl);
                                                     objValCIF.put(nameForm,objEl);
                                                     sessions.saveCIF(objValCIF.toString());
-                                                    rabbitMirroring.MirroringSendKey(dataFormCIF);
+                                                    RabbitMirroring.MirroringSendKey(dataFormCIF);
                                                 } catch (JSONException e) {
                                                     e.printStackTrace();
                                                 }
@@ -184,7 +182,7 @@ public class AdapterCIF extends RecyclerView.Adapter<AdapterCIF.ViewHolder> {
                                                     dataFormCIF.put(nameForm,objEl);
                                                     objValCIF.put(nameForm,objEl);
                                                     sessions.saveCIF(objValCIF.toString());
-                                                    rabbitMirroring.MirroringSendKey(dataFormCIF);
+                                                    RabbitMirroring.MirroringSendKey(dataFormCIF);
                                                 } catch (JSONException e) {
                                                     e.printStackTrace();
                                                 }
@@ -204,7 +202,7 @@ public class AdapterCIF extends RecyclerView.Adapter<AdapterCIF.ViewHolder> {
                                                 dataFormCIF.put(nameForm,objEl);
                                                 objValCIF.put(nameForm,objEl);
                                                 sessions.saveCIF(objValCIF.toString());
-                                                rabbitMirroring.MirroringSendKey(dataFormCIF);
+                                                RabbitMirroring.MirroringSendKey(dataFormCIF);
                                             } catch (JSONException e) {
                                                 e.printStackTrace();
                                             }
@@ -230,7 +228,7 @@ public class AdapterCIF extends RecyclerView.Adapter<AdapterCIF.ViewHolder> {
                                                     dataFormCIF.put(nameForm,objEl);
                                                     objValCIF.put(nameForm,objEl);
                                                     sessions.saveCIF(objValCIF.toString());
-                                                    rabbitMirroring.MirroringSendKey(dataFormCIF);
+                                                    RabbitMirroring.MirroringSendKey(dataFormCIF);
                                                 } catch (JSONException e) {
                                                     e.printStackTrace();
                                                 }
@@ -254,7 +252,7 @@ public class AdapterCIF extends RecyclerView.Adapter<AdapterCIF.ViewHolder> {
                                                 dataFormCIF.put(nameForm,objEl);
                                                 objValCIF.put(nameForm,objEl);
                                                 sessions.saveCIF(objValCIF.toString());
-                                                rabbitMirroring.MirroringSendKey(dataFormCIF);
+                                                RabbitMirroring.MirroringSendKey(dataFormCIF);
                                             } catch (JSONException e) {
                                                 e.printStackTrace();
                                             }
@@ -269,7 +267,7 @@ public class AdapterCIF extends RecyclerView.Adapter<AdapterCIF.ViewHolder> {
                                                 dataFormCIF.put(nameForm,objEl);
                                                 objValCIF.put(nameForm,objEl);
                                                 sessions.saveCIF(objValCIF.toString());
-                                                rabbitMirroring.MirroringSendKey(dataFormCIF);
+                                                RabbitMirroring.MirroringSendKey(dataFormCIF);
                                             } catch (JSONException e) {
                                                 e.printStackTrace();
                                             }
@@ -365,7 +363,7 @@ public class AdapterCIF extends RecyclerView.Adapter<AdapterCIF.ViewHolder> {
 
     private void processMatchData(ViewHolder holder, JSONObject objEl, String nameForm) {
         if (objEl != null) {
-            Log.e("CEK", "processDataFromOCR : " + objEl.toString());
+            Log.e("CEK", "processDataFromOCR : " + objEl);
             LinearLayout llFormBuild = holder.container;
             int child = llFormBuild.getChildCount();
 
@@ -394,7 +392,7 @@ public class AdapterCIF extends RecyclerView.Adapter<AdapterCIF.ViewHolder> {
 
                                         for (int ch = 0; ch < rg.getChildCount(); ch++) {
                                             int idRad = rg.getChildAt(ch).getId();
-                                            RadioButton rb = (RadioButton) rg.findViewById(idRad);
+                                            RadioButton rb = rg.findViewById(idRad);
                                             String labelRad = rb.getText().toString();
                                             String valEl = objEl.getString(nameDataEl);
                                             Log.e("CEK", "labelRad : " + labelRad + " | valEl : " + valEl);
@@ -405,7 +403,7 @@ public class AdapterCIF extends RecyclerView.Adapter<AdapterCIF.ViewHolder> {
                                                     if (chkEnable) {
                                                         for (int ch2 = 0; ch2 < rg.getChildCount(); ch2++) {
                                                             int idRad2 = rg.getChildAt(ch2).getId();
-                                                            RadioButton rb2 = (RadioButton) rg.findViewById(idRad2);
+                                                            RadioButton rb2 = rg.findViewById(idRad2);
                                                             rb2.setEnabled(false);
                                                         }
                                                     }
@@ -489,7 +487,6 @@ public class AdapterCIF extends RecyclerView.Adapter<AdapterCIF.ViewHolder> {
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
-        private final ImageView img_logo_porto;
         private final TextView tv_nama_product;
         private final ExpansionLayout expansionLayout;
         private final LinearLayout container;
@@ -497,10 +494,10 @@ public class AdapterCIF extends RecyclerView.Adapter<AdapterCIF.ViewHolder> {
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
 
-            img_logo_porto = (ImageView) itemView.findViewById(R.id.img_logo_porto);
-            tv_nama_product = (TextView) itemView.findViewById(R.id.tv_nama_product);
-            expansionLayout = (ExpansionLayout) itemView.findViewById(R.id.expansionLayout);
-            container = (LinearLayout) itemView.findViewById(R.id.container);
+            ImageView img_logo_porto = itemView.findViewById(R.id.img_logo_porto);
+            tv_nama_product = itemView.findViewById(R.id.tv_nama_product);
+            expansionLayout = itemView.findViewById(R.id.expansionLayout);
+            container = itemView.findViewById(R.id.container);
 
             img_logo_porto.setVisibility(View.GONE);
         }

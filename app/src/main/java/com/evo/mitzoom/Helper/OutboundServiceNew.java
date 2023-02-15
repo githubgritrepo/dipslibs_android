@@ -55,7 +55,7 @@ public class OutboundServiceNew extends Service {
     private static Thread publishEndpointThread;
     public static int IDSERVICES = 1001;
     public static int NOTIFICATION_IDOutbound = 101;
-    private static String TAG = "OutboundServiceNew";
+    private static final String TAG = "OutboundServiceNew";
     private static Context mContext;
     private static SessionManager sessions;
     private static String idDips = "";
@@ -417,7 +417,7 @@ public class OutboundServiceNew extends Service {
                     JSONObject datax = dataMirroring(jsons);
                     String dataxS = datax.toString();
 
-                    Log.e(TAG,"dataxS : "+dataxS.toString());
+                    Log.e(TAG,"dataxS : "+ dataxS);
 
                     ch.basicPublish("dips361-cs-send-key","dips.direct.cs."+csID+".send.key",false,null,dataxS.getBytes());
                     ch.waitForConfirmsOrDie();
@@ -458,7 +458,7 @@ public class OutboundServiceNew extends Service {
                         e.printStackTrace();
                     }
 
-                    Log.e(TAG,"jsons : "+jsons.toString());
+                    Log.e(TAG,"jsons : "+ jsons);
 
                     Connection connection = connectionFactory.newConnection();
                     Channel ch = connection.createChannel();
@@ -470,7 +470,7 @@ public class OutboundServiceNew extends Service {
                     JSONObject datax = dataMirroring(jsons);
                     String dataxS = datax.toString();
 
-                    Log.e(TAG,"dataxS : "+dataxS.toString());
+                    Log.e(TAG,"dataxS : "+ dataxS);
 
                     ch.basicPublish("dips361-cs-send-endpoint","dips.direct.cs."+csID+".send.endpoint",false,null,dataxS.getBytes());
                     ch.waitForConfirmsOrDie();

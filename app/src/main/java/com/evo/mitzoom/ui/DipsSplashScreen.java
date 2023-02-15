@@ -1,6 +1,5 @@
 package com.evo.mitzoom.ui;
 
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
@@ -20,13 +19,12 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 
 import com.evo.mitzoom.R;
-import com.evo.mitzoom.Session.SessionManager;
 
 import cn.pedant.SweetAlert.SweetAlertDialog;
 
 public class DipsSplashScreen extends AppCompatActivity {
 
-    private static String TAG = "CEK_DipsSplashScreen";
+    private static final String TAG = "CEK_DipsSplashScreen";
     private TextView tvVersion;
     private RelativeLayout rlBGTransparant;
 
@@ -37,8 +35,8 @@ public class DipsSplashScreen extends AppCompatActivity {
         setContentView(R.layout.activity_dips_splash_screen);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
         Log.e(TAG,"MASUK onCreate");
-        tvVersion = (TextView) findViewById(R.id.tvVersion);
-        rlBGTransparant = (RelativeLayout) findViewById(R.id.rlBGTransparant);
+        tvVersion = findViewById(R.id.tvVersion);
+        rlBGTransparant = findViewById(R.id.rlBGTransparant);
         //Untuk mengambil version dari Apps
         try {
             PackageInfo info = this.getPackageManager().getPackageInfo(this.getPackageName(),0);
@@ -65,11 +63,11 @@ public class DipsSplashScreen extends AppCompatActivity {
         String bankName = getString(R.string.bank_name);
         LayoutInflater inflater = getLayoutInflater();
         View dialogView = inflater.inflate(R.layout.layout_dialog_sweet, null);
-        ImageView imgDialog = (ImageView) dialogView.findViewById(R.id.imgDialog);
-        TextView tvTitleDialog = (TextView) dialogView.findViewById(R.id.tvTitleDialog);
-        TextView tvBodyDialog = (TextView) dialogView.findViewById(R.id.tvBodyDialog);
-        Button btnCancelDialog = (Button) dialogView.findViewById(R.id.btnCancelDialog);
-        Button btnConfirmDialog = (Button) dialogView.findViewById(R.id.btnConfirmDialog);
+        ImageView imgDialog = dialogView.findViewById(R.id.imgDialog);
+        TextView tvTitleDialog = dialogView.findViewById(R.id.tvTitleDialog);
+        TextView tvBodyDialog = dialogView.findViewById(R.id.tvBodyDialog);
+        Button btnCancelDialog = dialogView.findViewById(R.id.btnCancelDialog);
+        Button btnConfirmDialog = dialogView.findViewById(R.id.btnConfirmDialog);
         btnCancelDialog.setVisibility(View.VISIBLE);
         String tvBody1 = getString(R.string.warn_not_use_app);
         String tvBody2 = getString(R.string.warn_hub_calcenter);

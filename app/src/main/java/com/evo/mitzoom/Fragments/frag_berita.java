@@ -42,7 +42,6 @@ import com.evo.mitzoom.Helper.OutboundServiceNew;
 import com.evo.mitzoom.R;
 import com.evo.mitzoom.Session.SessionManager;
 import com.evo.mitzoom.ui.DipsWaitingRoom;
-import com.facebook.shimmer.ShimmerFrameLayout;
 import com.google.gson.JsonObject;
 import com.wdullaer.materialdatetimepicker.date.DatePickerDialog;
 
@@ -53,9 +52,9 @@ import org.json.JSONObject;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -78,7 +77,7 @@ public class frag_berita extends Fragment implements com.wdullaer.materialdateti
     private ViewPager2 mPager;
     private GridProductAdapter gridAdapter;
     private static final Integer[]img = {R.drawable.adsv1, R.drawable.adsv2, R.drawable.adsv3};
-    private ArrayList<Integer> imgArray = new ArrayList<Integer>();
+    private final ArrayList<Integer> imgArray = new ArrayList<Integer>();
     private CircleIndicator circleIndicator;
     private int currentPage;
     private Button btnSchedule,btnSchedule2, btnEndCall;
@@ -86,7 +85,10 @@ public class frag_berita extends Fragment implements com.wdullaer.materialdateti
     List<Integer> periodeInt = new ArrayList<>();
     HashMap<Integer,String> dataPeriode = new HashMap<>();
     HashMap<String,Integer> dataPeriodeId = new HashMap<>();
-    private int year, month, day, waktu_tunggu = 6000;
+    private int year;
+    private int month;
+    private int day;
+    private final int waktu_tunggu = 6000;
     private String tanggal, waktu;
     private String Savetanggal;
     private int Savewaktu;
@@ -96,7 +98,6 @@ public class frag_berita extends Fragment implements com.wdullaer.materialdateti
     private List<JSONObject> newDataProd;
     private SwipeRefreshLayout swipe;
     private RelativeLayout rl_real;
-    private ShimmerFrameLayout shimmer_view;
     private List<Integer> indeksNotFound;
     private DatePickerDialog dpd;
     private EditText et_Date;
@@ -120,14 +121,13 @@ public class frag_berita extends Fragment implements com.wdullaer.materialdateti
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.frag_berita, container, false);
-        swipe = (SwipeRefreshLayout) view.findViewById(R.id.swipe);
-        rl_real = (RelativeLayout) view.findViewById(R.id.rl_real);
-        //shimmer_view = (ShimmerFrameLayout) view.findViewById(R.id.shimmer_view);
+        swipe = view.findViewById(R.id.swipe);
+        rl_real = view.findViewById(R.id.rl_real);
         rv_product = view.findViewById(R.id.rv_product);
         mPager = view.findViewById(R.id.pager);
         circleIndicator = view.findViewById(R.id.indicator);
-        btnSchedule = (Button) view.findViewById(R.id.btnSchedule);
-        btnEndCall = (Button) view.findViewById(R.id.end_call);
+        btnSchedule = view.findViewById(R.id.btnSchedule);
+        btnEndCall = view.findViewById(R.id.end_call);
 
         return view;
     }
@@ -138,14 +138,11 @@ public class frag_berita extends Fragment implements com.wdullaer.materialdateti
 
         rl_real.setVisibility(View.INVISIBLE);
         DipsWaitingRoom.showProgress(true);
-        //shimmer_view.startShimmer();
 
         swipe.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
                 rl_real.setVisibility(View.INVISIBLE);
-                /*shimmer_view.setVisibility(View.VISIBLE);
-                shimmer_view.startShimmer();*/
                 DipsWaitingRoom.showProgress(true);
                 new AsyncProcess().execute();
                 swipe.setRefreshing(false);
@@ -219,8 +216,7 @@ public class frag_berita extends Fragment implements com.wdullaer.materialdateti
         et_Date.setText(tanggal);
 
         if (periodePenuh.length() > 0) {
-            ArrayList<String> times_new = new ArrayList<>();
-            times_new.addAll(time);
+            ArrayList<String> times_new = new ArrayList<>(time);
             for (int i = 0; i < periodePenuh.length(); i++) {
                 try {
                     String tglFull = periodePenuh.getJSONObject(i).getString("tanggal");
@@ -370,8 +366,6 @@ public class frag_berita extends Fragment implements com.wdullaer.materialdateti
                         if (indexs == dataArrSpanduk.length()-1) {
                             rl_real.setVisibility(View.VISIBLE);
                             DipsWaitingRoom.showProgress(false);
-                            /*shimmer_view.stopShimmer();
-                            shimmer_view.setVisibility(View.INVISIBLE);*/
 
                             mPager.setVisibility(View.VISIBLE);
                             circleIndicator.setVisibility(View.VISIBLE);
@@ -392,8 +386,6 @@ public class frag_berita extends Fragment implements com.wdullaer.materialdateti
                     if (indexs == dataArrSpanduk.length()-1) {
                         rl_real.setVisibility(View.VISIBLE);
                         DipsWaitingRoom.showProgress(false);
-                        /*shimmer_view.stopShimmer();
-                        shimmer_view.setVisibility(View.INVISIBLE);*/
 
                         mPager.setVisibility(View.VISIBLE);
                         circleIndicator.setVisibility(View.VISIBLE);
@@ -434,7 +426,7 @@ public class frag_berita extends Fragment implements com.wdullaer.materialdateti
         try {
             File bufferFile = File.createTempFile("test", ".mp4");
             BufferedOutputStream bufferOS = new BufferedOutputStream(
-                    new FileOutputStream(bufferFile));
+                    Files.newOutputStream(bufferFile.toPath()));
 
             BufferedInputStream bis = new BufferedInputStream(stream,2048);
 
@@ -525,11 +517,11 @@ public class frag_berita extends Fragment implements com.wdullaer.materialdateti
         LayoutInflater inflater = getLayoutInflater();
         View dialogView = inflater.inflate(R.layout.layout_dialog_sweet, null);
 
-        ImageView imgDialog = (ImageView) dialogView.findViewById(R.id.imgDialog);
-        TextView tvTitleDialog = (TextView) dialogView.findViewById(R.id.tvTitleDialog);
-        TextView tvBodyDialog = (TextView) dialogView.findViewById(R.id.tvBodyDialog);
-        Button btnCancelDialog = (Button) dialogView.findViewById(R.id.btnCancelDialog);
-        Button btnConfirmDialog = (Button) dialogView.findViewById(R.id.btnConfirmDialog);
+        ImageView imgDialog = dialogView.findViewById(R.id.imgDialog);
+        TextView tvTitleDialog = dialogView.findViewById(R.id.tvTitleDialog);
+        TextView tvBodyDialog = dialogView.findViewById(R.id.tvBodyDialog);
+        Button btnCancelDialog = dialogView.findViewById(R.id.btnCancelDialog);
+        Button btnConfirmDialog = dialogView.findViewById(R.id.btnConfirmDialog);
 
         tvTitleDialog.setVisibility(View.GONE);
         btnCancelDialog.setVisibility(View.VISIBLE);
@@ -620,9 +612,9 @@ public class frag_berita extends Fragment implements com.wdullaer.materialdateti
         sweetAlertDialog.hideConfirmButton();
         sweetAlertDialog.show();
 
-        ImageView btnclose = (ImageView) dialogView.findViewById(R.id.btn_close_schedule);
-        et_Date = (EditText) dialogView.findViewById(R.id.et_Date);
-        et_time = (Spinner) dialogView.findViewById(R.id.et_time);
+        ImageView btnclose = dialogView.findViewById(R.id.btn_close_schedule);
+        et_Date = dialogView.findViewById(R.id.et_Date);
+        et_time = dialogView.findViewById(R.id.et_time);
 
         ArrayAdapter<String> adapterTime = new ArrayAdapter<String>(context,R.layout.list_item, time);
         et_time.setAdapter(adapterTime);
@@ -745,9 +737,9 @@ public class frag_berita extends Fragment implements com.wdullaer.materialdateti
     private void serviceOutbound() {
         Intent serviceIntent = new Intent(context, OutboundServiceNew.class);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            ((Activity)context).startForegroundService(serviceIntent);
+            context.startForegroundService(serviceIntent);
         } else {
-            ((Activity)context).startService(serviceIntent);
+            context.startService(serviceIntent);
         }
     }
 
@@ -761,7 +753,7 @@ public class frag_berita extends Fragment implements com.wdullaer.materialdateti
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        Log.e("CEK","PARAMS saveSchedule : "+jsons.toString());
+        Log.e("CEK","PARAMS saveSchedule : "+ jsons);
         Log.d("PARAMS JADWAL","idDips = "+idDips+", Tanggal = "+Savetanggal+", Grup index Time of ["+Savewaktu+"]");
         RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), jsons.toString());
         ApiService API = Server.getAPIService();
@@ -772,7 +764,7 @@ public class frag_berita extends Fragment implements com.wdullaer.materialdateti
                 DipsWaitingRoom.showProgress(false);
                 Log.e("CEK","saveSchedule Respon Code : "+response.code());
                 if (response.isSuccessful() && response.body().size() > 0) {
-                    Log.e("CEK","saveSchedule Respon : "+response.body().toString());
+                    Log.e("CEK","saveSchedule Respon : "+ response.body());
 
                     String dataS = response.body().toString();
                     try {
@@ -801,11 +793,11 @@ public class frag_berita extends Fragment implements com.wdullaer.materialdateti
                     LayoutInflater inflater = getLayoutInflater();
                     View dialogView = inflater.inflate(R.layout.layout_dialog_sweet, null);
 
-                    ImageView imgDialog = (ImageView) dialogView.findViewById(R.id.imgDialog);
-                    TextView tvTitleDialog = (TextView) dialogView.findViewById(R.id.tvTitleDialog);
-                    TextView tvBodyDialog = (TextView) dialogView.findViewById(R.id.tvBodyDialog);
-                    Button btnCancelDialog = (Button) dialogView.findViewById(R.id.btnCancelDialog);
-                    Button btnConfirmDialog = (Button) dialogView.findViewById(R.id.btnConfirmDialog);
+                    ImageView imgDialog = dialogView.findViewById(R.id.imgDialog);
+                    TextView tvTitleDialog = dialogView.findViewById(R.id.tvTitleDialog);
+                    TextView tvBodyDialog = dialogView.findViewById(R.id.tvBodyDialog);
+                    Button btnCancelDialog = dialogView.findViewById(R.id.btnCancelDialog);
+                    Button btnConfirmDialog = dialogView.findViewById(R.id.btnConfirmDialog);
 
                     tvTitleDialog.setVisibility(View.GONE);
 
@@ -840,9 +832,9 @@ public class frag_berita extends Fragment implements com.wdullaer.materialdateti
 
     public class GridSpacingItemDecoration extends RecyclerView.ItemDecoration {
 
-        private int spanCount;
-        private int spacing;
-        private boolean includeEdge;
+        private final int spanCount;
+        private final int spacing;
+        private final boolean includeEdge;
 
         public GridSpacingItemDecoration(int spanCount, int spacing, boolean includeEdge) {
             this.spanCount = spanCount;

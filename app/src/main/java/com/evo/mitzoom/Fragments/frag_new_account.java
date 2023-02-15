@@ -51,7 +51,7 @@ public class frag_new_account extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.frag_new_account, container, false);
-        btnBack = (ImageView) view.findViewById(R.id.btn_back_new_acc);
+        btnBack = view.findViewById(R.id.btn_back_new_acc);
         icon_isi_form = view.findViewById(R.id.icon_isi_form);
         et_productType = view.findViewById(R.id.et_productType);
         btnproses = view.findViewById(R.id.btnProses_isi_form);
@@ -139,17 +139,6 @@ public class frag_new_account extends Fragment {
                 }
                 else if (nominal.isEmpty()){
                     Toast.makeText(context, getResources().getString(R.string.error_field), Toast.LENGTH_SHORT).show();
-                }
-                else {
-                    Fragment fragment;
-                    fragment = new frag_new_account2();
-                    Bundle bundle = new Bundle();
-                    bundle.putString("nama_lengkap",nama);
-                    bundle.putString("tgl",tgl);
-                    bundle.putString("produk",produk);
-                    bundle.putString("nominal",nominal);
-                    fragment.setArguments(bundle);
-                    getFragmentPage(fragment);
                 }
             }
         });

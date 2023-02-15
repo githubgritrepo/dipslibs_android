@@ -15,8 +15,8 @@ public class CircularSurfaceView extends SurfaceView {
 
     private int borderWidth;
     private int canvasSize;
-    private Paint paintBorder;
-    private Path path;
+    private final Paint paintBorder;
+    private final Path path;
 
     public CircularSurfaceView(final Context context) {
         this(context, null);

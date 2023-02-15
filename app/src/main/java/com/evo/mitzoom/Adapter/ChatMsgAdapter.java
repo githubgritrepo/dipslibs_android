@@ -32,12 +32,12 @@ import us.zoom.sdk.ZoomVideoSDKSession;
 
 public class ChatMsgAdapter extends RecyclerView.Adapter<ChatMsgAdapter.MsgHolder> {
 
-    private Context ctx;
-    private List<CharSequence> list;
-    private List<Boolean> isSelf;
-    private List<Boolean> isHost;
+    private final Context ctx;
+    private final List<CharSequence> list;
+    private final List<Boolean> isSelf;
+    private final List<Boolean> isHost;
     protected ZoomVideoSDKSession session;
-    private SessionManager sessionManager;
+    private final SessionManager sessionManager;
     public ChatMsgAdapter(Context ctx, List<CharSequence> list, List<Boolean> isHost, List<Boolean> isSelf) {
         this.ctx = ctx;
         this.list = list;
@@ -88,8 +88,8 @@ public class ChatMsgAdapter extends RecyclerView.Adapter<ChatMsgAdapter.MsgHolde
         return list.size();
     }
     class MsgHolder extends RecyclerView.ViewHolder {
-        private LinearLayout LLChat;
-        private LinearLayout chatBubble;
+        private final LinearLayout LLChat;
+        private final LinearLayout chatBubble;
         TextView chatMsg;
         MsgHolder(View view) {
             super(view);

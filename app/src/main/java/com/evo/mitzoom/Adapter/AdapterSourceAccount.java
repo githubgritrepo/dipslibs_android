@@ -17,8 +17,8 @@ import com.evo.mitzoom.R;
 
 public class AdapterSourceAccount extends ArrayAdapter<String> {
 
-    private Context mContext;
-    private String[] sourceAcc;
+    private final Context mContext;
+    private final String[] sourceAcc;
 
     public AdapterSourceAccount(@NonNull Context context, int resource, @NonNull String[] objects) {
         super(context, resource, objects);
@@ -50,7 +50,7 @@ public class AdapterSourceAccount extends ArrayAdapter<String> {
         builder.append(titleAcc).append(acc).append(nominal);
         builder.setSpan(new StyleSpan(android.graphics.Typeface.BOLD), 0, titleAcc.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE); //bold
 
-        TextView tvContent = (TextView) view.findViewById(R.id.tvContent);
+        TextView tvContent = view.findViewById(R.id.tvContent);
         tvContent.setText(builder);
         if (position == 0) {
             tvContent.setBackgroundColor(mContext.getResources().getColor(R.color.blue_btn_bg));

@@ -3,7 +3,7 @@ package com.evo.mitzoom;
 import java.util.Vector;
 
 public class ListenerList {
-    private Vector<IListener> mList;
+    private final Vector<IListener> mList;
 
     public ListenerList () {
         mList = new Vector<IListener>();

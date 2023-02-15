@@ -93,10 +93,10 @@ public class frag_open_account_product extends Fragment {
                              Bundle savedInstanceState) {
         View views = inflater.inflate(R.layout.fragment_frag_open_account_product, container, false);
 
-        btnBack = (ImageView) views.findViewById(R.id.btn_back);
-        rv_item = (RecyclerView) views.findViewById(R.id.rv_item);
-        rv_item2 = (RecyclerView) views.findViewById(R.id.rv_item2);
-        btnNext = (Button) views.findViewById(R.id.btnNext);
+        btnBack = views.findViewById(R.id.btn_back);
+        rv_item = views.findViewById(R.id.rv_item);
+        rv_item2 = views.findViewById(R.id.rv_item2);
+        btnNext = views.findViewById(R.id.btnNext);
 
         return views;
     }
@@ -132,10 +132,10 @@ public class frag_open_account_product extends Fragment {
             @Override
             public void onClick(View v) {
                 if (sessions.getNoCIF() == null || sessions.getNoCIF().isEmpty()) {
-                    rabbitMirroring.MirroringSendEndpoint(2);
+                    RabbitMirroring.MirroringSendEndpoint(2);
                     getFragmentPage(new frag_list_produk());
                 } else {
-                    rabbitMirroring.MirroringSendEndpoint(15);
+                    RabbitMirroring.MirroringSendEndpoint(15);
                     getFragmentPage(new frag_service_new());
                 }
             }
@@ -149,7 +149,7 @@ public class frag_open_account_product extends Fragment {
                     return;
                 }
                 if (flagViewTNC == false) {
-                    rabbitMirroring.MirroringSendEndpoint(361);
+                    RabbitMirroring.MirroringSendEndpoint(361);
                     PopUpTnc();
                 }
             }
@@ -247,7 +247,7 @@ public class frag_open_account_product extends Fragment {
         LayoutInflater inflater = ((Activity) mContext).getLayoutInflater();
         View dialogView = inflater.inflate(R.layout.item_tnc, null);
         SweetAlertDialog sweetAlertDialogTNC = new SweetAlertDialog(mContext, SweetAlertDialog.NORMAL_TYPE);
-        TextView tvBody = (TextView) dialogView.findViewById(R.id.tvBody);
+        TextView tvBody = dialogView.findViewById(R.id.tvBody);
         CheckBox checkBox = dialogView.findViewById(R.id.checktnc);
         Button btn = dialogView.findViewById(R.id.btnnexttnc);
         btn.setClickable(false);
@@ -265,7 +265,7 @@ public class frag_open_account_product extends Fragment {
                     String new_source = source.substring(idx);
                     byte[] data = Base64.decode(new_source, Base64.NO_WRAP);
                     Bitmap bitmap = BitmapFactory.decodeByteArray(data, 0, data.length);
-                    Drawable d = new BitmapDrawable(((Activity) mContext).getResources(), bitmap);
+                    Drawable d = new BitmapDrawable(mContext.getResources(), bitmap);
                     int intH = d.getIntrinsicHeight();
                     int intW = d.getIntrinsicWidth();
                     d.setBounds(0, 0, intW, intH);
@@ -276,8 +276,8 @@ public class frag_open_account_product extends Fragment {
 
         sweetAlertDialogTNC.show();
 
-        int width = (int)(((Activity)mContext).getResources().getDisplayMetrics().widthPixels);
-        int height = (int)(((Activity)mContext).getResources().getDisplayMetrics().heightPixels);
+        int width = mContext.getResources().getDisplayMetrics().widthPixels;
+        int height = mContext.getResources().getDisplayMetrics().heightPixels;
 
         Log.e("CEK","PopUpTnc width : "+width+" | height : "+height);
         int newWidth = (int)(width*0.8);
@@ -306,7 +306,7 @@ public class frag_open_account_product extends Fragment {
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
-                    rabbitMirroring.MirroringSendKey(tncCheckObj);
+                    RabbitMirroring.MirroringSendKey(tncCheckObj);
                 }
                 else {
                     Log.d("CHECK","FALSE");
@@ -318,7 +318,7 @@ public class frag_open_account_product extends Fragment {
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
-                    rabbitMirroring.MirroringSendKey(tncCheckObj);
+                    RabbitMirroring.MirroringSendKey(tncCheckObj);
                 }
             }
         });
@@ -372,9 +372,9 @@ public class frag_open_account_product extends Fragment {
 
     public class GridSpacingItemDecoration extends RecyclerView.ItemDecoration {
 
-        private int spanCount;
-        private int spacing;
-        private boolean includeEdge;
+        private final int spanCount;
+        private final int spacing;
+        private final boolean includeEdge;
 
         public GridSpacingItemDecoration(int spanCount, int spacing, boolean includeEdge) {
             this.spanCount = spanCount;

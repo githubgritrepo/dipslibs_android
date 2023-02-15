@@ -76,7 +76,7 @@
                     <Button
                         android:id="@+id/btnProses"
                         android:layout_width="match_parent"
-                        android:layout_height="35dp"
+                        android:layout_height="40dp"
                         android:background="@drawable/oval_background_10dp"
                         android:backgroundTint="@color/zm_button"
                         android:text="@string/btn_continue"

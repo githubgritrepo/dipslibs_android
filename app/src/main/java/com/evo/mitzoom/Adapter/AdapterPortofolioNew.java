@@ -16,7 +16,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.evo.mitzoom.Fragments.frag_dialog_rtgs;
+import com.evo.mitzoom.Fragments.frag_portfolio_new;
 import com.evo.mitzoom.GlideApp;
 import com.evo.mitzoom.R;
 import com.github.florent37.expansionpanel.ExpansionLayout;
@@ -29,8 +29,8 @@ import java.math.BigDecimal;
 
 public class AdapterPortofolioNew extends RecyclerView.Adapter<AdapterPortofolioNew.ViewHolder> {
 
-    private JSONArray dataList;
-    private Context mContext;
+    private final JSONArray dataList;
+    private final Context mContext;
     private final ExpansionLayoutCollection expansionsCollection = new ExpansionLayoutCollection();
 
     public AdapterPortofolioNew(Context ctx, JSONArray dataList){
@@ -54,8 +54,8 @@ public class AdapterPortofolioNew extends RecyclerView.Adapter<AdapterPortofolio
                 linkIcon = dataList.getJSONObject(position).getString("icon");
             }
             JSONArray dataListPorto = dataList.getJSONObject(position).getJSONArray("dataList");
-            Log.e("CEK","dataListPorto length : "+dataListPorto.length());
-            Log.e("CEK","dataListPorto : "+dataListPorto.toString());
+            //Log.e("CEK","dataListPorto length : "+dataListPorto.length());
+            //Log.e("CEK","dataListPorto : "+dataListPorto.toString());
 
             holder.tv_nama_product.setText(typeProd);
 
@@ -80,16 +80,20 @@ public class AdapterPortofolioNew extends RecyclerView.Adapter<AdapterPortofolio
             for (int i = 0; i < dataListPorto.length(); i++) {
                 String idRelatifs = "11" + i;
                 int idRelatif = Integer.valueOf(idRelatifs);
-                Log.e("CEK","dataListPorto ke-"+i+" | idRelatif : "+idRelatif);
+                //Log.e("CEK","dataListPorto ke-"+i+" | idRelatif : "+idRelatif);
                 String namaProduk = "";
                 String noRekening = "";
                 String jumlahDana = "";
                 String kurs = "";
+                String accountName = "";
                 try {
+                    accountName = dataListPorto.getJSONObject(i).getString("accountName");
                     namaProduk = dataListPorto.getJSONObject(i).getString("namaProduk");
                     noRekening = dataListPorto.getJSONObject(i).getString("noRekening");
                     jumlahDana = String.valueOf(dataListPorto.getJSONObject(i).getLong("jumlahDana"));
                     kurs = dataListPorto.getJSONObject(i).getString("kurs");
+
+                    namaProduk = namaProduk+" - "+noRekening;
 
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -126,8 +130,8 @@ public class AdapterPortofolioNew extends RecyclerView.Adapter<AdapterPortofolio
                 tv.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 15);
                 linearLayout.addView(tv);
 
-                BigDecimal parsed = frag_dialog_rtgs.parseCurrencyValue(jumlahDana);
-                String formatted = frag_dialog_rtgs.numberFormat.format(parsed);
+                BigDecimal parsed = frag_portfolio_new.parseCurrencyValue(jumlahDana);
+                String formatted = frag_portfolio_new.numberFormat.format(parsed);
 
                 String dataN = kurs + " " + formatted;
                 TextView tv2 = new TextView(mContext);
@@ -236,10 +240,10 @@ public class AdapterPortofolioNew extends RecyclerView.Adapter<AdapterPortofolio
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
 
-            img_logo_porto = (ImageView) itemView.findViewById(R.id.img_logo_porto);
-            tv_nama_product = (TextView) itemView.findViewById(R.id.tv_nama_product);
-            expansionLayout = (ExpansionLayout) itemView.findViewById(R.id.expansionLayout);
-            container = (LinearLayout) itemView.findViewById(R.id.container);
+            img_logo_porto = itemView.findViewById(R.id.img_logo_porto);
+            tv_nama_product = itemView.findViewById(R.id.tv_nama_product);
+            expansionLayout = itemView.findViewById(R.id.expansionLayout);
+            container = itemView.findViewById(R.id.container);
 
         }
     }

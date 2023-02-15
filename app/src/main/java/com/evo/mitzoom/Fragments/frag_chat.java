@@ -68,9 +68,9 @@ public class frag_chat extends Fragment  implements ZoomVideoSDKDelegate {
     private ChatMsgAdapter chatMsgAdapter;
     protected RecyclerView chatListView;
     private SessionManager sessionManager;
-    private List<CharSequence> list = new ArrayList<>();
-    private List<Boolean> isSelf = new ArrayList<>();
-    private List<Boolean> isHost = new ArrayList<>();
+    private final List<CharSequence> list = new ArrayList<>();
+    private final List<Boolean> isSelf = new ArrayList<>();
+    private final List<Boolean> isHost = new ArrayList<>();
     protected ZoomVideoSDKSession session;
 
     @Override

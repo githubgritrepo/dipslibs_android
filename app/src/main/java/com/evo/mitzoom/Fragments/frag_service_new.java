@@ -54,8 +54,8 @@ public class frag_service_new extends Fragment {
                              Bundle savedInstanceState) {
         View views = inflater.inflate(R.layout.fragment_service_new, container, false);
 
-        btnBack = (ImageView) views.findViewById(R.id.btn_back4);
-        rv_item = (RecyclerView) views.findViewById(R.id.rv_item);
+        btnBack = views.findViewById(R.id.btn_back4);
+        rv_item = views.findViewById(R.id.rv_item);
 
         return views;
     }
@@ -77,7 +77,7 @@ public class frag_service_new extends Fragment {
         btnBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                rabbitMirroring.MirroringSendEndpoint(14);
+                RabbitMirroring.MirroringSendEndpoint(14);
                 getFragmentPage(new frag_portfolio_new());
             }
         });
@@ -119,9 +119,9 @@ public class frag_service_new extends Fragment {
 
     public class GridSpacingItemDecoration extends RecyclerView.ItemDecoration {
 
-        private int spanCount;
-        private int spacing;
-        private boolean includeEdge;
+        private final int spanCount;
+        private final int spacing;
+        private final boolean includeEdge;
 
         public GridSpacingItemDecoration(int spanCount, int spacing, boolean includeEdge) {
             this.spanCount = spanCount;

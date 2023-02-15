@@ -11,12 +11,12 @@ import android.widget.Toast;
 import com.evo.mitzoom.R;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.nio.file.Files;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
@@ -32,9 +32,9 @@ import javax.net.ssl.X509TrustManager;
 
 public class DownloadTaskHelper extends AsyncTask<String, Integer, String> {
 
-    private Context context;
+    private final Context context;
     private PowerManager.WakeLock mWakeLock;
-    private ProgressDialog mProgressDialog;
+    private final ProgressDialog mProgressDialog;
 
     public DownloadTaskHelper(Context context, ProgressDialog progressDialog) {
         this.context = context;
@@ -102,9 +102,9 @@ public class DownloadTaskHelper extends AsyncTask<String, Integer, String> {
 
             // download the file
             input = connection.getInputStream();
-            output = new FileOutputStream(mediaFile);
+            output = Files.newOutputStream(mediaFile.toPath());
 
-            byte data[] = new byte[4096];
+            byte[] data = new byte[4096];
             long total = 0;
             int count;
             while ((count = input.read(data)) != -1) {

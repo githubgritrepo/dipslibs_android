@@ -18,8 +18,8 @@ import org.json.JSONException;
 
 public class ItemSavingAdapter extends RecyclerView.Adapter<ItemSavingAdapter.ViewHolder>{
 
-    private JSONArray dataList;
-    private Context mContext;
+    private final JSONArray dataList;
+    private final Context mContext;
 
     public ItemSavingAdapter(Context mContext,JSONArray dataList) {
         this.dataList = dataList;
@@ -63,9 +63,9 @@ public class ItemSavingAdapter extends RecyclerView.Adapter<ItemSavingAdapter.Vi
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
 
-            llProduct = (LinearLayout) itemView.findViewById(R.id.llProduct);
-            imgProd = (ImageView) itemView.findViewById(R.id.imgProd);
-            tvTitleList = (TextView) itemView.findViewById(R.id.tvTitleList);
+            llProduct = itemView.findViewById(R.id.llProduct);
+            imgProd = itemView.findViewById(R.id.imgProd);
+            tvTitleList = itemView.findViewById(R.id.tvTitleList);
         }
     }
 }

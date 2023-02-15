@@ -77,11 +77,11 @@ public class DipsCapture extends AppCompatActivity implements CameraSource.Pictu
     private static final int REQUEST_ALL = 888;
     private boolean doubleBackToExitPressedOnce = false;
     public static Integer useFacing = null;
-    private static int degreeFront = 0;
+    private static final int degreeFront = 0;
     public static int CAM_ID = 0;
     private CameraSource cameraSource;
-    private boolean inPreview = false;
-    private boolean cameraConfigured = false;
+    private final boolean inPreview = false;
+    private final boolean cameraConfigured = false;
     private SurfaceView preview = null;
     private SurfaceView transPreview = null;
     private SurfaceHolder previewHolder = null;
@@ -120,10 +120,10 @@ public class DipsCapture extends AppCompatActivity implements CameraSource.Pictu
 
         setContentView(R.layout.activity_dips_capture);
 
-        preview = (SurfaceView) findViewById(R.id.mySurface);
-        transPreview = (SurfaceView) findViewById(R.id.transSurface);
-        rlprogress = (RelativeLayout) findViewById(R.id.rlprogress);
-        LinearLayout llMsg = (LinearLayout) findViewById(R.id.llMsg);
+        preview = findViewById(R.id.mySurface);
+        transPreview = findViewById(R.id.transSurface);
+        rlprogress = findViewById(R.id.rlprogress);
+        LinearLayout llMsg = findViewById(R.id.llMsg);
         llMsg.getBackground().setAlpha(150);
 
         TelephonyManager tMgr = (TelephonyManager) mContext.getSystemService(Context.TELEPHONY_SERVICE);
@@ -625,9 +625,6 @@ public class DipsCapture extends AppCompatActivity implements CameraSource.Pictu
                         custName = dataCustomer.getString("namaLengkap");
                         String idDipsNew = dataCustomer.getString("idDips");
                         Log.e("CEK","idDipsNew : "+idDipsNew+" | idDips : "+idDips);
-                        /*if (idDips != null && OutboundService.mSocket != null && idDipsNew != idDips) {
-                            OutboundService.leaveOutbound(idDips);
-                        }*/
                         String accessToken = dataToken.getString("accessToken");
 
                         sessions.saveIdDips(idDipsNew);
@@ -715,7 +712,7 @@ public class DipsCapture extends AppCompatActivity implements CameraSource.Pictu
                 flagCapture = false;
                 Log.e("CEK","RESPONSE CODE: "+response.code());
                 if (response.body() != null) {
-                    Log.e("CEK","Response Body : "+response.body().toString());
+                    Log.e("CEK","Response Body : "+ response.body());
                 }
                 showProgress(false);
                 if (response.isSuccessful() && response.body() != null) {
@@ -743,9 +740,6 @@ public class DipsCapture extends AppCompatActivity implements CameraSource.Pictu
                     }
 
                     String idDipsOld = sessions.getKEY_IdDips();
-                    /*if (idDipsOld != null && OutboundService.mSocket != null) {
-                        OutboundService.leaveOutbound(idDipsOld);
-                    }*/
 
                     boolean isCust = response.body().isCustomer();
                     String custName = response.body().getName();

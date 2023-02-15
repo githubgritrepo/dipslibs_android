@@ -18,7 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class AdapterTypeService extends ArrayAdapter<TypeServiceItem> {
-    private List<TypeServiceItem> typeServiceItemList;
+    private final List<TypeServiceItem> typeServiceItemList;
 
     public AdapterTypeService (@NonNull Context context, @NonNull List<TypeServiceItem> typeServiceItems){
         super(context,0,typeServiceItems);
@@ -53,7 +53,7 @@ public class AdapterTypeService extends ArrayAdapter<TypeServiceItem> {
         return convertView;
     }
 
-    private Filter typeServiceFilter = new Filter() {
+    private final Filter typeServiceFilter = new Filter() {
         @Override
         protected FilterResults performFiltering(CharSequence constraint) {
             FilterResults results = new FilterResults();

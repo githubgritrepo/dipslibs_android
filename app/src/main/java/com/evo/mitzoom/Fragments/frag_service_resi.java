@@ -25,6 +25,7 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import com.evo.mitzoom.API.ApiService;
 import com.evo.mitzoom.API.Server;
 import com.evo.mitzoom.Helper.DownloadTaskHelper;
 import com.evo.mitzoom.Helper.RabbitMirroring;
@@ -68,6 +69,8 @@ public class frag_service_resi extends Fragment {
     private DownloadManager manager;
     private int loopStatus = 0;
 
+    private boolean newComplain = false;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -82,6 +85,10 @@ public class frag_service_resi extends Fragment {
         no_Form = sessions.getNoComplaint();
         noPengaduan = sessions.getNoComplaint();
 
+        if (getArguments() != null) {
+            newComplain = getArguments().getBoolean("newComplain");
+        }
+
         Log.e("CEK",this+" noPengaduan : "+noPengaduan);
 
     }
@@ -91,15 +98,15 @@ public class frag_service_resi extends Fragment {
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_frag_new_resi, container, false);
 
-        tvTitle = (TextView) v.findViewById(R.id.tvTitle);
-        tvSubTitle = (TextView) v.findViewById(R.id.tvSubTitle);
-        swipe = (SwipeRefreshLayout) v.findViewById(R.id.swipe);
-        imgResume = (PhotoView) v.findViewById(R.id.imgResume);
-        tvMsgThanks = (TextView) v.findViewById(R.id.tvMsgThanks);
-        tvMsgNum = (TextView) v.findViewById(R.id.tvMsgNum);
-        tvMsgThanks2 = (TextView) v.findViewById(R.id.tvMsgThanks2);
+        tvTitle = v.findViewById(R.id.tvTitle);
+        tvSubTitle = v.findViewById(R.id.tvSubTitle);
+        swipe = v.findViewById(R.id.swipe);
+        imgResume = v.findViewById(R.id.imgResume);
+        tvMsgThanks = v.findViewById(R.id.tvMsgThanks);
+        tvMsgNum = v.findViewById(R.id.tvMsgNum);
+        tvMsgThanks2 = v.findViewById(R.id.tvMsgThanks2);
         btnOK = v.findViewById(R.id.btnSelesai);
-        btnUnduh = (Button) v.findViewById(R.id.btnUnduh);
+        btnUnduh = v.findViewById(R.id.btnUnduh);
 
         return v;
     }
@@ -142,7 +149,7 @@ public class frag_service_resi extends Fragment {
             @Override
             public void onClick(View v) {
                 Log.e("CEK","MASUK BUTTON OK");
-                rabbitMirroring.MirroringSendEndpoint(14);
+                RabbitMirroring.MirroringSendEndpoint(14);
                 sessions.clearCIF();
                 getFragmentPage(new frag_portfolio_new());
             }
@@ -169,7 +176,14 @@ public class frag_service_resi extends Fragment {
 
     private void getResumeResi() {
         Log.e("CEK","getResumeResi");
-        Server.getAPIService().getResiComplaint(noPengaduan).enqueue(new Callback<JsonObject>() {
+        ApiService API = Server.getAPIService();
+        Call<JsonObject> call = null;
+        if (newComplain) {
+            call = API.getNewResiComplaint(noPengaduan);
+        } else {
+            call = API.getResiComplaint(noPengaduan);
+        }
+        call.enqueue(new Callback<JsonObject>() {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
                 Log.e("CEK","getResumeResi CODE : "+response.code());

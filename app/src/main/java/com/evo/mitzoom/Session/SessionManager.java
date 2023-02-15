@@ -6,13 +6,13 @@ import android.content.SharedPreferences;
 public class SessionManager {
 
     // Shared Preferences
-    private SharedPreferences pref;
+    private final SharedPreferences pref;
 
     // Editor for Shared preferences
-    private SharedPreferences.Editor editor;
+    private final SharedPreferences.Editor editor;
 
     // Context
-    private Context _context;
+    private final Context _context;
 
     // Shared pref mode
     int PRIVATE_MODE = 0;
@@ -36,6 +36,7 @@ public class SessionManager {
     public static final String KEY_NOCIF = "NOCIF";
     public static final String KEY_CONF_AGREE = "CONF_AGREE";
     public static final String KEY_NASABAH = "NASABAH";
+    public static final String KEY_REKTABUNGAN = "TABUNGANNASABAH";
     public static final String KEY_ADVANCE_AI_LICENSE = "ADVANCE_AI_LICENSE";
     public static final String KEY_ADVANCE_AI_EXPIREDTIME = "ADVANCE_AI_EXPIREDTIME";
     public static final String KEY_AUTHTOKEN = "AUTHTOKEN";
@@ -133,6 +134,10 @@ public class SessionManager {
 
     public void saveNasabah(String data) {
         editor.putString(KEY_NASABAH,data);
+        editor.commit();
+    }
+    public void saveRekNasabah(String data) {
+        editor.putString(KEY_REKTABUNGAN,data);
         editor.commit();
     }
 
@@ -244,6 +249,9 @@ public class SessionManager {
     }
     public String getNasabah() {
         return pref.getString(KEY_NASABAH,null);
+    }
+    public String getRekNasabah() {
+        return pref.getString(KEY_REKTABUNGAN,null);
     }
     public String getKEY_IdDips (){
         return pref.getString(KEY_IdDips,null);

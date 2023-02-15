@@ -66,7 +66,7 @@ public class RatingActivity extends AppCompatActivity {
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
         //getSupportActionBar().hide();
         Log.e(TAG,"idDips : "+idDips+" | idAgent : "+idAgent);
-        rlprogress = (RelativeLayout) findViewById(R.id.rlprogress);
+        rlprogress = findViewById(R.id.rlprogress);
         rating = findViewById(R.id.ratingBar);
         rating.setClickable(false);
         rating.setFocusable(false);
@@ -134,11 +134,11 @@ public class RatingActivity extends AppCompatActivity {
         LayoutInflater inflater = getLayoutInflater();
         View dialogView = inflater.inflate(R.layout.layout_dialog_sweet, null);
 
-        ImageView imgDialog = (ImageView) dialogView.findViewById(R.id.imgDialog);
-        TextView tvTitleDialog = (TextView) dialogView.findViewById(R.id.tvTitleDialog);
-        TextView tvBodyDialog = (TextView) dialogView.findViewById(R.id.tvBodyDialog);
-        Button btnCancelDialog = (Button) dialogView.findViewById(R.id.btnCancelDialog);
-        Button btnConfirmDialog = (Button) dialogView.findViewById(R.id.btnConfirmDialog);
+        ImageView imgDialog = dialogView.findViewById(R.id.imgDialog);
+        TextView tvTitleDialog = dialogView.findViewById(R.id.tvTitleDialog);
+        TextView tvBodyDialog = dialogView.findViewById(R.id.tvBodyDialog);
+        Button btnCancelDialog = dialogView.findViewById(R.id.btnCancelDialog);
+        Button btnConfirmDialog = dialogView.findViewById(R.id.btnConfirmDialog);
 
         tvTitleDialog.setVisibility(View.GONE);
 
@@ -181,7 +181,7 @@ public class RatingActivity extends AppCompatActivity {
             e.printStackTrace();
         }
 
-        Log.e(TAG,"RatingAgent : "+jsons.toString());
+        Log.e(TAG,"RatingAgent : "+ jsons);
 
         RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), jsons.toString());
 
@@ -217,7 +217,7 @@ public class RatingActivity extends AppCompatActivity {
             e.printStackTrace();
         }
 
-        Log.e(TAG,"RatingApps : "+jsons.toString());
+        Log.e(TAG,"RatingApps : "+ jsons);
 
         RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), jsons.toString());
 

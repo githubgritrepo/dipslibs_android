@@ -1,12 +1,10 @@
 package com.evo.mitzoom.Adapter;
 
-import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -16,26 +14,19 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.evo.mitzoom.Fragments.frag_open_account_product;
-import com.evo.mitzoom.Fragments.frag_service_item;
 import com.evo.mitzoom.Fragments.frag_service_item_new;
 import com.evo.mitzoom.Helper.RabbitMirroring;
 import com.evo.mitzoom.Model.ItemModel;
 import com.evo.mitzoom.R;
 import com.evo.mitzoom.Session.SessionManager;
-import com.evo.mitzoom.ui.DipsWaitingRoom;
-
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.util.ArrayList;
-
-import cn.pedant.SweetAlert.SweetAlertDialog;
 
 public class ItemServiceGridAdapter extends RecyclerView.Adapter<ItemServiceGridAdapter.ItemHolder>{
 
     private final RabbitMirroring rabbitMirroring;
-    private ArrayList<ItemModel> dataList;
-    private Context mContext;
+    private final ArrayList<ItemModel> dataList;
+    private final Context mContext;
     private SessionManager sessions;
     private String idDips;
     private Bundle bundle;
@@ -65,13 +56,13 @@ public class ItemServiceGridAdapter extends RecyclerView.Adapter<ItemServiceGrid
         holder.ads.setOnClickListener(v -> {
             switch (dataList.get(position).getId()){
                 case "0" :
-                    rabbitMirroring.MirroringSendEndpoint(201);
+                    RabbitMirroring.MirroringSendEndpoint(201);
                     fragment = new frag_open_account_product();
                     getFragmentPage(fragment);
                     break;
                 case "2" :/* SUDAH MIRRORING */
-                    int intLayout = 35;
-                    rabbitMirroring.MirroringSendEndpoint(intLayout);
+                    int intLayout = 359;
+                    RabbitMirroring.MirroringSendEndpoint(intLayout);
                     //fragment = new frag_form_komplain();
                     /*String dataNasabah = sessions.getNasabah();
                     String no_handphone = "";
@@ -138,8 +129,8 @@ public class ItemServiceGridAdapter extends RecyclerView.Adapter<ItemServiceGrid
         public ItemHolder(@NonNull View itemView) {
             super(itemView);
 
-            ads = (ImageView) itemView.findViewById(R.id.ads);
-            tvLabelItem = (TextView) itemView.findViewById(R.id.tvLabelItem);
+            ads = itemView.findViewById(R.id.ads);
+            tvLabelItem = itemView.findViewById(R.id.tvLabelItem);
         }
     }
 }

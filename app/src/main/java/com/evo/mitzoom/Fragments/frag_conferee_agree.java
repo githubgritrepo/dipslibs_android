@@ -17,7 +17,6 @@ import androidx.fragment.app.Fragment;
 
 import com.evo.mitzoom.API.ApiService;
 import com.evo.mitzoom.API.Server;
-import com.evo.mitzoom.Adapter.UserVideoAdapter;
 import com.evo.mitzoom.BaseMeetingActivity;
 import com.evo.mitzoom.Helper.RabbitMirroring;
 import com.evo.mitzoom.R;
@@ -72,8 +71,7 @@ public class frag_conferee_agree extends Fragment implements ZoomVideoSDKDelegat
     private String idDips;
     private SessionManager session;
     protected ZoomVideoSDKSession sessionz;
-    protected UserVideoAdapter adapter;
-    private Boolean result = true;
+    private final Boolean result = true;
     private RabbitMirroring rabbitMirroring;
 
 
@@ -182,7 +180,7 @@ public class frag_conferee_agree extends Fragment implements ZoomVideoSDKDelegat
                 OutApps();
             }
         });
-        Button btnCancel = (Button) sweetAlertDialog.findViewById(cn.pedant.SweetAlert.R.id.cancel_button);
+        Button btnCancel = sweetAlertDialog.findViewById(cn.pedant.SweetAlert.R.id.cancel_button);
         btnCancel.setBackgroundTintList(context.getResources().getColorStateList(R.color.Blue));
     }
 
@@ -224,10 +222,10 @@ public class frag_conferee_agree extends Fragment implements ZoomVideoSDKDelegat
             //Jika muka terdaftar maka langsung menuju ke portfolio
             session.clearCIF();
             getFragmentPage(new frag_portfolio_new());
-            rabbitMirroring.MirroringSendEndpoint(14);
+            RabbitMirroring.MirroringSendEndpoint(14);
         }
         else{
-            rabbitMirroring.MirroringSendEndpoint(2);
+            RabbitMirroring.MirroringSendEndpoint(2);
             getFragmentPage(new frag_list_produk());
         }
     }

@@ -64,7 +64,7 @@ public class FormSpin {
             FormSpin c = (FormSpin ) obj;
             Log.e("CEK","FormSpin c.getName() : "+c.getName()+" | name : "+name);
             Log.e("CEK","FormSpin c.getId() : "+c.getId()+" | name : "+id);
-            if(c.getName().equals(name) && c.getId()==id ) return true;
+            return c.getName().equals(name) && c.getId() == id;
         }
 
         return false;

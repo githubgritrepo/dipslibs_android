@@ -83,10 +83,10 @@ public class DipsCameraActivity extends AppCompatActivity {
     private static int degreeFront = 0;
     private Context mContext;
     private OrientationEventListener morientationEventListener;
-    private int mOrientation =  -1;
+    private final int mOrientation =  -1;
     private int rotationInDegree = 1;
-    private int optimalWidth = 0;
-    private int optimalHeight = 0;
+    private final int optimalWidth = 0;
+    private final int optimalHeight = 0;
     private int surfWIdth = 0;
     private int surfHeight = 0;
     private double surfLeft = 0;
@@ -323,12 +323,12 @@ public class DipsCameraActivity extends AppCompatActivity {
     }
 
     private void initialElements() {
-        appbar = (AppBarLayout) findViewById(R.id.appbar);
-        flFrame = (FrameLayout) findViewById(R.id.flFrame);
-        llHeader = (LinearLayout) findViewById(R.id.llHeader);
-        tvHeader = (TextView) findViewById(R.id.tvHeader);
-        tvContent = (TextView) findViewById(R.id.tvContent);
-        llMsg = (LinearLayout) findViewById(R.id.llMsg);
+        appbar = findViewById(R.id.appbar);
+        flFrame = findViewById(R.id.flFrame);
+        llHeader = findViewById(R.id.llHeader);
+        tvHeader = findViewById(R.id.tvHeader);
+        tvContent = findViewById(R.id.tvContent);
+        llMsg = findViewById(R.id.llMsg);
         imgSwitch = findViewById(R.id.imgSwitch);
         preview = findViewById(R.id.mySurface);
         transPreview = findViewById(R.id.transSurface);

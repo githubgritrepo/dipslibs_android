@@ -21,7 +21,6 @@ import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Surface;
 import android.view.SurfaceHolder;
-import android.view.SurfaceView;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.ArrayAdapter;
@@ -93,7 +92,10 @@ public class DipsSwafoto extends AppCompatActivity implements com.wdullaer.mater
     List<Integer> periodeInt = new ArrayList<>();
     HashMap<Integer,String> dataPeriode = new HashMap<>();
     HashMap<String,Integer> dataPeriodeId = new HashMap<>();
-    private int year, month, day, waktu_tunggu = 6000;
+    private int year;
+    private int month;
+    private int day;
+    private final int waktu_tunggu = 6000;
     private String tanggal, waktu;
     private String Savetanggal;
     private List<Integer> indeksNotFound;
@@ -125,11 +127,11 @@ public class DipsSwafoto extends AppCompatActivity implements com.wdullaer.mater
         idDips = sessions.getKEY_IdDips();
         isCust = sessions.getKEY_iSCust();
 
-        CardView cardSurf = (CardView) findViewById(R.id.cardSurf);
-        preview = (CircularSurfaceView) findViewById(R.id.mySurface);
-        btnSchedule = (Button) findViewById(R.id.btnSchedule);
-        btnEndCall = (Button) findViewById(R.id.end_call);
-        rlprogress = (RelativeLayout) findViewById(R.id.rlprogress);
+        CardView cardSurf = findViewById(R.id.cardSurf);
+        preview = findViewById(R.id.mySurface);
+        btnSchedule = findViewById(R.id.btnSchedule);
+        btnEndCall = findViewById(R.id.end_call);
+        rlprogress = findViewById(R.id.rlprogress);
 
         previewHolder();
 
@@ -146,11 +148,11 @@ public class DipsSwafoto extends AppCompatActivity implements com.wdullaer.mater
         getFragmentPage(fragment);
 
         View dialogView = getLayoutInflater().inflate(R.layout.layout_dialog_sweet, null);
-        ImageView imgDialog = (ImageView) dialogView.findViewById(R.id.imgDialog);
-        TextView tvTitleDialog = (TextView) dialogView.findViewById(R.id.tvTitleDialog);
-        TextView tvBodyDialog = (TextView) dialogView.findViewById(R.id.tvBodyDialog);
-        Button btnCancelDialog = (Button) dialogView.findViewById(R.id.btnCancelDialog);
-        Button btnConfirmDialog = (Button) dialogView.findViewById(R.id.btnConfirmDialog);
+        ImageView imgDialog = dialogView.findViewById(R.id.imgDialog);
+        TextView tvTitleDialog = dialogView.findViewById(R.id.tvTitleDialog);
+        TextView tvBodyDialog = dialogView.findViewById(R.id.tvBodyDialog);
+        Button btnCancelDialog = dialogView.findViewById(R.id.btnCancelDialog);
+        Button btnConfirmDialog = dialogView.findViewById(R.id.btnConfirmDialog);
 
         imgDialog.setImageDrawable(getDrawable(R.drawable.v_dialog_info));
         tvTitleDialog.setVisibility(View.GONE);
@@ -297,8 +299,7 @@ public class DipsSwafoto extends AppCompatActivity implements com.wdullaer.mater
         et_Date.setText(tanggal);
 
         if (periodePenuh.length() > 0) {
-            ArrayList<String> times_new = new ArrayList<>();
-            times_new.addAll(time);
+            ArrayList<String> times_new = new ArrayList<>(time);
             for (int i = 0; i < periodePenuh.length(); i++) {
                 try {
                     String tglFull = periodePenuh.getJSONObject(i).getString("tanggal");
@@ -334,9 +335,9 @@ public class DipsSwafoto extends AppCompatActivity implements com.wdullaer.mater
         sweetAlertDialog.hideConfirmButton();
         sweetAlertDialog.show();
 
-        ImageView btnclose = (ImageView) dialogView.findViewById(R.id.btn_close_schedule);
-        et_Date = (EditText) dialogView.findViewById(R.id.et_Date);
-        et_time = (Spinner) dialogView.findViewById(R.id.et_time);
+        ImageView btnclose = dialogView.findViewById(R.id.btn_close_schedule);
+        et_Date = dialogView.findViewById(R.id.et_Date);
+        et_time = dialogView.findViewById(R.id.et_time);
 
         ArrayAdapter<String> adapterTime = new ArrayAdapter<String>(mContext,R.layout.list_item, time);
 
@@ -462,7 +463,7 @@ public class DipsSwafoto extends AppCompatActivity implements com.wdullaer.mater
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        Log.e("CEK","PARAMS saveSchedule : "+jsons.toString());
+        Log.e("CEK","PARAMS saveSchedule : "+ jsons);
         Log.d("PARAMS JADWAL","idDips = "+idDips+", Tanggal = "+Savetanggal);
         RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), jsons.toString());
         ApiService API = Server.getAPIService();
@@ -472,7 +473,7 @@ public class DipsSwafoto extends AppCompatActivity implements com.wdullaer.mater
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
                 Log.e("CEK","saveSchedule Respon Code : "+response.code());
                 if (response.isSuccessful() && response.body().size() > 0) {
-                    Log.e("CEK","saveSchedule Respon : "+response.body().toString());
+                    Log.e("CEK","saveSchedule Respon : "+ response.body());
 
                     String dataS = response.body().toString();
                     try {
@@ -500,11 +501,11 @@ public class DipsSwafoto extends AppCompatActivity implements com.wdullaer.mater
                     LayoutInflater inflater = getLayoutInflater();
                     View dialogView = inflater.inflate(R.layout.layout_dialog_sweet, null);
 
-                    ImageView imgDialog = (ImageView) dialogView.findViewById(R.id.imgDialog);
-                    TextView tvTitleDialog = (TextView) dialogView.findViewById(R.id.tvTitleDialog);
-                    TextView tvBodyDialog = (TextView) dialogView.findViewById(R.id.tvBodyDialog);
-                    Button btnCancelDialog = (Button) dialogView.findViewById(R.id.btnCancelDialog);
-                    Button btnConfirmDialog = (Button) dialogView.findViewById(R.id.btnConfirmDialog);
+                    ImageView imgDialog = dialogView.findViewById(R.id.imgDialog);
+                    TextView tvTitleDialog = dialogView.findViewById(R.id.tvTitleDialog);
+                    TextView tvBodyDialog = dialogView.findViewById(R.id.tvBodyDialog);
+                    Button btnCancelDialog = dialogView.findViewById(R.id.btnCancelDialog);
+                    Button btnConfirmDialog = dialogView.findViewById(R.id.btnConfirmDialog);
 
                     tvTitleDialog.setVisibility(View.GONE);
 

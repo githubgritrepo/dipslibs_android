@@ -86,10 +86,10 @@ public class frag_list_produk extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.frag_daftar_produk, container, false);
-        rlOpenAccount = (RelativeLayout) view.findViewById(R.id.rlOpenAccount);
+        rlOpenAccount = view.findViewById(R.id.rlOpenAccount);
         /*rlProduct1 = (RelativeLayout) view.findViewById(R.id.rlProduct1);
         tvTitleList = (TextView) view.findViewById(R.id.tvTitleList);*/
-        rv_itemProduct = (RecyclerView) view.findViewById(R.id.rv_itemProduct);
+        rv_itemProduct = view.findViewById(R.id.rv_itemProduct);
         btnBack = view.findViewById(R.id.btn_back6);
         nested = view.findViewById(R.id.nested);
         return view;
@@ -110,7 +110,7 @@ public class frag_list_produk extends Fragment {
                 //rabbitMirroring.MirroringSendEndpoint(0);
                 /*rabbitMirroring.MirroringSendEndpoint(361);
                 PopUpTnc();*/
-                rabbitMirroring.MirroringSendEndpoint(201);
+                RabbitMirroring.MirroringSendEndpoint(201);
                 getFragmentPage(new frag_open_account_product());
             }
         });
@@ -120,17 +120,6 @@ public class frag_list_produk extends Fragment {
                 getFragmentPage(new frag_berita());
             }
         });
-
-        /*rlProduct1.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                String Tabungan = tvTitleList.getText().toString();
-                Bundle bundle = new Bundle();
-                bundle.putString("headline",Tabungan);
-                bundle.putByteArray("body",bodyProduk.getBytes(StandardCharsets.UTF_8));
-                sendDataFragment(bundle,new frag_tabungan());
-            }
-        });*/
     }
 
     private class AsyncProcess extends AsyncTask<Void,Void,Void> {
@@ -206,7 +195,7 @@ public class frag_list_produk extends Fragment {
             sweetAlertDialogTNC.hideConfirmButton();
             sweetAlertDialogTNC.setCancelable(false);
         }
-        TextView tvBody = (TextView) dialogView.findViewById(R.id.tvBody);
+        TextView tvBody = dialogView.findViewById(R.id.tvBody);
         CheckBox checkBox = dialogView.findViewById(R.id.checktnc);
         Button btn = dialogView.findViewById(R.id.btnnexttnc);
 
@@ -219,7 +208,7 @@ public class frag_list_produk extends Fragment {
                     String new_source = source.substring(idx);
                     byte[] data = Base64.decode(new_source, Base64.NO_WRAP);
                     Bitmap bitmap = BitmapFactory.decodeByteArray(data, 0, data.length);
-                    Drawable d = new BitmapDrawable(((Activity) context).getResources(), bitmap);
+                    Drawable d = new BitmapDrawable(context.getResources(), bitmap);
                     int intH = d.getIntrinsicHeight();
                     int intW = d.getIntrinsicWidth();
                     d.setBounds(0, 0, intW, intH);
@@ -229,8 +218,8 @@ public class frag_list_produk extends Fragment {
         }
         btn.setClickable(false);
 
-        int width = (int)(((Activity)context).getResources().getDisplayMetrics().widthPixels*0.60);
-        int height = (int)(((Activity)context).getResources().getDisplayMetrics().heightPixels*0.60);
+        int width = (int)(context.getResources().getDisplayMetrics().widthPixels*0.60);
+        int height = (int)(context.getResources().getDisplayMetrics().heightPixels*0.60);
 
         sweetAlertDialogTNC.getWindow().setGravity(Gravity.CENTER_HORIZONTAL);
         sweetAlertDialogTNC.getWindow().setLayout(width,height);
@@ -243,7 +232,7 @@ public class frag_list_produk extends Fragment {
                     Log.d("CHECK","TRUE");
                     btn.setBackgroundTintList(context.getResources().getColorStateList(R.color.zm_button));
                     btn.setClickable(true);
-                    rabbitMirroring.MirroringSendEndpoint(363);
+                    RabbitMirroring.MirroringSendEndpoint(363);
                 }
                 else {
                     Log.d("CHECK","FALSE");

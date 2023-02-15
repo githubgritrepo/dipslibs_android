@@ -23,8 +23,8 @@ import java.util.ArrayList;
 public class ItemOpenAccount extends RecyclerView.Adapter<ItemOpenAccount.ItemHolder>{
 
     private final RabbitMirroring rabbitMirroring;
-    private ArrayList<ItemModel> dataList;
-    private Context mContext;
+    private final ArrayList<ItemModel> dataList;
+    private final Context mContext;
     private SessionManager sessions;
     private String idDips;
     private Bundle bundle;
@@ -81,9 +81,9 @@ public class ItemOpenAccount extends RecyclerView.Adapter<ItemOpenAccount.ItemHo
         public ItemHolder(@NonNull View itemView) {
             super(itemView);
 
-            cvItems = (CardView) itemView.findViewById(R.id.cvItems);
-            ads = (ImageView) itemView.findViewById(R.id.ads);
-            tvLabelItem = (TextView) itemView.findViewById(R.id.tvLabelItem);
+            cvItems = itemView.findViewById(R.id.cvItems);
+            ads = itemView.findViewById(R.id.ads);
+            tvLabelItem = itemView.findViewById(R.id.tvLabelItem);
 
         }
     }

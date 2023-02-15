@@ -113,7 +113,7 @@ public class LivenessActivity extends PermissionActivity implements LivenessCall
      * 初始化控件
      */
     protected void findViews() {
-        clLiveness = (ConstraintLayout) findViewById(R.id.clLiveness);
+        clLiveness = findViewById(R.id.clLiveness);
         mMaskImageView = findViewById(R.id.mask_view);
         mLivenessView = findViewById(R.id.liveness_view);
         mTipImageView = findViewById(R.id.tip_image_view);

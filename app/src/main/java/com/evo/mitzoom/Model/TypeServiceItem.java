@@ -1,7 +1,8 @@
 package com.evo.mitzoom.Model;
 
 public class TypeServiceItem {
-    private String headline, content;
+    private final String headline;
+    private final String content;
 
     public TypeServiceItem (String headline, String content){
         this.headline = headline;

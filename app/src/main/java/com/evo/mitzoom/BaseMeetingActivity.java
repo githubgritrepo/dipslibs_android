@@ -10,11 +10,7 @@ import android.app.Service;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.res.ColorStateList;
 import android.content.res.Configuration;
-import android.content.res.Resources;
-import android.graphics.Color;
-import android.graphics.PorterDuff;
 import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Build;
@@ -22,10 +18,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.provider.Settings;
-import android.text.Spannable;
-import android.text.SpannableStringBuilder;
 import android.text.TextUtils;
-import android.text.style.ForegroundColorSpan;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Display;
@@ -50,7 +43,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -58,7 +50,6 @@ import com.evo.mitzoom.API.ApiService;
 import com.evo.mitzoom.API.Server;
 import com.evo.mitzoom.Adapter.ChatMsgAdapter;
 import com.evo.mitzoom.Adapter.UserVideoAdapter;
-import com.evo.mitzoom.Fragments.frag_chat;
 import com.evo.mitzoom.Fragments.frag_conferee_agree;
 import com.evo.mitzoom.Fragments.frag_file;
 import com.evo.mitzoom.Helper.NotificationMgr;
@@ -195,9 +186,9 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
     private String Chat;
     private ChatMsgAdapter chatMsgAdapter;
     protected RecyclerView chatListView;
-    private List<CharSequence> list = new ArrayList<>();
-    private List<Boolean> isSelf = new ArrayList<>();
-    private List<Boolean> isHost = new ArrayList<>();
+    private final List<CharSequence> list = new ArrayList<>();
+    private final List<Boolean> isSelf = new ArrayList<>();
+    private final List<Boolean> isHost = new ArrayList<>();
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -574,9 +565,7 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
             List<ZoomVideoSDKUser> userInfoList = UserHelper.getAllUsers();
             if (null != userInfoList && userInfoList.size() > 0) {
                 List<ZoomVideoSDKUser> list = new ArrayList<>(userInfoList.size());
-                for (ZoomVideoSDKUser userInfo : userInfoList) {
-                    list.add(userInfo);
-                }
+                list.addAll(userInfoList);
                 adapter.onUserJoin(list);
                 selectAndScrollToUser(mActiveUser);
             }
@@ -696,22 +685,22 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
 
         Log.e(TAG,"dyWidth : "+dyWidth);
 
-        gifLoading = (GifImageView) findViewById(R.id.gifLoading);
-        rlprogress = (RelativeLayout) findViewById(R.id.rlprogress);
-        imgBatikVic = (ImageView) findViewById(R.id.imgBatikVic);
-        llUsersVideo = (RelativeLayout) findViewById(R.id.llUsersVideo);
-        cardSurf = (CardView) findViewById(R.id.cardSurf);
-        cardSurfOff = (CardView) findViewById(R.id.cardSurfOff);
-        offUsersVideo= (RelativeLayout) findViewById(R.id.offUsersVideo);
-        ImageView video_off_tips2 = (ImageView) findViewById(R.id.video_off_tips2);
-        ImageView video_off_tips3 = (ImageView) findViewById(R.id.video_off_tips3);
+        gifLoading = findViewById(R.id.gifLoading);
+        rlprogress = findViewById(R.id.rlprogress);
+        imgBatikVic = findViewById(R.id.imgBatikVic);
+        llUsersVideo = findViewById(R.id.llUsersVideo);
+        cardSurf = findViewById(R.id.cardSurf);
+        cardSurfOff = findViewById(R.id.cardSurfOff);
+        offUsersVideo= findViewById(R.id.offUsersVideo);
+        ImageView video_off_tips2 = findViewById(R.id.video_off_tips2);
+        ImageView video_off_tips3 = findViewById(R.id.video_off_tips3);
         userVideoList = findViewById(R.id.userVideoList);
         videoListContain = findViewById(R.id.video_list_contain);
         actionBar = findViewById(R.id.action_bar);
         iconAudio = findViewById(R.id.icon_audio);
         iconVideo = findViewById(R.id.icon_video);
         videoOffView = findViewById(R.id.video_off_tips);
-        iconBubble = (LinearLayout) findViewById(R.id.iconBubble);
+        iconBubble = findViewById(R.id.iconBubble);
         btnChat = findViewById(R.id.icon_chat);
         btnFile = findViewById(R.id.icon_file);
         //llUsersVideo.setVisibility(View.INVISIBLE);
@@ -832,11 +821,11 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
         LayoutInflater inflater = getLayoutInflater();
         View dialogView = inflater.inflate(R.layout.layout_dialog_sweet, null);
 
-        ImageView imgDialog = (ImageView) dialogView.findViewById(R.id.imgDialog);
-        TextView tvTitleDialog = (TextView) dialogView.findViewById(R.id.tvTitleDialog);
-        TextView tvBodyDialog = (TextView) dialogView.findViewById(R.id.tvBodyDialog);
-        Button btnCancelDialog = (Button) dialogView.findViewById(R.id.btnCancelDialog);
-        Button btnConfirmDialog = (Button) dialogView.findViewById(R.id.btnConfirmDialog);
+        ImageView imgDialog = dialogView.findViewById(R.id.imgDialog);
+        TextView tvTitleDialog = dialogView.findViewById(R.id.tvTitleDialog);
+        TextView tvBodyDialog = dialogView.findViewById(R.id.tvBodyDialog);
+        Button btnCancelDialog = dialogView.findViewById(R.id.btnCancelDialog);
+        Button btnConfirmDialog = dialogView.findViewById(R.id.btnConfirmDialog);
 
         tvTitleDialog.setVisibility(View.GONE);
 
@@ -862,7 +851,7 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
                 releaseResource();
                 int ret = ZoomVideoSDK.getInstance().leaveSession(false);
                 sessions.clearPartData();
-                rabbitMirroring.MirroringSendEndpoint(99);
+                RabbitMirroring.MirroringSendEndpoint(99);
                 trimCache(mContext);
                 startActivity(new Intent(getApplicationContext(), RatingActivity.class));
                 finish();
@@ -877,11 +866,11 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
         LayoutInflater inflater = getLayoutInflater();
         View dialogView = inflater.inflate(R.layout.layout_dialog_sweet, null);
 
-        ImageView imgDialog = (ImageView) dialogView.findViewById(R.id.imgDialog);
-        TextView tvTitleDialog = (TextView) dialogView.findViewById(R.id.tvTitleDialog);
-        TextView tvBodyDialog = (TextView) dialogView.findViewById(R.id.tvBodyDialog);
-        Button btnCancelDialog = (Button) dialogView.findViewById(R.id.btnCancelDialog);
-        Button btnConfirmDialog = (Button) dialogView.findViewById(R.id.btnConfirmDialog);
+        ImageView imgDialog = dialogView.findViewById(R.id.imgDialog);
+        TextView tvTitleDialog = dialogView.findViewById(R.id.tvTitleDialog);
+        TextView tvBodyDialog = dialogView.findViewById(R.id.tvBodyDialog);
+        Button btnCancelDialog = dialogView.findViewById(R.id.btnCancelDialog);
+        Button btnConfirmDialog = dialogView.findViewById(R.id.btnConfirmDialog);
 
         tvTitleDialog.setVisibility(View.GONE);
         btnCancelDialog.setVisibility(View.VISIBLE);
@@ -908,7 +897,7 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
                 releaseResource();
                 int ret = ZoomVideoSDK.getInstance().leaveSession(false);
                 sessions.clearPartData();
-                rabbitMirroring.MirroringSendEndpoint(99);
+                RabbitMirroring.MirroringSendEndpoint(99);
                 trimCache(mContext);
                 startActivity(new Intent(getApplicationContext(), RatingActivity.class));
                 finish();
@@ -1222,7 +1211,7 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        rabbitMirroring.MirroringSendKey(idDipsObj);
+        RabbitMirroring.MirroringSendKey(idDipsObj);
     }
 
     @Override

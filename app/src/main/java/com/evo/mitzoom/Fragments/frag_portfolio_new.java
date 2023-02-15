@@ -37,11 +37,14 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.math.BigDecimal;
+import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 
 import okhttp3.MediaType;
 import okhttp3.RequestBody;
@@ -67,7 +70,7 @@ public class frag_portfolio_new extends Fragment {
             rgb("#90e610"), rgb("#f2ad0c"), rgb("#0af28a"), rgb("#f20a4c"), rgb("#f20a7a")
     };
     private String idDips;
-    private JSONObject dataNasabah;
+    private JSONObject dataNasabah = null;
     private String customerName;
     private JSONArray listTypeProduk;
     private JSONArray typeProdukListArr;
@@ -76,6 +79,7 @@ public class frag_portfolio_new extends Fragment {
     private boolean isSessionZoom = false;
     private String typeProduct = "";
     private String percentProduct = "";
+    public static final NumberFormat numberFormat = NumberFormat.getInstance(new Locale("id", "ID"));
 
     private static int rgb(String hex) {
         int color = (int) Long.parseLong(hex.replace("#", ""), 16);
@@ -122,7 +126,7 @@ public class frag_portfolio_new extends Fragment {
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-            rabbitMirroring.MirroringSendKey(dataCIF);
+            RabbitMirroring.MirroringSendKey(dataCIF);
         }
     }
 
@@ -132,10 +136,10 @@ public class frag_portfolio_new extends Fragment {
         View views = inflater.inflate(R.layout.fragment_frag_portfolio_new, container, false);
 
         pieChart = views.findViewById(R.id.pieChart);
-        nestedScrollView = (NestedScrollView) views.findViewById(R.id.nestedz);
-        btnService = (Button) views.findViewById(R.id.btnPnL);
-        tvtanggal = (TextView) views.findViewById(R.id.date);
-        rv_item_expand = (RecyclerView) views.findViewById(R.id.rv_item_expand);
+        nestedScrollView = views.findViewById(R.id.nestedz);
+        btnService = views.findViewById(R.id.btnPnL);
+        tvtanggal = views.findViewById(R.id.date);
+        rv_item_expand = views.findViewById(R.id.rv_item_expand);
         
         bahasa = sessions.getLANG();
         cekCust = sessions.getKEY_iSCust();
@@ -170,8 +174,10 @@ public class frag_portfolio_new extends Fragment {
         btnService.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                rabbitMirroring.MirroringSendEndpoint(15);
-                getFragmentPage(new frag_service_new());
+                if (dataNasabah.length() > 0) {
+                    RabbitMirroring.MirroringSendEndpoint(15);
+                    getFragmentPage(new frag_service_new());
+                }
             }
         });
 
@@ -195,7 +201,7 @@ public class frag_portfolio_new extends Fragment {
             e.printStackTrace();
         }
 
-        Log.e("CEK", this+" getPortofolio PARAMS : "+jsons.toString());
+        Log.e("CEK", this+" getPortofolio PARAMS : "+ jsons);
         RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), jsons.toString());
 
         Server.getAPIService().GetNewPortofolio(requestBody).enqueue(new Callback<JsonObject>() {
@@ -301,7 +307,7 @@ public class frag_portfolio_new extends Fragment {
                     pieEntryList.add(new PieEntry(Float.parseFloat(percent), typeProduk));
 
                     JSONArray dataList = parseGetProduct(type);
-                    Log.e("CEK","dataList : "+dataList.toString());
+                    Log.e("CEK","dataList : "+ dataList);
 
                     dataValProduk.put("typeProduct",typeProduk);
                     dataValProduk.put("dataList",dataList);
@@ -325,7 +331,8 @@ public class frag_portfolio_new extends Fragment {
         pieData.setValueFormatter(new PercentFormatter(pieChart));
         pieChart.setEntryLabelTextSize(12f);
         if (listTypeProduk.length() == 1 && !typeProduct.isEmpty() && !percentProduct.isEmpty()) {
-            if (percentProduct != "0,0" || percentProduct != "0.0") {
+            Log.e("CEK","MASUK IF PERCENT : "+percentProduct);
+            if (percentProduct.equals("0,0") || percentProduct.equals("0.0")) {
                 if (typeProduct.equals("tabungan")) {
                     pieChart.setTransparentCircleColor(mContext.getColor(R.color.zm_tabungan));
                 } else if (typeProduct.equals("deposito")) {
@@ -341,7 +348,7 @@ public class frag_portfolio_new extends Fragment {
                 } else {
                     pieChart.setTransparentCircleColor(mContext.getColor(R.color.zm_text));
                 }
-
+                pieChart.setTransparentCircleRadius(70f);
             }
         }
         pieChart.setData(pieData);
@@ -352,8 +359,11 @@ public class frag_portfolio_new extends Fragment {
 
     private JSONArray parseGetProduct(String type) throws JSONException {
         JSONArray prod = null;
+        JSONArray rekTabungan = new JSONArray();
         if (type.equals("tabungan")) {
             prod = dataNasabah.getJSONArray("portotabungan");
+            rekTabungan = prod;
+            sessions.saveRekNasabah(rekTabungan.toString());
         } else if (type.equals("deposito")) {
             prod = dataNasabah.getJSONArray("portodeposito");
         } else if (type.equals("pinjaman")) {
@@ -364,9 +374,16 @@ public class frag_portfolio_new extends Fragment {
 
         for (int i = 0; i < prod.length(); i++) {
             String prodName = "";
+            String accountName = "";
             if (type.equals("pinjaman")) {
                 prodName = prod.getJSONObject(i).getString("loanProductName");
+                if (prod.getJSONObject(i).has("accountName")) {
+                    accountName = prod.getJSONObject(i).getString("accountName");
+                }
             } else {
+                if (prod.getJSONObject(i).has("accountName")) {
+                    accountName = prod.getJSONObject(i).getString("accountName");
+                }
                 prodName = prod.getJSONObject(i).getString("prodName");
             }
 
@@ -378,6 +395,8 @@ public class frag_portfolio_new extends Fragment {
                 String balance = prod.getJSONObject(i).getString("availBalance");
                 jumlahDana = (long) Double.parseDouble(balance);
                 kurs = prod.getJSONObject(i).getString("acctCur");
+
+
             } else if (type.equals("deposito")) {
                 noRekening = prod.getJSONObject(i).getString("rekKredit");
                 String balance = prod.getJSONObject(i).getString("nominal");
@@ -392,6 +411,7 @@ public class frag_portfolio_new extends Fragment {
 
             JSONObject dataListPorto = new JSONObject();
             dataListPorto.put("namaProduk",prodName);
+            dataListPorto.put("accountName",accountName);
             dataListPorto.put("noRekening",noRekening);
             dataListPorto.put("jumlahDana",jumlahDana);
             dataListPorto.put("kurs",kurs);
@@ -411,6 +431,17 @@ public class frag_portfolio_new extends Fragment {
 
         rv_item_expand.setLayoutManager(recylerViewLayoutManager);
         rv_item_expand.setAdapter(dataExpand);
+    }
+
+    public static BigDecimal parseCurrencyValue(String value) {
+        try {
+            String replaceRegex = String.format("[%s,.\\s]", Objects.requireNonNull(numberFormat.getCurrency()).getDisplayName());
+            String currencyValue = value.replaceAll(replaceRegex, "");
+            return new BigDecimal(currencyValue);
+        } catch (Exception e) {
+            Log.e("MyApp", e.getMessage(), e);
+        }
+        return BigDecimal.ZERO;
     }
 
 }

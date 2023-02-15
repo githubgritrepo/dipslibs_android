@@ -19,7 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class AdapterBank2 extends ArrayAdapter<BankItem> {
-    private List<BankItem> bankItemList;
+    private final List<BankItem> bankItemList;
 
     public AdapterBank2(@NonNull Context context, @NonNull List<BankItem> bankList ){
         super(context, 0, bankList);
@@ -54,7 +54,7 @@ public class AdapterBank2 extends ArrayAdapter<BankItem> {
         return convertView;
     }
 
-    private Filter bankFilter = new Filter() {
+    private final Filter bankFilter = new Filter() {
         @Override
         protected FilterResults performFiltering(CharSequence constraint) {
             FilterResults results = new FilterResults();

@@ -1,11 +1,11 @@
 package com.evo.mitzoom.Model;
 
 public class PortfolioModel {
-    private String id;
-    private String namaPortfolio;
-    private String nominalPortfolio;
-    private int gambarPortfolio;
-    private String linkIcon;
+    private final String id;
+    private final String namaPortfolio;
+    private final String nominalPortfolio;
+    private final int gambarPortfolio;
+    private final String linkIcon;
 
     public PortfolioModel (String id, String namaPortfolio, String nominalPortfolio,int gambarPortfolio, String icon){
         this.id = id;

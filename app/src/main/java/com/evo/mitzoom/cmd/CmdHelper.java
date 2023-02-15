@@ -17,7 +17,7 @@ public class CmdHelper extends SimpleVideoSDKDelegate {
     private static final String TAG = "CEK_CmdHelper";
 
     private static volatile CmdHelper instance = null;
-    private ListenerList listeners = new ListenerList();
+    private final ListenerList listeners = new ListenerList();
     private CmdHelper() {}
 
     public static CmdHelper getInstance() {

@@ -251,8 +251,11 @@ public interface ApiService {
     @GET("form-generator/formkomplain/{noComplaint}")
     Call<JsonObject> getResiComplaint(@Path("noComplaint") String noComplaint);
 
+    @GET("form-generator/formkomplain-new/{noComplaint}")
+    Call<JsonObject> getNewResiComplaint(@Path("noComplaint") String noComplaint);
+
     @Headers("Content-Type: "+ MyConstants.CONTENT_TYPE)
-    @POST("form-data/komplain")
+    @POST("komplain")
     Call<JsonObject> formComplaint(@Body RequestBody body);
     @POST("form-data/komplain-old")
     Call<JsonObject> formComplaintOld(@Header("Content-Type") String contentType,

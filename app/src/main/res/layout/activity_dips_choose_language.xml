@@ -36,13 +36,11 @@
 
         <include layout="@layout/dialog_dips_choose_language" />
 
-        <RelativeLayout
-            android:id="@+id/rlload"
+        <include
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@color/transparentblack"
-            android:visibility="gone"
-            android:clickable="true"/>
+            layout="@layout/progress_loading"
+            android:layout_centerInParent="true"/>
 
     </RelativeLayout>
 

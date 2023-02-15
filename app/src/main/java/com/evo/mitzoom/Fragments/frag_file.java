@@ -39,7 +39,7 @@ public class frag_file extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.frag_file, container, false);
-        btnBack = (ImageView) view.findViewById(R.id.btnclose);
+        btnBack = view.findViewById(R.id.btnclose);
         viewPager = view.findViewById(R.id.view_pager);
         tabLayout = view.findViewById(R.id.tabs);
         return view;

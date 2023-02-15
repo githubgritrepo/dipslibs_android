@@ -20,8 +20,8 @@ public class GraphicFaceTracker extends Tracker<Face> {
     private DipsCameraSource dipsCameraSource;
     private int state = 0;
     private boolean flag;
-    private Context mContext;
-    private String activitys;
+    private final Context mContext;
+    private final String activitys;
 
     public GraphicFaceTracker( Context mContext, String activitys) {
         this.mContext = mContext;

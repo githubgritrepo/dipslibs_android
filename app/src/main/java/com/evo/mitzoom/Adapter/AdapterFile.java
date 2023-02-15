@@ -17,8 +17,8 @@ import com.evo.mitzoom.R;
 import java.util.ArrayList;
 
 public class AdapterFile extends RecyclerView.Adapter<AdapterFile.ItemHolder> {
-    private ArrayList<FileModel> dataList;
-    private Context ctx;
+    private final ArrayList<FileModel> dataList;
+    private final Context ctx;
 
     public AdapterFile(Context ctx, ArrayList<FileModel> dataList){
         this.dataList = dataList;
@@ -59,10 +59,10 @@ public class AdapterFile extends RecyclerView.Adapter<AdapterFile.ItemHolder> {
     }
 
     public class ItemHolder extends RecyclerView.ViewHolder{
-        private ImageView imgBin;
-        private TextView Nama_File;
-        private ImageView ic_unduh_;
-        private LinearLayout item;
+        private final ImageView imgBin;
+        private final TextView Nama_File;
+        private final ImageView ic_unduh_;
+        private final LinearLayout item;
 
         public ItemHolder(View itemView) {
             super(itemView);

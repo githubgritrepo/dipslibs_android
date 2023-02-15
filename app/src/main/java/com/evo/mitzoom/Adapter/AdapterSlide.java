@@ -30,11 +30,11 @@ import java.util.List;
 
 public class AdapterSlide extends RecyclerView.Adapter<AdapterSlide.ViewHolder> {
 
-    private Context mContext;
-    private JSONArray dataArr;
+    private final Context mContext;
+    private final JSONArray dataArr;
     private int mPlayerPosition;
-    private List<InputStream> isArr;
-    private List<String> contentType;
+    private final List<InputStream> isArr;
+    private final List<String> contentType;
 
     public AdapterSlide(Context mContext, JSONArray dataArr) {
         this.mContext = mContext;
@@ -145,11 +145,11 @@ public class AdapterSlide extends RecyclerView.Adapter<AdapterSlide.ViewHolder> 
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
-            myImage = (ImageView) itemView.findViewById(R.id.images);
-            rlVV = (RelativeLayout) itemView.findViewById(R.id.rlVV);
-            vv = (VideoView) itemView.findViewById(R.id.vvVideo);
-            imgBtnPlay = (ImageView) itemView.findViewById(R.id.imgBtnPlay);
-            nama = (TextView) itemView.findViewById(R.id.nama_item_caroseoul);
+            myImage = itemView.findViewById(R.id.images);
+            rlVV = itemView.findViewById(R.id.rlVV);
+            vv = itemView.findViewById(R.id.vvVideo);
+            imgBtnPlay = itemView.findViewById(R.id.imgBtnPlay);
+            nama = itemView.findViewById(R.id.nama_item_caroseoul);
         }
     }
     

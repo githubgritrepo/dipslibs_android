@@ -5,6 +5,7 @@
     android:installLocation="preferExternal">
 
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.INTERNET" />
@@ -136,11 +137,6 @@
                 android:resource="@xml/provider_path" />
         </provider>
 
-        <service
-            android:name=".Helper.OutboundService"
-            android:enabled="true"
-            android:exported="true"
-            android:stopWithTask="false" />
         <service
             android:name=".Helper.OutboundServiceNew"
             android:enabled="true"

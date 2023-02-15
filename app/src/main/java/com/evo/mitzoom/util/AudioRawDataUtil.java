@@ -42,9 +42,9 @@ public class AudioRawDataUtil {
 
     static final String TAG = "AudioRawDataUtil";
 
-    private Map<String, FileChannel> map = new HashMap<>();
+    private final Map<String, FileChannel> map = new HashMap<>();
 
-    private Context mContext;
+    private final Context mContext;
 
 
     public AudioRawDataUtil(Context context) {
@@ -73,7 +73,7 @@ public class AudioRawDataUtil {
         return null;
     }
 
-    private ZoomVideoSDKDelegate dataDelegate = new ZoomVideoSDKDelegate() {
+    private final ZoomVideoSDKDelegate dataDelegate = new ZoomVideoSDKDelegate() {
 
 
         @Override

@@ -6,7 +6,6 @@ import android.app.Activity;
 import android.app.ActivityManager;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
@@ -14,9 +13,6 @@ import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -25,14 +21,11 @@ import android.os.Environment;
 import android.os.PowerManager;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
-import android.text.Html;
 import android.util.Base64;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
-import android.widget.CheckBox;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
@@ -55,7 +48,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.util.Locale;
 
 import ai.advance.liveness.lib.CameraType;
@@ -64,7 +56,6 @@ import ai.advance.liveness.lib.GuardianLivenessDetectionSDK;
 import ai.advance.liveness.lib.LivenessResult;
 import ai.advance.liveness.lib.Market;
 import ai.advance.liveness.sdk.activity.LivenessActivity;
-import cn.pedant.SweetAlert.SweetAlertDialog;
 import okhttp3.MediaType;
 import okhttp3.RequestBody;
 import retrofit2.Call;
@@ -87,7 +78,7 @@ public class DipsChooseLanguage extends AppCompatActivity {
     private RadioGroup radioGroup;
     private Button btnNext;
     private TextView tvVersion;
-    private RelativeLayout rlload;
+    private RelativeLayout rlprogress;
     private String idDips;
     private boolean isFlagALL_FILES_ACCESS = false;
 
@@ -116,10 +107,10 @@ public class DipsChooseLanguage extends AppCompatActivity {
             }
         }
 
-        radioGroup = (RadioGroup) findViewById(R.id.groupradio);
-        btnNext = (Button) findViewById(R.id.btnNext);
-        tvVersion = (TextView) findViewById(R.id.tvVersion);
-        rlload = (RelativeLayout) findViewById(R.id.rlload);
+        radioGroup = findViewById(R.id.groupradio);
+        btnNext = findViewById(R.id.btnNext);
+        tvVersion = findViewById(R.id.tvVersion);
+        rlprogress = findViewById(R.id.rlprogress);
 
         radioGroup.clearCheck();
 
@@ -141,18 +132,6 @@ public class DipsChooseLanguage extends AppCompatActivity {
         super.onResume();
         Log.e(TAG,"MASUK onResume");
         reqPermission();
-
-        long unixTime = System.currentTimeMillis() / 1000L;
-        long expiredTimesAuth = sessions.getExpiredTimeAdvanceAI();
-        String cekExp = String.valueOf(expiredTimesAuth);
-        if (cekExp.length() > 10) {
-            expiredTimesAuth = Long.parseLong(cekExp.substring(0,10));
-        }
-        if (expiredTimesAuth == 0 || expiredTimesAuth < unixTime) {
-            sessions.saveAuthAdvanceAI(null,0);
-            new AsyncAuth().execute();
-        }
-
         Log.e(TAG,"openBatteryOptimizationDialogIfNeeded");
         Log.e(TAG,"isOptimizingBattery : "+isOptimizingBattery());
         Log.e(TAG,"getBatteryOptimizationPreferenceKey : "+getPreferences().getBoolean(getBatteryOptimizationPreferenceKey(), true));
@@ -171,6 +150,18 @@ public class DipsChooseLanguage extends AppCompatActivity {
                     startActivityForResult(overlaySettings, 1);
                 }
             }
+        }
+
+        long unixTime = System.currentTimeMillis() / 1000L;
+        long expiredTimesAuth = sessions.getExpiredTimeAdvanceAI();
+        String cekExp = String.valueOf(expiredTimesAuth);
+        if (cekExp.length() > 10) {
+            expiredTimesAuth = Long.parseLong(cekExp.substring(0,10));
+        }
+        if (expiredTimesAuth == 0 || expiredTimesAuth < unixTime) {
+            showProgress(true);
+            sessions.saveAuthAdvanceAI(null,0);
+            new AsyncAuth().execute();
         }
     }
 
@@ -198,7 +189,7 @@ public class DipsChooseLanguage extends AppCompatActivity {
                 }
                 else {
 //                    sweetAlertDialog.dismissWithAnimation();
-                    RadioButton radioButton = (RadioButton) radioGroup.findViewById(selectedId);
+                    RadioButton radioButton = radioGroup.findViewById(selectedId);
                     int idRb = radioButton.getId();
                     switch(idRb) {
                         case R.id.rbId:
@@ -400,6 +391,7 @@ public class DipsChooseLanguage extends AppCompatActivity {
         GuardianLivenessDetectionSDK.setActionSequence(true, Detector.DetectionType.BLINK);
         GuardianLivenessDetectionSDK.setResultPictureSize(300); // Settable input range: [300,1000], unit: pixels
         GuardianLivenessDetectionSDK.setActionTimeoutMills(20000);
+        GuardianLivenessDetectionSDK.isDetectOcclusion(true);
         String checkResult = GuardianLivenessDetectionSDK.setLicenseAndCheck(yourLicense);
         Log.e(TAG,"checkResult : "+checkResult);
         if ("SUCCESS".equals(checkResult)) {
@@ -433,7 +425,6 @@ public class DipsChooseLanguage extends AppCompatActivity {
                 startActivity(intent);
                 finishAffinity();
             } else {// Failure
-                rlload.setVisibility(View.GONE);
                 //String errorCode = LivenessResult.getErrorCode();// error code
                 String errorMsg = LivenessResult.getErrorMsg();// error message
                 //String transactionId = LivenessResult.getTransactionId(); // Transaction number, which can be used to troubleshoot problems with us
@@ -482,12 +473,18 @@ public class DipsChooseLanguage extends AppCompatActivity {
             e.printStackTrace();
         }
 
-        Log.e(TAG,"APIGetAuthAdvanceAI : "+jsons.toString());
+        Log.e(TAG,"APIGetAuthAdvanceAI : "+ jsons);
 
         RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), jsons.toString());
         Server.getAPIService().APIAuthLicenseLiveness(requestBody).enqueue(new Callback<JsonObject>() {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        showProgress(false);
+                    }
+                });
                 Log.e(TAG,"RESPONSE AUTH API AI : "+response.code());
                 if (response.isSuccessful()) {
                     Log.e(TAG,"RESPONSE AUTH API AI BODY : "+response.body().toString());
@@ -504,6 +501,12 @@ public class DipsChooseLanguage extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<JsonObject> call, Throwable t) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        showProgress(false);
+                    }
+                });
 
             }
         });
@@ -519,7 +522,7 @@ public class DipsChooseLanguage extends AppCompatActivity {
         }
 
         String AccessKey = "9daf9d6e9dfe6cdd";
-        Log.e(TAG,"REUQEST AUTH AI : "+jsons.toString());
+        Log.e(TAG,"REUQEST AUTH AI : "+ jsons);
         RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), jsons.toString());
         Server.getAPIServiceAdvanceAI().AuthLicenseLiveness(requestBody,AccessKey).enqueue(new Callback<JsonObject>() {
             @Override
@@ -546,6 +549,15 @@ public class DipsChooseLanguage extends AppCompatActivity {
                 Log.e(TAG,"onFailure AUTH AI : "+t.getMessage());
             }
         });
+    }
+
+    private void showProgress(Boolean bool){
+
+        if (bool){
+            rlprogress.setVisibility(View.VISIBLE);
+        }else {
+            rlprogress.setVisibility(View.GONE);
+        }
     }
 
 }

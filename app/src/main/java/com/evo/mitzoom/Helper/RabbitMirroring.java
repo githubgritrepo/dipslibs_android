@@ -27,10 +27,10 @@ public class RabbitMirroring {
     private static Thread publishEndpointThread;
     private static Context mContext;
     private static SessionManager sessions;
-    private static String TAG = "RabbitMirroring";
+    private static final String TAG = "RabbitMirroring";
 
     public RabbitMirroring(Context mContext) {
-        this.mContext = mContext;
+        RabbitMirroring.mContext = mContext;
 
         setupConnectionFactory();
     }
@@ -65,7 +65,7 @@ public class RabbitMirroring {
                     JSONObject datax = dataMirroring(jsons);
                     String dataxS = datax.toString();
 
-                    Log.e(TAG,"dataxS : "+dataxS.toString());
+                    Log.e(TAG,"dataxS : "+ dataxS);
 
                     ch.basicPublish("dips361-cs-send-key","dips.direct.cs."+csID+".send.key",false,null,dataxS.getBytes());
                     ch.waitForConfirmsOrDie();
@@ -106,7 +106,7 @@ public class RabbitMirroring {
                         e.printStackTrace();
                     }
 
-                    Log.e(TAG,"jsons : "+jsons.toString());
+                    Log.e(TAG,"jsons : "+ jsons);
 
                     Connection connection = connectionFactory.newConnection();
                     Channel ch = connection.createChannel();
@@ -118,7 +118,7 @@ public class RabbitMirroring {
                     JSONObject datax = dataMirroring(jsons);
                     String dataxS = datax.toString();
 
-                    Log.e(TAG,"dataxS : "+dataxS.toString());
+                    Log.e(TAG,"dataxS : "+ dataxS);
 
                     ch.basicPublish("dips361-cs-send-endpoint","dips.direct.cs."+csID+".send.endpoint",false,null,dataxS.getBytes());
                     ch.waitForConfirmsOrDie();

@@ -7,7 +7,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.StrictMode;
@@ -57,7 +56,7 @@ import retrofit2.Response;
 
 public class DipsLivenessResult extends AppCompatActivity {
 
-    private static String TAG = "CEK_DipsLivenessResult";
+    private static final String TAG = "CEK_DipsLivenessResult";
     private Context mContext;
     private SessionManager sessions;
     private ImageView mask_view;
@@ -92,10 +91,10 @@ public class DipsLivenessResult extends AppCompatActivity {
             }
         }
 
-        mask_view = (ImageView) findViewById(R.id.mask_view);
-        tip_text_view = (TextView) findViewById(R.id.tip_text_view);
-        llCircle = (RelativeLayout) findViewById(R.id.llCircle);
-        imgCheck = (ImageView) findViewById(R.id.imgCheck);
+        mask_view = findViewById(R.id.mask_view);
+        tip_text_view = findViewById(R.id.tip_text_view);
+        llCircle = findViewById(R.id.llCircle);
+        imgCheck = findViewById(R.id.imgCheck);
 
         AnimationCall();
 
@@ -339,11 +338,11 @@ public class DipsLivenessResult extends AppCompatActivity {
     private void dialogShowError(String license) {
         LayoutInflater inflater = getLayoutInflater();
         View dialogView = inflater.inflate(R.layout.layout_dialog_sweet, null);
-        ImageView imgDialog = (ImageView) dialogView.findViewById(R.id.imgDialog);
-        TextView tvTitleDialog = (TextView) dialogView.findViewById(R.id.tvTitleDialog);
-        TextView tvBodyDialog = (TextView) dialogView.findViewById(R.id.tvBodyDialog);
-        Button btnCancelDialog = (Button) dialogView.findViewById(R.id.btnCancelDialog);
-        Button btnConfirmDialog = (Button) dialogView.findViewById(R.id.btnConfirmDialog);
+        ImageView imgDialog = dialogView.findViewById(R.id.imgDialog);
+        TextView tvTitleDialog = dialogView.findViewById(R.id.tvTitleDialog);
+        TextView tvBodyDialog = dialogView.findViewById(R.id.tvBodyDialog);
+        Button btnCancelDialog = dialogView.findViewById(R.id.btnCancelDialog);
+        Button btnConfirmDialog = dialogView.findViewById(R.id.btnConfirmDialog);
         btnCancelDialog.setVisibility(View.GONE);
 
         imgDialog.setImageDrawable(getDrawable(R.drawable.v_dialog_warning));

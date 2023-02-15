@@ -81,11 +81,11 @@ public class DipsCameraSource extends AppCompatActivity implements CameraSource.
 
         setContentView(R.layout.activity_dips_camera_source);
 
-        preview = (SurfaceView) findViewById(R.id.mySurface);
-        transPreview = (SurfaceView) findViewById(R.id.transSurface);
-        TextView tvHeader = (TextView) findViewById(R.id.tvHeader);
-        TextView tvContent = (TextView) findViewById(R.id.tvContent);
-        LinearLayout llMsg = (LinearLayout) findViewById(R.id.llMsg);
+        preview = findViewById(R.id.mySurface);
+        transPreview = findViewById(R.id.transSurface);
+        TextView tvHeader = findViewById(R.id.tvHeader);
+        TextView tvContent = findViewById(R.id.tvContent);
+        LinearLayout llMsg = findViewById(R.id.llMsg);
         llMsg.getBackground().setAlpha(150);
         tvHeader.setText(R.string.ktp_swafoto);
         tvContent.setText(R.string.content_swafoto);
@@ -372,7 +372,7 @@ public class DipsCameraSource extends AppCompatActivity implements CameraSource.
         Matrix matrix = new Matrix();
         // RESIZE THE BIT MAP
 
-        int widthChange = (int) width - cx;
+        int widthChange = width - cx;
         int HeightChange = height;
         HeightChange = HeightChange - diffH;
         // "RECREATE" THE NEW BITMAP
@@ -387,7 +387,7 @@ public class DipsCameraSource extends AppCompatActivity implements CameraSource.
             matrix.postScale(1, -1);
             Log.e("CEK","posCX : "+posCX+" | posCY : "+posCY+" | posWidth : "+posWidth+" | posHeight : "+posHeight);
             int cxW = (int) (posWidth / 1.8);
-            int cxH = (int) (posHeight / 2);
+            int cxH = posHeight / 2;
             if ("xiaomi".equals(Build.MANUFACTURER.toLowerCase(Locale.ROOT))) {
                 cxW = (int) (posWidth / 1.2);
                 cxH = (int) (posHeight / 1.2);

@@ -1,9 +1,9 @@
 package com.evo.mitzoom.Model;
 
 public class ItemModel {
-    private String id;
-    private String namaItem;
-    private int gambarItem;
+    private final String id;
+    private final String namaItem;
+    private final int gambarItem;
 
     public ItemModel (String id, String namaItem, int gambarItem){
         this.id = id;

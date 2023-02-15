@@ -3,7 +3,6 @@ package com.evo.mitzoom.ui;
 import static com.evo.mitzoom.ui.DipsChooseLanguage.setLocale;
 
 import android.Manifest;
-import android.app.Activity;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -100,7 +99,7 @@ import us.zoom.sdk.ZoomVideoSDKSessionContext;
 import us.zoom.sdk.ZoomVideoSDKVideoOption;
 
 public class DipsOutboundCall extends AppCompatActivity implements DatePickerDialog.OnDateSetListener {
-    private static String TAG = "DipsOutboundCall";
+    private static final String TAG = "DipsOutboundCall";
     public static final int REQUEST_WRITE_PERMISSION = 786;
     private static final int MY_CAMERA_PERMISSION_CODE = 100;
     Camera.Parameters parameters;
@@ -153,7 +152,7 @@ public class DipsOutboundCall extends AppCompatActivity implements DatePickerDia
     ConnectionFactory connectionFactory = new ConnectionFactory();
     private Thread publishCallAcceptThread;
 
-    private Runnable runnable = new Runnable() {
+    private final Runnable runnable = new Runnable() {
         @Override
         public void run() {
             Log.i(TAG,"MASUK Run Timeout");
@@ -221,9 +220,9 @@ public class DipsOutboundCall extends AppCompatActivity implements DatePickerDia
         nama_agen = findViewById(R.id.nama_agen);
         incomingcall = findViewById(R.id.incomingcall);
         AnimationCall();
-        imgCS = (CircleImageView) findViewById(R.id.imgCS);
+        imgCS = findViewById(R.id.imgCS);
         accept = findViewById(R.id.acceptCall);
-        preview = (SurfaceView) findViewById(R.id.mySurfaceOutbound);
+        preview = findViewById(R.id.mySurfaceOutbound);
         reject = findViewById(R.id.rejectCall);
         Intent intent = getIntent();
         useFacing = intent.getIntExtra(KEY_USE_FACING, Camera.CameraInfo.CAMERA_FACING_FRONT);
@@ -326,8 +325,7 @@ public class DipsOutboundCall extends AppCompatActivity implements DatePickerDia
         et_Date.setText(tanggal);
 
         if (periodePenuh.length() > 0) {
-            ArrayList<String> times_new = new ArrayList<>();
-            times_new.addAll(time);
+            ArrayList<String> times_new = new ArrayList<>(time);
             for (int i = 0; i < periodePenuh.length(); i++) {
                 try {
                     String tglFull = periodePenuh.getJSONObject(i).getString("tanggal");
@@ -529,11 +527,11 @@ public class DipsOutboundCall extends AppCompatActivity implements DatePickerDia
         LayoutInflater inflater = getLayoutInflater();
         View dialogView = inflater.inflate(R.layout.layout_dialog_sweet, null);
 
-        ImageView imgDialog = (ImageView) dialogView.findViewById(R.id.imgDialog);
-        TextView tvTitleDialog = (TextView) dialogView.findViewById(R.id.tvTitleDialog);
-        TextView tvBodyDialog = (TextView) dialogView.findViewById(R.id.tvBodyDialog);
-        Button btnCancelDialog = (Button) dialogView.findViewById(R.id.btnCancelDialog);
-        Button btnConfirmDialog = (Button) dialogView.findViewById(R.id.btnConfirmDialog);
+        ImageView imgDialog = dialogView.findViewById(R.id.imgDialog);
+        TextView tvTitleDialog = dialogView.findViewById(R.id.tvTitleDialog);
+        TextView tvBodyDialog = dialogView.findViewById(R.id.tvBodyDialog);
+        Button btnCancelDialog = dialogView.findViewById(R.id.btnCancelDialog);
+        Button btnConfirmDialog = dialogView.findViewById(R.id.btnConfirmDialog);
 
         tvTitleDialog.setVisibility(View.GONE);
         btnCancelDialog.setVisibility(View.VISIBLE);
@@ -809,7 +807,7 @@ public class DipsOutboundCall extends AppCompatActivity implements DatePickerDia
                     sweetAlertDialog.setConfirmText(getResources().getString(R.string.done));
                     sweetAlertDialog.setCancelable(false);
                     sweetAlertDialog.show();
-                    Button btnConfirm = (Button) sweetAlertDialog.findViewById(cn.pedant.SweetAlert.R.id.confirm_button);
+                    Button btnConfirm = sweetAlertDialog.findViewById(cn.pedant.SweetAlert.R.id.confirm_button);
                     btnConfirm.setBackgroundTintList(DipsOutboundCall.this.getResources().getColorStateList(R.color.Blue));
                     btnConfirm.setOnClickListener(new View.OnClickListener() {
                         @Override
@@ -844,7 +842,7 @@ public class DipsOutboundCall extends AppCompatActivity implements DatePickerDia
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
                 Log.e("CEK","saveSchedule Respon Code : "+response.code());
                 if (response.isSuccessful() && response.body().size() > 0) {
-                    Log.e("CEK","saveSchedule Respon : "+response.body().toString());
+                    Log.e("CEK","saveSchedule Respon : "+ response.body());
                     String dataS = response.body().toString();
                     try {
                         JSONObject dataObj = new JSONObject(dataS);
@@ -882,9 +880,9 @@ public class DipsOutboundCall extends AppCompatActivity implements DatePickerDia
     private void serviceOutbound() {
         Intent serviceIntent = new Intent(mContext, OutboundServiceNew.class);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            ((Activity)mContext).startForegroundService(serviceIntent);
+            mContext.startForegroundService(serviceIntent);
         } else {
-            ((Activity)mContext).startService(serviceIntent);
+            mContext.startService(serviceIntent);
         }
     }
 
@@ -1185,7 +1183,7 @@ public class DipsOutboundCall extends AppCompatActivity implements DatePickerDia
             e.printStackTrace();
         }
 
-        Log.e(TAG,"processSignature REQ : "+jsons.toString());
+        Log.e(TAG,"processSignature REQ : "+ jsons);
 
         RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), jsons.toString());
 
