@@ -126,11 +126,20 @@ public class MyParserFormBuilder {
                     }
                     
                     boolean compRequired = false;
+                    boolean compDisabled = false;
                     if (compObj.has("required")) {
                         compRequired = compObj.getBoolean("required");
                     } else if (compObj.has("props")) {
                         if (compObj.getJSONObject("props").has("required")) {
                             compRequired = compObj.getJSONObject("props").getBoolean("required");
+                        }
+                        else if (compObj.getJSONObject("props").has("disabled")) {
+                            boolean getDisabled = compObj.getJSONObject("props").getBoolean("disabled");
+                            if (getDisabled) {
+                                compDisabled = false;
+                            } else {
+                                compDisabled = true;
+                            }
                         }
                     }
                     String urlPath = "";
@@ -191,6 +200,9 @@ public class MyParserFormBuilder {
                                             ed.setText(getDates);
                                         }
                                     };
+
+                                    ed.setEnabled(compDisabled);
+                                    ed.setClickable(compDisabled);
 
                                     ed.setOnClickListener(new View.OnClickListener() {
                                         @Override

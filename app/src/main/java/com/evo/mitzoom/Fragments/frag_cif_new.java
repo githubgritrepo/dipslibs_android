@@ -199,9 +199,9 @@ public class frag_cif_new extends Fragment {
 
         isSessionZoom = ZoomVideoSDK.getInstance().isInSession();
         Log.e("CEK",mContext+" isSessionZoom : "+isSessionZoom);
-        if (isSessionZoom) {
+        /*if (isSessionZoom) {
             rabbitMirroring = new RabbitMirroring(mContext);
-        }
+        }*/
 
     }
 
@@ -897,10 +897,6 @@ public class frag_cif_new extends Fragment {
                                         @Override
                                         public void onFocusChange(View view, boolean b) {
                                             Log.e("CEK","onFocusChange : "+b);
-                                            if (isSessionZoom) {
-                                                reqFormMirroring = dataReqFormMirroring();
-                                                RabbitMirroring.MirroringSendKey(reqFormMirroring);
-                                            }
                                         }
                                     });
                                     ed.addTextChangedListener(new TextWatcher() {
@@ -917,6 +913,10 @@ public class frag_cif_new extends Fragment {
                                             try {
                                                 objEl.put(nameDataEl, charSequence);
                                                 dataFormCIF.put(keysData,objEl);
+                                                if (isSessionZoom) {
+                                                    reqFormMirroring = dataReqFormMirroring();
+                                                    RabbitMirroring.MirroringSendKey(reqFormMirroring);
+                                                }
                                             } catch (JSONException e) {
                                                 e.printStackTrace();
                                             }
@@ -1234,10 +1234,6 @@ public class frag_cif_new extends Fragment {
                                         @Override
                                         public void onFocusChange(View view, boolean b) {
                                             Log.e("CEK","onFocusChange : "+b);
-                                            if (isSessionZoom) {
-                                                reqFormMirroring = dataReqFormMirroring();
-                                                RabbitMirroring.MirroringSendKey(reqFormMirroring);
-                                            }
                                         }
                                     });
                                     ed.addTextChangedListener(new TextWatcher() {
@@ -1254,6 +1250,10 @@ public class frag_cif_new extends Fragment {
                                             try {
                                                 objEl.put(nameDataEl, charSequence);
                                                 dataFormCIF.put(keysData,objEl);
+                                                if (isSessionZoom) {
+                                                    reqFormMirroring = dataReqFormMirroring();
+                                                    RabbitMirroring.MirroringSendKey(reqFormMirroring);
+                                                }
                                             } catch (JSONException e) {
                                                 e.printStackTrace();
                                             }
@@ -1823,6 +1823,9 @@ public class frag_cif_new extends Fragment {
 
                             String labelIdn = dataArr.getJSONObject(i).getString("labelIdn");
                             String labelEng = dataArr.getJSONObject(i).getString("labelEng");
+                            if (sessions.getLANG().equals("en")) {
+                                labelIdn = labelEng;
+                            }
                             dataDropDown.add(new FormSpin(idData,labelIdn,labelIdn,labelEng));
                             if (i == 0) {
                                 if (nameDataEl.contains("provinsi") || nameDataEl.contains("kabupaten") || nameDataEl.contains("kota") || nameDataEl.contains("kecamatan") || (nameDataEl.contains("kelurahan") || nameDataEl.contains("desa"))) {

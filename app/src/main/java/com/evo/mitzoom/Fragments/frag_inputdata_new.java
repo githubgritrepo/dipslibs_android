@@ -143,9 +143,9 @@ public class frag_inputdata_new extends Fragment {
         session = new SessionManager(mContext);
         isCust = session.getKEY_iSCust();
         isSessionZoom = ZoomVideoSDK.getInstance().isInSession();
-        if (isSessionZoom) {
+        /*if (isSessionZoom) {
             rabbitMirroring = new RabbitMirroring(mContext);
-        }
+        }*/
     }
 
     @Nullable
@@ -176,6 +176,7 @@ public class frag_inputdata_new extends Fragment {
             if (getArguments().containsKey("CUSTNAME")) {
                 custName = getArguments().getString("CUSTNAME");
             }
+            swipe.setRefreshing(true);
             processGetForm();
         } else {
             Log.e("CEK","MASUK SAVED INSTANACE");
@@ -996,6 +997,9 @@ public class frag_inputdata_new extends Fragment {
                                     JSONObject jenisObj = dataArr.getJSONObject(i).getJSONObject("jenis");
                                     labelIdn = jenisObj.getString("labelIdn");
                                     labelEng = jenisObj.getString("labelEng");
+                                    if (session.getLANG().equals("en")) {
+                                        labelIdn = labelEng;
+                                    }
                                 }
                                 dataDropDown.add(new FormSpin(idData, idJenis, labelIdn, labelEng));
                             }
@@ -1021,6 +1025,9 @@ public class frag_inputdata_new extends Fragment {
                                 }
                                 String labelIdn = dataArr.getJSONObject(i).getString("labelIdn");
                                 String labelEng = dataArr.getJSONObject(i).getString("labelEng");
+                                if (session.getLANG().equals("en")) {
+                                    labelIdn = labelEng;
+                                }
                                 dataDropDown.add(new FormSpin(idData, labelIdn, labelIdn, labelEng));
                                 if (i == 0) {
                                     if (nameDataEl.contains("provinsi") || nameDataEl.contains("kabupaten") || nameDataEl.contains("kota") || nameDataEl.contains("kecamatan") || (nameDataEl.contains("kelurahan") || nameDataEl.contains("desa"))) {

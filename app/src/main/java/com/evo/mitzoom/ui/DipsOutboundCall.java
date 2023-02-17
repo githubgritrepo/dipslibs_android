@@ -1,5 +1,6 @@
 package com.evo.mitzoom.ui;
 
+import static com.evo.mitzoom.Helper.MyWorker.EXTRA_START;
 import static com.evo.mitzoom.ui.DipsChooseLanguage.setLocale;
 
 import android.Manifest;
@@ -41,6 +42,13 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.work.Constraints;
+import androidx.work.Data;
+import androidx.work.ExistingWorkPolicy;
+import androidx.work.NetworkType;
+import androidx.work.OneTimeWorkRequest;
+import androidx.work.WorkManager;
+import androidx.work.WorkRequest;
 
 import com.auth0.android.jwt.Claim;
 import com.auth0.android.jwt.JWT;
@@ -48,6 +56,7 @@ import com.evo.mitzoom.API.ApiService;
 import com.evo.mitzoom.API.Server;
 import com.evo.mitzoom.BaseMeetingActivity;
 import com.evo.mitzoom.Constants.AuthConstants;
+import com.evo.mitzoom.Helper.MyWorker;
 import com.evo.mitzoom.Helper.OutboundServiceNew;
 import com.evo.mitzoom.R;
 import com.evo.mitzoom.Session.SessionManager;
@@ -75,6 +84,7 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import javax.net.ssl.HttpsURLConnection;
@@ -177,6 +187,7 @@ public class DipsOutboundCall extends AppCompatActivity implements DatePickerDia
     };
     private Handler handlerTimes = null;
     private Runnable myRunnable;
+    private WorkManager workManager = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -567,11 +578,6 @@ public class DipsOutboundCall extends AppCompatActivity implements DatePickerDia
     }
 
     private void setupConnectionFactory() {
-//        connectionFactory.setUsername(Server.RABBITMQ_USERNAME);
-//        connectionFactory.setPassword(Server.RABBITMQ_PASSWORD);
-//        connectionFactory.setHost(Server.RABBITMQ_IP);
-//        connectionFactory.setPort(Server.RABBITMQ_PORT);
-//        connectionFactory.setAutomaticRecoveryEnabled(false);
 
         String uriRabbit = Server.BASE_URL_RABBITMQ;
         try {
@@ -852,7 +858,7 @@ public class DipsOutboundCall extends AppCompatActivity implements DatePickerDia
                         e.printStackTrace();
                     }
 
-                    if (DipsWaitingRoom.channelCall != null) {
+                    /*if (DipsWaitingRoom.channelCall != null) {
                         try {
                             Log.e("CEK","MASUK channelCall abort close");
                             DipsWaitingRoom.channelCall.close();
@@ -863,9 +869,10 @@ public class DipsOutboundCall extends AppCompatActivity implements DatePickerDia
                             Log.e("CEK","MASUK subscribeThreadCall interrupt");
                             DipsWaitingRoom.subscribeThreadCall.interrupt();
                         }
-                    }
+                    }*/
 
-                    serviceOutbound();
+                    doWorkMyWorker();
+                    //serviceOutbound();
                 }
             }
 
@@ -875,6 +882,95 @@ public class DipsOutboundCall extends AppCompatActivity implements DatePickerDia
             }
         });
 
+    }
+
+    private void doWorkMyWorker() {
+        workManager = WorkManager.getInstance(mContext);
+
+        String jam = waktu;
+        Log.e("CEK","doWorkMyWorker Savetanggal : "+Savetanggal);
+        Log.e("CEK","doWorkMyWorker jam : "+jam);
+        if (jam.indexOf("-") > 0) {
+            String[] sp = jam.split("-");
+            for (int i = 0; i < sp.length; i++) {
+                workManager.cancelUniqueWork(idDips+"_timesStart"+i);
+            }
+
+            for (int i = 0; i < sp.length; i++) {
+                Calendar currentDate = Calendar.getInstance();
+
+                String[] timeArray = sp[i].split(":");
+                String[] spDate = Savetanggal.split("-");
+                String thn = spDate[0].toString().trim();
+                String getBln = spDate[1].toString().trim();
+                int bln = Integer.parseInt(getBln) - 1;
+                String tgl = spDate[2].toString().trim();
+
+                Log.e("CEK","DATETIMES-"+i+" : "+Savetanggal+" "+sp[i]);
+
+                Calendar calendar = Calendar.getInstance();
+                calendar.set(Integer.parseInt(thn),bln,Integer.parseInt(tgl));
+                calendar.set(Calendar.HOUR_OF_DAY, Integer.parseInt(timeArray[0].trim()));
+                calendar.set(Calendar.MINUTE, Integer.parseInt(timeArray[1].trim()));
+                calendar.set(Calendar.SECOND, 0);
+
+                long timeCurrentMilis = currentDate.getTimeInMillis();
+                long timeInMilis = calendar.getTimeInMillis();
+                long timeDiff = timeInMilis - timeCurrentMilis;
+
+                boolean start = true;
+                if (i > 0) {
+                    start = false;
+                }
+
+                Data data = new Data.Builder()
+                        .putBoolean(EXTRA_START,start)
+                        .build();
+
+                Constraints constraints = new Constraints.Builder()
+                        .setRequiredNetworkType(NetworkType.CONNECTED)
+                        .build();
+
+                WorkRequest workRequest = new OneTimeWorkRequest.Builder(MyWorker.class)
+                        .setInputData(data)
+                        .setConstraints(constraints)
+                        .setInitialDelay(timeDiff, TimeUnit.MILLISECONDS)
+                        .build();
+
+                workManager.enqueueUniqueWork(idDips+"_timesStart"+i,
+                        ExistingWorkPolicy.KEEP, (OneTimeWorkRequest) workRequest);
+            }
+        } else {
+            workManager.cancelUniqueWork(idDips);
+            Calendar currentDate = Calendar.getInstance();
+
+            String[] timeArray = jam.split(":");
+
+            Calendar calendar = Calendar.getInstance();
+            calendar.set(Calendar.HOUR_OF_DAY, Integer.parseInt(timeArray[0].trim()));
+            calendar.set(Calendar.MINUTE, Integer.parseInt(timeArray[1].trim()));
+            calendar.set(Calendar.SECOND, 0);
+
+            long timeCurrentMilis = currentDate.getTimeInMillis();
+            long timeInMilis = calendar.getTimeInMillis();
+            long timeDiff = timeInMilis - timeCurrentMilis;
+
+            Data data = new Data.Builder()
+                    .putBoolean(EXTRA_START,true)
+                    .build();
+
+            Constraints constraints = new Constraints.Builder()
+                    .setRequiredNetworkType(NetworkType.CONNECTED)
+                    .build();
+
+            WorkRequest workRequest = new OneTimeWorkRequest.Builder(MyWorker.class)
+                    .setConstraints(constraints)
+                    .setInitialDelay(timeDiff, TimeUnit.MILLISECONDS)
+                    .build();
+
+            workManager.enqueueUniqueWork(idDips,
+                    ExistingWorkPolicy.KEEP, (OneTimeWorkRequest) workRequest);
+        }
     }
 
     private void serviceOutbound() {

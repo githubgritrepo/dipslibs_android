@@ -119,7 +119,7 @@ public class frag_portfolio_new extends Fragment {
 
         isSessionZoom = ZoomVideoSDK.getInstance().isInSession();
         if (isSessionZoom) {
-            rabbitMirroring = new RabbitMirroring(mContext);
+            //rabbitMirroring = new RabbitMirroring(mContext);
             JSONObject dataCIF = new JSONObject();
             try {
                 dataCIF.put("noCif",noCif);
@@ -362,7 +362,14 @@ public class frag_portfolio_new extends Fragment {
         JSONArray rekTabungan = new JSONArray();
         if (type.equals("tabungan")) {
             prod = dataNasabah.getJSONArray("portotabungan");
-            rekTabungan = prod;
+            JSONArray getProd = prod;
+            JSONArray ch = new JSONArray();
+            JSONObject chObj = new JSONObject();
+            chObj.put("accountNo",getString(R.string.choose_please));
+            chObj.put("accountName",getString(R.string.choose_please));
+            ch.put(chObj);
+            rekTabungan.put(ch);
+            rekTabungan.put(getProd);
             sessions.saveRekNasabah(rekTabungan.toString());
         } else if (type.equals("deposito")) {
             prod = dataNasabah.getJSONArray("portodeposito");

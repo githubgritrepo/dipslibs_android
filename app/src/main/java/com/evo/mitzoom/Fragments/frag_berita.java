@@ -1,5 +1,7 @@
 package com.evo.mitzoom.Fragments;
 
+import static com.evo.mitzoom.Helper.MyWorker.EXTRA_START;
+
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -33,11 +35,19 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import androidx.viewpager2.widget.CompositePageTransformer;
 import androidx.viewpager2.widget.MarginPageTransformer;
 import androidx.viewpager2.widget.ViewPager2;
+import androidx.work.Constraints;
+import androidx.work.Data;
+import androidx.work.ExistingWorkPolicy;
+import androidx.work.NetworkType;
+import androidx.work.OneTimeWorkRequest;
+import androidx.work.WorkManager;
+import androidx.work.WorkRequest;
 
 import com.evo.mitzoom.API.ApiService;
 import com.evo.mitzoom.API.Server;
 import com.evo.mitzoom.Adapter.AdapterSlide;
 import com.evo.mitzoom.Adapter.GridProductAdapter;
+import com.evo.mitzoom.Helper.MyWorker;
 import com.evo.mitzoom.Helper.OutboundServiceNew;
 import com.evo.mitzoom.R;
 import com.evo.mitzoom.Session.SessionManager;
@@ -59,6 +69,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import cn.pedant.SweetAlert.SweetAlertDialog;
@@ -104,6 +115,7 @@ public class frag_berita extends Fragment implements com.wdullaer.materialdateti
     private Spinner et_time;
     private JSONArray tanggalPenuh;
     private JSONArray periodePenuh;
+    private WorkManager workManager = null;
 
 
     @Override
@@ -554,6 +566,25 @@ public class frag_berita extends Fragment implements com.wdullaer.materialdateti
         });
     }
     private void OutApps(){
+        if (DipsWaitingRoom.connection != null) {
+            try {
+                if (DipsWaitingRoom.channelSubscribeReqTicket != null) {
+                    DipsWaitingRoom.channelSubscribeReqTicket.close();
+                }
+                if (DipsWaitingRoom.channelSubscribe != null) {
+                    DipsWaitingRoom.channelSubscribe.close();
+                }
+                if (DipsWaitingRoom.channelCall != null) {
+                    DipsWaitingRoom.channelCall.close();
+                }
+                if (DipsWaitingRoom.connection != null) {
+                    DipsWaitingRoom.connection.close();
+                }
+            } catch (IOException | TimeoutException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
         Intent intent = new Intent(Intent.ACTION_MAIN);
         intent.addCategory(Intent.CATEGORY_HOME);
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -788,7 +819,8 @@ public class frag_berita extends Fragment implements com.wdullaer.materialdateti
                         }
                     }
 
-                    serviceOutbound();
+                    doWorkMyWorker();
+                    //serviceOutbound();
 
                     LayoutInflater inflater = getLayoutInflater();
                     View dialogView = inflater.inflate(R.layout.layout_dialog_sweet, null);
@@ -828,6 +860,95 @@ public class frag_berita extends Fragment implements com.wdullaer.materialdateti
             }
         });
 
+    }
+
+    private void doWorkMyWorker() {
+        workManager = WorkManager.getInstance(context);
+
+        String jam = waktu;
+        Log.e("CEK","doWorkMyWorker Savetanggal : "+Savetanggal);
+        Log.e("CEK","doWorkMyWorker jam : "+jam);
+        if (jam.indexOf("-") > 0) {
+            String[] sp = jam.split("-");
+            for (int i = 0; i < sp.length; i++) {
+                workManager.cancelUniqueWork(idDips+"_timesStart"+i);
+            }
+
+            for (int i = 0; i < sp.length; i++) {
+                Calendar currentDate = Calendar.getInstance();
+
+                String[] timeArray = sp[i].split(":");
+                String[] spDate = Savetanggal.split("-");
+                String thn = spDate[0].toString().trim();
+                String getBln = spDate[1].toString().trim();
+                int bln = Integer.parseInt(getBln) - 1;
+                String tgl = spDate[2].toString().trim();
+
+                Log.e("CEK","DATETIMES-"+i+" : "+Savetanggal+" "+sp[i]);
+
+                Calendar calendar = Calendar.getInstance();
+                calendar.set(Integer.parseInt(thn),bln,Integer.parseInt(tgl));
+                calendar.set(Calendar.HOUR_OF_DAY, Integer.parseInt(timeArray[0].trim()));
+                calendar.set(Calendar.MINUTE, Integer.parseInt(timeArray[1].trim()));
+                calendar.set(Calendar.SECOND, 0);
+
+                long timeCurrentMilis = currentDate.getTimeInMillis();
+                long timeInMilis = calendar.getTimeInMillis();
+                long timeDiff = timeInMilis - timeCurrentMilis;
+
+                boolean start = true;
+                if (i > 0) {
+                    start = false;
+                }
+
+                Data data = new Data.Builder()
+                        .putBoolean(EXTRA_START,start)
+                        .build();
+
+                Constraints constraints = new Constraints.Builder()
+                        .setRequiredNetworkType(NetworkType.CONNECTED)
+                        .build();
+
+                WorkRequest workRequest = new OneTimeWorkRequest.Builder(MyWorker.class)
+                        .setInputData(data)
+                        .setConstraints(constraints)
+                        .setInitialDelay(timeDiff, TimeUnit.MILLISECONDS)
+                        .build();
+
+                workManager.enqueueUniqueWork(idDips+"_timesStart"+i,
+                        ExistingWorkPolicy.KEEP, (OneTimeWorkRequest) workRequest);
+            }
+        } else {
+            workManager.cancelUniqueWork(idDips);
+            Calendar currentDate = Calendar.getInstance();
+
+            String[] timeArray = jam.split(":");
+
+            Calendar calendar = Calendar.getInstance();
+            calendar.set(Calendar.HOUR_OF_DAY, Integer.parseInt(timeArray[0].trim()));
+            calendar.set(Calendar.MINUTE, Integer.parseInt(timeArray[1].trim()));
+            calendar.set(Calendar.SECOND, 0);
+
+            long timeCurrentMilis = currentDate.getTimeInMillis();
+            long timeInMilis = calendar.getTimeInMillis();
+            long timeDiff = timeInMilis - timeCurrentMilis;
+
+            Data data = new Data.Builder()
+                    .putBoolean(EXTRA_START,true)
+                    .build();
+
+            Constraints constraints = new Constraints.Builder()
+                    .setRequiredNetworkType(NetworkType.CONNECTED)
+                    .build();
+
+            WorkRequest workRequest = new OneTimeWorkRequest.Builder(MyWorker.class)
+                    .setConstraints(constraints)
+                    .setInitialDelay(timeDiff, TimeUnit.MILLISECONDS)
+                    .build();
+
+            workManager.enqueueUniqueWork(idDips,
+                    ExistingWorkPolicy.KEEP, (OneTimeWorkRequest) workRequest);
+        }
     }
 
     public class GridSpacingItemDecoration extends RecyclerView.ItemDecoration {

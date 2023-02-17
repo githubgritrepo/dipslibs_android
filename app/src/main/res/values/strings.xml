@@ -322,4 +322,5 @@
     <string name="max_upfile" translatable="false">Maksimal 3 file</string>
     <string name="alert_upimage" translatable="false">Mohon untuk upload Foto.</string>
     <string name="alert_upfile" translatable="false">Mohon untuk upload File.</string>
+    <string name="choose_please">== Silakan Pilih ==</string>
 </resources>

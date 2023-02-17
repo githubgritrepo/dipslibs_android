@@ -80,9 +80,9 @@ public class frag_open_account_product extends Fragment {
         isCust = sessions.getKEY_iSCust();
         isSwafoto = sessions.getKEY_iSSwafoto();
         isSessionZoom = ZoomVideoSDK.getInstance().isInSession();
-        if (isSessionZoom) {
+        /*if (isSessionZoom) {
             rabbitMirroring = new RabbitMirroring(mContext);
-        }
+        }*/
 
         Log.e("CEK_FRAG_OPEN","getNoCIF : "+sessions.getNoCIF());
 

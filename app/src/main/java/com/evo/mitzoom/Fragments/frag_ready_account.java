@@ -183,9 +183,9 @@ public class frag_ready_account extends Fragment {
             no_handphone = "089637407882";
         }
         Log.e("CEK",mContext+" isSessionZoom : "+isSessionZoom+" | no_handphone : "+no_handphone);
-        if (isSessionZoom) {
+        /*if (isSessionZoom) {
             rabbitMirroring = new RabbitMirroring(mContext);
-        }
+        }*/
         
     }
 
@@ -1350,9 +1350,6 @@ public class frag_ready_account extends Fragment {
                                         @Override
                                         public void onFocusChange(View view, boolean b) {
                                             Log.e("CEK","onFocusChange : "+b);
-                                            if (isSessionZoom) {
-                                                RabbitMirroring.MirroringSendKey(dataFormObj);
-                                            }
                                         }
                                     });
                                     ed.addTextChangedListener(new TextWatcher() {
@@ -1369,6 +1366,9 @@ public class frag_ready_account extends Fragment {
                                             try {
                                                 objEl.put(nameDataEl, charSequence);
                                                 dataFormObj = dataReqForm();
+                                                if (isSessionZoom) {
+                                                    RabbitMirroring.MirroringSendKey(dataFormObj);
+                                                }
                                             } catch (JSONException e) {
                                                 e.printStackTrace();
                                             }
@@ -1649,7 +1649,9 @@ public class frag_ready_account extends Fragment {
                                 }
                                 String labelIdn = dataArr.getJSONObject(i).getString("labelIdn");
                                 String labelEng = dataArr.getJSONObject(i).getString("labelEng");
-
+                                if (sessions.getLANG().equals("en")) {
+                                    labelIdn = labelEng;
+                                }
                                 dataDropDown.add(new FormSpin(idData, kode, labelIdn, labelEng));
                             }
                         } else {
@@ -1660,6 +1662,9 @@ public class frag_ready_account extends Fragment {
                                 }
                                 String labelIdn = dataArr.getJSONObject(i).getString("labelIdn");
                                 String labelEng = dataArr.getJSONObject(i).getString("labelEng");
+                                if (sessions.getLANG().equals("en")) {
+                                    labelIdn = labelEng;
+                                }
                                 dataDropDown.add(new FormSpin(idData, labelIdn, labelIdn, labelEng));
                                 if (i == 0) {
                                     if (nameDataEl.contains("provinsi") || nameDataEl.contains("kabupaten") || nameDataEl.contains("kota") || nameDataEl.contains("kecamatan") || (nameDataEl.contains("kelurahan") || nameDataEl.contains("desa"))) {

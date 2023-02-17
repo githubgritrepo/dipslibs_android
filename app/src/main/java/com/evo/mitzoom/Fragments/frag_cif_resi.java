@@ -72,6 +72,7 @@ public class frag_cif_resi extends Fragment {
     private int formCode = 0;
     private String idForm = "";
     private int loopStatus = 0;
+    private String filenames = "";
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -92,9 +93,9 @@ public class frag_cif_resi extends Fragment {
             }
         }
         isSessionZoom = ZoomVideoSDK.getInstance().isInSession();
-        if (isSessionZoom) {
+        /*if (isSessionZoom) {
             rabbitMirroring = new RabbitMirroring(mContext);
-        }
+        }*/
         if (getArguments() != null) {
             formCode = getArguments().getInt("formCode");
             idForm = getArguments().getString("idForm");
@@ -191,7 +192,7 @@ public class frag_cif_resi extends Fragment {
         mProgressDialog.setCancelable(true);
 
         DownloadTaskHelper downloadTaskHelper = new DownloadTaskHelper(mContext, mProgressDialog);
-        downloadTaskHelper.execute(pdfFile);
+        downloadTaskHelper.execute(pdfFile,filenames);
 
         mProgressDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
 
@@ -294,6 +295,7 @@ public class frag_cif_resi extends Fragment {
                         JSONObject dataObj = new JSONObject(dataS);
                         String base64Image = dataObj.getJSONObject("data").getString("image");
                         pdfFile = dataObj.getJSONObject("data").getString("pdf");
+                        filenames = pdfFile.substring(pdfFile.lastIndexOf("/") );
                         bytePhoto = Base64.decode(base64Image, Base64.DEFAULT);
                         Bitmap bitmap = BitmapFactory.decodeByteArray(bytePhoto, 0, bytePhoto.length);
                         imgResume.setImageBitmap(bitmap);
@@ -345,6 +347,7 @@ public class frag_cif_resi extends Fragment {
                         JSONObject dataObj = new JSONObject(dataS);
                         String base64Image = dataObj.getJSONObject("data").getString("image");
                         pdfFile = dataObj.getJSONObject("data").getString("pdf");
+                        filenames = pdfFile.substring(pdfFile.lastIndexOf("/") );
                         bytePhoto = Base64.decode(base64Image, Base64.DEFAULT);
                         Bitmap bitmap = BitmapFactory.decodeByteArray(bytePhoto, 0, bytePhoto.length);
                         imgResume.setImageBitmap(bitmap);

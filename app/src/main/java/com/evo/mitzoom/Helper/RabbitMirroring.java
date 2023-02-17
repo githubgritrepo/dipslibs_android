@@ -23,11 +23,14 @@ public class RabbitMirroring {
 
     //RabitMQ
     static ConnectionFactory connectionFactory = new ConnectionFactory();
+    private static Connection connection = null;
     private static Thread publishThread;
     private static Thread publishEndpointThread;
     private static Context mContext;
     private static SessionManager sessions;
     private static final String TAG = "RabbitMirroring";
+    private static Channel chSendKey = null;
+    private static Channel chSendEndpoint = null;
 
     public RabbitMirroring(Context mContext) {
         RabbitMirroring.mContext = mContext;
@@ -43,97 +46,102 @@ public class RabbitMirroring {
         try {
             connectionFactory.setAutomaticRecoveryEnabled(false);
             connectionFactory.setUri(uriRabbit);
+            connection = connectionFactory.newConnection();
         } catch (URISyntaxException | NoSuchAlgorithmException | KeyManagementException e) {
             Log.e(TAG,"ERROR setupConnectionFactory : "+e.getMessage());
             e.printStackTrace();
+        } catch (IOException | TimeoutException e) {
+            throw new RuntimeException(e);
         }
     }
 
     public static void MirroringSendKey(JSONObject jsons) {
-        Log.e(TAG,"MASUK MirroringSendKey : "+jsons.toString());
-        publishThread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    Connection connection = connectionFactory.newConnection();
-                    Channel ch = connection.createChannel();
-                    ch.confirmSelect();
-
-                    String csID = sessions.getCSID();
-                    Log.e(TAG,"csID : "+csID);
-
-                    JSONObject datax = dataMirroring(jsons);
-                    String dataxS = datax.toString();
-
-                    Log.e(TAG,"dataxS : "+ dataxS);
-
-                    ch.basicPublish("dips361-cs-send-key","dips.direct.cs."+csID+".send.key",false,null,dataxS.getBytes());
-                    ch.waitForConfirmsOrDie();
-
-                } catch (IOException | TimeoutException | InterruptedException e) {
-                    Log.e(TAG, "publishToAMQP Connection broken: " + e.getClass().getName());
+        if (connection != null) {
+            Log.e(TAG, "MASUK MirroringSendKey : " + jsons.toString());
+            publishThread = new Thread(new Runnable() {
+                @Override
+                public void run() {
                     try {
-                        Thread.sleep(4000); //sleep and then try again
-                        MirroringSendKey(jsons);
-                    } catch (InterruptedException e1) {
+                        chSendKey = connection.createChannel();
+                        chSendKey.confirmSelect();
 
+                        String csID = sessions.getCSID();
+                        Log.e(TAG, "csID : " + csID);
+
+                        JSONObject datax = dataMirroring(jsons);
+                        String dataxS = datax.toString();
+
+                        Log.e(TAG, "dataxS : " + dataxS);
+
+                        chSendKey.basicPublish("dips361-cs-send-key", "dips.direct.cs." + csID + ".send.key", false, null, dataxS.getBytes());
+                        chSendKey.waitForConfirmsOrDie();
+
+                    } catch (IOException | InterruptedException e) {
+                        Log.e(TAG, "publishToAMQP Connection broken: " + e.getClass().getName());
+                        try {
+                            Thread.sleep(4000); //sleep and then try again
+                            MirroringSendKey(jsons);
+                        } catch (InterruptedException ignored) {
+
+                        }
                     }
                 }
-            }
-        });
-        publishThread.start();
+            });
+            publishThread.start();
+        }
     }
 
     public static void MirroringSendEndpoint(int kodeEndPoint) {
-        Log.e(TAG,"MASUK MirroringSendEndpoint : "+kodeEndPoint);
-        publishEndpointThread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    JSONObject jsons = null;
+        if (connection != null) {
+            Log.e(TAG, "MASUK MirroringSendEndpoint : " + kodeEndPoint);
+            publishEndpointThread = new Thread(new Runnable() {
+                @Override
+                public void run() {
                     try {
-                        jsons = new JSONObject();
-                        jsons.put("endpoint",kodeEndPoint);
-                        if (kodeEndPoint == 99) {
-                            if (sessions.getKEY_IdDips() != null) {
-                                jsons.put("idDips",sessions.getKEY_IdDips());
+                        JSONObject jsons = null;
+                        try {
+                            jsons = new JSONObject();
+                            jsons.put("endpoint", kodeEndPoint);
+                            if (kodeEndPoint == 99) {
+                                if (sessions.getKEY_IdDips() != null) {
+                                    jsons.put("idDips", sessions.getKEY_IdDips());
+                                }
+                                OutboundServiceNew.stopServiceSocket();
+                                Intent intentOutbound = new Intent(mContext, OutboundServiceNew.class);
+                                mContext.stopService(intentOutbound);
                             }
-                            OutboundServiceNew.stopServiceSocket();
-                            Intent intentOutbound = new Intent(mContext, OutboundServiceNew.class);
-                            mContext.stopService(intentOutbound);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
                         }
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
 
-                    Log.e(TAG,"jsons : "+ jsons);
+                        Log.e(TAG, "jsons : " + jsons);
 
-                    Connection connection = connectionFactory.newConnection();
-                    Channel ch = connection.createChannel();
-                    ch.confirmSelect();
+                        chSendEndpoint = connection.createChannel();
+                        chSendEndpoint.confirmSelect();
 
-                    String csID = sessions.getCSID();
-                    Log.e(TAG,"csID : "+csID);
+                        String csID = sessions.getCSID();
+                        Log.e(TAG, "csID : " + csID);
 
-                    JSONObject datax = dataMirroring(jsons);
-                    String dataxS = datax.toString();
+                        JSONObject datax = dataMirroring(jsons);
+                        String dataxS = datax.toString();
 
-                    Log.e(TAG,"dataxS : "+ dataxS);
+                        Log.e(TAG, "dataxS : " + dataxS);
 
-                    ch.basicPublish("dips361-cs-send-endpoint","dips.direct.cs."+csID+".send.endpoint",false,null,dataxS.getBytes());
-                    ch.waitForConfirmsOrDie();
+                        chSendEndpoint.basicPublish("dips361-cs-send-endpoint", "dips.direct.cs." + csID + ".send.endpoint", false, null, dataxS.getBytes());
+                        chSendEndpoint.waitForConfirmsOrDie();
 
-                } catch (IOException | TimeoutException | InterruptedException e) {
-                    Log.e(TAG, "publishToAMQP Connection broken: " + e.getClass().getName());
-                    try {
-                        Thread.sleep(4000); //sleep and then try again
-                    } catch (InterruptedException e1) {
+                    } catch (IOException | InterruptedException e) {
+                        Log.e(TAG, "publishToAMQP Connection broken: " + e.getClass().getName());
+                        try {
+                            Thread.sleep(4000); //sleep and then try again
+                        } catch (InterruptedException e1) {
 
+                        }
                     }
                 }
-            }
-        });
-        publishEndpointThread.start();
+            });
+            publishEndpointThread.start();
+        }
     }
 
     private static JSONObject dataMirroring(JSONObject dataObj) {
@@ -159,6 +167,28 @@ public class RabbitMirroring {
 
         if (publishEndpointThread != null) {
             publishEndpointThread.interrupt();
+        }
+
+        if (connection != null) {
+            if (chSendKey != null) {
+                try {
+                    chSendKey.close();
+                } catch (IOException | TimeoutException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+            if (chSendEndpoint != null) {
+                try {
+                    chSendEndpoint.close();
+                } catch (IOException | TimeoutException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+            try {
+                connection.close();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 }

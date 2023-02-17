@@ -1,5 +1,6 @@
 package com.evo.mitzoom.ui;
 
+import static com.evo.mitzoom.Helper.MyWorker.EXTRA_START;
 import static com.evo.mitzoom.ui.DipsChooseLanguage.setLocale;
 
 import android.Manifest;
@@ -44,6 +45,13 @@ import androidx.appcompat.app.AppCompatDelegate;
 import androidx.cardview.widget.CardView;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
+import androidx.work.Constraints;
+import androidx.work.Data;
+import androidx.work.ExistingWorkPolicy;
+import androidx.work.NetworkType;
+import androidx.work.OneTimeWorkRequest;
+import androidx.work.WorkManager;
+import androidx.work.WorkRequest;
 
 import com.auth0.android.jwt.Claim;
 import com.auth0.android.jwt.JWT;
@@ -52,6 +60,7 @@ import com.evo.mitzoom.API.Server;
 import com.evo.mitzoom.BaseMeetingActivity;
 import com.evo.mitzoom.Constants.AuthConstants;
 import com.evo.mitzoom.Fragments.frag_berita;
+import com.evo.mitzoom.Helper.MyWorker;
 import com.evo.mitzoom.Helper.OutboundServiceNew;
 import com.evo.mitzoom.R;
 import com.evo.mitzoom.Session.SessionManager;
@@ -83,6 +92,7 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import cn.pedant.SweetAlert.SweetAlertDialog;
@@ -135,15 +145,17 @@ public class DipsWaitingRoom extends AppCompatActivity implements DatePickerDial
     private int Savewaktu;
     //RabitMQ
     private static final ConnectionFactory connectionFactory = new ConnectionFactory();
+    public static Connection connection = null;
+    public static Channel channelSubscribeReqTicket = null;
+    public static Channel channelSubscribe = null;
+    public static Channel channelCall = null;
     private Thread subscribeThread;
     private Thread subscribeReqTicketThread;
     public static Thread subscribeThreadCall;
-    private Thread subscribeAllTicketInfoCall;
     private Thread publishThread;
     private Thread publishQSTicketThread;
     private static Thread publishCallAcceptThread;
     private final boolean isSwafoto = false;
-    public static Channel channelCall = null;
 
     ArrayList<String> time = new ArrayList<>();
     List<Integer> periodeInt = new ArrayList<>();
@@ -165,6 +177,7 @@ public class DipsWaitingRoom extends AppCompatActivity implements DatePickerDial
     public static RelativeLayout rlprogress;
     private boolean isConfigure;
     private boolean flagShowJoin = false;
+    private WorkManager workManager = null;
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
@@ -292,8 +305,24 @@ public class DipsWaitingRoom extends AppCompatActivity implements DatePickerDial
         if (subscribeThreadCall != null) {
             subscribeThreadCall.interrupt();
         }
-        if (subscribeAllTicketInfoCall != null) {
-            subscribeAllTicketInfoCall.interrupt();
+
+        if (connection != null) {
+            try {
+                if (channelSubscribeReqTicket != null) {
+                    channelSubscribeReqTicket.close();
+                }
+                if (channelSubscribe != null) {
+                    channelSubscribe.close();
+                }
+                if (channelCall != null) {
+                    channelCall.close();
+                }
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (IOException | TimeoutException e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 
@@ -321,12 +350,7 @@ public class DipsWaitingRoom extends AppCompatActivity implements DatePickerDial
         Log.d(TAG, "idDips : "+idDips);
         subscribeReqTicket();
 
-        /*mSocket.on("waiting", waitingListener);
-        mSocket.connect();*/
-
-        //processGetTicket(myTicket);
-
-        savedAuthCredentialIDDiPS(idDips);
+        //savedAuthCredentialIDDiPS(idDips);
     }
 
     private void serviceOutbound() {
@@ -348,6 +372,25 @@ public class DipsWaitingRoom extends AppCompatActivity implements DatePickerDial
     }
 
     private void OutApps(){
+        if (connection != null) {
+            try {
+                if (channelSubscribeReqTicket != null) {
+                    channelSubscribeReqTicket.close();
+                }
+                if (channelSubscribe != null) {
+                    channelSubscribe.close();
+                }
+                if (channelCall != null) {
+                    channelCall.close();
+                }
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (IOException | TimeoutException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
         Intent intent = new Intent(Intent.ACTION_MAIN);
         intent.addCategory(Intent.CATEGORY_HOME);
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -357,18 +400,15 @@ public class DipsWaitingRoom extends AppCompatActivity implements DatePickerDial
     }
 
     private void setupConnectionFactory() {
-//        connectionFactory.setUsername(Server.RABBITMQ_USERNAME);
-//        connectionFactory.setPassword(Server.RABBITMQ_PASSWORD);
-//        connectionFactory.setHost(Server.RABBITMQ_IP);
-//        connectionFactory.setPort(Server.RABBITMQ_PORT);
-//        connectionFactory.setAutomaticRecoveryEnabled(false);
-
         String uriRabbit = Server.BASE_URL_RABBITMQ;
         try {
             connectionFactory.setAutomaticRecoveryEnabled(true);
             connectionFactory.setUri(uriRabbit);
+            connection = connectionFactory.newConnection();
         } catch (URISyntaxException | NoSuchAlgorithmException | KeyManagementException e) {
             e.printStackTrace();
+        } catch (IOException | TimeoutException e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -446,119 +486,122 @@ public class DipsWaitingRoom extends AppCompatActivity implements DatePickerDial
     }
 
     private void publishToAMQP() {
-        publishThread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    Connection connection = connectionFactory.newConnection();
-                    Channel ch = connection.createChannel();
-                    ch.confirmSelect();
-
-                    JSONObject dataTicketObj = dataGetTicket();
-                    String dataTicket = dataTicketObj.toString();
-
-                    //ch.queueDeclare("dips.queue.service.req.ticket",true,false,false,null);
-                    ch.basicPublish("","dips.queue.service.req.ticket",false,null,dataTicket.getBytes());
-                    ch.waitForConfirmsOrDie();
-
-                } catch (IOException | TimeoutException | InterruptedException e) {
-                    Log.e(TAG, "publishToAMQP Connection broken: " + e.getClass().getName());
+        if (connection != null) {
+            publishThread = new Thread(new Runnable() {
+                @Override
+                public void run() {
                     try {
-                        Thread.sleep(4000); //sleep and then try again
-                        publishToAMQP();
-                    } catch (InterruptedException e1) {
+                        Channel ch = connection.createChannel();
+                        ch.confirmSelect();
 
+                        JSONObject dataTicketObj = dataGetTicket();
+                        String dataTicket = dataTicketObj.toString();
+
+                        //ch.queueDeclare("dips.queue.service.req.ticket",true,false,false,null);
+                        ch.basicPublish("", "dips.queue.service.req.ticket", false, null, dataTicket.getBytes());
+                        ch.waitForConfirmsOrDie();
+
+                    } catch (IOException | InterruptedException e) {
+                        Log.e(TAG, "publishToAMQP Connection broken: " + e.getClass().getName());
+                        try {
+                            Thread.sleep(4000); //sleep and then try again
+                            publishToAMQP();
+                        } catch (InterruptedException ignored) {
+
+                        }
                     }
                 }
-            }
-        });
-        publishThread.start();
+            });
+            publishThread.start();
+        }
     }
 
     private void publishQSReqTicket() {
-        publishQSTicketThread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    Connection connection = connectionFactory.newConnection();
-                    Channel ch = connection.createChannel();
-                    ch.confirmSelect();
-
-                    JSONObject dataTicketObj = reqQSTicket();
-                    String dataTicket = dataTicketObj.toString();
-
-                    //ch.queueDeclare("dips.queue.qs.req.ticket",true,false,false,null);
-                    ch.basicPublish("","dips.queue.qs.req.ticket",false,null,dataTicket.getBytes());
-                    ch.waitForConfirmsOrDie();
-
-                } catch (IOException | TimeoutException | InterruptedException e) {
-                    Log.e(TAG, "publishQSReqTicket Connection broken: " + e.getClass().getName());
+        if (connection != null) {
+            publishQSTicketThread = new Thread(new Runnable() {
+                @Override
+                public void run() {
                     try {
-                        Thread.sleep(4000); //sleep and then try again
-                        publishQSReqTicket();
-                    } catch (InterruptedException e1) {
+                        Channel ch = connection.createChannel();
+                        ch.confirmSelect();
 
+                        JSONObject dataTicketObj = reqQSTicket();
+                        String dataTicket = dataTicketObj.toString();
+
+                        //ch.queueDeclare("dips.queue.qs.req.ticket",true,false,false,null);
+                        ch.basicPublish("", "dips.queue.qs.req.ticket", false, null, dataTicket.getBytes());
+                        ch.waitForConfirmsOrDie();
+
+                    } catch (IOException | InterruptedException e) {
+                        Log.e(TAG, "publishQSReqTicket Connection broken: " + e.getClass().getName());
+                        try {
+                            Thread.sleep(4000); //sleep and then try again
+                            publishQSReqTicket();
+                        } catch (InterruptedException ignored) {
+
+                        }
                     }
                 }
-            }
-        });
-        publishQSTicketThread.start();
+            });
+            publishQSTicketThread.start();
+        }
     }
 
     void subscribe() {
-        subscribeThread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    Connection connection = connectionFactory.newConnection();
-                    Channel channel = connection.createChannel();
-                    channel.basicQos(1);
-                    AMQP.Queue.DeclareOk q = channel.queueDeclare();
-                    channel.exchangeDeclare("dips361-cust-ticket", "direct", true);
-                    channel.queueBind(q.getQueue(), "dips361-cust-ticket", "dips.direct.cust."+idDips+".ticket");
-                    channel.basicConsume(q.getQueue(), true, new DeliverCallback() {
-                        @Override
-                        public void handle(String consumerTag, Delivery message) throws IOException {
-                            String getMessage = new String(message.getBody());
-                            Log.e(TAG,"Success subscribeThread getMessage : "+getMessage);
-                            try {
-                                JSONObject dataObj = new JSONObject(getMessage);
-                                String getTicket = dataObj.getJSONObject("transaction").getString("ticket");
-                                Log.e(TAG,"subscribeThread getTicket : "+getTicket);
-                                int myTicketInt = Integer.parseInt(getTicket);
-                                Log.e(TAG,"subscribeThread myTicketInt : "+myTicketInt);
-                                myTicketNumber = String.format("%03d", myTicketInt);
-                                Log.e(TAG,"subscribeThread myTicketNumber : "+myTicketNumber);
-                                String myticketContent = myTicketNumber;
-                                runOnUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        myTicket.setText(myticketContent);
-                                    }
-                                });
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            }
-                        }
-                    }, new CancelCallback() {
-                        @Override
-                        public void handle(String consumerTag) throws IOException {
-                            Log.e(TAG,"subscribeThread consumerTag : "+consumerTag);
-                        }
-                    });
-                    publishToAMQP(); //RabbitMQ
-                } catch (Exception e1) {
-                    Log.e(TAG, "subscribe Connection broken: " + e1.getClass().getName());
+        if (connection != null) {
+            subscribeThread = new Thread(new Runnable() {
+                @Override
+                public void run() {
                     try {
-                        Thread.sleep(4000); //sleep and then try again
-                        subscribe();
-                        //getNewMyTicketsV2();
-                    } catch (InterruptedException e) {
+                        channelSubscribe = connection.createChannel();
+                        channelSubscribe.basicQos(1);
+                        AMQP.Queue.DeclareOk q = channelSubscribe.queueDeclare();
+                        channelSubscribe.exchangeDeclare("dips361-cust-ticket", "direct", true);
+                        channelSubscribe.queueBind(q.getQueue(), "dips361-cust-ticket", "dips.direct.cust." + idDips + ".ticket");
+                        channelSubscribe.basicConsume(q.getQueue(), true, new DeliverCallback() {
+                            @Override
+                            public void handle(String consumerTag, Delivery message) throws IOException {
+                                String getMessage = new String(message.getBody());
+                                Log.e(TAG, "Success subscribeThread getMessage : " + getMessage);
+                                try {
+                                    JSONObject dataObj = new JSONObject(getMessage);
+                                    String getTicket = dataObj.getJSONObject("transaction").getString("ticket");
+                                    Log.e(TAG, "subscribeThread getTicket : " + getTicket);
+                                    int myTicketInt = Integer.parseInt(getTicket);
+                                    Log.e(TAG, "subscribeThread myTicketInt : " + myTicketInt);
+                                    myTicketNumber = String.format("%03d", myTicketInt);
+                                    Log.e(TAG, "subscribeThread myTicketNumber : " + myTicketNumber);
+                                    String myticketContent = myTicketNumber;
+                                    runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            myTicket.setText(myticketContent);
+                                        }
+                                    });
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        }, new CancelCallback() {
+                            @Override
+                            public void handle(String consumerTag) throws IOException {
+                                Log.e(TAG, "subscribeThread consumerTag : " + consumerTag);
+                            }
+                        });
+                        publishToAMQP(); //RabbitMQ
+                    } catch (Exception e1) {
+                        Log.e(TAG, "subscribe Connection broken: " + e1.getClass().getName());
+                        try {
+                            Thread.sleep(4000); //sleep and then try again
+                            subscribe();
+                            //getNewMyTicketsV2();
+                        } catch (InterruptedException e) {
+                        }
                     }
                 }
-            }
-        });
-        subscribeThread.start();
+            });
+            subscribeThread.start();
+        }
     }
 
     private void getNewMyTicketsV2(){
@@ -595,237 +638,203 @@ public class DipsWaitingRoom extends AppCompatActivity implements DatePickerDial
     }
 
     void subscribeReqTicket() {
-        subscribeReqTicketThread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    Log.e(TAG,"MASUK subscribeReqTicket");
-                    Connection connection = connectionFactory.newConnection();
-                    Channel channel = connection.createChannel();
-                    channel.basicQos(1);
-                    AMQP.Queue.DeclareOk q = channel.queueDeclare();
-                    channel.exchangeDeclare("dips361-cust-req-ticket", "direct", true);
-                    channel.queueBind(q.getQueue(), "dips361-cust-req-ticket", "dips.direct.cust."+idDips+".req.ticket");
-                    channel.basicConsume(q.getQueue(), true, new DeliverCallback() {
-                        @Override
-                        public void handle(String consumerTag, Delivery message) throws IOException {
-                            String getMessage = new String(message.getBody());
-                            Log.e(TAG,"Success subscribeReqTicket getMessage : "+getMessage);
-                            try {
-                                JSONObject dataObj = new JSONObject(getMessage);
-                                String ticketLast = dataObj.getJSONObject("transaction").getString("ticket");
-                                int ticketLastInt = Integer.parseInt(ticketLast);
-                                Log.e(TAG, "subscribeReqTicket ticketLast : " +ticketLast);
-                                String lastQueue = String.format("%03d", ticketLastInt);
-                                Log.e(TAG, "subscribeReqTicket lastQueue : " +lastQueue);
-                                String lastTicketContent = lastQueue;
-                                runOnUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        lastTicket.setText(lastTicketContent);
-                                    }
-                                });
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            }
-
-                            subscribeCall(); //RabbitMQ
-                            subscribe(); //RabbitMQ
-                            //getNewMyTicketsV2();
-                            //subscribeAllTicketInfo(); //RabbitMQ
-                        }
-                    }, new CancelCallback() {
-                        @Override
-                        public void handle(String consumerTag) throws IOException {
-                            Log.e(TAG,"subscribeReqTicket consumerTag : "+consumerTag);
-                        }
-                    });
-
-                    publishQSReqTicket();
-                } catch (Exception e1) {
-                    Log.e(TAG, "subscribeReqTicket Connection broken: " + e1.getClass().getName());
+        if (connection != null) {
+            subscribeReqTicketThread = new Thread(new Runnable() {
+                @Override
+                public void run() {
                     try {
-                        Thread.sleep(4000); //sleep and then try again
-                        subscribeReqTicket();
-                    } catch (InterruptedException e) {
-                    }
-                }
-            }
-        });
-        subscribeReqTicketThread.start();
-    }
-
-    void subscribeCall() {
-        subscribeThreadCall = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    Log.e(TAG,"MASUK subscribeCall");
-                    Connection connection = connectionFactory.newConnection();
-                    channelCall = connection.createChannel();
-                    channelCall.basicQos(1);
-                    AMQP.Queue.DeclareOk q = channelCall.queueDeclare();
-                    Log.e(TAG,"subscribeCall getQueue : "+q.getQueue());
-                    channelCall.exchangeDeclare("dips361-cust-call", "direct", true);
-                    channelCall.queueBind(q.getQueue(), "dips361-cust-call", "dips.direct.cust."+idDips+".call");
-                    Log.e(TAG,"AFTER subscribeCall queueBind getChannelNumber : "+channelCall.getChannelNumber());
-                    channelCall.basicConsume(q.getQueue(), true, new DeliverCallback() {
-                        @Override
-                        public void handle(String consumerTag, Delivery message) throws IOException {
-                            String getMessage = new String(message.getBody());
-                            Log.e(TAG,"Success subscribeCall getMessage : "+getMessage);
-                            try {
-                                JSONObject dataObj = new JSONObject(getMessage);
-                                String actionCall = "";
-                                if (dataObj.getJSONObject("transaction").has("action")) {
-                                    actionCall = dataObj.getJSONObject("transaction").getString("action");
-                                }
-                                if (actionCall.equals("info")) {
-                                    String csId = dataObj.getJSONObject("transaction").getString("csId");
-                                    sessions.saveCSID(csId);
-                                } else {
-                                    int getTicket = dataObj.getJSONObject("transaction").getInt("ticket");
-                                    Log.e(TAG, "subscribeCall getTicket : " + getTicket);
-                                    String getQueue = String.format("%03d", getTicket);
-                                    String lastTicketContent = getQueue;
+                        Log.e(TAG, "MASUK subscribeReqTicket");
+                        channelSubscribeReqTicket = connection.createChannel();
+                        channelSubscribeReqTicket.basicQos(1);
+                        AMQP.Queue.DeclareOk q = channelSubscribeReqTicket.queueDeclare();
+                        channelSubscribeReqTicket.exchangeDeclare("dips361-cust-req-ticket", "direct", true);
+                        channelSubscribeReqTicket.queueBind(q.getQueue(), "dips361-cust-req-ticket", "dips.direct.cust." + idDips + ".req.ticket");
+                        channelSubscribeReqTicket.basicConsume(q.getQueue(), true, new DeliverCallback() {
+                            @Override
+                            public void handle(String consumerTag, Delivery message) throws IOException {
+                                String getMessage = new String(message.getBody());
+                                Log.e(TAG, "Success subscribeReqTicket getMessage : " + getMessage);
+                                try {
+                                    JSONObject dataObj = new JSONObject(getMessage);
+                                    String ticketLast = dataObj.getJSONObject("transaction").getString("ticket");
+                                    int ticketLastInt = Integer.parseInt(ticketLast);
+                                    Log.e(TAG, "subscribeReqTicket ticketLast : " + ticketLast);
+                                    String lastQueue = String.format("%03d", ticketLastInt);
+                                    Log.e(TAG, "subscribeReqTicket lastQueue : " + lastQueue);
+                                    String lastTicketContent = lastQueue;
                                     runOnUiThread(new Runnable() {
                                         @Override
                                         public void run() {
                                             lastTicket.setText(lastTicketContent);
                                         }
                                     });
-                                    Log.e(TAG, "subscribeCall getQueue : " + getQueue + " | myTicketNumber : " + myTicketNumber);
-                                    if (getQueue.equals(myTicketNumber)) {
-                                        Log.e(TAG, "subscribeCall MASUK IF");
-                                        String sessionId = idDips;
-                                        if (dataObj.getJSONObject("transaction").has("sessionId")) {
-                                            sessionId = dataObj.getJSONObject("transaction").getString("sessionId");
-                                        }
-                                        String csId = dataObj.getJSONObject("transaction").getString("csId");
-                                        String password = dataObj.getJSONObject("transaction").getString("password");
-                                        Log.e(TAG, "subscribeCall sessionId : " + sessionId);
-                                        Log.e(TAG, "subscribeCall csId : " + csId);
-                                        Log.e(TAG, "subscribeCall password : " + password);
-
-                                        NameSession = sessionId;
-                                        SessionPass = password;
-                                        sessions.saveCSID(csId);
-                                        runOnUiThread(new Runnable() {
-                                            @Override
-                                            public void run() {
-                                                if (!isFinishing()) {
-                                                    try {
-                                                        if (flagShowJoin == false) {
-                                                            PopUpSucces(csId);
-                                                        }
-                                                    } catch (WindowManager.BadTokenException e) {
-                                                        Log.e("WindowManagerBad ", e.toString());
-                                                    }
-                                                }
-                                            }
-                                        });
-                                    } else {
-                                        Log.e(TAG, "subscribeCall MASUK ELSE WAITING");
-                                        runOnUiThread(new Runnable() {
-                                            @Override
-                                            public void run() {
-                                                PopUpWaiting();
-                                            }
-                                        });
-                                    }
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
                                 }
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            }
-                        }
-                    }, new CancelCallback() {
-                        @Override
-                        public void handle(String consumerTag) throws IOException {
-                            Log.e(TAG,"subscribeCall consumerTag : "+consumerTag);
-                        }
-                    });
 
-                } catch (Exception e1) {
-                    Log.e(TAG, "subscribeCall Connection broken: " + e1.getClass().getName());
-                    try {
-                        Thread.sleep(4000); //sleep and then try again
-                        subscribeCall();
-                    } catch (InterruptedException e) {
+                                subscribeCall(); //RabbitMQ
+                                subscribe(); //RabbitMQ
+                                //getNewMyTicketsV2();
+                            }
+                        }, new CancelCallback() {
+                            @Override
+                            public void handle(String consumerTag) throws IOException {
+                                Log.e(TAG, "subscribeReqTicket consumerTag : " + consumerTag);
+                            }
+                        });
+
+                        publishQSReqTicket();
+                    } catch (Exception e1) {
+                        Log.e(TAG, "subscribeReqTicket Connection broken: " + e1.getClass().getName());
+                        try {
+                            Thread.sleep(4000); //sleep and then try again
+                            subscribeReqTicket();
+                        } catch (InterruptedException e) {
+                        }
                     }
                 }
-            }
-        });
-        subscribeThreadCall.start();
+            });
+            subscribeReqTicketThread.start();
+        }
     }
 
-    void subscribeAllTicketInfo() {
-        subscribeAllTicketInfoCall = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    Connection connection = connectionFactory.newConnection();
-                    Channel channel = connection.createChannel();
-                    channel.basicQos(1);
-                    AMQP.Queue.DeclareOk q = channel.queueDeclare();
-                    channel.exchangeDeclare("dips.broadcast.all.ticket.info", "fanout", true);
-                    channel.queueBind(q.getQueue(), "dips.broadcast.all.ticket.info", "");
-                    channel.basicConsume(q.getQueue(), true, new DeliverCallback() {
-                        @Override
-                        public void handle(String consumerTag, Delivery message) throws IOException {
-                            String getMessage = new String(message.getBody());
-                            Log.e(TAG,"Success subscribeAllTicketInfo getMessage : "+getMessage);
-                            Log.e(TAG,"Success subscribeAllTicketInfo consumerTag : "+consumerTag);
-                        }
-                    }, new CancelCallback() {
-                        @Override
-                        public void handle(String consumerTag) throws IOException {
-                            Log.e(TAG,"subscribeAllTicketInfo consumerTag : "+consumerTag);
-                        }
-                    });
-
-                } catch (Exception e1) {
-                    Log.e(TAG, "subscribeAllTicketInfo Connection broken: " + e1.getClass().getName());
+    void subscribeCall() {
+        if (connection != null) {
+            subscribeThreadCall = new Thread(new Runnable() {
+                @Override
+                public void run() {
                     try {
-                        Thread.sleep(4000); //sleep and then try again
-                        subscribeAllTicketInfo();
-                    } catch (InterruptedException e) {
+                        Log.e(TAG, "MASUK subscribeCall");
+                        ;
+                        channelCall = connection.createChannel();
+                        channelCall.basicQos(1);
+                        AMQP.Queue.DeclareOk q = channelCall.queueDeclare();
+                        Log.e(TAG, "subscribeCall getQueue : " + q.getQueue());
+                        channelCall.exchangeDeclare("dips361-cust-call", "direct", true);
+                        channelCall.queueBind(q.getQueue(), "dips361-cust-call", "dips.direct.cust." + idDips + ".call");
+                        Log.e(TAG, "AFTER subscribeCall queueBind getChannelNumber : " + channelCall.getChannelNumber());
+                        channelCall.basicConsume(q.getQueue(), true, new DeliverCallback() {
+                            @Override
+                            public void handle(String consumerTag, Delivery message) throws IOException {
+                                String getMessage = new String(message.getBody());
+                                Log.e(TAG, "Success subscribeCall getMessage : " + getMessage);
+                                try {
+                                    JSONObject dataObj = new JSONObject(getMessage);
+                                    String actionCall = "";
+                                    if (dataObj.getJSONObject("transaction").has("action")) {
+                                        actionCall = dataObj.getJSONObject("transaction").getString("action");
+                                    }
+                                    if (actionCall.equals("info")) {
+                                        String csId = dataObj.getJSONObject("transaction").getString("csId");
+                                        sessions.saveCSID(csId);
+                                    } else {
+                                        int getTicket = dataObj.getJSONObject("transaction").getInt("ticket");
+                                        Log.e(TAG, "subscribeCall getTicket : " + getTicket);
+                                        String getQueue = String.format("%03d", getTicket);
+                                        String lastTicketContent = getQueue;
+                                        runOnUiThread(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                lastTicket.setText(lastTicketContent);
+                                            }
+                                        });
+                                        Log.e(TAG, "subscribeCall getQueue : " + getQueue + " | myTicketNumber : " + myTicketNumber);
+                                        if (getQueue.equals(myTicketNumber)) {
+                                            Log.e(TAG, "subscribeCall MASUK IF");
+                                            String sessionId = idDips;
+                                            if (dataObj.getJSONObject("transaction").has("sessionId")) {
+                                                sessionId = dataObj.getJSONObject("transaction").getString("sessionId");
+                                            }
+                                            String csId = dataObj.getJSONObject("transaction").getString("csId");
+                                            String password = dataObj.getJSONObject("transaction").getString("password");
+                                            Log.e(TAG, "subscribeCall sessionId : " + sessionId);
+                                            Log.e(TAG, "subscribeCall csId : " + csId);
+                                            Log.e(TAG, "subscribeCall password : " + password);
+
+                                            NameSession = sessionId;
+                                            SessionPass = password;
+                                            sessions.saveCSID(csId);
+                                            runOnUiThread(new Runnable() {
+                                                @Override
+                                                public void run() {
+                                                    if (!isFinishing()) {
+                                                        try {
+                                                            if (flagShowJoin == false) {
+                                                                PopUpSucces(csId);
+                                                            }
+                                                        } catch (
+                                                                WindowManager.BadTokenException e) {
+                                                            Log.e("WindowManagerBad ", e.toString());
+                                                        }
+                                                    }
+                                                }
+                                            });
+                                        } else {
+                                            Log.e(TAG, "subscribeCall MASUK ELSE WAITING");
+                                            runOnUiThread(new Runnable() {
+                                                @Override
+                                                public void run() {
+                                                    PopUpWaiting();
+                                                }
+                                            });
+                                        }
+                                    }
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        }, new CancelCallback() {
+                            @Override
+                            public void handle(String consumerTag) throws IOException {
+                                Log.e(TAG, "subscribeCall consumerTag : " + consumerTag);
+                            }
+                        });
+
+                    } catch (Exception e1) {
+                        Log.e(TAG, "subscribeCall Connection broken: " + e1.getClass().getName());
+                        try {
+                            Thread.sleep(4000); //sleep and then try again
+                            subscribeCall();
+                        } catch (InterruptedException e) {
+                        }
                     }
                 }
-            }
-        });
-        subscribeAllTicketInfoCall.start();
+            });
+            subscribeThreadCall.start();
+        }
     }
 
     public static void publishCallAccept(String csId, String labelAction) {
-        publishCallAcceptThread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    Connection connection = connectionFactory.newConnection();
-                    Channel ch = connection.createChannel();
-                    ch.confirmSelect();
-
-                    JSONObject dataTicketObj = reqAcceptCall(labelAction);
-                    String dataTicket = dataTicketObj.toString();
-
-                    Log.e(TAG,"publishCallAccept dips.direct.cs."+csId+".accept.user REQ : "+dataTicket);
-
-                    ch.exchangeDeclare("dips361-cs-accept-user", "direct", true);
-                    ch.basicPublish("dips361-cs-accept-user","dips.direct.cs."+csId+".accept.user",false,null,dataTicket.getBytes());
-                    ch.waitForConfirmsOrDie();
-
-                } catch (IOException | TimeoutException | InterruptedException e) {
-                    Log.e(TAG, "publishCallAccept Connection broken: " + e.getClass().getName());
+        if (connection != null) {
+            publishCallAcceptThread = new Thread(new Runnable() {
+                @Override
+                public void run() {
                     try {
-                        Thread.sleep(4000); //sleep and then try again
-                        publishCallAccept(csId, labelAction);
-                    } catch (InterruptedException e1) {
+                        Channel ch = connection.createChannel();
+                        ch.confirmSelect();
 
+                        JSONObject dataTicketObj = reqAcceptCall(labelAction);
+                        String dataTicket = dataTicketObj.toString();
+
+                        Log.e(TAG, "publishCallAccept dips.direct.cs." + csId + ".accept.user REQ : " + dataTicket);
+
+                        ch.exchangeDeclare("dips361-cs-accept-user", "direct", true);
+                        ch.basicPublish("dips361-cs-accept-user", "dips.direct.cs." + csId + ".accept.user", false, null, dataTicket.getBytes());
+                        ch.waitForConfirmsOrDie();
+
+                    } catch (IOException | InterruptedException e) {
+                        Log.e(TAG, "publishCallAccept Connection broken: " + e.getClass().getName());
+                        try {
+                            Thread.sleep(4000); //sleep and then try again
+                            publishCallAccept(csId, labelAction);
+                        } catch (InterruptedException ignored) {
+
+                        }
                     }
                 }
-            }
-        });
-        publishCallAcceptThread.start();
+            });
+            publishCallAcceptThread.start();
+        }
     }
 
     private void AnimationCall(){
@@ -1286,20 +1295,21 @@ public class DipsWaitingRoom extends AppCompatActivity implements DatePickerDial
                         e.printStackTrace();
                     }
 
-                    if (DipsWaitingRoom.channelCall != null) {
+                    /*if (channelCall != null) {
                         try {
                             Log.e(TAG,"MASUK channelCall abort close");
-                            DipsWaitingRoom.channelCall.close();
+                            channelCall.close();
                         } catch (IOException | TimeoutException e) {
                             e.printStackTrace();
                         }
-                        if (DipsWaitingRoom.subscribeThreadCall != null) {
+                        if (subscribeThreadCall != null) {
                             Log.e(TAG,"MASUK subscribeThreadCall interrupt");
-                            DipsWaitingRoom.subscribeThreadCall.interrupt();
+                            subscribeThreadCall.interrupt();
                         }
-                    }
+                    }*/
 
-                    serviceOutbound();
+                    doWorkMyWorker();
+                    //serviceOutbound();
                     PopUpEndSchedule();
                 }
             }
@@ -1310,6 +1320,96 @@ public class DipsWaitingRoom extends AppCompatActivity implements DatePickerDial
             }
         });
 
+    }
+
+    private void doWorkMyWorker() {
+        workManager = WorkManager.getInstance(mContext);
+
+        String jam = waktu;
+        Log.e("CEK","doWorkMyWorker Savetanggal : "+Savetanggal);
+        Log.e("CEK","doWorkMyWorker jam : "+jam);
+        if (jam.indexOf("-") > 0) {
+            String[] sp = jam.split("-");
+            for (int i = 0; i < sp.length; i++) {
+                workManager.cancelUniqueWork(idDips+"_timesStart"+i);
+            }
+
+            for (int i = 0; i < sp.length; i++) {
+                Calendar currentDate = Calendar.getInstance();
+
+                String[] timeArray = sp[i].split(":");
+                String[] spDate = Savetanggal.split("-");
+                String thn = spDate[0].toString().trim();
+                String getBln = spDate[1].toString().trim();
+                int bln = Integer.parseInt(getBln) - 1;
+                String tgl = spDate[2].toString().trim();
+
+                Log.e("CEK","DATETIMES-"+i+" : "+Savetanggal+" "+sp[i]);
+
+                Calendar calendar = Calendar.getInstance();
+                calendar.set(Integer.parseInt(thn),bln,Integer.parseInt(tgl));
+                calendar.set(Calendar.HOUR_OF_DAY, Integer.parseInt(timeArray[0].trim()));
+                calendar.set(Calendar.MINUTE, Integer.parseInt(timeArray[1].trim()));
+                calendar.set(Calendar.SECOND, 0);
+
+                long timeCurrentMilis = currentDate.getTimeInMillis();
+                long timeInMilis = calendar.getTimeInMillis();
+                long timeDiff = timeInMilis - timeCurrentMilis;
+
+                boolean start = true;
+                if (i > 0) {
+                    start = false;
+                }
+
+                Data data = new Data.Builder()
+                        .putBoolean(EXTRA_START,start)
+                        .build();
+
+                Constraints constraints = new Constraints.Builder()
+                        .setRequiredNetworkType(NetworkType.CONNECTED)
+                        .build();
+
+                WorkRequest workRequest = new OneTimeWorkRequest.Builder(MyWorker.class)
+                        .setInputData(data)
+                        .setConstraints(constraints)
+                        .setInitialDelay(timeDiff, TimeUnit.MILLISECONDS)
+                        .build();
+
+                workManager.enqueueUniqueWork(idDips,
+                        ExistingWorkPolicy.KEEP, (OneTimeWorkRequest) workRequest);
+            }
+        } else {
+            workManager.cancelUniqueWork(idDips);
+
+            Calendar currentDate = Calendar.getInstance();
+
+            String[] timeArray = jam.split(":");
+
+            Calendar calendar = Calendar.getInstance();
+            calendar.set(Calendar.HOUR_OF_DAY, Integer.parseInt(timeArray[0].trim()));
+            calendar.set(Calendar.MINUTE, Integer.parseInt(timeArray[1].trim()));
+            calendar.set(Calendar.SECOND, 0);
+
+            long timeCurrentMilis = currentDate.getTimeInMillis();
+            long timeInMilis = calendar.getTimeInMillis();
+            long timeDiff = timeInMilis - timeCurrentMilis;
+
+            Data data = new Data.Builder()
+                    .putBoolean(EXTRA_START,true)
+                    .build();
+
+            Constraints constraints = new Constraints.Builder()
+                    .setRequiredNetworkType(NetworkType.CONNECTED)
+                    .build();
+
+            WorkRequest workRequest = new OneTimeWorkRequest.Builder(MyWorker.class)
+                    .setConstraints(constraints)
+                    .setInitialDelay(timeDiff, TimeUnit.MILLISECONDS)
+                    .build();
+
+            workManager.enqueueUniqueWork(idDips,
+                    ExistingWorkPolicy.KEEP, (OneTimeWorkRequest) workRequest);
+        }
     }
 
     private void PopUpEndSchedule() {

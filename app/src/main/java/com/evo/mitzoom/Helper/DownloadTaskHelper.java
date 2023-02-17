@@ -95,6 +95,11 @@ public class DownloadTaskHelper extends AsyncTask<String, Integer, String> {
             String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss",
                     Locale.getDefault()).format(new Date());
             String filename = "FORM_CIF_"+timeStamp+".pdf";
+            if (sUrl[1] != null) {
+                if (!sUrl[1].isEmpty()) {
+                    filename = sUrl[1];
+                }
+            }
             File mediaFile = new File(dir.getPath() + File.separator +
                     filename);
 

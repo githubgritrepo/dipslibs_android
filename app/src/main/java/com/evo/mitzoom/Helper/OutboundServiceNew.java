@@ -69,6 +69,8 @@ public class OutboundServiceNew extends Service {
     String CHANNEL_ID = "OutboundCall";
     String CHANNEL_NAME = "Outbound Call";
     int LED_COLOR = 0xff00ff00;
+    private static Channel channelCall = null;
+    private static Connection connection;
 
     @Override
     public void onCreate() {
@@ -154,137 +156,141 @@ public class OutboundServiceNew extends Service {
             connectionFactory.setAutomaticRecoveryEnabled(false);
             connectionFactory.setUri(uriRabbit);
             connectionFactory.setNetworkRecoveryInterval(10000);
+            connection = connectionFactory.newConnection();
         } catch (URISyntaxException | NoSuchAlgorithmException | KeyManagementException e) {
             e.printStackTrace();
+        } catch (IOException | TimeoutException e) {
+            throw new RuntimeException(e);
         }
     }
 
     void subscribeCall()
     {
-        subscribeThreadCallOutbound = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    Log.e(TAG,"MASUK subscribeCall");
-                    Connection connection = connectionFactory.newConnection();
-                    Channel channel = connection.createChannel();
-                    channel.basicQos(1);
-                    AMQP.Queue.DeclareOk q = channel.queueDeclare();
-                    Log.e(TAG,"subscribeCall getQueue : "+q.getQueue());
-                    channel.exchangeDeclare("dips361-cust-call", "direct", true);
-                    channel.queueBind(q.getQueue(), "dips361-cust-call", "dips.direct.cust."+idDips+".call");
-                    Log.e(TAG,"AFTER subscribeCall queueBind getChannelNumber : "+channel.getChannelNumber());
-                    channel.basicConsume(q.getQueue(), true, new DeliverCallback() {
-                        @Override
-                        public void handle(String consumerTag, Delivery message) throws IOException {
-                            String getMessage = new String(message.getBody());
-                            Log.e(TAG,"Success subscribeCall getMessage : "+getMessage);
-                            try {
-                                JSONObject dataObj = new JSONObject(getMessage);
-                                String actionCall = "";
-                                if (dataObj.getJSONObject("transaction").has("action")) {
-                                    actionCall = dataObj.getJSONObject("transaction").getString("action");
-                                }
-
-                                if (actionCall.equals("info")) {
-                                    String csId = dataObj.getJSONObject("transaction").getString("csId");
-                                    sessions.saveCSID(csId);
-                                } else {
-                                    int getTicket = dataObj.getJSONObject("transaction").getInt("ticket");
-                                    if (dataObj.getJSONObject("transaction").has("sessionId")) {
-                                        sessionId = dataObj.getJSONObject("transaction").getString("sessionId");
-                                        sessions.saveSessionIdDips(sessionId);
-                                    }
-                                    csId = dataObj.getJSONObject("transaction").getString("csId");
-                                    String password = dataObj.getJSONObject("transaction").getString("password");
-                                    Log.e(TAG, "subscribeCall csId : " + csId);
-                                    Log.e(TAG, "subscribeCall password : " + password);
-                                    Log.e(TAG, "subscribeCall getTicket : " + getTicket);
-                                    String getQueue = String.format("%03d", getTicket);
-                                    Log.e(TAG, "subscribeCall getQueue : " + getQueue);
-
-                                    String agentImage = "";
-                                    String namaAgen = "Fulan";
-                                    if (dataObj.getJSONObject("transaction").has("agentImage")) {
-                                        agentImage = dataObj.getJSONObject("transaction").getString("agentImage");
-                                    }
-                                    if (dataObj.getJSONObject("transaction").has("namaAgen")) {
-                                        namaAgen = dataObj.getJSONObject("transaction").getString("namaAgen");
+        if (connection != null) {
+            subscribeThreadCallOutbound = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        Log.e(TAG, "MASUK subscribeCall");
+                        channelCall = connection.createChannel();
+                        channelCall.basicQos(1);
+                        AMQP.Queue.DeclareOk q = channelCall.queueDeclare();
+                        Log.e(TAG, "subscribeCall getQueue : " + q.getQueue());
+                        channelCall.exchangeDeclare("dips361-cust-call", "direct", true);
+                        channelCall.queueBind(q.getQueue(), "dips361-cust-call", "dips.direct.cust." + idDips + ".call");
+                        Log.e(TAG, "AFTER subscribeCall queueBind getChannelNumber : " + channelCall.getChannelNumber());
+                        channelCall.basicConsume(q.getQueue(), true, new DeliverCallback() {
+                            @Override
+                            public void handle(String consumerTag, Delivery message) throws IOException {
+                                String getMessage = new String(message.getBody());
+                                Log.e(TAG, "Success subscribeCall getMessage : " + getMessage);
+                                try {
+                                    JSONObject dataObj = new JSONObject(getMessage);
+                                    String actionCall = "";
+                                    if (dataObj.getJSONObject("transaction").has("action")) {
+                                        actionCall = dataObj.getJSONObject("transaction").getString("action");
                                     }
 
-                                    Log.e(TAG, "subscribeCall agentImage : " + agentImage);
-                                    Log.e(TAG, "subscribeCall namaAgen : " + namaAgen);
-
-                                    password_session = password;
-                                    customerName = sessions.getNasabahName();
-                                    imagesAgent = agentImage;
-                                    nameAgent = namaAgen;
-                                    sessions.saveCSID(csId);
-
-                                    //showIncomingCallNotification();
-
-                                    Intent intent = new Intent(getApplicationContext(), MyBroadcastReceiver.class);
-                                    intent.setAction("calloutbound");
-
-                                    PendingIntent pendingIntent = null;
-                                    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
-                                        pendingIntent = PendingIntent.getBroadcast
-                                                (mContext, 0, intent, PendingIntent.FLAG_MUTABLE);
+                                    if (actionCall.equals("info")) {
+                                        String csId = dataObj.getJSONObject("transaction").getString("csId");
+                                        sessions.saveCSID(csId);
                                     } else {
-                                        pendingIntent = PendingIntent.getBroadcast
-                                                (mContext, 0, intent, 0);
+                                        int getTicket = dataObj.getJSONObject("transaction").getInt("ticket");
+                                        if (dataObj.getJSONObject("transaction").has("sessionId")) {
+                                            sessionId = dataObj.getJSONObject("transaction").getString("sessionId");
+                                            sessions.saveSessionIdDips(sessionId);
+                                        }
+                                        csId = dataObj.getJSONObject("transaction").getString("csId");
+                                        String password = dataObj.getJSONObject("transaction").getString("password");
+                                        Log.e(TAG, "subscribeCall csId : " + csId);
+                                        Log.e(TAG, "subscribeCall password : " + password);
+                                        Log.e(TAG, "subscribeCall getTicket : " + getTicket);
+                                        String getQueue = String.format("%03d", getTicket);
+                                        Log.e(TAG, "subscribeCall getQueue : " + getQueue);
+
+                                        String agentImage = "";
+                                        String namaAgen = "Fulan";
+                                        if (dataObj.getJSONObject("transaction").has("agentImage")) {
+                                            agentImage = dataObj.getJSONObject("transaction").getString("agentImage");
+                                        }
+                                        if (dataObj.getJSONObject("transaction").has("namaAgen")) {
+                                            namaAgen = dataObj.getJSONObject("transaction").getString("namaAgen");
+                                        }
+
+                                        Log.e(TAG, "subscribeCall agentImage : " + agentImage);
+                                        Log.e(TAG, "subscribeCall namaAgen : " + namaAgen);
+
+                                        password_session = password;
+                                        customerName = sessions.getNasabahName();
+                                        imagesAgent = agentImage;
+                                        nameAgent = namaAgen;
+                                        sessions.saveCSID(csId);
+
+                                        //showIncomingCallNotification();
+
+                                        Intent intent = new Intent(getApplicationContext(), MyBroadcastReceiver.class);
+                                        intent.setAction("calloutbound");
+
+                                        PendingIntent pendingIntent = null;
+                                        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
+                                            pendingIntent = PendingIntent.getBroadcast
+                                                    (mContext, 0, intent, PendingIntent.FLAG_MUTABLE);
+                                        } else {
+                                            pendingIntent = PendingIntent.getBroadcast
+                                                    (mContext, 0, intent, 0);
+                                        }
+
+                                        long addTimes = System.currentTimeMillis() + 2000;
+
+                                        AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+                                        alarmManager.set(AlarmManager.RTC_WAKEUP, addTimes, pendingIntent);
+
+                                        new Handler().postDelayed(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                //setelah loading maka akan langsung berpindah ke home activity
+                                                ((Activity) mContext).runOnUiThread(new Runnable() {
+                                                    @Override
+                                                    public void run() {
+                                                        showNotificationOutbound();
+                                                    }
+                                                });
+                                            }
+                                        }, 3000);
                                     }
 
-                                    long addTimes = System.currentTimeMillis() + 2000;
-
-                                    AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-                                    alarmManager.set(AlarmManager.RTC_WAKEUP, addTimes, pendingIntent);
-
-                                    new Handler().postDelayed(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            //setelah loading maka akan langsung berpindah ke home activity
-                                            ((Activity)mContext).runOnUiThread(new Runnable() {
-                                                @Override
-                                                public void run() {
-                                                    showNotificationOutbound();
-                                                }
-                                            });
-                                        }
-                                    },3000);
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
                                 }
-
-                            } catch (JSONException e) {
-                                e.printStackTrace();
                             }
-                        }
-                    }, new CancelCallback() {
-                        @Override
-                        public void handle(String consumerTag) throws IOException {
-                            Log.e(TAG,"subscribeCall consumerTag : "+consumerTag);
-                        }
-                    });
+                        }, new CancelCallback() {
+                            @Override
+                            public void handle(String consumerTag) throws IOException {
+                                Log.e(TAG, "subscribeCall consumerTag : " + consumerTag);
+                            }
+                        });
 
-                } catch (ShutdownSignalException e) {
-                    Log.e(TAG, "subscribeCall ShutdownSignalException: " + e.getMessage());
-                    try {
-                        Thread.sleep(4000); //sleep and then try again
-                        subscribeCall();
-                    } catch (InterruptedException ex) {
-                        ex.printStackTrace();
-                    }
-                } catch (IOException | TimeoutException e1) {
-                    Log.e(TAG, "subscribeCall Connection broken: " + e1.getMessage());
-                    try {
-                        Thread.sleep(4000); //sleep and then try again
-                        subscribeCall();
-                    } catch (InterruptedException e) {
-                        Log.e(TAG, "subscribeCall InterruptedExceptionn: " + e.getMessage());
+                    } catch (ShutdownSignalException e) {
+                        Log.e(TAG, "subscribeCall ShutdownSignalException: " + e.getMessage());
+                        try {
+                            Thread.sleep(4000); //sleep and then try again
+                            subscribeCall();
+                        } catch (InterruptedException ex) {
+                            ex.printStackTrace();
+                        }
+                    } catch (IOException e1) {
+                        Log.e(TAG, "subscribeCall Connection broken: " + e1.getMessage());
+                        try {
+                            Thread.sleep(4000); //sleep and then try again
+                            subscribeCall();
+                        } catch (InterruptedException e) {
+                            Log.e(TAG, "subscribeCall InterruptedExceptionn: " + e.getMessage());
+                        }
                     }
                 }
-            }
-        });
-        subscribeThreadCallOutbound.start();
+            });
+            subscribeThreadCallOutbound.start();
+        }
     }
 
     private void showIncomingCallNotification() {
@@ -401,91 +407,57 @@ public class OutboundServiceNew extends Service {
         return jsObj;
     }
 
-    private static void MirroringSendKey(JSONObject jsons) {
-        Log.e(TAG,"MASUK MirroringSendKey : "+jsons.toString());
-        publishMirroringKeyThread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    Connection connection = connectionFactory.newConnection();
-                    Channel ch = connection.createChannel();
-                    ch.confirmSelect();
-
-                    String csID = sessions.getCSID();
-                    Log.e(TAG,"csID : "+csID);
-
-                    JSONObject datax = dataMirroring(jsons);
-                    String dataxS = datax.toString();
-
-                    Log.e(TAG,"dataxS : "+ dataxS);
-
-                    ch.basicPublish("dips361-cs-send-key","dips.direct.cs."+csID+".send.key",false,null,dataxS.getBytes());
-                    ch.waitForConfirmsOrDie();
-
-                } catch (IOException | TimeoutException | InterruptedException e) {
-                    Log.e(TAG, "publishToAMQP Connection broken: " + e.getClass().getName());
-                    try {
-                        Thread.sleep(4000); //sleep and then try again
-                        MirroringSendKey(jsons);
-                    } catch (InterruptedException e1) {
-
-                    }
-                }
-            }
-        });
-        publishMirroringKeyThread.start();
-    }
-
     public static void MirroringSendEndpoint(int kodeEndPoint) {
-        Log.e(TAG,"MASUK MirroringSendEndpoint : "+kodeEndPoint);
-        publishEndpointThread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    JSONObject jsons = null;
+        if (connection != null) {
+            Log.e(TAG, "MASUK MirroringSendEndpoint : " + kodeEndPoint);
+            publishEndpointThread = new Thread(new Runnable() {
+                @Override
+                public void run() {
                     try {
-                        jsons = new JSONObject();
-                        jsons.put("endpoint",kodeEndPoint);
-                        if (kodeEndPoint == 99) {
-                            if (sessions.getKEY_IdDips() != null) {
-                                jsons.put("idDips",sessions.getKEY_IdDips());
+                        JSONObject jsons = null;
+                        try {
+                            jsons = new JSONObject();
+                            jsons.put("endpoint", kodeEndPoint);
+                            if (kodeEndPoint == 99) {
+                                if (sessions.getKEY_IdDips() != null) {
+                                    jsons.put("idDips", sessions.getKEY_IdDips());
+                                }
+                                OutboundServiceNew.stopServiceSocket();
+                                Intent intentOutbound = new Intent(mContext, OutboundServiceNew.class);
+                                mContext.stopService(intentOutbound);
                             }
-                            OutboundServiceNew.stopServiceSocket();
-                            Intent intentOutbound = new Intent(mContext, OutboundServiceNew.class);
-                            mContext.stopService(intentOutbound);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
                         }
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
 
-                    Log.e(TAG,"jsons : "+ jsons);
+                        Log.e(TAG, "jsons : " + jsons);
 
-                    Connection connection = connectionFactory.newConnection();
-                    Channel ch = connection.createChannel();
-                    ch.confirmSelect();
+                        Channel ch = connection.createChannel();
+                        ch.confirmSelect();
 
-                    String csID = sessions.getCSID();
-                    Log.e(TAG,"csID : "+csID);
+                        String csID = sessions.getCSID();
+                        Log.e(TAG, "csID : " + csID);
 
-                    JSONObject datax = dataMirroring(jsons);
-                    String dataxS = datax.toString();
+                        JSONObject datax = dataMirroring(jsons);
+                        String dataxS = datax.toString();
 
-                    Log.e(TAG,"dataxS : "+ dataxS);
+                        Log.e(TAG, "dataxS : " + dataxS);
 
-                    ch.basicPublish("dips361-cs-send-endpoint","dips.direct.cs."+csID+".send.endpoint",false,null,dataxS.getBytes());
-                    ch.waitForConfirmsOrDie();
+                        ch.basicPublish("dips361-cs-send-endpoint", "dips.direct.cs." + csID + ".send.endpoint", false, null, dataxS.getBytes());
+                        ch.waitForConfirmsOrDie();
 
-                } catch (IOException | TimeoutException | InterruptedException e) {
-                    Log.e(TAG, "publishToAMQP Connection broken: " + e.getClass().getName());
-                    try {
-                        Thread.sleep(4000); //sleep and then try again
-                    } catch (InterruptedException e1) {
+                    } catch (IOException | InterruptedException e) {
+                        Log.e(TAG, "publishToAMQP Connection broken: " + e.getClass().getName());
+                        try {
+                            Thread.sleep(4000); //sleep and then try again
+                        } catch (InterruptedException e1) {
 
+                        }
                     }
                 }
-            }
-        });
-        publishEndpointThread.start();
+            });
+            publishEndpointThread.start();
+        }
     }
 
     private static JSONObject dataMirroring(JSONObject dataObj) {
@@ -505,45 +477,59 @@ public class OutboundServiceNew extends Service {
     }
 
     private static void publishCallAccept(String labelAction) {
-        Log.e("CEK","publishCallAccept");
-        publishCallAcceptThread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    Connection connection = connectionFactory.newConnection();
-                    Channel ch = connection.createChannel();
-                    ch.confirmSelect();
-
-                    JSONObject dataTicketObj = reqAcceptCall(labelAction);
-                    String dataTicket = dataTicketObj.toString();
-
-                    Log.e("CEK","publishCallAccept REQ csId : "+csId);
-                    Log.e("CEK","publishCallAccept REQ : "+dataTicket);
-
-                    ch.exchangeDeclare("dips361-cs-accept-user", "direct", true);
-                    ch.basicPublish("dips361-cs-accept-user","dips.direct.cs."+csId+".accept.user",false,null,dataTicket.getBytes());
-                    ch.waitForConfirmsOrDie();
-
-                } catch (IOException | TimeoutException | InterruptedException e) {
-                    Log.e(TAG, "publishCallAccept Connection broken: " + e.getClass().getName());
+        if (connection != null) {
+            Log.e("CEK", "publishCallAccept");
+            publishCallAcceptThread = new Thread(new Runnable() {
+                @Override
+                public void run() {
                     try {
-                        Thread.sleep(4000); //sleep and then try again
-                        publishCallAccept(labelAction);
-                    } catch (InterruptedException e1) {
+                        Channel ch = connection.createChannel();
+                        ch.confirmSelect();
 
+                        JSONObject dataTicketObj = reqAcceptCall(labelAction);
+                        String dataTicket = dataTicketObj.toString();
+
+                        Log.e("CEK", "publishCallAccept REQ csId : " + csId);
+                        Log.e("CEK", "publishCallAccept REQ : " + dataTicket);
+
+                        ch.exchangeDeclare("dips361-cs-accept-user", "direct", true);
+                        ch.basicPublish("dips361-cs-accept-user", "dips.direct.cs." + csId + ".accept.user", false, null, dataTicket.getBytes());
+                        ch.waitForConfirmsOrDie();
+
+                    } catch (IOException | InterruptedException e) {
+                        Log.e(TAG, "publishCallAccept Connection broken: " + e.getClass().getName());
+                        try {
+                            Thread.sleep(4000); //sleep and then try again
+                            publishCallAccept(labelAction);
+                        } catch (InterruptedException e1) {
+
+                        }
                     }
                 }
-            }
-        });
-        publishCallAcceptThread.start();
+            });
+            publishCallAcceptThread.start();
+        }
     }
 
     public static void stopServiceSocket() {
         if (subscribeThreadCallOutbound != null) {
+            Log.e("CEK","subscribeThreadCallOutbound interrupt");
             subscribeThreadCallOutbound.interrupt();
         }
         if (publishCallAcceptThread != null) {
+            Log.e("CEK","publishCallAcceptThread interrupt");
             publishCallAcceptThread.interrupt();
+        }
+
+        if (channelCall != null) {
+            try {
+                channelCall.close();
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (IOException | TimeoutException e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 

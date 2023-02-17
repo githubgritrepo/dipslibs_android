@@ -43,9 +43,9 @@ public class frag_service_new extends Fragment {
         mContext = getContext();
         sessions = new SessionManager(mContext);
         isSessionZoom = ZoomVideoSDK.getInstance().isInSession();
-        if (isSessionZoom) {
+        /*if (isSessionZoom) {
             rabbitMirroring = new RabbitMirroring(mContext);
-        }
+        }*/
 
     }
 

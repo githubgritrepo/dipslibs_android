@@ -157,9 +157,9 @@ public class frag_service_item extends Fragment {
         idDips = sessions.getKEY_IdDips();
         isSessionZoom = ZoomVideoSDK.getInstance().isInSession();
         formCode = sessions.getFormCode();
-        if (isSessionZoom) {
+        /*if (isSessionZoom) {
             rabbitMirroring = new RabbitMirroring(mContext);
-        }
+        }*/
 
         String dataNasabah = sessions.getNasabah();
         Log.e("CEK",mContext+" dataNasabah : "+dataNasabah);
@@ -577,9 +577,6 @@ public class frag_service_item extends Fragment {
                                         @Override
                                         public void onFocusChange(View view, boolean b) {
                                             Log.e("CEK","onFocusChange : "+b);
-                                            if (isSessionZoom) {
-                                                RabbitMirroring.MirroringSendKey(dataForms);
-                                            }
                                         }
                                     });
                                     ed.addTextChangedListener(new TextWatcher() {
@@ -596,6 +593,9 @@ public class frag_service_item extends Fragment {
                                             try {
                                                 objEl.put(nameDataEl, charSequence);
                                                 dataForms.put(keys,objEl);
+                                                if (isSessionZoom) {
+                                                    RabbitMirroring.MirroringSendKey(dataForms);
+                                                }
                                             } catch (JSONException e) {
                                                 e.printStackTrace();
                                             }
@@ -930,6 +930,9 @@ public class frag_service_item extends Fragment {
                                 JSONObject jenisObj = dataArr.getJSONObject(i).getJSONObject("jenis");
                                 String labelIdn = jenisObj.getString("labelIdn");
                                 String labelEng = jenisObj.getString("labelEng");
+                                if (sessions.getLANG().equals("en")) {
+                                    labelIdn = labelEng;
+                                }
                                 dataDropDown.add(new FormSpin(idData, idJenis, labelIdn, labelEng));
                             }
                             flagStuckSpin = true;
@@ -941,6 +944,9 @@ public class frag_service_item extends Fragment {
                                 }
                                 String labelIdn = dataArr.getJSONObject(i).getString("labelIdn");
                                 String labelEng = dataArr.getJSONObject(i).getString("labelEng");
+                                if (sessions.getLANG().equals("en")) {
+                                    labelIdn = labelEng;
+                                }
                                 dataDropDown.add(new FormSpin(idData, labelIdn, labelIdn, labelEng));
                                 if (i == 0) {
                                     if (nameDataEl.contains("provinsi") || nameDataEl.contains("kabupaten") || nameDataEl.contains("kota") || nameDataEl.contains("kecamatan") || (nameDataEl.contains("kelurahan") || nameDataEl.contains("desa"))) {

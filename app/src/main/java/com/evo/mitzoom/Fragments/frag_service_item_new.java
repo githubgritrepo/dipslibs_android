@@ -171,9 +171,9 @@ public class frag_service_item_new extends Fragment {
         idDips = sessions.getKEY_IdDips();
         isSessionZoom = ZoomVideoSDK.getInstance().isInSession();
         formCode = sessions.getFormCode();
-        if (isSessionZoom) {
+        /*if (isSessionZoom) {
             rabbitMirroring = new RabbitMirroring(mContext);
-        }
+        }*/
 
         String dataNasabah = sessions.getNasabah();
         Log.e("CEK",mContext+" dataNasabah : "+dataNasabah);
@@ -1049,7 +1049,7 @@ public class frag_service_item_new extends Fragment {
             multipartBody = new MultipartBody.Builder()
                     .addPart(MultipartBody.Part.createFormData("ttd", file.getName(), requestFile))
                     .addPart(MultipartBody.Part.createFormData("noPengaduan", null, requestnoComplaint))
-                    .addPart(MultipartBody.Part.createFormData("buktiPendukung1", null, requestFileMedia))
+                    .addPart(MultipartBody.Part.createFormData("buktiPendukung1", fileMedia.getName(), requestFileMedia))
                     .build();
         } else if (lenMedia == 2) {
             Uri uri = (Uri) dataFilesMedia.get(0);
@@ -1079,8 +1079,8 @@ public class frag_service_item_new extends Fragment {
             multipartBody = new MultipartBody.Builder()
                     .addPart(MultipartBody.Part.createFormData("ttd", file.getName(), requestFile))
                     .addPart(MultipartBody.Part.createFormData("noPengaduan", null, requestnoComplaint))
-                    .addPart(MultipartBody.Part.createFormData("buktiPendukung1", null, requestFileMedia))
-                    .addPart(MultipartBody.Part.createFormData("buktiPendukung2", null, requestFileMedia2))
+                    .addPart(MultipartBody.Part.createFormData("buktiPendukung1", fileMedia.getName(), requestFileMedia))
+                    .addPart(MultipartBody.Part.createFormData("buktiPendukung2", fileMedia2.getName(), requestFileMedia2))
                     .build();
         } else if (lenMedia == 3) {
             Uri uri = (Uri) dataFilesMedia.get(0);
@@ -1122,9 +1122,9 @@ public class frag_service_item_new extends Fragment {
             multipartBody = new MultipartBody.Builder()
                     .addPart(MultipartBody.Part.createFormData("ttd", file.getName(), requestFile))
                     .addPart(MultipartBody.Part.createFormData("noPengaduan", null, requestnoComplaint))
-                    .addPart(MultipartBody.Part.createFormData("buktiPendukung1", null, requestFileMedia))
-                    .addPart(MultipartBody.Part.createFormData("buktiPendukung2", null, requestFileMedia2))
-                    .addPart(MultipartBody.Part.createFormData("buktiPendukung3", null, requestFileMedia3))
+                    .addPart(MultipartBody.Part.createFormData("buktiPendukung1", fileMedia.getName(), requestFileMedia))
+                    .addPart(MultipartBody.Part.createFormData("buktiPendukung2", fileMedia2.getName(), requestFileMedia2))
+                    .addPart(MultipartBody.Part.createFormData("buktiPendukung3", fileMedia3.getName(), requestFileMedia3))
                     .build();
         }
 
@@ -1467,6 +1467,9 @@ public class frag_service_item_new extends Fragment {
                                     JSONObject jenisObj = dataArr.getJSONObject(i).getJSONObject("jenis");
                                     labelIdn = jenisObj.getString("labelIdn");
                                     labelEng = jenisObj.getString("labelEng");
+                                    if (sessions.getLANG().equals("en")) {
+                                        labelIdn = labelEng;
+                                    }
                                 }
                                 dataDropDown.add(new FormSpin(idData, idJenis, labelIdn, labelEng));
                             }
@@ -1498,6 +1501,9 @@ public class frag_service_item_new extends Fragment {
                                 }
                                 String labelIdn = dataArr.getJSONObject(i).getString("labelIdn");
                                 String labelEng = dataArr.getJSONObject(i).getString("labelEng");
+                                if (sessions.getLANG().equals("en")) {
+                                    labelIdn = labelEng;
+                                }
                                 dataDropDown.add(new FormSpin(idData, labelIdn, labelIdn, labelEng));
                                 if (i == 0) {
                                     if (nameDataEl.contains("provinsi") || nameDataEl.contains("kabupaten") || nameDataEl.contains("kota") || nameDataEl.contains("kecamatan") || (nameDataEl.contains("kelurahan") || nameDataEl.contains("desa"))) {

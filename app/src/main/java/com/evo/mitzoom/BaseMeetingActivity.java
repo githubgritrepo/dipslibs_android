@@ -855,6 +855,7 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
                 trimCache(mContext);
                 startActivity(new Intent(getApplicationContext(), RatingActivity.class));
                 finish();
+                RabbitMirroring.closeThreadConnection();
             }
         });
     }
@@ -901,6 +902,7 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
                 trimCache(mContext);
                 startActivity(new Intent(getApplicationContext(), RatingActivity.class));
                 finish();
+                RabbitMirroring.closeThreadConnection();
             }
         });
         btnCancelDialog.setOnClickListener(new View.OnClickListener() {
