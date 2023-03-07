@@ -68,7 +68,9 @@
             android:name=".ui.DipsCameraSource"
             android:exported="false"
             android:screenOrientation="portrait"
-            android:theme="@style/Theme.MITZoom" />
+            android:theme="@style/Theme.MITZoom"
+            android:showOnLockScreen="true"
+            android:showWhenLocked="true"/>
         <activity
             android:name=".ui.DipsChooseLanguage"
             android:exported="false"
@@ -88,21 +90,27 @@
             android:name=".ui.DipsCameraActivity"
             android:exported="false"
             android:screenOrientation="portrait"
-            android:theme="@style/Theme.MITZoom" />
+            android:theme="@style/Theme.MITZoom"
+            android:showOnLockScreen="true"
+            android:showWhenLocked="true"/>
         <activity
             android:name=".ui.RatingActivity"
             android:exported="false"
             android:configChanges="screenSize|orientation|keyboardHidden|keyboard"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.MITZoom"
-            android:windowSoftInputMode="adjustResize"/>
+            android:windowSoftInputMode="adjustResize"
+            android:showOnLockScreen="true"
+            android:showWhenLocked="true"/>
         <activity
             android:name=".ui.DipsVideoConfren"
             android:configChanges="screenSize|orientation|keyboardHidden|keyboard"
             android:exported="false"
             android:screenOrientation="portrait"
             android:theme="@style/ZMTheme.SubWindow"
-            android:windowSoftInputMode="adjustResize" />
+            android:windowSoftInputMode="adjustResize"
+            android:showOnLockScreen="true"
+            android:showWhenLocked="true"/>
         <activity
             android:name=".ui.DipsWaitingRoom"
             android:exported="false"

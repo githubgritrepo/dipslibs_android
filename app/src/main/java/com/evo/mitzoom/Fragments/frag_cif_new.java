@@ -149,8 +149,10 @@ public class frag_cif_new extends Fragment {
     final String STATE_IMGBYTE = "IMGBYTEUPLOAD";
     private byte[] IMG_BYTE = new byte[0];
     private String picturePath = "";
+    private String picturePathCrop = "";
     private byte[] imageBytes = new byte[0];
     private String encodedImage;
+    private String encodedImageCrop;
     private boolean flagOCR = false;
     private String tmptLahir = "-";
     private String provinsi,kodepos="",kota_kabupaten, nik, nama, ttl, jeniskelamin, golongan_darah, alamat, rtrw, desa_kelurahan, kecamatan, agama, status_perkawinan, kewarganegaraan, pekerjaan = "", namaIbuKandung = "";
@@ -183,6 +185,8 @@ public class frag_cif_new extends Fragment {
     private String npwp = "-";
     private EditText edKodePos = null;
     JSONObject dataObjProDesa = new JSONObject();
+    private boolean ocrKTP = false;
+    private boolean flagMother = false;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -261,6 +265,8 @@ public class frag_cif_new extends Fragment {
                 form_id = getArguments().getInt("form_id");
             } else if (getArguments().containsKey("NPWP")) {
                 npwp = getArguments().getString("NPWP");
+            } else if (getArguments().containsKey("OCRKTP")) {
+                ocrKTP = getArguments().getBoolean("OCRKTP");
             }
         }
         if (formCode == 8) {
@@ -470,19 +476,31 @@ public class frag_cif_new extends Fragment {
                     }
                     else {
                         if (formCode == 22) {
-                            if (!picturePath.isEmpty()) {
-                                String fieldName = "foto";
-                                ((Activity)mContext).runOnUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        if (isSessionZoom) {
-                                            BaseMeetingActivity.showProgress(true);
-                                        } else {
-                                            DipsSwafoto.showProgress(true);
+                            if (ocrKTP && flagOCR) {
+                                PopUpOCR();
+                                JSONObject dataReq = dataReqOCR2();
+                                JSONObject reqOCR = new JSONObject();
+                                try {
+                                    reqOCR.put("ocr",dataReq);
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+                                RabbitMirroring.MirroringSendKey(reqOCR);
+                            } else {
+                                if (!picturePath.isEmpty()) {
+                                    String fieldName = "foto";
+                                    ((Activity) mContext).runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            if (isSessionZoom) {
+                                                BaseMeetingActivity.showProgress(true);
+                                            } else {
+                                                DipsSwafoto.showProgress(true);
+                                            }
                                         }
-                                    }
-                                });
-                                processFormDataAttachment(fieldName,picturePath);
+                                    });
+                                    processFormDataAttachment(fieldName, picturePath);
+                                }
                             }
                         }
                         else if (formCode == 6) {
@@ -803,7 +821,9 @@ public class frag_cif_new extends Fragment {
     private void processGetForm(int formId) {
         Log.e("CEK", this+" MASUK processGetForm formId : "+formId);
         Log.e("CEK", this+" MASUK formCode : "+formCode);
-        Server.getAPIWAITING_PRODUCT().getFormBuilder(formId).enqueue(new Callback<JsonObject>() {
+        String authAccess = "Bearer "+sessions.getAuthToken();
+        String exchangeToken = sessions.getExchangeToken();
+        Server.getAPIWAITING_PRODUCT().getFormBuilder(formId,authAccess,exchangeToken).enqueue(new Callback<JsonObject>() {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
                 swipe.setRefreshing(false);
@@ -815,6 +835,12 @@ public class frag_cif_new extends Fragment {
                     llFormBuild.removeAllViewsInLayout();
                     try {
                         JSONObject dataObj = new JSONObject(dataS);
+                        if (dataObj.has("token")) {
+                            String accessToken = dataObj.getString("token");
+                            String exchangeToken = dataObj.getString("exchange");
+                            sessions.saveAuthToken(accessToken);
+                            sessions.saveExchangeToken(exchangeToken);
+                        }
                         JSONObject dataObjForm = dataObj.getJSONObject("data");
                         String dataForm = dataObjForm.getString("data");
                         Log.e("CEK","dataForm : "+dataForm);
@@ -1568,18 +1594,20 @@ public class frag_cif_new extends Fragment {
 
     private void processSendFormCIF(JSONObject jsons) {
         Log.e("CEK","processSendFormCIF : "+jsons.toString());
+        String authAccess = "Bearer "+sessions.getAuthToken();
+        String exchangeToken = sessions.getExchangeToken();
         RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), jsons.toString());
 
         ApiService API = Server.getAPIService();
         Call<JsonObject> call = null;
         if (formCode == 8 || formCode == 801) {
-            call = API.AddDataSelf(requestBody);
+            call = API.AddDataSelf(requestBody,authAccess,exchangeToken);
         }
         else if (formCode == 802) {
-            call = API.AddDataWork(requestBody);
+            call = API.AddDataWork(requestBody,authAccess,exchangeToken);
         }
         else if (formCode == 803) {
-            call = API.AddDataFinance(requestBody);
+            call = API.AddDataFinance(requestBody,authAccess,exchangeToken);
         }
 
         Log.e("CEK","processSendFormCIF call : "+call.request());
@@ -1603,6 +1631,12 @@ public class frag_cif_new extends Fragment {
                     Log.e("CEK","processSendFormCIF dataS : "+dataS);
                     try {
                         JSONObject dataObj = new JSONObject(dataS);
+                        if (dataObj.has("token")) {
+                            String accessToken = dataObj.getString("token");
+                            String exchangeToken = dataObj.getString("exchange");
+                            sessions.saveAuthToken(accessToken);
+                            sessions.saveExchangeToken(exchangeToken);
+                        }
                         int errCode = dataObj.getInt("code");
                         String msg = dataObj.getString("message");
                         if (errCode >= 200 && errCode <= 300) {
@@ -1798,7 +1832,9 @@ public class frag_cif_new extends Fragment {
     private void processGetDynamicURL(Spinner spin, String urlPath, String nameDataEl) {
         flagStuckSpin = false;
         Log.e("CEK","processGetDynamicURL : "+urlPath);
-        Server.getAPIService().getDynamicUrl(urlPath).enqueue(new Callback<JsonObject>() {
+        String authAccess = "Bearer "+sessions.getAuthToken();
+        String exchangeToken = sessions.getExchangeToken();
+        Server.getAPIService().getDynamicUrl(urlPath,authAccess,exchangeToken).enqueue(new Callback<JsonObject>() {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
                 Log.e("CEK","processGetDynamicURL code : "+response.code());
@@ -1807,6 +1843,12 @@ public class frag_cif_new extends Fragment {
                     Log.e("CEK","processGetDynamicURL dataS : "+dataS);
                     try {
                         JSONObject dataObj = new JSONObject(dataS);
+                        if (dataObj.has("token")) {
+                            String accessToken = dataObj.getString("token");
+                            String exchangeToken = dataObj.getString("exchange");
+                            sessions.saveAuthToken(accessToken);
+                            sessions.saveExchangeToken(exchangeToken);
+                        }
                         JSONArray dataArr = dataObj.getJSONArray("data");
                         ArrayList<FormSpin> dataDropDown = new ArrayList<>();
                         for (int i = 0; i < dataArr.length(); i++) {
@@ -2105,10 +2147,12 @@ public class frag_cif_new extends Fragment {
         }
         Log.e("CEK","Kelurahan : "+desa_kelurahan+" | kecamatan : "+kecamatan+" | kabupaten : "+kota_kabupaten+" | provinsi : "+provinsi);
         Log.e("CEK","PAYLOAD GET KODE POS "+ json);
+        String authAccess = "Bearer "+sessions.getAuthToken();
+        String exchangeToken = sessions.getExchangeToken();
         RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), json.toString());
         Log.e("CEK","PAYLOAD GET KODE POS 2"+requestBody);
         ApiService API = Server.getAPIService();
-        Call<JsonObject> call = API.getKodePos(requestBody);
+        Call<JsonObject> call = API.getKodePos(requestBody,authAccess,exchangeToken);
         call.enqueue(new Callback<JsonObject>() {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
@@ -2119,6 +2163,12 @@ public class frag_cif_new extends Fragment {
                         JSONObject dataObj = new JSONObject(dataS);
                         kodepos = dataObj.getJSONObject("data").getString("kodepos");
                         Log.e("INI KODE POS",""+kodepos);
+                        if (dataObj.has("token")) {
+                            String accessToken = dataObj.getString("token");
+                            String exchangeToken = dataObj.getString("exchange");
+                            sessions.saveAuthToken(accessToken);
+                            sessions.saveExchangeToken(exchangeToken);
+                        }
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
@@ -2297,6 +2347,9 @@ public class frag_cif_new extends Fragment {
         EditText et_warga= dialogView.findViewById(R.id.et_warga);
         EditText et_work= dialogView.findViewById(R.id.et_work);
         EditText et_nama_ibuKandung = dialogView.findViewById(R.id.et_nama_ibu_kandung);
+        TextView tvError = (TextView) dialogView.findViewById(R.id.tvError);
+        TextView tvMandatory = (TextView) dialogView.findViewById(R.id.tvMandatory);
+        CheckBox chkDataCorrect = (CheckBox) dialogView.findViewById(R.id.chkDataCorrect);
         Button btnOCRCancel = dialogView.findViewById(R.id.btncncl);
         Button btnOCRNext = dialogView.findViewById(R.id.btnlnjt);
 
@@ -2366,6 +2419,26 @@ public class frag_cif_new extends Fragment {
             }
         };
 
+        chkDataCorrect.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (chkDataCorrect.isChecked()) {
+                    tvError.setVisibility(View.GONE);
+                    ((Activity)mContext).runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (isSessionZoom) {
+                                BaseMeetingActivity.showProgress(true);
+                            } else {
+                                DipsSwafoto.showProgress(true);
+                            }
+                        }
+                    });
+                    processValidateIbuKandung(chkDataCorrect,tvError,tvMandatory);
+                }
+            }
+        });
+
         TTL2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -2384,8 +2457,8 @@ public class frag_cif_new extends Fragment {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
+                nik = s.toString();
                 if (isSessionZoom) {
-                    nik = s.toString();
                     JSONObject dataReq = dataReqOCR2();
                     JSONObject reqOCR = new JSONObject();
                     try {
@@ -2410,8 +2483,8 @@ public class frag_cif_new extends Fragment {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
+                nama = s.toString();
                 if (isSessionZoom) {
-                    nama = s.toString();
                     JSONObject dataReq = dataReqOCR2();
                     JSONObject reqOCR = new JSONObject();
                     try {
@@ -2436,8 +2509,8 @@ public class frag_cif_new extends Fragment {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
+                tmptLahir = s.toString();
                 if (isSessionZoom) {
-                    tmptLahir = s.toString();
                     JSONObject dataReq = dataReqOCR2();
                     JSONObject reqOCR = new JSONObject();
                     try {
@@ -2462,8 +2535,8 @@ public class frag_cif_new extends Fragment {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
+                ttl = s.toString();
                 if (isSessionZoom) {
-                    ttl = s.toString();
                     JSONObject dataReq = dataReqOCR2();
                     JSONObject reqOCR = new JSONObject();
                     try {
@@ -2488,8 +2561,8 @@ public class frag_cif_new extends Fragment {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
+                jeniskelamin = s.toString();
                 if (isSessionZoom) {
-                    jeniskelamin = s.toString();
                     JSONObject dataReq = dataReqOCR2();
                     JSONObject reqOCR = new JSONObject();
                     try {
@@ -2514,8 +2587,8 @@ public class frag_cif_new extends Fragment {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
+                golongan_darah = s.toString();
                 if (isSessionZoom) {
-                    golongan_darah = s.toString();
                     JSONObject dataReq = dataReqOCR2();
                     JSONObject reqOCR = new JSONObject();
                     try {
@@ -2540,8 +2613,8 @@ public class frag_cif_new extends Fragment {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
+                alamat = s.toString();
                 if (isSessionZoom) {
-                    alamat = s.toString();
                     JSONObject dataReq = dataReqOCR2();
                     JSONObject reqOCR = new JSONObject();
                     try {
@@ -2566,8 +2639,8 @@ public class frag_cif_new extends Fragment {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
+                rtrw = s.toString();
                 if (isSessionZoom) {
-                    rtrw = s.toString();
                     JSONObject dataReq = dataReqOCR2();
                     JSONObject reqOCR = new JSONObject();
                     try {
@@ -2592,8 +2665,8 @@ public class frag_cif_new extends Fragment {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
+                provinsi = s.toString();
                 if (isSessionZoom) {
-                    provinsi = s.toString();
                     JSONObject dataReq = dataReqOCR2();
                     JSONObject reqOCR = new JSONObject();
                     try {
@@ -2618,8 +2691,8 @@ public class frag_cif_new extends Fragment {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
+                kota_kabupaten = s.toString();
                 if (isSessionZoom) {
-                    kota_kabupaten = s.toString();
                     JSONObject dataReq = dataReqOCR2();
                     JSONObject reqOCR = new JSONObject();
                     try {
@@ -2644,8 +2717,8 @@ public class frag_cif_new extends Fragment {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
+                kecamatan = s.toString();
                 if (isSessionZoom) {
-                    kecamatan = s.toString();
                     JSONObject dataReq = dataReqOCR2();
                     JSONObject reqOCR = new JSONObject();
                     try {
@@ -2670,8 +2743,8 @@ public class frag_cif_new extends Fragment {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
+                desa_kelurahan = s.toString();
                 if (isSessionZoom) {
-                    desa_kelurahan = s.toString();
                     JSONObject dataReq = dataReqOCR2();
                     JSONObject reqOCR = new JSONObject();
                     try {
@@ -2696,8 +2769,8 @@ public class frag_cif_new extends Fragment {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
+                agama = s.toString();
                 if (isSessionZoom) {
-                    agama = s.toString();
                     JSONObject dataReq = dataReqOCR2();
                     JSONObject reqOCR = new JSONObject();
                     try {
@@ -2722,8 +2795,8 @@ public class frag_cif_new extends Fragment {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
+                status_perkawinan = s.toString();
                 if (isSessionZoom) {
-                    status_perkawinan = s.toString();
                     JSONObject dataReq = dataReqOCR2();
                     JSONObject reqOCR = new JSONObject();
                     try {
@@ -2748,8 +2821,8 @@ public class frag_cif_new extends Fragment {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
+                kewarganegaraan = s.toString();
                 if (isSessionZoom) {
-                    kewarganegaraan = s.toString();
                     JSONObject dataReq = dataReqOCR2();
                     JSONObject reqOCR = new JSONObject();
                     try {
@@ -2774,8 +2847,8 @@ public class frag_cif_new extends Fragment {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
+                pekerjaan = s.toString();
                 if (isSessionZoom) {
-                    pekerjaan = s.toString();
                     JSONObject dataReq = dataReqOCR2();
                     JSONObject reqOCR = new JSONObject();
                     try {
@@ -2795,13 +2868,15 @@ public class frag_cif_new extends Fragment {
         et_nama_ibuKandung.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
+                tvMandatory.setVisibility(View.VISIBLE);
+                tvError.setVisibility(View.GONE);
             }
 
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+                namaIbuKandung = charSequence.toString();
                 if (isSessionZoom) {
-                    namaIbuKandung = charSequence.toString();
                     JSONObject dataReq = dataReqOCR2();
                     JSONObject reqOCR = new JSONObject();
                     try {
@@ -2822,38 +2897,47 @@ public class frag_cif_new extends Fragment {
         btnOCRNext.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //if (isSessionZoom) {
                 nik = NIK.getText().toString().trim();
                 nama = Nama.getText().toString().trim();
                 tmptLahir = TTL.getText().toString().trim();
                 ttl = TTL2.getText().toString().trim();
                 Log.e("CEK","picturePath : "+picturePath);
-                if (!picturePath.isEmpty() && !namaIbuKandung.isEmpty()) {
-                    sweetAlertDialog.cancel();
-                    sweetAlertDialog.dismissWithAnimation();
-                    String fieldName = "ktp";
-                    ((Activity)mContext).runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            if (isSessionZoom) {
-                                BaseMeetingActivity.showProgress(true);
-                            } else {
-                                DipsSwafoto.showProgress(true);
+                if (chkDataCorrect.isChecked() && flagMother) {
+                    if (!picturePath.isEmpty() && !namaIbuKandung.isEmpty()) {
+                        sweetAlertDialog.cancel();
+                        sweetAlertDialog.dismissWithAnimation();
+                        String fieldName = "ktp";
+                        ((Activity)mContext).runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                if (isSessionZoom) {
+                                    BaseMeetingActivity.showProgress(true);
+                                } else {
+                                    DipsSwafoto.showProgress(true);
+                                }
                             }
+                        });
+                        //dataReqOCR();
+                        if (isSessionZoom) {
+                            JSONObject reqOCR = new JSONObject();
+                            try {
+                                reqOCR.put("startValidasi", true);
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                            RabbitMirroring.MirroringSendKey(reqOCR);
                         }
-                    });
-                    dataReqOCR();
-                    JSONObject reqOCR = new JSONObject();
-                    try {
-                        reqOCR.put("startValidasi",true);
-                    } catch (JSONException e) {
-                        e.printStackTrace();
+                        processDukcapil();
                     }
-                    RabbitMirroring.MirroringSendKey(reqOCR);
-                    processDukcapil(fieldName,picturePath);
-                }
-                else{
-                    Toast.makeText(mContext, ""+getString(R.string.validate_nama_ibu), Toast.LENGTH_SHORT).show();
+                    else{
+                        Toast.makeText(mContext, ""+getString(R.string.validate_nama_ibu), Toast.LENGTH_SHORT).show();
+                    }
+                } else {
+                    if (chkDataCorrect.isChecked() && !flagMother) {
+                        Toast.makeText(mContext, getString(R.string.please_wait3), Toast.LENGTH_LONG).show();
+                    } else {
+                        Toast.makeText(mContext, getString(R.string.accept_mother), Toast.LENGTH_LONG).show();
+                    }
                 }
             }
         });
@@ -2953,7 +3037,8 @@ public class frag_cif_new extends Fragment {
 
         return datasReqOCR;
     }
-    private void processDukcapil(String fieldName, String filePath){
+
+    private JSONObject dataReqValidate() {
         JSONObject jsons = new JSONObject();
         try {
             jsons.put("idDips",idDips);
@@ -2976,21 +3061,245 @@ public class frag_cif_new extends Fragment {
         catch (JSONException e) {
             e.printStackTrace();
         }
+
+        Log.e("CEK","dataReqValidateIbu : "+jsons.toString());
+
+        return jsons;
+    }
+
+    private JSONObject dataReqValidateFace() {
+        JSONObject jsons = new JSONObject();
+        try {
+            jsons.put("idDips",idDips);
+            jsons.put("nik",nik);
+            jsons.put("image",encodedImage);
+        }
+        catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        Log.e("CEK","dataReqValidateFace : "+jsons.toString());
+
+        return jsons;
+    }
+
+    private void processValidateIbuKandung(CheckBox chkDataCorrect, TextView tvError, TextView tvMandatory){
+        JSONObject jsons = dataReqValidate();
+        String authAccess = "Bearer "+sessions.getAuthToken();
+        String exchangeToken = sessions.getExchangeToken();
+
         RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), jsons.toString());
         ApiService API = Server.getAPIService();
-        Call<JsonObject> call = API.validasiDukcapil(requestBody);
+        Call<JsonObject> call = API.validasiIbuKandung(requestBody,authAccess,exchangeToken);
         call.enqueue(new Callback<JsonObject>() {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                Log.e("CEK","response ValidateIbuKandung : "+response.code());
+                if (response.isSuccessful()){
+                    ((Activity)mContext).runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (isSessionZoom) {
+                                BaseMeetingActivity.showProgress(false);
+                            } else {
+                                DipsSwafoto.showProgress(false);
+                            }
+                        }
+                    });
+                    try {
+                        String dataS = response.body().toString();
+                        Log.d("HASIL ValidateIbuKandung",""+dataS);
+                        JSONObject dataObj = new JSONObject(dataS);
+                        if (dataObj.has("token")) {
+                            String accessToken = dataObj.getString("token");
+                            String exchangeToken = dataObj.getString("exchange");
+                            sessions.saveAuthToken(accessToken);
+                            sessions.saveExchangeToken(exchangeToken);
+                        }
+                        String status = dataObj.getString("status");
+                        String msg = dataObj.getString("message");
+                        if (status.equals("oke")){
+                            flagMother = true;
+                        }
+                        else{
+                            chkDataCorrect.setChecked(false);
+                            flagMother = false;
+                            //tvError.setText(msg);
+                            tvError.setVisibility(View.VISIBLE);
+                            tvMandatory.setVisibility(View.GONE);
+                        }
+
+                    }
+                    catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+                else {
+                    chkDataCorrect.setChecked(false);
+                    flagMother = false;
+                    try {
+                        ((Activity)mContext).runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                if (isSessionZoom) {
+                                    BaseMeetingActivity.showProgress(false);
+                                } else {
+                                    DipsSwafoto.showProgress(false);
+                                }
+                            }
+                        });
+                        String dataS = response.body().toString();
+                        Log.d("HASIL ValidateIbuKandung",""+dataS);
+                        JSONObject dataObj = new JSONObject(dataS);
+                        String status = dataObj.getString("status");
+                        String msg = dataObj.getString("message");
+                        Toast.makeText(mContext, "Failed "+status+","+msg, Toast.LENGTH_SHORT).show();
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<JsonObject> call, Throwable t) {
+                chkDataCorrect.setChecked(false);
+                flagMother = false;
+                ((Activity)mContext).runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (isSessionZoom) {
+                            BaseMeetingActivity.showProgress(false);
+                        } else {
+                            DipsSwafoto.showProgress(false);
+                        }
+                    }
+                });
+                Toast.makeText(mContext, ""+t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void processValidateNasabahFace() {
+        JSONObject jsons = dataReqValidateFace();
+        String authAccess = "Bearer "+sessions.getAuthToken();
+        String exchangeToken = sessions.getExchangeToken();
+
+        RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), jsons.toString());
+        ApiService API = Server.getAPIService();
+        Call<JsonObject> call = API.validasiWajahNasabah(requestBody,authAccess,exchangeToken);
+        call.enqueue(new Callback<JsonObject>() {
+            @Override
+            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                Log.e("CEK","Response Code processValidateNasabahFace : "+response.code());
+                if (response.isSuccessful()){
+                    String dataS = response.body().toString();
+                    Log.e("CEK",""+dataS);
+                    try {
+                        JSONObject dataObj = new JSONObject(dataS);
+                        if (dataObj.has("token")) {
+                            String accessToken = dataObj.getString("token");
+                            String exchangeToken = dataObj.getString("exchange");
+                            sessions.saveAuthToken(accessToken);
+                            sessions.saveExchangeToken(exchangeToken);
+                        }
+
+                        String status = dataObj.getString("status");
+                        String msg = dataObj.getString("message");
+                        if (status.equals("oke")){
+                            processDTOTT();
+                        }
+                        else{
+                            ((Activity)mContext).runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    if (isSessionZoom) {
+                                        BaseMeetingActivity.showProgress(false);
+                                    } else {
+                                        DipsSwafoto.showProgress(false);
+                                    }
+                                }
+                            });
+                            dialogFailedValidation("IDEM");
+                        }
+                    }
+                    catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                } else {
+                    String msg = "";
+                    if (response.errorBody().toString().isEmpty()) {
+                        String dataS = response.errorBody().toString();
+                        Log.e("CEK","ERROR RESPON : "+dataS);
+                        try {
+                            JSONObject dataObj = new JSONObject(dataS);
+                            msg = dataObj.getString("message");
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    } else {
+                        String dataS = null;
+                        try {
+                            dataS = response.errorBody().string();
+                            Log.e("CEK","ERROR RESPON 2 : "+dataS);
+                            JSONObject dataObj = new JSONObject(dataS);
+                            if (dataObj.has("message")) {
+                                msg = dataObj.getString("message");
+                            }
+                        } catch (IOException | JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    //dialogFailedValidation("IDEM");
+                    if (response.code() == 400) {
+                        processDTOTT();
+                    }
+                    Toast.makeText(mContext,msg,Toast.LENGTH_LONG).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<JsonObject> call, Throwable t) {
+                ((Activity)mContext).runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (isSessionZoom) {
+                            BaseMeetingActivity.showProgress(false);
+                        } else {
+                            DipsSwafoto.showProgress(false);
+                        }
+                    }
+                });
+            }
+        });
+    }
+
+    private void processDukcapil(){
+        JSONObject jsons = dataReqValidate();
+        String authAccess = "Bearer "+sessions.getAuthToken();
+        String exchangeToken = sessions.getExchangeToken();
+
+        RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), jsons.toString());
+        ApiService API = Server.getAPIService();
+        Call<JsonObject> call = API.validasiDukcapil(requestBody,authAccess,exchangeToken);
+        call.enqueue(new Callback<JsonObject>() {
+            @Override
+            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                Log.e("CEL","RESPONSE Code processDukcapil : "+response.code());
                 if (response.isSuccessful()){
                     try {
                         String dataS = response.body().toString();
                         Log.d("HASIL VALIDASI DUKCAPIL",""+dataS);
                         JSONObject dataObj = new JSONObject(dataS);
+                        if (dataObj.has("token")) {
+                            String accessToken = dataObj.getString("token");
+                            String exchangeToken = dataObj.getString("exchange");
+                            sessions.saveAuthToken(accessToken);
+                            sessions.saveExchangeToken(exchangeToken);
+                        }
                         String status = dataObj.getString("status");
                         String msg = dataObj.getString("message");
                         if (status.equals("oke")){
-                            processDTOTT(fieldName,filePath);
+                            processValidateNasabahFace();
                         }
                         else{
                             //Ketika Gagal melakukan validasi dukcapil
@@ -3013,25 +3322,38 @@ public class frag_cif_new extends Fragment {
                     }
                 }
                 else {
-                    try {
-                        ((Activity)mContext).runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                if (isSessionZoom) {
-                                    BaseMeetingActivity.showProgress(false);
-                                } else {
-                                    DipsSwafoto.showProgress(false);
-                                }
+                    ((Activity)mContext).runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (isSessionZoom) {
+                                BaseMeetingActivity.showProgress(false);
+                            } else {
+                                DipsSwafoto.showProgress(false);
                             }
-                        });
-                        String dataS = response.body().toString();
-                        Log.d("HASIL VALIDASI DUKCAPIL",""+dataS);
-                        JSONObject dataObj = new JSONObject(dataS);
-                        String status = dataObj.getString("status");
-                        String msg = dataObj.getString("message");
-                        Toast.makeText(mContext, "Failed "+status+","+msg, Toast.LENGTH_SHORT).show();
-                    } catch (JSONException e) {
-                        e.printStackTrace();
+                        }
+                    });
+                    String msg = "";
+                    if (response.errorBody().toString().isEmpty()) {
+                        String dataS = response.errorBody().toString();
+                        Log.e("CEK","ERROR RESPON : "+dataS);
+                        try {
+                            JSONObject dataObj = new JSONObject(dataS);
+                            msg = dataObj.getString("message");
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    } else {
+                        String dataS = null;
+                        try {
+                            dataS = response.errorBody().string();
+                            Log.e("CEK","ERROR RESPON 2 : "+dataS);
+                            JSONObject dataObj = new JSONObject(dataS);
+                            if (dataObj.has("message")) {
+                                msg = dataObj.getString("message");
+                            }
+                        } catch (IOException | JSONException e) {
+                            e.printStackTrace();
+                        }
                     }
                 }
             }
@@ -3061,12 +3383,21 @@ public class frag_cif_new extends Fragment {
         TextView tvBodyDialog = dialogView.findViewById(R.id.tvBodyDialog);
         Button btnCancelDialog = dialogView.findViewById(R.id.btnCancelDialog);
         Button btnConfirmDialog = dialogView.findViewById(R.id.btnConfirmDialog);
-        if (kasus.equals("Dukcapil")){
+        if (kasus.equals("swafotocheck") || kasus.equals("OCR")){
             btnCancelDialog.setVisibility(View.GONE);
             tvTitleDialog.setVisibility(View.GONE);
             imgDialog.setImageDrawable(mContext.getDrawable(R.drawable.v_dialog_info));
-            tvBodyDialog.setText(getString(R.string.validate_dukcapil));
-            btnConfirmDialog.setText(getString(R.string.btn_validate_dukcapil));
+            if (kasus.equals("swafotocheck") || kasus.equals("OCR")) {
+                if (kasus.equals("OCR")) {
+                    tvBodyDialog.setText(getString(R.string.ktpnotread));
+                } else {
+                    tvBodyDialog.setText(getString(R.string.capture_back));
+                }
+                btnConfirmDialog.setText(getString(R.string.ambil_gambar));
+            }/* else {
+                tvBodyDialog.setText(getString(R.string.validate_dukcapil));
+                btnConfirmDialog.setText(getString(R.string.btn_validate_dukcapil));
+            }*/
         }
         else{
             btnCancelDialog.setVisibility(View.VISIBLE);
@@ -3086,6 +3417,8 @@ public class frag_cif_new extends Fragment {
         btnCancelDialog.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                sweetAlertDialog.cancel();
+                sweetAlertDialog.dismissWithAnimation();
                 JSONObject reqOCR = new JSONObject();
                 try {
                     reqOCR.put("startValidasi",false);
@@ -3093,8 +3426,6 @@ public class frag_cif_new extends Fragment {
                     e.printStackTrace();
                 }
                 RabbitMirroring.MirroringSendKey(reqOCR);
-                sweetAlertDialog.cancel();
-                sweetAlertDialog.dismissWithAnimation();
                 Intent dialPhoneIntent = new Intent(Intent.ACTION_DIAL, Uri.parse("tel:1500977"));
                 startActivity(dialPhoneIntent);
                 ((Activity)mContext).finishAffinity();
@@ -3103,28 +3434,35 @@ public class frag_cif_new extends Fragment {
         btnConfirmDialog.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                JSONObject reqOCR = new JSONObject();
-                try {
-                    reqOCR.put("startValidasi",false);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-                RabbitMirroring.MirroringSendKey(reqOCR);
                 sweetAlertDialog.cancel();
                 sweetAlertDialog.dismissWithAnimation();
-                if (kasus.equals("Dukcapil")){
-                   PopUpOCR();
-                }
-                else{
-                    int ret = ZoomVideoSDK.getInstance().leaveSession(false);
-                    sessions.clearPartData();
-                    RabbitMirroring.MirroringSendEndpoint(99);
-                    OutApps();
+
+                if (kasus.equals("swafotocheck")  || kasus.equals("OCR")) {
+                    sessions.saveMedia(1);
+                    chooseFromCamera();
+                } else {
+                    if (kasus.equals("Dukcapil")) {
+                        JSONObject reqOCR = new JSONObject();
+                        try {
+                            reqOCR.put("startValidasi", false);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                        RabbitMirroring.MirroringSendKey(reqOCR);
+                    }
+                    /*if (kasus.equals("Dukcapil")) {
+                        PopUpOCR();
+                    } else {*/
+                        int ret = ZoomVideoSDK.getInstance().leaveSession(false);
+                        sessions.clearPartData();
+                        RabbitMirroring.MirroringSendEndpoint(99);
+                        OutApps();
+                    //}
                 }
             }
         });
     }
-    private void processDTOTT(String fieldName, String filePath){
+    private void processDTOTT(){
         JSONObject jsons = new JSONObject();
         try {
             jsons.put("idDips",idDips);
@@ -3147,9 +3485,11 @@ public class frag_cif_new extends Fragment {
         catch (JSONException e) {
             e.printStackTrace();
         }
+        String authAccess = "Bearer "+sessions.getAuthToken();
+        String exchangeToken = sessions.getExchangeToken();
         RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), jsons.toString());
         ApiService API = Server.getAPIService();
-        Call<JsonObject> call = API.validasiDttot(requestBody);
+        Call<JsonObject> call = API.validasiDttot(requestBody,authAccess,exchangeToken);
         call.enqueue(new Callback<JsonObject>() {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
@@ -3158,10 +3498,17 @@ public class frag_cif_new extends Fragment {
                         String dataS = response.body().toString();
                         Log.d("HASIL VALIDASI DTOTT",""+dataS);
                         JSONObject dataObj = new JSONObject(dataS);
+                        if (dataObj.has("token")) {
+                            String accessToken = dataObj.getString("token");
+                            String exchangeToken = dataObj.getString("exchange");
+                            sessions.saveAuthToken(accessToken);
+                            sessions.saveExchangeToken(exchangeToken);
+                        }
                         String status = dataObj.getString("status");
                         String msg = dataObj.getString("message");
                         if (status.equals("oke")){
-                            processFormDataAttachment(fieldName,filePath);
+                            CekDataByNIK();
+                            //processFormDataAttachment(fieldName,filePath);
                         }
                         else{
                             ((Activity)mContext).runOnUiThread(new Runnable() {
@@ -3183,25 +3530,38 @@ public class frag_cif_new extends Fragment {
                     }
                 }
                 else{
-                    try {
-                        ((Activity)mContext).runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                if (isSessionZoom) {
-                                    BaseMeetingActivity.showProgress(false);
-                                } else {
-                                    DipsSwafoto.showProgress(false);
-                                }
+                    ((Activity)mContext).runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (isSessionZoom) {
+                                BaseMeetingActivity.showProgress(false);
+                            } else {
+                                DipsSwafoto.showProgress(false);
                             }
-                        });
-                        String dataS = response.body().toString();
-                        Log.d("HASIL VALIDASI DUKCAPIL",""+dataS);
-                        JSONObject dataObj = new JSONObject(dataS);
-                        String status = dataObj.getString("status");
-                        String msg = dataObj.getString("message");
-                        Toast.makeText(mContext, "Failed "+status+","+msg, Toast.LENGTH_SHORT).show();
-                    } catch (JSONException e) {
-                        e.printStackTrace();
+                        }
+                    });
+                    String msg = "";
+                    if (response.errorBody().toString().isEmpty()) {
+                        String dataS = response.errorBody().toString();
+                        Log.e("CEK","ERROR RESPON : "+dataS);
+                        try {
+                            JSONObject dataObj = new JSONObject(dataS);
+                            msg = dataObj.getString("message");
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    } else {
+                        String dataS = null;
+                        try {
+                            dataS = response.errorBody().string();
+                            Log.e("CEK","ERROR RESPON 2 : "+dataS);
+                            JSONObject dataObj = new JSONObject(dataS);
+                            if (dataObj.has("message")) {
+                                msg = dataObj.getString("message");
+                            }
+                        } catch (IOException | JSONException e) {
+                            e.printStackTrace();
+                        }
                     }
                 }
             }
@@ -3209,6 +3569,249 @@ public class frag_cif_new extends Fragment {
             @Override
             public void onFailure(Call<JsonObject> call, Throwable t) {
 
+            }
+        });
+    }
+
+    private void CekDataByNIK(){
+        JSONObject jsons = new JSONObject();
+        try {
+            jsons.put("idDips",idDips);
+            jsons.put("nama",nama);
+            jsons.put("nik",nik);
+        }
+        catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        Log.e("CEL","REQUEST CekDataByNIK : "+jsons.toString());
+
+        String authAccess = "Bearer "+sessions.getAuthToken();
+        String exchangeToken = sessions.getExchangeToken();
+
+        RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), jsons.toString());
+
+        ApiService API = Server.getAPIService();
+        Call<JsonObject> call = API.CekByNIK(requestBody,authAccess,exchangeToken);
+        Log.e("CEL","URL CekDataByNIK : "+call.request().url());
+        call.enqueue(new Callback<JsonObject>() {
+            @Override
+            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                Log.e("CEL","RESPONSE Code CekDataByNIK : "+response.code());
+                if (response.isSuccessful()) {
+                    String dataS = response.body().toString();
+                    Log.e("CEK","RESPONSE CekDataByNIK : "+dataS);
+                    try {
+                        JSONObject jsObj = new JSONObject(dataS);
+                        if (jsObj.has("token")) {
+                            String accessToken = jsObj.getString("token");
+                            String exchangeToken = jsObj.getString("exchange");
+                            sessions.saveAuthToken(accessToken);
+                            sessions.saveExchangeToken(exchangeToken);
+                        }
+                        int err_code = jsObj.getInt("code");
+                        String message = jsObj.getString("message");
+                        if (err_code == 200) {
+                            JSONObject dataObj = jsObj.getJSONObject("data");
+                            idDips = dataObj.getString("idDips");
+                            sessions.saveIdDips(idDips);
+
+                            String getDataNasabah = sessions.getNasabah();
+                            Log.e("CEK","getDataNasabah : "+getDataNasabah);
+                            JSONObject dataNasabahObj = null;
+                            if (getDataNasabah != null && !getDataNasabah.isEmpty()) {
+                                dataNasabahObj = new JSONObject(getDataNasabah);
+                            }
+
+                            String namaIdentitas = "";
+                            if (dataObj.has("namaLengkap")) {
+                                namaIdentitas = dataObj.getString("namaLengkap");
+                            }
+                            String no_handphone = "";
+                            if (dataObj.has("noHp")) {
+                                no_handphone = dataObj.getString("noHp");
+                            }
+                            String noIdentitas = "";
+                            if (dataObj.has("nik")) {
+                                noIdentitas = dataObj.getString("nik");
+                            }
+                            String branchCode = "";
+                            if (dataObj.has("branchCode")) {
+                                branchCode = dataObj.getString("branchCode");
+                            }
+
+                            dataNasabahObj.put("noHp",no_handphone);
+                            dataNasabahObj.put("namaLengkap",namaIdentitas);
+                            dataNasabahObj.put("nik",noIdentitas);
+                            dataNasabahObj.put("branchCode",branchCode);
+                            sessions.saveNasabah(dataNasabahObj.toString());
+                            String getDataNasabah2 = sessions.getNasabah();
+                            Log.e("CEK","getDataNasabah2 : "+getDataNasabah2);
+
+                            if (dataObj.has("noCif")) {
+                                if (!dataObj.isNull("noCif")) {
+                                    String noCif = dataObj.getString("noCif");
+                                    if (!noCif.isEmpty()) {
+                                        sessions.saveNoCIF(noCif);
+                                        sessions.saveIsCust(true);
+                                        processValidationDataNasabah();
+                                    } else {
+                                        processFormDataAttachment2("ktp",picturePathCrop);
+                                    }
+                                } else {
+                                    processFormDataAttachment2("ktp",picturePathCrop);
+                                }
+                            }
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                } else {
+                    if (isSessionZoom) {
+                        BaseMeetingActivity.showProgress(false);
+                    } else {
+                        DipsSwafoto.showProgress(false);
+                    }
+                    String msg = "";
+                    if (response.errorBody().toString().isEmpty()) {
+                        String dataS = response.errorBody().toString();
+                        Log.e("CEK","ERROR RESPON : "+dataS);
+                        try {
+                            JSONObject dataObj = new JSONObject(dataS);
+                            msg = dataObj.getString("message");
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    } else {
+                        String dataS = null;
+                        try {
+                            dataS = response.errorBody().string();
+                            Log.e("CEK","ERROR RESPON 2 : "+dataS);
+                            JSONObject dataObj = new JSONObject(dataS);
+                            if (dataObj.has("message")) {
+                                msg = dataObj.getString("message");
+                            }
+                        } catch (IOException | JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<JsonObject> call, Throwable t) {
+                if (isSessionZoom) {
+                    BaseMeetingActivity.showProgress(false);
+                } else {
+                    DipsSwafoto.showProgress(false);
+                }
+            }
+        });
+    }
+
+    private void processValidationDataNasabah() {
+        JSONObject jsons = new JSONObject();
+        try {
+            jsons.put("idDips",idDips);
+            jsons.put("namaLengkap",nama);
+            jsons.put("nik",nik);
+            jsons.put("tglLahir",ttl);
+            jsons.put("tempatlahir",tmptLahir);
+            jsons.put("namaLengkapIbu",namaIbuKandung);
+        }
+        catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        String authAccess = "Bearer "+sessions.getAuthToken();
+        String exchangeToken = sessions.getExchangeToken();
+
+        RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), jsons.toString());
+
+        ApiService API = Server.getAPIService();
+        Call<JsonObject> call = API.validasiDataNasabah(requestBody,authAccess,exchangeToken);
+        Log.e("CEL","URL validasiDataNasabah : "+call.request().url());
+        call.enqueue(new Callback<JsonObject>() {
+            @Override
+            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                Log.e("CEL","RESPONSE Code validasiDataNasabah : "+response.code());
+
+                if (response.isSuccessful()) {
+                    String dataS = response.body().toString();
+                    Log.e("CEK","RESPONSE validasiDataNasabah : "+dataS);
+                    try {
+                        JSONObject dataObj = new JSONObject(dataS);
+                        if (dataObj.has("token")) {
+                            String accessToken = dataObj.getString("token");
+                            String exchangeToken = dataObj.getString("exchange");
+                            sessions.saveAuthToken(accessToken);
+                            sessions.saveExchangeToken(exchangeToken);
+                        }
+                        String status = dataObj.getString("status");
+                        String msg = dataObj.getString("message");
+                        if (status.equals("oke")){
+                            processFormDataAttachment2("ktp",picturePathCrop);
+                        } else {
+                            ((Activity)mContext).runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    if (isSessionZoom) {
+                                        BaseMeetingActivity.showProgress(false);
+                                    } else {
+                                        DipsSwafoto.showProgress(false);
+                                    }
+                                }
+                            });
+                            dialogFailedValidation("IDEM");
+                        }
+                    } catch (JSONException e) {
+                        if (isSessionZoom) {
+                            BaseMeetingActivity.showProgress(false);
+                        } else {
+                            DipsSwafoto.showProgress(false);
+                        }
+                        throw new RuntimeException(e);
+                    }
+                } else {
+                    if (isSessionZoom) {
+                        BaseMeetingActivity.showProgress(false);
+                    } else {
+                        DipsSwafoto.showProgress(false);
+                    }
+                    dialogFailedValidation("IDEM");
+                    String msg = "";
+                    if (response.errorBody().toString().isEmpty()) {
+                        String dataS = response.errorBody().toString();
+                        Log.e("CEK","ERROR RESPON : "+dataS);
+                        try {
+                            JSONObject dataObj = new JSONObject(dataS);
+                            msg = dataObj.getString("message");
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    } else {
+                        String dataS = null;
+                        try {
+                            dataS = response.errorBody().string();
+                            Log.e("CEK","ERROR RESPON 2 : "+dataS);
+                            JSONObject dataObj = new JSONObject(dataS);
+                            if (dataObj.has("message")) {
+                                msg = dataObj.getString("message");
+                            }
+                        } catch (IOException | JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<JsonObject> call, Throwable t) {
+                if (isSessionZoom) {
+                    BaseMeetingActivity.showProgress(false);
+                } else {
+                    DipsSwafoto.showProgress(false);
+                }
             }
         });
     }
@@ -3221,13 +3824,16 @@ public class frag_cif_new extends Fragment {
         Call<JsonObject> call = null;
         MultipartBody multipartBody = null;
         String contentType = "";
+        String authAccess = "Bearer "+sessions.getAuthToken();
+        String exchangeToken = sessions.getExchangeToken();
+
         multipartBody = new MultipartBody.Builder()
                 .addPart(MultipartBody.Part.createFormData(fieldName,file.getName(),requestFile))
                 .addPart(MultipartBody.Part.createFormData("idDips",null,requestidDips))
                 .build();
         contentType = "multipart/form-data; charset=utf-8; boundary=" + multipartBody.boundary();
 
-        call = API.formAttachment(contentType,multipartBody);
+        call = API.formAttachment(contentType,authAccess,exchangeToken,multipartBody);
 
         Log.e("CEK","processFormDataAttachment call url : "+call.request().url());
 
@@ -3250,6 +3856,12 @@ public class frag_cif_new extends Fragment {
                     Log.e("CEK","processFormDataAttachment : "+dataS);
                     try {
                         JSONObject dataObj = new JSONObject(dataS);
+                        if (dataObj.has("token")) {
+                            String accessToken = dataObj.getString("token");
+                            String exchangeToken = dataObj.getString("exchange");
+                            sessions.saveAuthToken(accessToken);
+                            sessions.saveExchangeToken(exchangeToken);
+                        }
                         int errCode = dataObj.getInt("code");
                         String msg = dataObj.getString("message");
                         if (errCode == 200 || errCode == 202) {
@@ -3379,6 +3991,129 @@ public class frag_cif_new extends Fragment {
                 if (fieldName.equals("ktp")) {
                     IMG_BYTE = new byte[0];
                 }
+                Toast.makeText(mContext,t.getMessage(),Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void processFormDataAttachment2(String keys, String picturePath) {
+        File file = new File(picturePath);
+        RequestBody requestFile = RequestBody.create(MediaType.parse("image/jpeg"),file);
+        RequestBody requestidDips = RequestBody.create(MediaType.parse("text/plain"), String.valueOf(idDips));
+        Log.e("CEK","filePath : "+ picturePath +" | requestidDips : "+requestidDips);
+        ApiService API = Server.getAPIService2();
+        Call<JsonObject> call = null;
+        MultipartBody multipartBody = null;
+        String contentType = "";
+        String authAccess = "Bearer "+sessions.getAuthToken();
+        String exchangeToken = sessions.getExchangeToken();
+
+        multipartBody = new MultipartBody.Builder()
+                .addPart(MultipartBody.Part.createFormData(keys,file.getName(),requestFile))
+                .addPart(MultipartBody.Part.createFormData("idDips",null,requestidDips))
+                .build();
+        contentType = "multipart/form-data; charset=utf-8; boundary=" + multipartBody.boundary();
+
+        call = API.formAttachment(contentType,authAccess,exchangeToken,multipartBody);
+
+        Log.e("CEK","processFormDataAttachment call url : "+call.request().url());
+
+        call.enqueue(new Callback<JsonObject>() {
+            @Override
+            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                Log.e("CEK","processFormDataAttachment response code : "+response.code());
+                ((Activity)mContext).runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (isSessionZoom) {
+                            BaseMeetingActivity.showProgress(false);
+                        } else {
+                            DipsSwafoto.showProgress(false);
+                        }
+                    }
+                });
+                if (response.isSuccessful()) {
+                    String dataS = response.body().toString();
+                    Log.e("CEK","processFormDataAttachment : "+dataS);
+                    try {
+                        JSONObject dataObj = new JSONObject(dataS);
+                        if (dataObj.has("token")) {
+                            String accessToken = dataObj.getString("token");
+                            String exchangeToken = dataObj.getString("exchange");
+                            sessions.saveAuthToken(accessToken);
+                            sessions.saveExchangeToken(exchangeToken);
+                        }
+                        int errCode = dataObj.getInt("code");
+                        String msg = dataObj.getString("message");
+                        if (errCode == 200 || errCode == 202) {
+                            if (keys.equals("ktp")) {
+                                processFormDataAttachment2("foto",picturePath);
+                            } else if (keys.equals("foto")) {
+                                processFormDataAttachment2("ttd",picturePathCrop);
+                            }
+                            if (!isSessionZoom && formCode == 22 && keys.equals("ttd")) {
+                                Intent intent = new Intent(mContext, DipsWaitingRoom.class);
+                                intent.putExtra("CUSTNAME",nama);
+                                startActivity(intent);
+                                ((Activity) mContext).finishAffinity();
+
+                                if (mediaFilePhoto != null) {
+                                    if (mediaFilePhoto.exists()) {
+                                        try {
+                                            mediaFilePhoto.getCanonicalFile().delete();
+                                            if (mediaFilePhoto.exists()) {
+                                                getActivity().getApplicationContext().deleteFile(mediaFilePhoto.getName());
+                                            }
+                                        } catch (IOException e) {
+                                            e.printStackTrace();
+                                        }
+                                    }
+                                }
+
+                                if (mediaFilePhotoCropSwafoto != null) {
+                                    if (mediaFilePhotoCropSwafoto.exists()) {
+                                        try {
+                                            mediaFilePhotoCropSwafoto.getCanonicalFile().delete();
+                                            if (mediaFilePhotoCropSwafoto.exists()) {
+                                                getActivity().getApplicationContext().deleteFile(mediaFilePhotoCropSwafoto.getName());
+                                            }
+                                        } catch (IOException e) {
+                                            e.printStackTrace();
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        else {
+                            Toast.makeText(mContext,msg,Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                    catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+                else {
+                    if (response.body() != null) {
+                        Log.e("CEK","response body : "+ response.body());
+                    } else {
+                        Log.e("CEK","response errorBody : "+response.errorBody().toString());
+                    }
+                    Toast.makeText(mContext,getString(R.string.msg_error),Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<JsonObject> call, Throwable t) {
+                ((Activity)mContext).runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (isSessionZoom) {
+                            BaseMeetingActivity.showProgress(false);
+                        } else {
+                            DipsSwafoto.showProgress(false);
+                        }
+                    }
+                });
                 Toast.makeText(mContext,t.getMessage(),Toast.LENGTH_SHORT).show();
             }
         });
@@ -3549,8 +4284,10 @@ public class frag_cif_new extends Fragment {
         } catch (JSONException e) {
             e.printStackTrace();
         }
+        String authAccess = "Bearer "+sessions.getAuthToken();
+        String exchangeToken = sessions.getExchangeToken();
         RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), dataObjCIF.toString());
-        Server.getAPIService().saveForm(requestBody).enqueue(new Callback<JsonObject>() {
+        Server.getAPIService().saveForm(requestBody,authAccess,exchangeToken).enqueue(new Callback<JsonObject>() {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
                 Log.e("CEK","APISaveForm code : "+response.code());
@@ -3559,10 +4296,15 @@ public class frag_cif_new extends Fragment {
                     Log.e("CEK","APISaveForm dataS : "+dataS);
                     try {
                         JSONObject dataObj = new JSONObject(dataS);
+                        if (dataObj.has("token")) {
+                            String accessToken = dataObj.getString("token");
+                            String exchangeToken = dataObj.getString("exchange");
+                            sessions.saveAuthToken(accessToken);
+                            sessions.saveExchangeToken(exchangeToken);
+                        }
                         String idForm = dataObj.getJSONObject("data").getString("idForm");
                         idFormObj = new JSONObject();
                         idFormObj.put("idForm",idForm);
-
                         processSendOTP();
 
                     } catch (JSONException e) {
@@ -3612,14 +4354,27 @@ public class frag_cif_new extends Fragment {
 
         Log.e("CEK","processValidateOTP : "+ dataObjOTP);
 
+        String authAccess = "Bearer "+sessions.getAuthToken();
+        String exchangeToken = sessions.getExchangeToken();
         RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), dataObjOTP.toString());
-        Server.getAPIService().ValidateOTP(requestBody).enqueue(new Callback<JsonObject>() {
+        Server.getAPIService().ValidateOTP(requestBody,authAccess,exchangeToken).enqueue(new Callback<JsonObject>() {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
                 Log.e("CEK","processValidateOTP code : "+response.code());
                 if (response.isSuccessful()) {
                     String dataS = response.body().toString();
                     Log.e("CEK","processValidateOTP : "+dataS);
+                    try {
+                        JSONObject dataObj = new JSONObject(dataS);
+                        if (dataObj.has("token")) {
+                            String accessToken = dataObj.getString("token");
+                            String exchangeToken = dataObj.getString("exchange");
+                            sessions.saveAuthToken(accessToken);
+                            sessions.saveExchangeToken(exchangeToken);
+                        }
+                    } catch (JSONException e) {
+                        throw new RuntimeException(e);
+                    }
                     RabbitMirroring.MirroringSendKey(idFormObj);
                     processApprovalStatus();
                 } else {
@@ -3666,7 +4421,10 @@ public class frag_cif_new extends Fragment {
             e.printStackTrace();
         }
 
-        Server.getAPIService().ApprovalStatus(idForm).enqueue(new Callback<JsonObject>() {
+        String authAccess = "Bearer "+sessions.getAuthToken();
+        String exchangeToken = sessions.getExchangeToken();
+
+        Server.getAPIService().ApprovalStatus(idForm,authAccess,exchangeToken).enqueue(new Callback<JsonObject>() {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
                 Log.e("CEK", this+" processApprovalStatus code : "+response.code());
@@ -3685,6 +4443,12 @@ public class frag_cif_new extends Fragment {
                     Log.e("CEK","processApprovalStatus dataS : "+dataS);
                     try {
                         JSONObject dataObj = new JSONObject(dataS);
+                        if (dataObj.has("token")) {
+                            String accessToken = dataObj.getString("token");
+                            String exchangeToken = dataObj.getString("exchange");
+                            sessions.saveAuthToken(accessToken);
+                            sessions.saveExchangeToken(exchangeToken);
+                        }
                         if (dataObj.getJSONObject("data").has("noCif")) {
                             String noCif = dataObj.getJSONObject("data").getString("noCif");
                             sessions.saveNoCIF(noCif);
@@ -3796,9 +4560,11 @@ public class frag_cif_new extends Fragment {
 
         Log.e("CEK","processSendOTP : "+ dataObjOTP);
 
+        String authAccess = "Bearer "+sessions.getAuthToken();
+        String exchangeToken = sessions.getExchangeToken();
         RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), dataObjOTP.toString());
 
-        Server.getAPIService().SendOTP(requestBody).enqueue(new Callback<JsonObject>() {
+        Server.getAPIService().SendOTP(requestBody,authAccess,exchangeToken).enqueue(new Callback<JsonObject>() {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
                 ((Activity)mContext).runOnUiThread(new Runnable() {
@@ -3817,6 +4583,12 @@ public class frag_cif_new extends Fragment {
                     Log.e("CEK","processSendOTP : "+dataS);
                     try {
                         JSONObject dataObj = new JSONObject(dataS);
+                        if (dataObj.has("token")) {
+                            String accessToken = dataObj.getString("token");
+                            String exchangeToken = dataObj.getString("exchange");
+                            sessions.saveAuthToken(accessToken);
+                            sessions.saveExchangeToken(exchangeToken);
+                        }
                         transactionId = dataObj.getJSONObject("data").getString("transactionId");
                         RabbitMirroring.MirroringSendEndpoint(11);
                         pageOTP();
@@ -3981,18 +4753,6 @@ public class frag_cif_new extends Fragment {
         if (formCode == 4) {
             imgBase64 = encodedImage;
             keys = "ktp";
-            /*File mediaFilesCrop = null;
-            try {
-                mediaFilesCrop = createTemporaryFile(imageBytes);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            int file_mediaFilesCrop = Integer.parseInt(String.valueOf(mediaFilesCrop.length()/1024));
-
-            Bitmap bitmapOptimal = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length);
-
-            Log.e("CEK", "file_mediaFilesCrop :"+file_mediaFilesCrop+" | bitmapOptimal.getWidth() : "+bitmapOptimal.getWidth()+" | bitmapOptimal.getHeight() : "+bitmapOptimal.getHeight());*/
-
             imgtoBase64OCR();
         } else if (formCode == 22) {
             keys = "swafoto";
@@ -4043,10 +4803,12 @@ public class frag_cif_new extends Fragment {
         } catch (JSONException e) {
             e.printStackTrace();
         }
+        String authAccess = "Bearer "+sessions.getAuthToken();
+        String exchangeToken = sessions.getExchangeToken();
         RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), jsons.toString());
         ApiService API = Server.getAPIService();
-        Call<JsonObject> call = API.ocrNpwp(requestBody);
-        Log.e("CEK", "url ocrKTP : " + call.request().url());
+        Call<JsonObject> call = API.ocrNpwp(requestBody,authAccess,exchangeToken);
+        Log.e("CEK", "url ocrNPWP : " + call.request().url());
         call.enqueue(new Callback<JsonObject>() {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
@@ -4067,6 +4829,12 @@ public class frag_cif_new extends Fragment {
                     try {
                         JSONObject jsObj = new JSONObject(dataS);
                         npwp = jsObj.getJSONObject("data").getString("npwpId");
+                        if (jsObj.has("token")) {
+                            String accessToken = jsObj.getString("token");
+                            String exchangeToken = jsObj.getString("exchange");
+                            sessions.saveAuthToken(accessToken);
+                            sessions.saveExchangeToken(exchangeToken);
+                        }
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
@@ -4090,16 +4858,22 @@ public class frag_cif_new extends Fragment {
     }
 
     private void ocrKTP(){
-        Log.d("Masuk OCR","");
+        String baseImages = encodedImage;
+        Log.d("Masuk OCR","ocrKTP : "+ocrKTP);
+        if (ocrKTP) {
+            baseImages = encodedImageCrop;
+        }
         JSONObject jsons = new JSONObject();
         try {
-            jsons.put("image",encodedImage);
+            jsons.put("image",baseImages);
         } catch (JSONException e) {
             e.printStackTrace();
         }
+        String authAccess = "Bearer "+sessions.getAuthToken();
+        String exchangeToken = sessions.getExchangeToken();
         RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), jsons.toString());
         ApiService API = Server.getAPIService();
-        Call<JsonObject> call = API.ocrKtp(requestBody);
+        Call<JsonObject> call = API.ocrKtp(requestBody,authAccess,exchangeToken);
         Log.e("CEK","url ocrKTP : "+call.request().url());
         call.enqueue(new Callback<JsonObject>() {
             @Override
@@ -4122,6 +4896,12 @@ public class frag_cif_new extends Fragment {
                         JSONObject jsObj = new JSONObject(dataS);
                         int errCode = jsObj.getInt("code");
                         String message = jsObj.getString("message");
+                        if (jsObj.has("token")) {
+                            String accessToken = jsObj.getString("token");
+                            String exchangeToken = jsObj.getString("exchange");
+                            sessions.saveAuthToken(accessToken);
+                            sessions.saveExchangeToken(exchangeToken);
+                        }
                         if (errCode == 200) {
                             JSONObject dataObj = jsObj.getJSONObject("data");
                             datasReqOCR = dataObj;
@@ -4189,6 +4969,15 @@ public class frag_cif_new extends Fragment {
                             datasReqOCR.remove("status_perkawinan");
 
                             flagOCR = true;
+                            PopUpOCR();
+                            JSONObject dataReq = dataReqOCR2();
+                            JSONObject reqOCR = new JSONObject();
+                            try {
+                                reqOCR.put("ocr",dataReq);
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                            RabbitMirroring.MirroringSendKey(reqOCR);
                         } else {
                             Toast.makeText(mContext, message, Toast.LENGTH_SHORT).show();
                         }
@@ -4202,6 +4991,7 @@ public class frag_cif_new extends Fragment {
                     String msg = "";
                     if (response.errorBody().toString().isEmpty()) {
                         String dataS = response.errorBody().toString();
+                        Log.e("CEK","ERROR RESPON : "+dataS);
                         try {
                             JSONObject dataObj = new JSONObject(dataS);
                             msg = dataObj.getString("message");
@@ -4212,6 +5002,7 @@ public class frag_cif_new extends Fragment {
                         String dataS = null;
                         try {
                             dataS = response.errorBody().string();
+                            Log.e("CEK","ERROR RESPON 2 : "+dataS);
                             JSONObject dataObj = new JSONObject(dataS);
                             if (dataObj.has("message")) {
                                 msg = dataObj.getString("message");
@@ -4221,7 +5012,8 @@ public class frag_cif_new extends Fragment {
                         }
                     }
 
-                    Toast.makeText(mContext,msg,Toast.LENGTH_SHORT).show();
+                    dialogFailedValidation("OCR");
+                    //Toast.makeText(mContext,msg,Toast.LENGTH_SHORT).show();
                 }
             }
             @Override
@@ -4367,28 +5159,25 @@ public class frag_cif_new extends Fragment {
             }
             else if (requestCode == REQUESTCODE_SWAFOTO){
                 sessions.saveFlagUpDoc(true);
-                /*byte[] resultCamera = data.getByteArrayExtra("result_camera");
-                byte[] resultCropCamera = data.getByteArrayExtra("result_cropImage");
-                Bitmap bitmap = BitmapFactory.decodeByteArray(resultCamera, 0, resultCamera.length);*/
                 String filePaths = data.getStringExtra("result_camera");
                 String filePathsCrop = data.getStringExtra("result_cropImage");
                 Bitmap bitmap = BitmapFactory.decodeFile(filePaths);
+                Bitmap bitmapCrop = BitmapFactory.decodeFile(filePathsCrop);
+
+                if (ocrKTP) {
+                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                    bitmapCrop.compress(Bitmap.CompressFormat.JPEG,100, baos);
+                    byte[] imageBytesCrop = baos.toByteArray();
+                    encodedImageCrop = Base64.encodeToString(imageBytesCrop, Base64.NO_WRAP);
+                }
 
                 mediaFilePhoto = new File(filePaths);
                 mediaFilePhotoCropSwafoto = new File(filePathsCrop);
-
-                /*try {
-                    mediaFilePhoto = createTemporaryFile(resultCamera);
-                    mediaFilePhotoCropSwafoto = createTemporaryFile(resultCropCamera);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                picturePath = mediaFilePhoto.getAbsolutePath();*/
                 picturePath = filePaths;
+                picturePathCrop = filePathsCrop;
 
                 LL.setBackgroundResource(0);
                 btnNext.setVisibility(View.VISIBLE);
-                //btnNext.setBackgroundTintList(mContext.getResources().getColorStateList(R.color.zm_button));
                 btnNext.setClickable(true);
                 imgDelete.setVisibility(View.VISIBLE);
                 viewImage.setVisibility(View.VISIBLE);
@@ -4418,6 +5207,8 @@ public class frag_cif_new extends Fragment {
         Call<JsonObject> call = null;
         MultipartBody multipartBody = null;
         String contentType = "";
+        String authAccess = "Bearer "+sessions.getAuthToken();
+        String exchangeToken = sessions.getExchangeToken();
 
         multipartBody = new MultipartBody.Builder()
                 .addPart(MultipartBody.Part.createFormData("firstImage", mediaFilePhoto.getName(), requestFile))
@@ -4425,7 +5216,7 @@ public class frag_cif_new extends Fragment {
                 .build();
         contentType = "multipart/form-data; charset=utf-8; boundary=" + multipartBody.boundary();
 
-        call = API.swafotoCheck(contentType, multipartBody);
+        call = API.swafotoCheck(contentType, authAccess, exchangeToken, multipartBody);
 
         Log.e("CEK", "processSwafotoCheck call url : " + call.request().url());
 
@@ -4433,25 +5224,33 @@ public class frag_cif_new extends Fragment {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
                 Log.e("CEK","processSwafotoCheck response code : "+response.code());
-                ((Activity)mContext).runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (isSessionZoom) {
-                            BaseMeetingActivity.showProgress(false);
-                        } else {
-                            DipsSwafoto.showProgress(false);
-                        }
-                    }
-                });
                 if (response.isSuccessful()) {
                     btnNext.setClickable(true);
                     btnNext.setBackgroundTintList(mContext.getResources().getColorStateList(R.color.zm_button));
                     String dataS = response.body().toString();
-                    Log.e("CEK","processFormDataAttachment : "+dataS);
+                    new Handler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (ocrKTP) {
+                                imgtoBase64OCR();
+                            }
+                        }
+                    },500);
                 } else {
+                    ((Activity)mContext).runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (isSessionZoom) {
+                                BaseMeetingActivity.showProgress(false);
+                            } else {
+                                DipsSwafoto.showProgress(false);
+                            }
+                        }
+                    });
                     btnNext.setClickable(false);
                     btnNext.setBackgroundTintList(mContext.getResources().getColorStateList(R.color.btnFalse));
                     Toast.makeText(mContext, R.string.capture_back,Toast.LENGTH_SHORT).show();
+                    dialogFailedValidation("swafotocheck");
                 }
             }
 

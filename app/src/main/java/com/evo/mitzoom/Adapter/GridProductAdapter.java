@@ -149,13 +149,15 @@ public class GridProductAdapter extends RecyclerView.Adapter<GridProductAdapter.
 
     private void processProductMedia(int produkId, GriViewHolder holder) {
         Log.e("CEK","processProductMedia : "+produkId);
-        Server.getAPIWAITING_PRODUCT().getProductMedia(produkId).enqueue(new Callback<ResponseBody>() {
+        String authAccess = "Bearer "+sessions.getAuthToken();
+        String exchangeToken = sessions.getExchangeToken();
+        Server.getAPIWAITING_PRODUCT().getProductMedia(produkId,authAccess,exchangeToken).enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                 if (response.code() == 200) {
                     String Content_Type = response.headers().get("Content-Type");
                     Log.e("CEK","processProductMedia Content_Type : "+Content_Type);
-                    if (Content_Type.indexOf("json") < 0) {
+                    if (!Content_Type.contains("json")) {
                         InputStream in = response.body().byteStream();
                         processParsingMedia(in, Content_Type,holder);
                     }
@@ -170,7 +172,7 @@ public class GridProductAdapter extends RecyclerView.Adapter<GridProductAdapter.
     }
 
     private void processParsingMedia(InputStream in, String content_type, GriViewHolder holder) {
-        if (content_type.indexOf("image") > -1) {
+        if (content_type.contains("image")) {
             Bitmap bitmap = BitmapFactory.decodeStream(in);
             holder.ads.setImageBitmap(bitmap);
         }

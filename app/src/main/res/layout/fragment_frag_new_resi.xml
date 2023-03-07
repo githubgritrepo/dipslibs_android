@@ -125,7 +125,7 @@
                         android:background="@drawable/oval_background_10dp"
                         android:backgroundTint="@color/btnFalse"
                         android:drawableStart="@drawable/ic_unduh"
-                        android:text="@string/unduh_formulir"
+                        android:text="@string/unduh_resi"
                         android:textColor="@color/white"
                         android:textSize="12dp"
                         android:textStyle="bold" />

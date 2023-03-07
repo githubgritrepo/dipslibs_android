@@ -133,13 +133,21 @@ public class frag_list_produk extends Fragment {
     }
 
     private void processGetTNC() {
-        Server.getAPIService().getTNC(1).enqueue(new Callback<JsonObject>() {
+        String authAccess = "Bearer "+sessions.getAuthToken();
+        String exchangeToken = sessions.getExchangeToken();
+        Server.getAPIService().getTNC(1,authAccess,exchangeToken).enqueue(new Callback<JsonObject>() {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
                 if (response.isSuccessful()) {
                     String dataS = response.body().toString();
                     try {
                         JSONObject dataObj = new JSONObject(dataS);
+                        if (dataObj.has("token")) {
+                            String accessToken = dataObj.getString("token");
+                            String exchangeToken = dataObj.getString("exchange");
+                            sessions.saveAuthToken(accessToken);
+                            sessions.saveExchangeToken(exchangeToken);
+                        }
                         dataTnC = dataObj.getJSONObject("data").getString("data");
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -262,13 +270,21 @@ public class frag_list_produk extends Fragment {
     }
 
     private void processGetProduct() {
-        Server.getAPIWAITING_PRODUCT().getNewProductPublish().enqueue(new Callback<JsonObject>() {
+        String authAccess = "Bearer "+sessions.getAuthToken();
+        String exchangeToken = sessions.getExchangeToken();
+        Server.getAPIWAITING_PRODUCT().getNewProductPublish(authAccess,exchangeToken).enqueue(new Callback<JsonObject>() {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
                 if (response.isSuccessful()) {
                     String dataS = response.body().toString();
                     try {
                         JSONObject dataObj = new JSONObject(dataS);
+                        if (dataObj.has("token")) {
+                            String accessToken = dataObj.getString("token");
+                            String exchangeToken = dataObj.getString("exchange");
+                            sessions.saveAuthToken(accessToken);
+                            sessions.saveExchangeToken(exchangeToken);
+                        }
                         JSONArray dataRows = dataObj.getJSONArray("data");
                         for (int i = 0; i < dataRows.length(); i++) {
                             JSONObject produkId = dataRows.getJSONObject(i).getJSONObject("produkId");

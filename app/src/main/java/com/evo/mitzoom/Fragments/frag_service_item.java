@@ -443,6 +443,9 @@ public class frag_service_item extends Fragment {
             e.printStackTrace();
         }
 
+        String authAccess = "Bearer "+sessions.getAuthToken();
+        String exchangeToken = sessions.getExchangeToken();
+
         Log.e("CEK","processSendFormCompaint tgl : "+tgl+" | getCodeType : "+getCodeType);
 
         RequestBody requesttgl = RequestBody.create(MediaType.parse("text/plain"), tgl);
@@ -459,7 +462,7 @@ public class frag_service_item extends Fragment {
         String contentType = "multipart/form-data; charset=utf-8; boundary=" + multipartBody.boundary();
 
         ApiService API = Server.getAPIService2();
-        Call<JsonObject> call = API.formComplaintOld(contentType,multipartBody);
+        Call<JsonObject> call = API.formComplaintOld(contentType,authAccess,exchangeToken,multipartBody);
         Log.e("CEK","processSendFormCompaint call : "+call.request());
         call.enqueue(new Callback<JsonObject>() {
             @Override
@@ -470,6 +473,12 @@ public class frag_service_item extends Fragment {
                     Log.e("CEK","processSendFormCompaint dataS : "+dataS);
                     try {
                         JSONObject dataObj = new JSONObject(dataS);
+                        if (dataObj.has("token")) {
+                            String accessToken = dataObj.getString("token");
+                            String exchangeToken = dataObj.getString("exchange");
+                            sessions.saveAuthToken(accessToken);
+                            sessions.saveExchangeToken(exchangeToken);
+                        }
                         noPengaduan = dataObj.getJSONObject("data").getString("noPengaduan");
                         sessions.saveNoComplaint(noPengaduan);
                     } catch (JSONException e) {
@@ -512,7 +521,9 @@ public class frag_service_item extends Fragment {
     private void processGetForm(int formId) {
         Log.e("CEK", this+" MASUK processGetForm formId : "+formId);
         Log.e("CEK", this+" MASUK formCode : "+formCode);
-        Server.getAPIWAITING_PRODUCT().getFormBuilder(formId).enqueue(new Callback<JsonObject>() {
+        String authAccess = "Bearer "+sessions.getAuthToken();
+        String exchangeToken = sessions.getExchangeToken();
+        Server.getAPIWAITING_PRODUCT().getFormBuilder(formId,authAccess,exchangeToken).enqueue(new Callback<JsonObject>() {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
                 swipe.setRefreshing(false);
@@ -525,6 +536,12 @@ public class frag_service_item extends Fragment {
                     llFormBuild.removeAllViewsInLayout();
                     try {
                         JSONObject dataObj = new JSONObject(dataS);
+                        if (dataObj.has("token")) {
+                            String accessToken = dataObj.getString("token");
+                            String exchangeToken = dataObj.getString("exchange");
+                            sessions.saveAuthToken(accessToken);
+                            sessions.saveExchangeToken(exchangeToken);
+                        }
                         JSONObject dataObjForm = dataObj.getJSONObject("data");
                         String dataForm = dataObjForm.getString("data");
                         Log.e("CEK","dataForm : "+dataForm);
@@ -907,7 +924,9 @@ public class frag_service_item extends Fragment {
     private void processGetDynamicURL(Spinner spin, String urlPath, String nameDataEl) {
         flagStuckSpin = false;
         Log.e("CEK","processGetDynamicURL : "+urlPath);
-        Server.getAPIService().getDynamicUrl(urlPath).enqueue(new Callback<JsonObject>() {
+        String authAccess = "Bearer "+sessions.getAuthToken();
+        String exchangeToken = sessions.getExchangeToken();
+        Server.getAPIService().getDynamicUrl(urlPath,authAccess,exchangeToken).enqueue(new Callback<JsonObject>() {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
                 Log.e("CEK","processGetDynamicURL code : "+response.code());
@@ -916,6 +935,12 @@ public class frag_service_item extends Fragment {
                     Log.e("CEK","processGetDynamicURL dataS : "+dataS);
                     try {
                         JSONObject dataObj = new JSONObject(dataS);
+                        if (dataObj.has("token")) {
+                            String accessToken = dataObj.getString("token");
+                            String exchangeToken = dataObj.getString("exchange");
+                            sessions.saveAuthToken(accessToken);
+                            sessions.saveExchangeToken(exchangeToken);
+                        }
                         String nameOpr = dataObj.getString("name");
                         JSONArray dataArr = dataObj.getJSONArray("data");
                         ArrayList<FormSpin> dataDropDown = new ArrayList<>();
@@ -1183,9 +1208,11 @@ public class frag_service_item extends Fragment {
 
         Log.e("CEK","processSendOTP : "+ dataObjOTP);
 
+        String authAccess = "Bearer "+sessions.getAuthToken();
+        String exchangeToken = sessions.getExchangeToken();
         RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), dataObjOTP.toString());
 
-        Server.getAPIService().SendOTP(requestBody).enqueue(new Callback<JsonObject>() {
+        Server.getAPIService().SendOTP(requestBody,authAccess,exchangeToken).enqueue(new Callback<JsonObject>() {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
                 if (isSessionZoom) {
@@ -1199,6 +1226,12 @@ public class frag_service_item extends Fragment {
                     Log.e("CEK","processSendOTP : "+dataS);
                     try {
                         JSONObject dataObj = new JSONObject(dataS);
+                        if (dataObj.has("token")) {
+                            String accessToken = dataObj.getString("token");
+                            String exchangeToken = dataObj.getString("exchange");
+                            sessions.saveAuthToken(accessToken);
+                            sessions.saveExchangeToken(exchangeToken);
+                        }
                         transactionId = dataObj.getJSONObject("data").getString("transactionId");
                         RabbitMirroring.MirroringSendEndpoint(11);
                         pageOTP();
@@ -1234,8 +1267,10 @@ public class frag_service_item extends Fragment {
 
         Log.e("CEK","processValidateOTP : "+ dataObjOTP);
 
+        String authAccess = "Bearer "+sessions.getAuthToken();
+        String exchangeToken = sessions.getExchangeToken();
         RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), dataObjOTP.toString());
-        Server.getAPIService().ValidateOTP(requestBody).enqueue(new Callback<JsonObject>() {
+        Server.getAPIService().ValidateOTP(requestBody,authAccess,exchangeToken).enqueue(new Callback<JsonObject>() {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
                 if (isSessionZoom) {
@@ -1247,6 +1282,17 @@ public class frag_service_item extends Fragment {
                 if (response.isSuccessful()) {
                     String dataS = response.body().toString();
                     Log.e("CEK","processValidateOTP : "+dataS);
+                    try {
+                        JSONObject dataObj = new JSONObject(dataS);
+                        if (dataObj.has("token")) {
+                            String accessToken = dataObj.getString("token");
+                            String exchangeToken = dataObj.getString("exchange");
+                            sessions.saveAuthToken(accessToken);
+                            sessions.saveExchangeToken(exchangeToken);
+                        }
+                    } catch (JSONException e) {
+                        throw new RuntimeException(e);
+                    }
                     RabbitMirroring.MirroringSendEndpoint(130);
                     Bundle bundle = new Bundle();
                     bundle.putBoolean("newComplain",false);

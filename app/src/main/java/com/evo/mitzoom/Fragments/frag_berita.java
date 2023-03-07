@@ -138,8 +138,8 @@ public class frag_berita extends Fragment implements com.wdullaer.materialdateti
         rv_product = view.findViewById(R.id.rv_product);
         mPager = view.findViewById(R.id.pager);
         circleIndicator = view.findViewById(R.id.indicator);
-        btnSchedule = view.findViewById(R.id.btnSchedule);
-        btnEndCall = view.findViewById(R.id.end_call);
+       /* btnSchedule = view.findViewById(R.id.btnSchedule);
+        btnEndCall = view.findViewById(R.id.end_call);*/
 
         return view;
     }
@@ -161,9 +161,10 @@ public class frag_berita extends Fragment implements com.wdullaer.materialdateti
             }
         });
 
+        parseGetSchedule();
         new AsyncProcess().execute();
 
-        btnSchedule.setOnClickListener(new View.OnClickListener() {
+        /*btnSchedule.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (time.size() > 0) {
@@ -178,12 +179,13 @@ public class frag_berita extends Fragment implements com.wdullaer.materialdateti
             public void onClick(View v) {
                 EndCall();
             }
-        });
+        });*/
 
     }
 
-    private void processGetCheckSchedule() {
-        Server.getAPIService().GetCheckSchedule().enqueue(new Callback<JsonObject>() {
+    /*private void processGetCheckSchedule() {
+        String authAccess = "Bearer "+sessions.getAuthToken();
+        Server.getAPIService().GetCheckSchedule(authAccess).enqueue(new Callback<JsonObject>() {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
                 if (response.isSuccessful()) {
@@ -209,7 +211,7 @@ public class frag_berita extends Fragment implements com.wdullaer.materialdateti
 
             }
         });
-    }
+    }*/
 
     @Override
     public void onDateSet(com.wdullaer.materialdatetimepicker.date.DatePickerDialog view, int year, int monthOfYear, int dayOfMonth) {
@@ -262,13 +264,45 @@ public class frag_berita extends Fragment implements com.wdullaer.materialdateti
         protected Void doInBackground(Void... voids) {
             processGetSpanduk();
             processGetProduct();
-            processGetCheckSchedule();
-            processGetScheduleTimes();
+            //processGetCheckSchedule();
+            //processGetScheduleTimes();
             return null;
         }
     }
 
-    private void processGetScheduleTimes() {
+    private void parseGetSchedule() {
+        Log.e("CEK","frag_berita parseGetSchedule");
+        if (sessions.getScheduledDate() != null) {
+            Log.e("CEK","frag_berita sessions.getScheduledDate()");
+            try {
+                JSONObject dataObj = new JSONObject(sessions.getScheduledDate());
+                tanggalPenuh = dataObj.getJSONObject("data").getJSONArray("tanggalPenuh");
+                periodePenuh = dataObj.getJSONObject("data").getJSONArray("periodePenuh");
+            } catch (JSONException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        if (sessions.getScheduledTime() != null) {
+            Log.e("CEK","frag_berita sessions.getScheduledTime()");
+            try {
+                JSONArray dataArrTimes = new JSONArray(sessions.getScheduledTime());
+                Log.e("CEK","frag_berita dataArrTimes : "+dataArrTimes.length());
+                for (int i = 0; i < dataArrTimes.length(); i++) {
+                    int periodeId = dataArrTimes.getJSONObject(i).getInt("id");
+                    String periode = dataArrTimes.getJSONObject(i).getString("periode");
+                    time.add(periode);
+                    periodeInt.add(periodeId);
+                    dataPeriode.put(periodeId,periode);
+                    dataPeriodeId.put(periode,periodeId);
+                }
+            } catch (JSONException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
+    /*private void processGetScheduleTimes() {
         Server.getAPIService().GetScheduleTimes().enqueue(new Callback<JsonObject>() {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
@@ -301,18 +335,27 @@ public class frag_berita extends Fragment implements com.wdullaer.materialdateti
 
             }
         });
-    }
+    }*/
 
     private void processGetSpanduk() {
         indeksNotFound = new ArrayList<>();
-        Server.getAPIWAITING_PRODUCT().getSpandukPublish().enqueue(new Callback<JsonObject>() {
+        String authAccess = "Bearer "+sessions.getAuthToken();
+        String exchangeToken = sessions.getExchangeToken();
+        Server.getAPIWAITING_PRODUCT().getSpandukPublish(authAccess,exchangeToken).enqueue(new Callback<JsonObject>() {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
                 Log.e("CEK","Response Code processGetSpanduk : "+response.code());
                 if (response.isSuccessful()) {
+                    DipsWaitingRoom.showProgress(false);
                     String dataS = response.body().toString();
                     try {
                         JSONObject dataObj = new JSONObject(dataS);
+                        if (dataObj.has("token")) {
+                            String accessToken = dataObj.getString("token");
+                            String exchangeToken = dataObj.getString("exchange");
+                            sessions.saveAuthToken(accessToken);
+                            sessions.saveExchangeToken(exchangeToken);
+                        }
                         if (dataObj.has("err_code")) {
                             int errCode = dataObj.getInt("err_code");
                             if (errCode == 0) {
@@ -358,14 +401,16 @@ public class frag_berita extends Fragment implements com.wdullaer.materialdateti
     private void processSpandukMedia(int idSpanduk, JSONObject dataStream, int indexs) {
         Log.e("CEK","processSpandukMedia indexs : "+indexs+" | idSpanduk : "+idSpanduk);
         final int[] loops = {indexs};
-        Server.getAPIWAITING_PRODUCT().getSpandukMedia(idSpanduk).enqueue(new Callback<ResponseBody>() {
+        String authAccess = "Bearer "+sessions.getAuthToken();
+        String exchangeToken = sessions.getExchangeToken();
+        Server.getAPIWAITING_PRODUCT().getSpandukMedia(idSpanduk,authAccess,exchangeToken).enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                 Log.e("CEK","processSpandukMedia response : "+response.code());
                 if (response.code() == 200) {
                     String Content_Type = response.headers().get("Content-Type");
                     Log.e("CEK","processSpandukMedia Content_Type : "+Content_Type);
-                    if (Content_Type.indexOf("json") < 0) {
+                    if (!Content_Type.contains("json")) {
                         InputStream in = response.body().byteStream();
 
                         if (indexs < dataArrSpanduk.length()-1) {
@@ -377,7 +422,7 @@ public class frag_berita extends Fragment implements com.wdullaer.materialdateti
 
                         if (indexs == dataArrSpanduk.length()-1) {
                             rl_real.setVisibility(View.VISIBLE);
-                            DipsWaitingRoom.showProgress(false);
+
 
                             mPager.setVisibility(View.VISIBLE);
                             circleIndicator.setVisibility(View.VISIBLE);
@@ -397,7 +442,6 @@ public class frag_berita extends Fragment implements com.wdullaer.materialdateti
 
                     if (indexs == dataArrSpanduk.length()-1) {
                         rl_real.setVisibility(View.VISIBLE);
-                        DipsWaitingRoom.showProgress(false);
 
                         mPager.setVisibility(View.VISIBLE);
                         circleIndicator.setVisibility(View.VISIBLE);
@@ -462,7 +506,9 @@ public class frag_berita extends Fragment implements com.wdullaer.materialdateti
     }
 
     private void processGetProduct() {
-        Server.getAPIWAITING_PRODUCT().getNewProductPublish().enqueue(new Callback<JsonObject>() {
+        String authAccess = "Bearer "+sessions.getAuthToken();
+        String exchangeToken = sessions.getExchangeToken();
+        Server.getAPIWAITING_PRODUCT().getNewProductPublish(authAccess,exchangeToken).enqueue(new Callback<JsonObject>() {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
                 Log.e("CEK","Response Code processGetProduct : "+response.code());
@@ -470,6 +516,12 @@ public class frag_berita extends Fragment implements com.wdullaer.materialdateti
                     String dataS = response.body().toString();
                     try {
                         JSONObject dataObj = new JSONObject(dataS);
+                        if (dataObj.has("token")) {
+                            String accessToken = dataObj.getString("token");
+                            String exchangeToken = dataObj.getString("exchange");
+                            sessions.saveAuthToken(accessToken);
+                            sessions.saveExchangeToken(exchangeToken);
+                        }
                         int errCode = dataObj.getInt("code");
                         Log.e("CEK","errCode : "+errCode);
                         if (errCode == 200) {
@@ -569,16 +621,24 @@ public class frag_berita extends Fragment implements com.wdullaer.materialdateti
         if (DipsWaitingRoom.connection != null) {
             try {
                 if (DipsWaitingRoom.channelSubscribeReqTicket != null) {
-                    DipsWaitingRoom.channelSubscribeReqTicket.close();
+                    if (DipsWaitingRoom.channelSubscribeReqTicket.isOpen()) {
+                        DipsWaitingRoom.channelSubscribeReqTicket.close();
+                    }
                 }
                 if (DipsWaitingRoom.channelSubscribe != null) {
-                    DipsWaitingRoom.channelSubscribe.close();
+                    if (DipsWaitingRoom.channelSubscribe.isOpen()) {
+                        DipsWaitingRoom.channelSubscribe.close();
+                    }
                 }
                 if (DipsWaitingRoom.channelCall != null) {
-                    DipsWaitingRoom.channelCall.close();
+                    if (DipsWaitingRoom.channelCall.isOpen()) {
+                        DipsWaitingRoom.channelCall.close();
+                    }
                 }
                 if (DipsWaitingRoom.connection != null) {
-                    DipsWaitingRoom.connection.close();
+                    if (DipsWaitingRoom.connection.isOpen()) {
+                        DipsWaitingRoom.connection.close();
+                    }
                 }
             } catch (IOException | TimeoutException e) {
                 throw new RuntimeException(e);
@@ -612,27 +672,6 @@ public class frag_berita extends Fragment implements com.wdullaer.materialdateti
             }
         });
         mPager.setPageTransformer(transformer);
-        //circleIndicator.setViewPager(mPager);
-
-        /*Handler handler = new Handler();
-        Runnable updates = new Runnable() {
-            @Override
-            public void run() {
-                if (currentPage == dataArrSpanduk.length()) {
-                    currentPage = 0;
-                }
-                mPager.setCurrentItem(currentPage, true);
-                currentPage++;
-            }
-        };
-
-        Timer timer = new Timer();
-        timer.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                handler.post(updates);
-            }
-        }, 5000, 5000);*/
     }
 
     private void PopUpSchedule(){
@@ -784,11 +823,13 @@ public class frag_berita extends Fragment implements com.wdullaer.materialdateti
         } catch (JSONException e) {
             e.printStackTrace();
         }
+        String authAccess = "Bearer "+sessions.getAuthToken();
+        String exchangeToken = sessions.getExchangeToken();
         Log.e("CEK","PARAMS saveSchedule : "+ jsons);
-        Log.d("PARAMS JADWAL","idDips = "+idDips+", Tanggal = "+Savetanggal+", Grup index Time of ["+Savewaktu+"]");
+        Log.d("PARAMS JADWAL","idDips = "+idDips+", Tanggal = "+Savetanggal+", periodeId = "+periodeId);
         RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), jsons.toString());
         ApiService API = Server.getAPIService();
-        Call<JsonObject> call = API.saveSchedule(requestBody);
+        Call<JsonObject> call = API.saveSchedule(requestBody,authAccess,exchangeToken);
         call.enqueue(new Callback<JsonObject>() {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
@@ -802,11 +843,17 @@ public class frag_berita extends Fragment implements com.wdullaer.materialdateti
                         JSONObject dataObj = new JSONObject(dataS);
                         int idSchedule = dataObj.getJSONObject("data").getInt("id");
                         sessions.saveIDSchedule(idSchedule);
+                        if (dataObj.has("token")) {
+                            String accessToken = dataObj.getString("token");
+                            String exchangeToken = dataObj.getString("exchange");
+                            sessions.saveAuthToken(accessToken);
+                            sessions.saveExchangeToken(exchangeToken);
+                        }
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
 
-                    if (DipsWaitingRoom.channelCall != null) {
+                    /*if (DipsWaitingRoom.channelCall != null) {
                         try {
                             Log.e("CEK","MASUK channelCall abort close");
                             DipsWaitingRoom.channelCall.close();
@@ -817,10 +864,10 @@ public class frag_berita extends Fragment implements com.wdullaer.materialdateti
                             Log.e("CEK","MASUK subscribeThreadCall interrupt");
                             DipsWaitingRoom.subscribeThreadCall.interrupt();
                         }
-                    }
+                    }*/
 
-                    doWorkMyWorker();
-                    //serviceOutbound();
+                    //doWorkMyWorker();
+                    serviceOutbound();
 
                     LayoutInflater inflater = getLayoutInflater();
                     View dialogView = inflater.inflate(R.layout.layout_dialog_sweet, null);

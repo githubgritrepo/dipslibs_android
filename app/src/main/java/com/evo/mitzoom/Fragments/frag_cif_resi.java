@@ -281,7 +281,9 @@ public class frag_cif_resi extends Fragment {
 
     private void getResumeResiCIFReady() {
         Log.e("CEK","getResumeResiCIFReady");
-        Server.getAPIService().getResiCIFReady(idForm).enqueue(new Callback<JsonObject>() {
+        String authAccess = "Bearer "+sessions.getAuthToken();
+        String exchangeToken = sessions.getExchangeToken();
+        Server.getAPIService().getResiCIFReady(idForm,authAccess,exchangeToken).enqueue(new Callback<JsonObject>() {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
                 Log.e("CEK","getResumeResi CODE : "+response.code());
@@ -293,6 +295,12 @@ public class frag_cif_resi extends Fragment {
                     String dataS = response.body().toString();
                     try {
                         JSONObject dataObj = new JSONObject(dataS);
+                        if (dataObj.has("token")) {
+                            String accessToken = dataObj.getString("token");
+                            String exchangeToken = dataObj.getString("exchange");
+                            sessions.saveAuthToken(accessToken);
+                            sessions.saveExchangeToken(exchangeToken);
+                        }
                         String base64Image = dataObj.getJSONObject("data").getString("image");
                         pdfFile = dataObj.getJSONObject("data").getString("pdf");
                         filenames = pdfFile.substring(pdfFile.lastIndexOf("/") );
@@ -333,7 +341,9 @@ public class frag_cif_resi extends Fragment {
 
     private void getResumeResi() {
         Log.e("CEK","getResumeResi");
-        Server.getAPIService().getResiCIF(idDips).enqueue(new Callback<JsonObject>() {
+        String authAccess = "Bearer "+sessions.getAuthToken();
+        String exchangeToken = sessions.getExchangeToken();
+        Server.getAPIService().getResiCIF(idDips,authAccess,exchangeToken).enqueue(new Callback<JsonObject>() {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
                 Log.e("CEK","getResumeResi CODE : "+response.code());
@@ -345,6 +355,12 @@ public class frag_cif_resi extends Fragment {
                     String dataS = response.body().toString();
                     try {
                         JSONObject dataObj = new JSONObject(dataS);
+                        if (dataObj.has("token")) {
+                            String accessToken = dataObj.getString("token");
+                            String exchangeToken = dataObj.getString("exchange");
+                            sessions.saveAuthToken(accessToken);
+                            sessions.saveExchangeToken(exchangeToken);
+                        }
                         String base64Image = dataObj.getJSONObject("data").getString("image");
                         pdfFile = dataObj.getJSONObject("data").getString("pdf");
                         filenames = pdfFile.substring(pdfFile.lastIndexOf("/") );

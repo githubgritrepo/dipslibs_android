@@ -194,7 +194,15 @@
         android:id="@+id/layout_frame"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/cardSurf" />
+        android:layout_below="@id/cardSurf"
+        android:layout_above="@id/incNavBottom"/>
+
+    <include
+        android:id="@+id/incNavBottom"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        layout="@layout/layout_bottom_action_bar_swafoto"
+        android:layout_alignParentBottom="true"/>
 
     <include
         android:layout_width="match_parent"

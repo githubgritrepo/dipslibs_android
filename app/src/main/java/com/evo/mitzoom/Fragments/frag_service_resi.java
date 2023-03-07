@@ -126,7 +126,7 @@ public class frag_service_resi extends Fragment {
             }
         });
 
-        String titleSuccess = getString(R.string.title_safe_complaint);
+        String titleSuccess = getString(R.string.thankyou);
         String titleHeadline = getString(R.string.body_complaint);
         String titleHeadline2 = getString(R.string.body2_complaint);
 
@@ -179,10 +179,12 @@ public class frag_service_resi extends Fragment {
         Log.e("CEK","getResumeResi");
         ApiService API = Server.getAPIService();
         Call<JsonObject> call = null;
+        String authAccess = "Bearer "+sessions.getAuthToken();
+        String exchangeToken = sessions.getExchangeToken();
         if (newComplain) {
-            call = API.getNewResiComplaint(noPengaduan);
+            call = API.getNewResiComplaint(noPengaduan,authAccess,exchangeToken);
         } else {
-            call = API.getResiComplaint(noPengaduan);
+            call = API.getResiComplaint(noPengaduan,authAccess,exchangeToken);
         }
         call.enqueue(new Callback<JsonObject>() {
             @Override
@@ -196,6 +198,12 @@ public class frag_service_resi extends Fragment {
                     String dataS = response.body().toString();
                     try {
                         JSONObject dataObj = new JSONObject(dataS);
+                        if (dataObj.has("token")) {
+                            String accessToken = dataObj.getString("token");
+                            String exchangeToken = dataObj.getString("exchange");
+                            sessions.saveAuthToken(accessToken);
+                            sessions.saveExchangeToken(exchangeToken);
+                        }
                         String base64Image = dataObj.getJSONObject("data").getString("image");
                         pdfFile = dataObj.getJSONObject("data").getString("pdf");
                         filenames = pdfFile.substring(pdfFile.lastIndexOf("/") );

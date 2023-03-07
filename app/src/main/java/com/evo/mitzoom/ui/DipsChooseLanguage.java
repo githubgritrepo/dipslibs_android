@@ -271,14 +271,13 @@ public class DipsChooseLanguage extends AppCompatActivity {
         }
         if (ActivityCompat.checkSelfPermission(mContext, readImagePermission) != PackageManager.PERMISSION_GRANTED &&
                 ActivityCompat.checkSelfPermission(mContext, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED &&
-                ActivityCompat.checkSelfPermission(mContext, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED &&
                 ActivityCompat.checkSelfPermission(mContext, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED &&
                 ActivityCompat.checkSelfPermission(mContext, Manifest.permission.RECEIVE_SMS) != PackageManager.PERMISSION_GRANTED &&
                 ActivityCompat.checkSelfPermission(mContext, Manifest.permission.READ_SMS) != PackageManager.PERMISSION_GRANTED &&
                 ActivityCompat.checkSelfPermission(mContext, Manifest.permission.READ_PHONE_NUMBERS) != PackageManager.PERMISSION_GRANTED){
 
             Log.e(TAG,"MASUK IF reqPermission");
-            requestPermissions(new String[]{Manifest.permission.READ_PHONE_STATE,Manifest.permission.CAMERA,Manifest.permission.WRITE_EXTERNAL_STORAGE,readImagePermission,Manifest.permission.RECEIVE_SMS,
+            requestPermissions(new String[]{Manifest.permission.READ_PHONE_STATE,Manifest.permission.CAMERA,readImagePermission,Manifest.permission.RECEIVE_SMS,
                     Manifest.permission.READ_SMS,Manifest.permission.READ_PHONE_NUMBERS}, REQUEST_ALL);
         } else {
             Log.e(TAG,"MASUK ELSE reqPermission");
@@ -476,7 +475,7 @@ public class DipsChooseLanguage extends AppCompatActivity {
         Log.e(TAG,"APIGetAuthAdvanceAI : "+ jsons);
 
         RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), jsons.toString());
-        Server.getAPIService().APIAuthLicenseLiveness(requestBody).enqueue(new Callback<JsonObject>() {
+        Server.getAPIService2().APIAuthLicenseLiveness(requestBody).enqueue(new Callback<JsonObject>() {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
                 runOnUiThread(new Runnable() {

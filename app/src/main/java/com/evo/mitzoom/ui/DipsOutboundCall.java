@@ -32,8 +32,10 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -56,6 +58,7 @@ import com.evo.mitzoom.API.ApiService;
 import com.evo.mitzoom.API.Server;
 import com.evo.mitzoom.BaseMeetingActivity;
 import com.evo.mitzoom.Constants.AuthConstants;
+import com.evo.mitzoom.Fragments.frag_berita;
 import com.evo.mitzoom.Helper.MyWorker;
 import com.evo.mitzoom.Helper.OutboundServiceNew;
 import com.evo.mitzoom.R;
@@ -128,11 +131,11 @@ public class DipsOutboundCall extends AppCompatActivity implements DatePickerDia
     public static Integer useFacing = null;
     private static final String KEY_USE_FACING = "use_facing";
     private static int degreeFront = 0;
-    private LayoutInflater inflater;
-    private View dialogView;
     private ImageView btnclose;
-    private TextView et_Date, textView, nama_agen;
-    private AutoCompleteTextView et_time;
+    private TextView textView, nama_agen;
+
+    private EditText et_Date;
+    private Spinner et_time;
     private int year, month, day;
     private String tanggal, waktu;
     private String Savetanggal;
@@ -141,7 +144,7 @@ public class DipsOutboundCall extends AppCompatActivity implements DatePickerDia
     List<Integer> periodeInt = new ArrayList<>();
     HashMap<Integer,String> dataPeriode = new HashMap<>();
     HashMap<String,Integer> dataPeriodeId = new HashMap<>();
-    private MaterialButton btnSchedule2;
+    private Button btnSchedule2;
     private Context mContext;
     private SessionManager sessions;
     private boolean isCust = false;
@@ -227,6 +230,7 @@ public class DipsOutboundCall extends AppCompatActivity implements DatePickerDia
                     WindowManager.LayoutParams.FLAG_ALLOW_LOCK_WHILE_SCREEN_ON);
         }
 
+        parseGetSchedule();
         initializeSdk();
         nama_agen = findViewById(R.id.nama_agen);
         incomingcall = findViewById(R.id.incomingcall);
@@ -271,14 +275,14 @@ public class DipsOutboundCall extends AppCompatActivity implements DatePickerDia
             @Override
             public void run() {
                 Log.d("TIDAK DIANGKAT","");
-                OutApps();
+                OutboundServiceNew.OutConference();
                 Intent serviceIntent = new Intent(mContext, OutboundServiceNew.class);
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                     startForegroundService(serviceIntent);
                 } else {
                     startService(serviceIntent);
                 }
-                OutboundServiceNew.OutConference();
+                OutApps();
             }
         };
         handlerTimes.postDelayed(myRunnable, 30000);
@@ -407,16 +411,6 @@ public class DipsOutboundCall extends AppCompatActivity implements DatePickerDia
         }
 
         super.onPause();
-    }
-
-    private class AsyncProcess extends AsyncTask<Void,Void,Void> {
-
-        @Override
-        protected Void doInBackground(Void... voids) {
-            processGetCheckSchedule();
-            processGetScheduleTimes();
-            return null;
-        }
     }
 
     private class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
@@ -589,67 +583,32 @@ public class DipsOutboundCall extends AppCompatActivity implements DatePickerDia
 
     }
 
-    private void processGetCheckSchedule() {
-        Server.getAPIService().GetCheckSchedule().enqueue(new Callback<JsonObject>() {
-            @Override
-            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
-                if (response.isSuccessful()) {
-                    String dataS = response.body().toString();
-                    try {
-                        JSONObject dataObj = new JSONObject(dataS);
-                        int errCode = dataObj.getInt("code");
-                        if (errCode == 200) {
-                            tanggalPenuh = dataObj.getJSONObject("data").getJSONArray("tanggalPenuh");
-                            periodePenuh = dataObj.getJSONObject("data").getJSONArray("periodePenuh");
+    private void parseGetSchedule() {
+        if (sessions.getScheduledDate() != null) {
+            try {
+                JSONObject dataObj = new JSONObject(sessions.getScheduledDate());
+                tanggalPenuh = dataObj.getJSONObject("data").getJSONArray("tanggalPenuh");
+                periodePenuh = dataObj.getJSONObject("data").getJSONArray("periodePenuh");
+            } catch (JSONException e) {
+                throw new RuntimeException(e);
+            }
+        }
 
-                            Log.e(TAG,"tanggalPenuh : "+tanggalPenuh.toString());
-                            Log.e(TAG,"periodePenuh : "+periodePenuh.toString());
-                        }
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
+        if (sessions.getScheduledTime() != null) {
+            try {
+                JSONArray dataArrTimes = new JSONArray(sessions.getScheduledTime());
+                for (int i = 0; i < dataArrTimes.length(); i++) {
+                    int periodeId = dataArrTimes.getJSONObject(i).getInt("id");
+                    String periode = dataArrTimes.getJSONObject(i).getString("periode");
+                    time.add(periode);
+                    periodeInt.add(periodeId);
+                    dataPeriode.put(periodeId,periode);
+                    dataPeriodeId.put(periode,periodeId);
                 }
+            } catch (JSONException e) {
+                throw new RuntimeException(e);
             }
-
-            @Override
-            public void onFailure(Call<JsonObject> call, Throwable t) {
-
-            }
-        });
-    }
-
-    private void processGetScheduleTimes() {
-        Server.getAPIService().GetScheduleTimes().enqueue(new Callback<JsonObject>() {
-            @Override
-            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
-                if (response.isSuccessful()) {
-                    String dataS = response.body().toString();
-                    try {
-                        JSONObject dataObj = new JSONObject(dataS);
-                        int errCode = dataObj.getInt("code");
-                        if (errCode == 200) {
-                            JSONArray dataArrTimes = dataObj.getJSONArray("data");
-                            for (int i = 0; i < dataArrTimes.length(); i++) {
-                                int periodeId = dataArrTimes.getJSONObject(i).getInt("id");
-                                String periode = dataArrTimes.getJSONObject(i).getString("periode");
-                                time.add(periode);
-                                periodeInt.add(periodeId);
-                                dataPeriode.put(periodeId,periode);
-                                dataPeriodeId.put(periode,periodeId);
-                            }
-                        }
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-
-                }
-            }
-
-            @Override
-            public void onFailure(Call<JsonObject> call, Throwable t) {
-
-            }
-        });
+        }
     }
 
     private void PopUpSchedule(){
@@ -657,55 +616,23 @@ public class DipsOutboundCall extends AppCompatActivity implements DatePickerDia
         if (mRingtone != null) {
             mRingtone.stop();
         }
-        inflater = getLayoutInflater();
-        dialogView = inflater.inflate(R.layout.item_schedule,null);
+        OutboundServiceNew.OutConference();
+        LayoutInflater inflater = getLayoutInflater();
+        View dialogView = inflater.inflate(R.layout.item_schedule, null);
         SweetAlertDialog sweetAlertDialog = new SweetAlertDialog(DipsOutboundCall.this, SweetAlertDialog.NORMAL_TYPE);
         sweetAlertDialog.setCustomView(dialogView);
         sweetAlertDialog.setCancelable(false);
         sweetAlertDialog.hideConfirmButton();
         sweetAlertDialog.show();
 
-        sweetAlertDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
-            @Override
-            public void onDismiss(DialogInterface dialog) {
-                Log.i(TAG,"MASUK DISMISS");
-                startTimeOut = true;
-                if (getAction.isEmpty()) {
-                    //new AsynTimeout().execute();
-                    handlerTimes = new Handler();
-                    myRunnable = new Runnable() {
-                        @Override
-                        public void run() {
-                            Log.d("TIDAK DIANGKAT","");
-                            OutApps();
-                            Intent serviceIntent = new Intent(mContext, OutboundServiceNew.class);
-                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                                startForegroundService(serviceIntent);
-                            } else {
-                                startService(serviceIntent);
-                            }
-                            OutboundServiceNew.OutConference();
-                        }
-                    };
-                    handlerTimes.postDelayed(myRunnable, 30000);
-                }
-            }
-        });
-        ArrayAdapter<String> adapterTime = new ArrayAdapter<String>(DipsOutboundCall.this,R.layout.list_item, time);
-        btnclose = dialogView.findViewById(R.id.btn_close_schedule);
+        ImageView btnclose = dialogView.findViewById(R.id.btn_close_schedule);
         et_Date = dialogView.findViewById(R.id.et_Date);
-        textView = dialogView.findViewById(R.id.textHeadSchedule);
-        textView.setText("Apakah anda ingin menjadwalkan panggilan ?");
         et_time = dialogView.findViewById(R.id.et_time);
-        et_time.setAdapter(adapterTime);
-        btnSchedule2 = dialogView.findViewById(R.id.btnSchedule2);
-        et_time.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Savewaktu = position;
 
-            }
-        });
+        ArrayAdapter<String> adapterTime = new ArrayAdapter<String>(mContext,R.layout.list_item, time);
+        et_time.setAdapter(adapterTime);
+
+        btnSchedule2 = dialogView.findViewById(R.id.btnSchedule2);
         et_Date.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -787,62 +714,54 @@ public class DipsOutboundCall extends AppCompatActivity implements DatePickerDia
         btnclose.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                sweetAlertDialog.dismissWithAnimation();
+                sweetAlertDialog.dismiss();
             }
         });
         btnSchedule2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                tanggal = et_Date.getText().toString();
-                waktu = et_time.getText().toString();
+                tanggal = et_Date.getText().toString().trim().trim();
+                waktu = et_time.getSelectedItem().toString();
                 if (tanggal.trim().equals("")){
-                    Toast.makeText(getApplicationContext(), R.string.notif_blank, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(mContext.getApplicationContext(), R.string.notif_blank, Toast.LENGTH_SHORT).show();
                 }
                 else if (waktu.trim().equals("")){
-                    Toast.makeText(getApplicationContext(), R.string.notif_blank, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(mContext.getApplicationContext(), R.string.notif_blank, Toast.LENGTH_SHORT).show();
                 }
                 else {
+                    if (idDips.isEmpty()) {
+                        idDips = sessions.getKEY_IdDips();
+                    }
+                    //Toast.makeText(context.getApplicationContext(), getResources().getString(R.string.schedule) + tanggal + " & " + getResources().getString(R.string.jam) + waktu, Toast.LENGTH_LONG).show();
+                    sweetAlertDialog.dismiss();
+                    String csId = sessions.getCSID();
+                    /*if (csId != null && !csId.isEmpty()) {
+                        OutboundServiceNew.rejectCall();
+                    }*/
                     sessions.saveIDSchedule(0);
                     saveSchedule();
-                    OutboundServiceNew.rejectCall();
-                    Toast.makeText(getApplicationContext(), "Jadwal panggilan anda "+tanggal+" jam "+waktu, Toast.LENGTH_LONG).show();
-                    sweetAlertDialog.dismissWithAnimation();
-                    sweetAlertDialog.setCancelable(false);
-                    SweetAlertDialog sweetAlertDialog = new SweetAlertDialog(DipsOutboundCall.this, SweetAlertDialog.SUCCESS_TYPE);
-                    sweetAlertDialog.setContentText(getResources().getString(R.string.content_after_schedule));
-                    sweetAlertDialog.setConfirmText(getResources().getString(R.string.done));
-                    sweetAlertDialog.setCancelable(false);
-                    sweetAlertDialog.show();
-                    Button btnConfirm = sweetAlertDialog.findViewById(cn.pedant.SweetAlert.R.id.confirm_button);
-                    btnConfirm.setBackgroundTintList(DipsOutboundCall.this.getResources().getColorStateList(R.color.Blue));
-                    btnConfirm.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            Log.i(TAG,"MASUK BUTTON CONFIRM");
-                            sweetAlertDialog.dismiss();
-                            OutApps();
-                        }
-                    });
                 }
 
             }
         });
-        btnSchedule2.setBackgroundTintList(DipsOutboundCall.this.getResources().getColorStateList(R.color.Blue));
     }
 
     private void saveSchedule(){
+        int periodeId = dataPeriodeId.get(waktu);
         JSONObject jsons = new JSONObject();
         try {
             jsons.put("idDips",idDips);
             jsons.put("tanggal",Savetanggal);
-            jsons.put("periodeId",Savewaktu);
+            jsons.put("periodeId",periodeId);
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        Log.d("PARAMS JADWAL","idDips = "+idDips+", Tanggal = "+Savetanggal+", Grup index Time of ["+Savewaktu+"]");
+        String authAccess = "Bearer "+sessions.getAuthToken();
+        String exchangeToken = sessions.getExchangeToken();
+        Log.d("PARAMS JADWAL","idDips = "+idDips+", Tanggal = "+Savetanggal+", periodeId = "+periodeId);
         RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), jsons.toString());
         ApiService API = Server.getAPIService();
-        Call<JsonObject> call = API.saveSchedule(requestBody);
+        Call<JsonObject> call = API.saveSchedule(requestBody,authAccess,exchangeToken);
         call.enqueue(new Callback<JsonObject>() {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
@@ -854,25 +773,19 @@ public class DipsOutboundCall extends AppCompatActivity implements DatePickerDia
                         JSONObject dataObj = new JSONObject(dataS);
                         int idSchedule = dataObj.getJSONObject("data").getInt("id");
                         sessions.saveIDSchedule(idSchedule);
+                        if (dataObj.has("token")) {
+                            String accessToken = dataObj.getString("token");
+                            String exchangeToken = dataObj.getString("exchange");
+                            sessions.saveAuthToken(accessToken);
+                            sessions.saveExchangeToken(exchangeToken);
+                        }
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
 
-                    /*if (DipsWaitingRoom.channelCall != null) {
-                        try {
-                            Log.e("CEK","MASUK channelCall abort close");
-                            DipsWaitingRoom.channelCall.close();
-                        } catch (IOException | TimeoutException e) {
-                            e.printStackTrace();
-                        }
-                        if (DipsWaitingRoom.subscribeThreadCall != null) {
-                            Log.e("CEK","MASUK subscribeThreadCall interrupt");
-                            DipsWaitingRoom.subscribeThreadCall.interrupt();
-                        }
-                    }*/
-
-                    doWorkMyWorker();
-                    //serviceOutbound();
+                    //doWorkMyWorker();
+                    serviceOutbound();
+                    OutApps();
                 }
             }
 

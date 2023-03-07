@@ -42,11 +42,11 @@
                 android:layout_marginStart="20dp"
                 android:layout_marginEnd="20dp"
                 android:elevation="0dp"
-                android:backgroundTint="#F1F2F2"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:cardCornerRadius="10dp"
-                android:layout_gravity="center">
+                android:layout_gravity="center"
+                android:foreground="@drawable/bg_cardview">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -63,13 +63,24 @@
                         android:textAlignment="center"
                         android:textColor="@color/black"
                         android:text="@string/apakah_permasalahan_anda_n_selesai_dengan_baik"/>
+                    <RatingBar
+                        android:clickable="false"
+                        android:focusable="false"
+                        android:progressTint="@color/ratingON"
+                        android:layout_gravity="center"
+                        android:id="@+id/ratingBar"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:stepSize="1"/>
                     <LinearLayout
                         android:gravity="center"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="10dp"
                         android:layout_marginBottom="20dp"
-                        android:orientation="horizontal">
+                        android:orientation="horizontal"
+                        android:visibility="gone">
                         <ImageView
                             android:id="@+id/thumbs_up"
                             android:layout_gravity="center"
@@ -88,7 +99,7 @@
 
             </androidx.cardview.widget.CardView>
 
-            <androidx.cardview.widget.CardView
+            <!--<androidx.cardview.widget.CardView
                 android:layout_marginTop="20dp"
                 android:layout_marginStart="20dp"
                 android:layout_marginEnd="20dp"
@@ -97,7 +108,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:cardCornerRadius="10dp"
-                android:layout_gravity="center">
+                android:layout_gravity="center"
+                android:visibility="gone">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -128,7 +140,7 @@
 
                 </LinearLayout>
 
-            </androidx.cardview.widget.CardView>
+            </androidx.cardview.widget.CardView>-->
 
             <EditText
                 android:gravity="top"
@@ -139,8 +151,7 @@
                 android:layout_marginStart="20dp"
                 android:layout_marginEnd="20dp"
                 android:layout_marginBottom="20dp"
-                android:background="@drawable/bg_textinput"
-                android:backgroundTint="#F1F2F2"
+                android:background="@drawable/bg_cardview"
                 android:inputType="textMultiLine"
                 android:hint="@string/write_here"
                 android:lines="8"

@@ -117,6 +117,8 @@ public class frag_portfolio_new extends Fragment {
             noCif = sessions.getNoCIF();
         }
 
+//        noCif = "89916515"; //mba tari
+
         isSessionZoom = ZoomVideoSDK.getInstance().isInSession();
         if (isSessionZoom) {
             //rabbitMirroring = new RabbitMirroring(mContext);
@@ -202,9 +204,11 @@ public class frag_portfolio_new extends Fragment {
         }
 
         Log.e("CEK", this+" getPortofolio PARAMS : "+ jsons);
+        String authAccess = "Bearer "+sessions.getAuthToken();
+        String exchangeToken = sessions.getExchangeToken();
         RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), jsons.toString());
 
-        Server.getAPIService().GetNewPortofolio(requestBody).enqueue(new Callback<JsonObject>() {
+        Server.getAPIService().GetNewPortofolio(requestBody,authAccess,exchangeToken).enqueue(new Callback<JsonObject>() {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
                 Log.e("CEK","getPortofolio CODE: "+response.code());
@@ -218,6 +222,12 @@ public class frag_portfolio_new extends Fragment {
                     Log.e("CEK","getPortofolio dataS: "+dataS);
                     try {
                         JSONObject dataObj = new JSONObject(dataS);
+                        if (dataObj.has("token")) {
+                            String accessToken = dataObj.getString("token");
+                            String exchangeToken = dataObj.getString("exchange");
+                            sessions.saveAuthToken(accessToken);
+                            sessions.saveExchangeToken(exchangeToken);
+                        }
                         int errCode = dataObj.getInt("code");
                         if (errCode == 200) {
                             dataNasabah = dataObj.getJSONObject("data");
@@ -359,17 +369,22 @@ public class frag_portfolio_new extends Fragment {
 
     private JSONArray parseGetProduct(String type) throws JSONException {
         JSONArray prod = null;
-        JSONArray rekTabungan = new JSONArray();
         if (type.equals("tabungan")) {
             prod = dataNasabah.getJSONArray("portotabungan");
-            JSONArray getProd = prod;
-            JSONArray ch = new JSONArray();
-            JSONObject chObj = new JSONObject();
-            chObj.put("accountNo",getString(R.string.choose_please));
-            chObj.put("accountName",getString(R.string.choose_please));
-            ch.put(chObj);
-            rekTabungan.put(ch);
-            rekTabungan.put(getProd);
+            JSONArray rekTabungan = new JSONArray();
+            for (int i = 0; i < prod.length()+1; i++) {
+                if (i == 0) {
+                    JSONObject chObj = new JSONObject();
+                    chObj.put("accountNo",getString(R.string.choose_please));
+                    chObj.put("accountName",getString(R.string.choose_please));
+                    rekTabungan.put(chObj);
+                } else {
+                    int j = i - 1;
+                    JSONObject jsonObject = prod.getJSONObject(j);
+                    rekTabungan.put(jsonObject);
+                }
+            }
+            Log.e("CEK","rekTabungan : "+rekTabungan.toString());
             sessions.saveRekNasabah(rekTabungan.toString());
         } else if (type.equals("deposito")) {
             prod = dataNasabah.getJSONArray("portodeposito");

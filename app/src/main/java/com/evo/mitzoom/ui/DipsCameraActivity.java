@@ -87,12 +87,6 @@ public class DipsCameraActivity extends AppCompatActivity {
     private int rotationInDegree = 1;
     private final int optimalWidth = 0;
     private final int optimalHeight = 0;
-    private int surfWIdth = 0;
-    private int surfHeight = 0;
-    private double surfLeft = 0;
-    private double surfTop = 0;
-    private double surfRight = 0;
-    private double surfBottom = 0;
     private SessionManager sessions;
     private boolean isConfigure;
     private boolean cekSwafoto = false;
@@ -115,36 +109,17 @@ public class DipsCameraActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
 
-        if (getIntent().getExtras() != null) {
-            cekSwafoto = getIntent().getExtras().containsKey("SWAFOTO");
-            transPreview.setVisibility(View.GONE);
-            appbar.setVisibility(View.GONE);
-            llHeader.setVisibility(View.VISIBLE);
-            llMsg.setVisibility(View.VISIBLE);
+        transPreview.setVisibility(View.VISIBLE);
+        appbar.setVisibility(View.VISIBLE);
+        llHeader.setVisibility(View.GONE);
+        llMsg.setVisibility(View.GONE);
 
-            useFacing = intent.getIntExtra(KEY_USE_FACING, Camera.CameraInfo.CAMERA_FACING_FRONT);
+        useFacing = intent.getIntExtra(KEY_USE_FACING, Camera.CameraInfo.CAMERA_FACING_BACK);
 
-            RelativeLayout.LayoutParams paramsFrame = new RelativeLayout.LayoutParams(
-                    RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT);
-
-            paramsFrame.setMargins(0, 120, 0, 0);
-            flFrame.setLayoutParams(paramsFrame);
-            tvHeader.setText("Foto diri dengan KTP");
-            tvContent.setText("Pastikan foto terlihat jelas dan tidak buram");
-            llMsg.getBackground().setAlpha(150);
-        } else {
-            transPreview.setVisibility(View.VISIBLE);
-            appbar.setVisibility(View.VISIBLE);
-            llHeader.setVisibility(View.GONE);
-            llMsg.setVisibility(View.GONE);
-
-            useFacing = intent.getIntExtra(KEY_USE_FACING, Camera.CameraInfo.CAMERA_FACING_BACK);
-
-            transHolder = transPreview.getHolder();
-            transHolder.setFormat(PixelFormat.TRANSPARENT);
-            transHolder.addCallback(surfaceCallbackTrans);
-            transHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
-        }
+        transHolder = transPreview.getHolder();
+        transHolder.setFormat(PixelFormat.TRANSPARENT);
+        transHolder.addCallback(surfaceCallbackTrans);
+        transHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
 
         btnTake.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -271,6 +246,53 @@ public class DipsCameraActivity extends AppCompatActivity {
             }
         });
     }
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        isConfigure = false;
+
+        hideStatusBar();
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (checkSelfPermission(Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+                requestPermissions(new String[]{Manifest.permission.CAMERA}, MY_CAMERA_PERMISSION_CODE);
+            } else {
+                requestPermission();
+            }
+        } else {
+            int resultPerm = ContextCompat.checkSelfPermission(mContext, Manifest.permission.CAMERA);
+            if (resultPerm != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, MY_CAMERA_PERMISSION_CODE);
+            } else {
+                requestPermission();
+            }
+        }
+    }
+    private void previewHolder(){
+        previewHolder = preview.getHolder();
+        previewHolder.addCallback(surfaceCallback);
+        previewHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
+    }
+    @Override
+    protected void onPause() {
+        if (inPreview) {
+            camera.stopPreview();
+        }
+
+        if (camera != null) {
+            camera.release();
+            camera = null;
+            inPreview = false;
+        }
+
+        super.onPause();
+    }
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        sessions.saveMedia(0);
+    }
 
     public byte[] getDownsizedImageBytes(Bitmap fullBitmap, int scaleWidth, int scaleHeight) throws IOException {
         Bitmap scaledBitmap = Bitmap.createScaledBitmap(fullBitmap, scaleWidth, scaleHeight, true);
@@ -335,53 +357,7 @@ public class DipsCameraActivity extends AppCompatActivity {
         btnTake = findViewById(R.id.takePicture);
         btn_back = findViewById(R.id.btn_back);
     }
-    @Override
-    protected void onResume() {
-        super.onResume();
 
-        isConfigure = false;
-
-        hideStatusBar();
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (checkSelfPermission(Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
-                requestPermissions(new String[]{Manifest.permission.CAMERA}, MY_CAMERA_PERMISSION_CODE);
-            } else {
-                requestPermission();
-            }
-        } else {
-            int resultPerm = ContextCompat.checkSelfPermission(mContext, Manifest.permission.CAMERA);
-            if (resultPerm != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, MY_CAMERA_PERMISSION_CODE);
-            } else {
-                requestPermission();
-            }
-        }
-    }
-    private void previewHolder(){
-        previewHolder = preview.getHolder();
-        previewHolder.addCallback(surfaceCallback);
-        previewHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
-    }
-    @Override
-    protected void onPause() {
-        if (inPreview) {
-            camera.stopPreview();
-        }
-
-        if (camera != null) {
-            camera.release();
-            camera = null;
-            inPreview = false;
-        }
-
-        super.onPause();
-    }
-    @Override
-    public void onBackPressed() {
-        super.onBackPressed();
-        sessions.saveMedia(0);
-    }
     public void hideStatusBar() {
         getWindow().getDecorView()
                 .setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE
@@ -558,12 +534,8 @@ public class DipsCameraActivity extends AppCompatActivity {
             double diffH = Math.ceil(height / 2.8);
             double diffw = Math.ceil(width / 14);
 
-            surfWIdth = width;
-            surfHeight = height;
-            surfLeft = diffw;
-            surfTop = diffH;
-            surfRight = (width-diffw);
-            surfBottom = (height-diffH);
+            double surfRight = (width - diffw);
+            double surfBottom = (height - diffH);
 
             RectF rect = new RectF((float) diffw,(float) diffH,(float) surfRight,(float) surfBottom);
 

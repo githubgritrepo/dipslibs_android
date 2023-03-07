@@ -172,20 +172,26 @@ public class RabbitMirroring {
         if (connection != null) {
             if (chSendKey != null) {
                 try {
-                    chSendKey.close();
+                    if (chSendKey.isOpen()) {
+                        chSendKey.close();
+                    }
                 } catch (IOException | TimeoutException e) {
                     throw new RuntimeException(e);
                 }
             }
             if (chSendEndpoint != null) {
                 try {
-                    chSendEndpoint.close();
+                    if (chSendEndpoint.isOpen()) {
+                        chSendEndpoint.close();
+                    }
                 } catch (IOException | TimeoutException e) {
                     throw new RuntimeException(e);
                 }
             }
             try {
-                connection.close();
+                if (connection.isOpen()) {
+                    connection.close();
+                }
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }

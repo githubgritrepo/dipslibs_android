@@ -40,6 +40,7 @@ public class SessionManager {
     public static final String KEY_ADVANCE_AI_LICENSE = "ADVANCE_AI_LICENSE";
     public static final String KEY_ADVANCE_AI_EXPIREDTIME = "ADVANCE_AI_EXPIREDTIME";
     public static final String KEY_AUTHTOKEN = "AUTHTOKEN";
+    public static final String KEY_EXCHANGETOKEN = "EXCHANGETOKEN";
     public static final String KEY_CSID = "CSID";
     public static final String KEY_FLOW = "FLOW";
     public static final String KEY_FORMCODE = "FORMCODE";
@@ -50,6 +51,8 @@ public class SessionManager {
     public static final String KEY_noComplaint = "NOCOMPLAINT";
     public static final String KEY_NAMANASABAH = "NAMANASABAH";
     public static final String KEY_SESSIONID_DIPS = "SESSIONID_DIPS";
+    public static final String KEY_SCHEDULE_DATE = "SCHEDULE_DATE";
+    public static final String KEY_SCHEDULE_TIME = "SCHEDULE_TIME";
 
     // Constructor
     public SessionManager(Context context){
@@ -146,6 +149,11 @@ public class SessionManager {
         editor.commit();
     }
 
+    public void saveExchangeToken(String data) {
+        editor.putString(KEY_EXCHANGETOKEN,data);
+        editor.commit();
+    }
+
     public void saveCSID(String data) {
         editor.putString(KEY_CSID,data);
         editor.commit();
@@ -188,6 +196,16 @@ public class SessionManager {
 
     public void saveNasabahName(String data) {
         editor.putString(KEY_NAMANASABAH,data);
+        editor.commit();
+    }
+
+    public void saveScheduledDate(String data) {
+        editor.putString(KEY_SCHEDULE_DATE,data);
+        editor.commit();
+    }
+
+    public void saveScheduledTime(String data) {
+        editor.putString(KEY_SCHEDULE_TIME,data);
         editor.commit();
     }
 
@@ -299,6 +317,9 @@ public class SessionManager {
     public String getAuthToken() {
         return pref.getString(KEY_AUTHTOKEN,null);
     }
+    public String getExchangeToken() {
+        return pref.getString(KEY_EXCHANGETOKEN,null);
+    }
     public String getCSID() {
         return pref.getString(KEY_CSID,null);
     }
@@ -325,6 +346,12 @@ public class SessionManager {
     }
     public String getNasabahName() {
         return pref.getString(KEY_NAMANASABAH,null);
+    }
+    public String getScheduledDate() {
+        return pref.getString(KEY_SCHEDULE_DATE,null);
+    }
+    public String getScheduledTime() {
+        return pref.getString(KEY_SCHEDULE_TIME,null);
     }
 
 }

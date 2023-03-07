@@ -88,7 +88,7 @@ public class DipsCameraSource extends AppCompatActivity implements CameraSource.
         LinearLayout llMsg = findViewById(R.id.llMsg);
         llMsg.getBackground().setAlpha(150);
         tvHeader.setText(R.string.ktp_swafoto);
-        tvContent.setText(R.string.content_swafoto);
+        tvContent.setText(R.string.content_swafoto2);
 
     }
 
@@ -181,7 +181,7 @@ public class DipsCameraSource extends AppCompatActivity implements CameraSource.
             Log.e("CEK","rad : "+rad);
 
             int NUM_DASHES = 20;
-            float DASH_PORTION = (float) 0.75;
+            float DASH_PORTION = (float) 0.3;
             float GAP_PORTION = (float) 0.25;
             double circumference = 2 * Math.PI * rad;
             float dashPlusGapSize = (float) (circumference / NUM_DASHES);
@@ -200,18 +200,11 @@ public class DipsCameraSource extends AppCompatActivity implements CameraSource.
             Log.e("CEK","surfaceChanged width : "+width+" | height : "+height);
 
             double diffH = Math.ceil(height / 1.5);
-            double diffw = Math.ceil(width / 3.5);
+            double diffw = Math.ceil(width / 5);
 
-            double surfRight = 0;
-            double surfBottom = 0;
+            double surfRight = (width - diffw);
+            double surfBottom = Math.ceil(height / 1.1);
 
-            surfRight = (width-diffw);
-            surfBottom = (height-200);
-
-            posCX = (int) diffw;
-            posCY = (int) surfRight;
-            posWidth = (int) diffH;
-            posHeight = (int) surfBottom;
             Log.e("CEK","surfaceChanged diffw : "+diffw+" | diffH : "+diffH+" | surfRight : "+surfRight+" | surfBottom : "+surfBottom);
 
             RectF rect = new RectF((float) diffw,(float) diffH,(float) surfRight,(float) surfBottom);
@@ -359,43 +352,22 @@ public class DipsCameraSource extends AppCompatActivity implements CameraSource.
             sy = ((float) newWidth) / width;
         }
 
-        /*if (useFacing == CameraSource.CAMERA_FACING_FRONT) {
-            matrix.setRotate(rotationInDegree);
-        } else {
-            matrix.setRotate(90);
-        }*/
-
-        int cx = (int) (width / 3.5);
-        int cy = (int) (height / 1.5);
-        int diffH = cy;
+        int cx = (int) (width / 4.9);
+        int cy = (int) (height / 1.6);
+        int widthB = (int) (width / 1.7);
+        int heightB = (int) (height / 3.6);
 
         Matrix matrix = new Matrix();
         // RESIZE THE BIT MAP
-
-        int widthChange = width - cx;
-        int HeightChange = height;
-        HeightChange = HeightChange - diffH;
-        // "RECREATE" THE NEW BITMAP
-        Log.e("CEK","diffH : "+diffH+" | sx : "+sx+" | sy : "+sy+" | cx : "+cx+" | cy : "+cy);
-        Log.e("CEK","Width Change : "+widthChange+" | Height Change : "+HeightChange);
-        Bitmap resizedBitmap = null;
         if (width < height) {
             matrix.postScale(-1, 1);
-            resizedBitmap = Bitmap.createBitmap(
-                    bm, cx, cy, widthChange - 700, HeightChange - 450, matrix, false);
         } else {
             matrix.postScale(1, -1);
-            Log.e("CEK","posCX : "+posCX+" | posCY : "+posCY+" | posWidth : "+posWidth+" | posHeight : "+posHeight);
-            int cxW = (int) (posWidth / 1.8);
-            int cxH = posHeight / 2;
-            if ("xiaomi".equals(Build.MANUFACTURER.toLowerCase(Locale.ROOT))) {
-                cxW = (int) (posWidth / 1.2);
-                cxH = (int) (posHeight / 1.2);
-            }
-            Log.e("CEK","cxW : "+cxW+" | cxH : "+cxH);
-            resizedBitmap = Bitmap.createBitmap(
-                    bm, posCX, posCY, cxW, cxH, matrix, false);
         }
+
+        // "RECREATE" THE NEW BITMAP
+        Bitmap resizedBitmap = Bitmap.createBitmap(
+                bm, cx, cy, widthB, heightB, matrix, false);
 
         return resizedBitmap;
     }

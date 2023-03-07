@@ -21,11 +21,15 @@ public interface ApiService {
 
     @Headers("Content-Type: "+ MyConstants.CONTENT_TYPE)
     @POST("digitech/ocr-ktp")
-    Call<JsonObject> ocrKtp(@Body RequestBody body);
+    Call<JsonObject> ocrKtp(@Body RequestBody body,
+                            @Header("Authorization") String authHeader,
+                            @Header("exchangeToken") String exchangeToken);
 
     @Headers("Content-Type: "+ MyConstants.CONTENT_TYPE)
     @POST("digitech/ocr-npwp")
-    Call<JsonObject> ocrNpwp(@Body RequestBody body);
+    Call<JsonObject> ocrNpwp(@Body RequestBody body,
+                             @Header("Authorization") String authHeader,
+                             @Header("exchangeToken") String exchangeToken);
 
     @Headers("Content-Type: "+ MyConstants.CONTENT_TYPE)
     @POST("capture/identify")
@@ -62,7 +66,9 @@ public interface ApiService {
 
     @Headers("Content-Type: "+ MyConstants.CONTENT_TYPE)
     @POST("customer/nik-check")
-    Call<JsonObject> CekByNIK(@Body RequestBody body);
+    Call<JsonObject> CekByNIK(@Body RequestBody body,
+                              @Header("Authorization") String authHeader,
+                              @Header("exchangeToken") String exchangeToken);
 
     @Headers("Content-Type: "+ MyConstants.CONTENT_TYPE)
     @POST("document/savebase64")
@@ -82,15 +88,19 @@ public interface ApiService {
 
     @Headers("Content-Type: "+ MyConstants.CONTENT_TYPE)
     @POST("schedule/create")
-    Call<JsonObject> saveSchedule(@Body RequestBody body);
+    Call<JsonObject> saveSchedule(@Body RequestBody body,
+                                  @Header("Authorization") String authHeader,
+                                  @Header("exchangeToken") String exchangeToken);
 
     @Headers("Content-Type: "+ MyConstants.CONTENT_TYPE)
     @GET("schedule/not-available")
-    Call<JsonObject> GetCheckSchedule();
+    Call<JsonObject> GetCheckSchedule(@Header("Authorization") String authHeader,
+                                      @Header("exchangeToken") String exchangeToken);
 
     @Headers("Content-Type: "+ MyConstants.CONTENT_TYPE)
     @GET("time-period")
-    Call<JsonObject> GetScheduleTimes();
+    Call<JsonObject> GetScheduleTimes(@Header("Authorization") String authHeader,
+                                      @Header("exchangeToken") String exchangeToken);
 
     @Headers("Content-Type: "+ MyConstants.CONTENT_TYPE)
     @POST("account_opening/createform")
@@ -129,7 +139,9 @@ public interface ApiService {
 
     @Headers("Content-Type: "+ MyConstants.CONTENT_TYPE)
     @POST("form/save")
-    Call<JsonObject> saveForm(@Body RequestBody body);
+    Call<JsonObject> saveForm(@Body RequestBody body,
+                              @Header("Authorization") String authHeader,
+                              @Header("exchangeToken") String exchangeToken);
 
     @Headers("Content-Type: "+ MyConstants.CONTENT_TYPE)
     @POST("form/verifyOtp")
@@ -141,15 +153,21 @@ public interface ApiService {
 
     @Headers("Content-Type: "+ MyConstants.CONTENT_TYPE)
     @POST("kodepos/get-by-wilayah")
-    Call<JsonObject> getKodePos(@Body RequestBody body);
+    Call<JsonObject> getKodePos(@Body RequestBody body,
+                                @Header("Authorization") String authHeader,
+                                @Header("exchangeToken") String exchangeToken);
 
     @Headers("Content-Type: "+ MyConstants.CONTENT_TYPE)
     @POST("middleware/send-otp")
-    Call<JsonObject> SendOTP(@Body RequestBody body);
+    Call<JsonObject> SendOTP(@Body RequestBody body,
+                             @Header("Authorization") String authHeader,
+                             @Header("exchangeToken") String exchangeToken);
 
     @Headers("Content-Type: "+ MyConstants.CONTENT_TYPE)
     @POST("middleware/validate-otp")
-    Call<JsonObject> ValidateOTP(@Body RequestBody body);
+    Call<JsonObject> ValidateOTP(@Body RequestBody body,
+                                 @Header("Authorization") String authHeader,
+                                 @Header("exchangeToken") String exchangeToken);
 
     @Headers("Content-Type: "+ MyConstants.CONTENT_TYPE)
     @GET("customer-portfolio/{NoCIF}")
@@ -158,20 +176,34 @@ public interface ApiService {
     );
 
     @Headers("Content-Type: "+ MyConstants.CONTENT_TYPE)
+    @POST("customer-portfolio/validasi/data-nasabah")
+    Call<JsonObject> validasiDataNasabah(@Body RequestBody body,
+                                 @Header("Authorization") String authHeader,
+                                 @Header("exchangeToken") String exchangeToken);
+
+    @Headers("Content-Type: "+ MyConstants.CONTENT_TYPE)
     @POST("customer-portfolio/portfolio-data")
-    Call<JsonObject> AddDataSelf(@Body RequestBody body);
+    Call<JsonObject> AddDataSelf(@Body RequestBody body,
+                                 @Header("Authorization") String authHeader,
+                                 @Header("exchangeToken") String exchangeToken);
 
     @Headers("Content-Type: "+ MyConstants.CONTENT_TYPE)
     @POST("customer-portfolio/employment-data/")
-    Call<JsonObject> AddDataWork(@Body RequestBody body);
+    Call<JsonObject> AddDataWork(@Body RequestBody body,
+                                 @Header("Authorization") String authHeader,
+                                 @Header("exchangeToken") String exchangeToken);
 
     @Headers("Content-Type: "+ MyConstants.CONTENT_TYPE)
     @POST("customer-portfolio/financial-data")
-    Call<JsonObject> AddDataFinance(@Body RequestBody body);
+    Call<JsonObject> AddDataFinance(@Body RequestBody body,
+                                    @Header("Authorization") String authHeader,
+                                    @Header("exchangeToken") String exchangeToken);
 
     @Headers("Content-Type: "+ MyConstants.CONTENT_TYPE)
     @POST("list-account/list")
-    Call<JsonObject> GetNewPortofolio(@Body RequestBody body);
+    Call<JsonObject> GetNewPortofolio(@Body RequestBody body,
+                                      @Header("Authorization") String authHeader,
+                                      @Header("exchangeToken") String exchangeToken);
 
     @Headers("Content-Type: "+ MyConstants.CONTENT_TYPE)
     @GET("form/resume-rtgs/{indexTypeTran}-{etc}-{noFIP}-{isPenduduk}-{namaPenyetor}-{addrPenyetor}-{noHP}-" +
@@ -199,10 +231,13 @@ public interface ApiService {
 
     @Headers("Content-Type: "+ MyConstants.CONTENT_TYPE)
     @GET("spanduk/publish")
-    Call<JsonObject> getSpandukPublish();
+    Call<JsonObject> getSpandukPublish(@Header("Authorization") String authHeader,
+                                       @Header("exchangeToken") String exchangeToken);
 
     @GET("spanduk/media/{id}")
-    Call<ResponseBody> getSpandukMedia(@Path("id") int id);
+    Call<ResponseBody> getSpandukMedia(@Path("id") int id,
+                                       @Header("Authorization") String authHeader,
+                                       @Header("exchangeToken") String exchangeToken);
 
     @Headers("Content-Type: "+ MyConstants.CONTENT_TYPE)
     @GET("publish_product")
@@ -210,13 +245,18 @@ public interface ApiService {
 
     @Headers("Content-Type: "+ MyConstants.CONTENT_TYPE)
     @GET("list-publish-product/list")
-    Call<JsonObject> getNewProductPublish();
+    Call<JsonObject> getNewProductPublish(@Header("Authorization") String authHeader,
+                                          @Header("exchangeToken") String exchangeToken);
 
     @GET("product/media/{id}")
-    Call<ResponseBody> getProductMedia(@Path("id") int id);
+    Call<ResponseBody> getProductMedia(@Path("id") int id,
+                                       @Header("Authorization") String authHeader,
+                                       @Header("exchangeToken") String exchangeToken);
 
     @GET("form-builder/list/{formid}")
-    Call<JsonObject> getFormBuilder(@Path("formid") int formId);
+    Call<JsonObject> getFormBuilder(@Path("formid") int formId,
+                                    @Header("Authorization") String authHeader,
+                                    @Header("exchangeToken") String exchangeToken);
 
     @GET("percobaan/form-nik")
     Call<ResponseBody> getFormNIK();
@@ -228,67 +268,116 @@ public interface ApiService {
     );
 
     @Headers("Content-Type: "+ MyConstants.CONTENT_TYPE)
-    @POST("credential/advance-licence")
+    @POST("credentials/credential/advance-licence")
     Call<JsonObject> APIAuthLicenseLiveness(@Body RequestBody body);
 
     @POST("form-data-swafoto/check")
     Call<JsonObject> swafotoCheck(@Header("Content-Type") String contentType,
+                                  @Header("Authorization") String authHeader,
+                                  @Header("exchangeToken") String exchangeToken,
                                     @Body RequestBody body);
 
     @POST("form-data/data-diri")
     Call<JsonObject> formAttachment(@Header("Content-Type") String contentType,
+                                    @Header("Authorization") String authHeader,
+                                    @Header("exchangeToken") String exchangeToken,
                                     @Body RequestBody body);
 
     @GET("tnc/list/{idTnc}")
-    Call<JsonObject> getTNC(@Path("idTnc") int idTnc);
+    Call<JsonObject> getTNC(@Path("idTnc") int idTnc,
+                            @Header("Authorization") String authHeader,
+                            @Header("exchangeToken") String exchangeToken);
 
     @GET("form-generator/formcif/{idDips}")
-    Call<JsonObject> getResiCIF(@Path("idDips") String idDips);
+    Call<JsonObject> getResiCIF(@Path("idDips") String idDips,
+                                @Header("Authorization") String authHeader,
+                                @Header("exchangeToken") String exchangeToken);
 
     @GET("form-generator/pembukaanrekening/{idForm}")
-    Call<JsonObject> getResiCIFReady(@Path("idForm") String idForm);
+    Call<JsonObject> getResiCIFReady(@Path("idForm") String idForm,
+                                     @Header("Authorization") String authHeader,
+                                     @Header("exchangeToken") String exchangeToken);
 
     @GET("form-generator/formkomplain/{noComplaint}")
-    Call<JsonObject> getResiComplaint(@Path("noComplaint") String noComplaint);
+    Call<JsonObject> getResiComplaint(@Path("noComplaint") String noComplaint,
+                                      @Header("Authorization") String authHeader,
+                                      @Header("exchangeToken") String exchangeToken);
 
     @GET("form-generator/formkomplain-new/{noComplaint}")
-    Call<JsonObject> getNewResiComplaint(@Path("noComplaint") String noComplaint);
+    Call<JsonObject> getNewResiComplaint(@Path("noComplaint") String noComplaint,
+                                         @Header("Authorization") String authHeader,
+                                         @Header("exchangeToken") String exchangeToken);
 
     @Headers("Content-Type: "+ MyConstants.CONTENT_TYPE)
     @POST("komplain")
-    Call<JsonObject> formComplaint(@Body RequestBody body);
+    Call<JsonObject> formComplaint(@Body RequestBody body,
+                                   @Header("Authorization") String authHeader,
+                                   @Header("exchangeToken") String exchangeToken);
     @POST("form-data/komplain-old")
     Call<JsonObject> formComplaintOld(@Header("Content-Type") String contentType,
-                                   @Body RequestBody body);
+                                      @Header("Authorization") String authHeader,
+                                      @Header("exchangeToken") String exchangeToken,
+                                      @Body RequestBody body);
 
     @POST("form-data-komplain/add-media")
     Call<JsonObject> formComplaintMedia(@Header("Content-Type") String contentType,
+                                        @Header("Authorization") String authHeader,
+                                        @Header("exchangeToken") String exchangeToken,
                                         @Body RequestBody body);
 
     @Headers("Content-Type: "+ MyConstants.CONTENT_TYPE)
     @GET("approval/status/{idForm}")
-    Call<JsonObject> ApprovalStatus(@Path("idForm") String idForm);
+    Call<JsonObject> ApprovalStatus(@Path("idForm") String idForm,
+                                    @Header("Authorization") String authHeader,
+                                    @Header("exchangeToken") String exchangeToken);
 
     @GET
-    Call<JsonObject> getDynamicUrl(@Url String url);
+    Call<JsonObject> getDynamicUrl(@Url String url,
+                                   @Header("Authorization") String authHeader,
+                                   @Header("exchangeToken") String exchangeToken);
 
     @Headers("Content-Type: "+ MyConstants.CONTENT_TYPE)
     @POST("digitech/h5-advance")
     Call<JsonObject> H5Advance(@Body RequestBody body);
 
     @Headers("Content-Type: "+ MyConstants.CONTENT_TYPE)
-    @POST("rating-agent")
-    Call<JsonObject> RateAgent(@Body RequestBody body);
+    @POST("rating-agent-v2")
+    Call<JsonObject> RateAgent(@Body RequestBody body,
+                               @Header("Authorization") String authHeader,
+                               @Header("exchangeToken") String exchangeToken);
 
     @Headers("Content-Type: "+ MyConstants.CONTENT_TYPE)
     @POST("rating-app")
-    Call<JsonObject> RateApp(@Body RequestBody body);
+    Call<JsonObject> RateApp(@Body RequestBody body,
+                             @Header("Authorization") String authHeader,
+                             @Header("exchangeToken") String exchangeToken);
+
+    @Headers("Content-Type: "+ MyConstants.CONTENT_TYPE)
+    @POST("customer-portfolio/validasi/ibu-kandung")
+    Call<JsonObject> validasiIbuKandung(@Body RequestBody body,
+                                      @Header("Authorization") String authHeader,
+                                      @Header("exchangeToken") String exchangeToken);
+
+    @Headers("Content-Type: "+ MyConstants.CONTENT_TYPE)
+    @POST("customer-portfolio/validasi/wajah-nasabah")
+    Call<JsonObject> validasiWajahNasabah(@Body RequestBody body,
+                                        @Header("Authorization") String authHeader,
+                                        @Header("exchangeToken") String exchangeToken);
 
     @Headers("Content-Type: "+ MyConstants.CONTENT_TYPE)
     @POST("customer-portfolio/validasi/dukcapil-v2")
-    Call<JsonObject> validasiDukcapil(@Body RequestBody body);
+    Call<JsonObject> validasiDukcapil(@Body RequestBody body,
+                                      @Header("Authorization") String authHeader,
+                                      @Header("exchangeToken") String exchangeToken);
 
     @Headers("Content-Type: "+ MyConstants.CONTENT_TYPE)
     @POST("customer-portfolio/validasi/dttot-v2")
-    Call<JsonObject> validasiDttot(@Body RequestBody body);
+    Call<JsonObject> validasiDttot(@Body RequestBody body,
+                                   @Header("Authorization") String authHeader,
+                                   @Header("exchangeToken") String exchangeToken);
+
+    @Headers("Content-Type: "+ MyConstants.CONTENT_TYPE)
+    @GET("config/list")
+    Call<JsonObject> ConfigList(@Header("Authorization") String authHeader,
+                                    @Header("exchangeToken") String exchangeToken);
 }

@@ -114,16 +114,17 @@
         <ImageView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_above="@id/incl_bottombar"
+            android:layout_alignParentBottom="true"
             android:scaleType="fitXY"
             android:src="@drawable/batikbvic10" />
 
         <include
-            android:id="@+id/incl_bottombar"
+            android:id="@+id/incNavBottom"
             layout="@layout/layout_bottom_action_bar_swafoto"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true" />
+            android:layout_alignParentBottom="true"
+            android:visibility="gone"/>
 
     </RelativeLayout>
 

@@ -502,7 +502,9 @@ public class frag_inputdata_new extends Fragment {
 
     private void processGetForm() {
         Log.e("CEK","MASUK processGetForm");
-        Server.getAPIWAITING_PRODUCT().getFormBuilder(7).enqueue(new Callback<JsonObject>() {
+        String authAccess = "Bearer "+session.getAuthToken();
+        String exchangeToken = session.getExchangeToken();
+        Server.getAPIWAITING_PRODUCT().getFormBuilder(7,authAccess,exchangeToken).enqueue(new Callback<JsonObject>() {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
                 swipe.setRefreshing(false);
@@ -514,6 +516,12 @@ public class frag_inputdata_new extends Fragment {
                     llFormBuild.removeAllViewsInLayout();
                     try {
                         JSONObject dataObj = new JSONObject(dataS);
+                        if (dataObj.has("token")) {
+                            String accessToken = dataObj.getString("token");
+                            String exchangeToken = dataObj.getString("exchange");
+                            session.saveAuthToken(accessToken);
+                            session.saveExchangeToken(exchangeToken);
+                        }
                         JSONObject dataObjForm = dataObj.getJSONObject("data");
                         String dataForm = dataObjForm.getString("data");
                         Log.e("CEK","dataForm : "+dataForm);
@@ -928,7 +936,9 @@ public class frag_inputdata_new extends Fragment {
 
     private void processGetDynamicURLAutoComplete(AutoCompleteTextView autoText, String urlPath, String nameDataEl) {
         Log.e("CEK","processGetDynamicURLAutoComplete : "+urlPath);
-        Server.getAPIService().getDynamicUrl(urlPath).enqueue(new Callback<JsonObject>() {
+        String authAccess = "Bearer "+session.getAuthToken();
+        String exchangeToken = session.getExchangeToken();
+        Server.getAPIService().getDynamicUrl(urlPath,authAccess,exchangeToken).enqueue(new Callback<JsonObject>() {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
                 Log.e("CEK","processGetDynamicURL code : "+response.code());
@@ -937,6 +947,12 @@ public class frag_inputdata_new extends Fragment {
                     Log.e("CEK", "processGetDynamicURL dataS : " + dataS);
                     try {
                         JSONObject dataObj = new JSONObject(dataS);
+                        if (dataObj.has("token")) {
+                            String accessToken = dataObj.getString("token");
+                            String exchangeToken = dataObj.getString("exchange");
+                            session.saveAuthToken(accessToken);
+                            session.saveExchangeToken(exchangeToken);
+                        }
                         String nameOpr = dataObj.getString("name");
                         JSONArray dataArr = dataObj.getJSONArray("data");
                         ArrayList<FormSpin> dataDropDown = new ArrayList<>();
@@ -970,7 +986,9 @@ public class frag_inputdata_new extends Fragment {
     private void processGetDynamicURL(Spinner spin, String urlPath, String nameDataEl) {
         flagStuckSpin = false;
         Log.e("CEK","processGetDynamicURL : "+urlPath);
-        Server.getAPIService().getDynamicUrl(urlPath).enqueue(new Callback<JsonObject>() {
+        String authAccess = "Bearer "+session.getAuthToken();
+        String exchangeToken = session.getExchangeToken();
+        Server.getAPIService().getDynamicUrl(urlPath,authAccess,exchangeToken).enqueue(new Callback<JsonObject>() {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
                 Log.e("CEK","processGetDynamicURL code : "+response.code());
@@ -979,6 +997,12 @@ public class frag_inputdata_new extends Fragment {
                     Log.e("CEK","processGetDynamicURL dataS : "+dataS);
                     try {
                         JSONObject dataObj = new JSONObject(dataS);
+                        if (dataObj.has("token")) {
+                            String accessToken = dataObj.getString("token");
+                            String exchangeToken = dataObj.getString("exchange");
+                            session.saveAuthToken(accessToken);
+                            session.saveExchangeToken(exchangeToken);
+                        }
                         String nameOpr = dataObj.getString("name");
                         JSONArray dataArr = dataObj.getJSONArray("data");
                         ArrayList<FormSpin> dataDropDown = new ArrayList<>();
@@ -1260,10 +1284,13 @@ public class frag_inputdata_new extends Fragment {
     private void CekDataByNIK(JSONObject jsons){
         Log.e("CEL","MASUK CekDataByNIK");
 
+        String authAccess = "Bearer "+session.getAuthToken();
+        String exchangeToken = session.getExchangeToken();
+
         RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), jsons.toString());
 
         ApiService API = Server.getAPIService();
-        Call<JsonObject> call = API.CekByNIK(requestBody);
+        Call<JsonObject> call = API.CekByNIK(requestBody,authAccess,exchangeToken);
         Log.e("CEL","URL CekDataByNIK : "+call.request().url());
         call.enqueue(new Callback<JsonObject>() {
             @Override

@@ -19,6 +19,7 @@
     <string name="call_is_being_connected3" translatable="false">Panggilan terhubung . . .</string>
     <string name="schedule_a_task" translatable="false">Jadwalkan Panggilan</string>
     <string name="end_call" translatable="false">Akhiri</string>
+    <string name="end_call2" translatable="false">Akhiri Panggilan</string>
     <string name="headline_schedule" translatable="false">saat ini seluruh petugas kami belum dapat menjawab panggilan Anda, mohon jadwalkan waktu terbaik bagi kami untuk menghubungi Anda kembali.</string>
     <string name="day_date_schedule" translatable="false"><![CDATA[Hari & Tanggal]]></string>
     <string name="time" translatable="false">Waktu</string>
@@ -149,7 +150,7 @@
     <string name="INTERBANK_TRANSACTION" translatable="false">Transaksi Antar Bank</string>
     <string name="ATM_CARD" translatable="false">Kartu ATM</string>
     <string name="KYC_UPDATING" translatable="false">Perbarui Data</string>
-    <string name="CUSTOMER_COMPLAIN" translatable="false">Keluhan Nasabah</string>
+    <string name="CUSTOMER_COMPLAIN" translatable="false">Pengaduan Nasabah</string>
     <string name="DORMANT_ACTIVATION" translatable="false">Aktivasi Dormant</string>
     <string name="rto_content" translatable="false">Nominal transaksi minimal Rp. 50.000,00 dan maksimal Rp. 50.000.000,00</string>
     <string name="skn_content" translatable="false">Nominal transaksi minimal Rp. 50.000,00 dan maksimal Rp. 1.000.000.000,00 pertransaksi</string>
@@ -193,11 +194,11 @@
     <string name="selamat_npembukaan_akun_berhasil" translatable="false">Selamat!\nPembukaan Akun Berhasil</string>
     <string name="nomor_akun" translatable="false">Nomor Akun</string>
     <string name="unduh_formulir" translatable="false">Unduh Formulir</string>
-    <string name="formulir_komplain" translatable="false">Form Keluhan</string>
+    <string name="formulir_komplain" translatable="false">Form Pengaduan</string>
     <string name="silahkan_isi_formulir_berikut_dengan_keluhan_anda_kami_akan_menindaklanjuti_sesegera_mungkin" translatable="false">Silakan isi formulir berikut. Kami akan meninjau dan menindaklanjuti permintaan Anda sesegera mungkin.</string>
     <string name="perihal" translatable="false">Perihal</string>
     <string name="tanggal" translatable="false">Tanggal</string>
-    <string name="detail_komplain" translatable="false">Detail Keluhan</string>
+    <string name="detail_komplain" translatable="false">Detail Pengaduan</string>
     <string name="POWER_OF_ATTORNEY" translatable="false">Surat Kuasa</string>
     <string name="IBMB_REGISTRATION" translatable="false">Aktivasi IBMB</string>
     <string name="CREDIT_FORM" translatable="false">Formulir Kredit</string>
@@ -276,10 +277,10 @@
     <string name="alert_swafoto" translatable="false">Pastikan wajah dan KTP Anda terlihat jelas dan tidak buram.</string>
     <string name="alert_npwp" translatable="false">Pastikan gambar atau foto NPWP sudah jelas dan tidak buram. Lewati jika tidak memiliki NPWP</string>
     <string name="alert_ttd" translatable="false">Pastikan gambar atau foto Tanda Tangan sudah jelas dan tidak buram.</string>
-    <string name="state_complaint" translatable="false">Saya menyatakan bahwa seluruh data yang saya berikan di formulir keluhan  ini benar.</string>
+    <string name="state_complaint" translatable="false">Saya menyatakan bahwa seluruh data yang saya berikan di formulir pengduan  ini benar.</string>
     <string name="accept_state" translatable="false">Mohon untuk menyetujui pernyataan</string>
-    <string name="title_safe_complaint" translatable="false">SELAMAT!\nKeluhan Anda Berhasil Tercatat.</string>
-    <string name="body_complaint" translatable="false">Keluhan Anda berhasil tercatat &amp; akan segera kami tangani. Berikut ini adalah nomor tiket aduan Anda.</string>
+    <string name="title_safe_complaint" translatable="false">SELAMAT!\nPengaduan Anda Berhasil Tercatat.</string>
+    <string name="body_complaint" translatable="false">Pengaduan Anda berhasil tercatat &amp; akan segera kami tangani. Berikut ini adalah nomor tiket aduan Anda.</string>
     <string name="body2_complaint" translatable="false">Terima kasih telah mempercayakan transaksi perbankan Anda pada Bank XYZ. Resi ini telah dikirimkan ke alamat email Anda. Harap untuk memeriksa email Anda.</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="badan_usaha" translatable="false">Badan Usaha</string>
@@ -300,6 +301,7 @@
     <string name="block_account" translatable="false">Blokir Rekening</string>
     <string name="label_downloaded" translatable="false">Menunggu File didownload</string>
     <string name="content_swafoto" translatable="false">Pastikan foto terlihat jelas dan tidak buram</string>
+    <string name="content_swafoto2" translatable="false">Tempatkan Kartu Tanda Penduduk didalam kotak merah. Pastikan wajah dan KTP Anda terlihat jelas dan tidak buram.</string>
     <string name="account_closure" translatable="false">Penutupan Rekening</string>
     <string name="write_here" translatable="false">Tulis disini</string>
     <string name="lbpinjaman" translatable="false">Pinjaman</string>
@@ -314,13 +316,19 @@
     <string name="calling" translatable="false">Memanggil...</string>
     <string name="incoming_call_from" translatable="false">Panggilan Masuk dari</string>
     <string name="required" translatable="false">*Wajib diisi</string>
-    <string name="capture_back" translatable="false">Foto Anda gagal diproses, silahkan ulangi ambil gambar</string>
+    <string name="capture_back" translatable="false">Gambar tidak sesuai.\nHarap ulangi kembali</string>
+    <string name="ktpnotread" translatable="false">KTP belum terbaca.\nHarap ulangi kembali</string>
     <string name="validate_dukcapil" translatable="false">Data KTP tidak Valid. Pastikan KTP yang Anda gunakan Benar dan Terdaftar</string>
     <string name="btn_validate_dukcapil" translatable="false">Masukkan Ulang KTP</string>
-    <string name="validate_nama_ibu" translatable="false">Silahkan masukkan nama ibu kandung</string>
+    <string name="validate_nama_ibu" translatable="false">Silakan masukkan nama ibu kandung</string>
     <string name="validate_dtott" translatable="false">Maaf Anda Tidak Dapat Menggunakan Layanan Digital Operations Bank Victoria. Untuk info lebih lanjut silakan menghubungi Call Center Bank Victoria.</string>
     <string name="max_upfile" translatable="false">Maksimal 3 file</string>
     <string name="alert_upimage" translatable="false">Mohon untuk upload Foto.</string>
     <string name="alert_upfile" translatable="false">Mohon untuk upload File.</string>
-    <string name="choose_please">== Silakan Pilih ==</string>
+    <string name="choose_please" translatable="false">== Silakan Pilih ==</string>
+    <string name="thankyou" translatable="false">Terima Kasih</string>
+    <string name="data_sudah_benar" translatable="false">Data sudah benar</string>
+    <string name="ambil_gambar" translatable="false">Ambil Gambar</string>
+    <string name="please_check_mothername" translatable="false">Silakan periksa lagi nama Ibu Kandung Anda</string>
+    <string name="accept_mother" translatable="false">Harap Menyetujui Data Sudah Benar</string>
 </resources>

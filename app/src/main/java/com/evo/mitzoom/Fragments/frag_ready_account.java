@@ -663,8 +663,10 @@ public class frag_ready_account extends Fragment {
         }
         Log.e("CEK", "APISaveForm : " + dataObjCIF);
 
+        String authAccess = "Bearer "+sessions.getAuthToken();
+        String exchangeToken = sessions.getExchangeToken();
         RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), dataObjCIF.toString());
-        Server.getAPIService().saveForm(requestBody).enqueue(new Callback<JsonObject>() {
+        Server.getAPIService().saveForm(requestBody,authAccess,exchangeToken).enqueue(new Callback<JsonObject>() {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
                 Log.e("CEK","APISaveForm code : "+response.code());
@@ -673,6 +675,12 @@ public class frag_ready_account extends Fragment {
                     Log.e("CEK","APISaveForm dataS : "+dataS);
                     try {
                         JSONObject dataObj = new JSONObject(dataS);
+                        if (dataObj.has("token")) {
+                            String accessToken = dataObj.getString("token");
+                            String exchangeToken = dataObj.getString("exchange");
+                            sessions.saveAuthToken(accessToken);
+                            sessions.saveExchangeToken(exchangeToken);
+                        }
                         String idForm = dataObj.getJSONObject("data").getString("idForm");
                         idFormObj = new JSONObject();
                         idFormObj.put("idForm",idForm);
@@ -736,9 +744,11 @@ public class frag_ready_account extends Fragment {
 
         Log.e("CEK","processSendOTP : "+ dataObjOTP);
 
+        String authAccess = "Bearer "+sessions.getAuthToken();
+        String exchangeToken = sessions.getExchangeToken();
         RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), dataObjOTP.toString());
 
-        Server.getAPIService().SendOTP(requestBody).enqueue(new Callback<JsonObject>() {
+        Server.getAPIService().SendOTP(requestBody,authAccess,exchangeToken).enqueue(new Callback<JsonObject>() {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
                 ((Activity)mContext).runOnUiThread(new Runnable() {
@@ -757,6 +767,12 @@ public class frag_ready_account extends Fragment {
                     Log.e("CEK","processSendOTP : "+dataS);
                     try {
                         JSONObject dataObj = new JSONObject(dataS);
+                        if (dataObj.has("token")) {
+                            String accessToken = dataObj.getString("token");
+                            String exchangeToken = dataObj.getString("exchange");
+                            sessions.saveAuthToken(accessToken);
+                            sessions.saveExchangeToken(exchangeToken);
+                        }
                         transactionId = dataObj.getJSONObject("data").getString("transactionId");
                         RabbitMirroring.MirroringSendEndpoint(11);
                         pageOTP();
@@ -881,8 +897,10 @@ public class frag_ready_account extends Fragment {
 
         Log.e("CEK","processValidateOTP : "+ dataObjOTP);
 
+        String authAccess = "Bearer "+sessions.getAuthToken();
+        String exchangeToken = sessions.getExchangeToken();
         RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), dataObjOTP.toString());
-        Server.getAPIService().ValidateOTP(requestBody).enqueue(new Callback<JsonObject>() {
+        Server.getAPIService().ValidateOTP(requestBody,authAccess,exchangeToken).enqueue(new Callback<JsonObject>() {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
                 Log.e("CEK","processValidateOTP code : "+response.code());
@@ -892,6 +910,13 @@ public class frag_ready_account extends Fragment {
                     JSONObject reqFormSend = dataReqForm();
                     
                     try {
+                        JSONObject dataObj = new JSONObject(dataS);
+                        if (dataObj.has("token")) {
+                            String accessToken = dataObj.getString("token");
+                            String exchangeToken = dataObj.getString("exchange");
+                            sessions.saveAuthToken(accessToken);
+                            sessions.saveExchangeToken(exchangeToken);
+                        }
                         String idForm = idFormObj.getString("idForm");
                         
                         JSONObject dataObjAccount = reqFormSend.getJSONObject("pembukaanakun");
@@ -952,7 +977,9 @@ public class frag_ready_account extends Fragment {
         }
 
         String finalIdForm = idForm;
-        Server.getAPIService().ApprovalStatus(idForm).enqueue(new Callback<JsonObject>() {
+        String authAccess = "Bearer "+sessions.getAuthToken();
+        String exchangeToken = sessions.getExchangeToken();
+        Server.getAPIService().ApprovalStatus(idForm,authAccess,exchangeToken).enqueue(new Callback<JsonObject>() {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
                 Log.e("CEK", this+" processApprovalStatus code : "+response.code());
@@ -971,6 +998,12 @@ public class frag_ready_account extends Fragment {
                     Log.e("CEK","processApprovalStatus dataS : "+dataS);
                     try {
                         JSONObject dataObj = new JSONObject(dataS);
+                        if (dataObj.has("token")) {
+                            String accessToken = dataObj.getString("token");
+                            String exchangeToken = dataObj.getString("exchange");
+                            sessions.saveAuthToken(accessToken);
+                            sessions.saveExchangeToken(exchangeToken);
+                        }
                         if (dataObj.getJSONObject("data").has("noCif")) {
                             if (!dataObj.getJSONObject("data").getString("noCif").isEmpty()) {
                                 String noCif = dataObj.getJSONObject("data").getString("noCif");
@@ -1143,7 +1176,9 @@ public class frag_ready_account extends Fragment {
     private void processGetForm(int formId) {
         Log.e("CEK", this+" MASUK processGetForm formId : "+formId);
         Log.e("CEK", this+" MASUK formCode : "+formCode);
-        Server.getAPIWAITING_PRODUCT().getFormBuilder(formId).enqueue(new Callback<JsonObject>() {
+        String authAccess = "Bearer "+sessions.getAuthToken();
+        String exchangeToken = sessions.getExchangeToken();
+        Server.getAPIWAITING_PRODUCT().getFormBuilder(formId,authAccess,exchangeToken).enqueue(new Callback<JsonObject>() {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
                 if (isSessionZoom) {
@@ -1160,6 +1195,12 @@ public class frag_ready_account extends Fragment {
                     llFormBuild.removeAllViewsInLayout();
                     try {
                         JSONObject dataObj = new JSONObject(dataS);
+                        if (dataObj.has("token")) {
+                            String accessToken = dataObj.getString("token");
+                            String exchangeToken = dataObj.getString("exchange");
+                            sessions.saveAuthToken(accessToken);
+                            sessions.saveExchangeToken(exchangeToken);
+                        }
                         JSONObject dataObjForm = dataObj.getJSONObject("data");
                         String dataForm = dataObjForm.getString("data");
                         Log.e("CEK","dataForm : "+dataForm);
@@ -1627,7 +1668,9 @@ public class frag_ready_account extends Fragment {
     private void processGetDynamicURL(Spinner spin, String urlPath, String nameDataEl) {
         flagStuckSpin = false;
         Log.e("CEK","processGetDynamicURL : "+urlPath);
-        Server.getAPIService().getDynamicUrl(urlPath).enqueue(new Callback<JsonObject>() {
+        String authAccess = "Bearer "+sessions.getAuthToken();
+        String exchangeToken = sessions.getExchangeToken();
+        Server.getAPIService().getDynamicUrl(urlPath,authAccess,exchangeToken).enqueue(new Callback<JsonObject>() {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
                 Log.e("CEK","processGetDynamicURL code : "+response.code());
@@ -1636,6 +1679,12 @@ public class frag_ready_account extends Fragment {
                     Log.e("CEK","processGetDynamicURL dataS : "+dataS);
                     try {
                         JSONObject dataObj = new JSONObject(dataS);
+                        if (dataObj.has("token")) {
+                            String accessToken = dataObj.getString("token");
+                            String exchangeToken = dataObj.getString("exchange");
+                            sessions.saveAuthToken(accessToken);
+                            sessions.saveExchangeToken(exchangeToken);
+                        }
                         String nameAction = dataObj.getString("name");
                         ArrayList<FormSpin> dataDropDown = new ArrayList<>();
                         JSONArray dataArr = dataObj.getJSONArray("data");

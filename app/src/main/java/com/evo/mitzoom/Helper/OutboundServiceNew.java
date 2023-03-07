@@ -70,7 +70,7 @@ public class OutboundServiceNew extends Service {
     String CHANNEL_NAME = "Outbound Call";
     int LED_COLOR = 0xff00ff00;
     private static Channel channelCall = null;
-    private static Connection connection;
+    private static Connection connection = null;
 
     @Override
     public void onCreate() {
@@ -422,9 +422,9 @@ public class OutboundServiceNew extends Service {
                                 if (sessions.getKEY_IdDips() != null) {
                                     jsons.put("idDips", sessions.getKEY_IdDips());
                                 }
-                                OutboundServiceNew.stopServiceSocket();
+                                /*OutboundServiceNew.stopServiceSocket();
                                 Intent intentOutbound = new Intent(mContext, OutboundServiceNew.class);
-                                mContext.stopService(intentOutbound);
+                                mContext.stopService(intentOutbound);*/
                             }
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -445,6 +445,12 @@ public class OutboundServiceNew extends Service {
 
                         ch.basicPublish("dips361-cs-send-endpoint", "dips.direct.cs." + csID + ".send.endpoint", false, null, dataxS.getBytes());
                         ch.waitForConfirmsOrDie();
+
+                        if (kodeEndPoint == 99) {
+                            OutboundServiceNew.stopServiceSocket();
+                            Intent intentOutbound = new Intent(mContext, OutboundServiceNew.class);
+                            mContext.stopService(intentOutbound);
+                        }
 
                     } catch (IOException | InterruptedException e) {
                         Log.e(TAG, "publishToAMQP Connection broken: " + e.getClass().getName());
@@ -523,9 +529,15 @@ public class OutboundServiceNew extends Service {
 
         if (channelCall != null) {
             try {
-                channelCall.close();
+                if (channelCall.isOpen()) {
+                    if (channelCall.isOpen()) {
+                        channelCall.close();
+                    }
+                }
                 if (connection != null) {
-                    connection.close();
+                    if (connection.isOpen()) {
+                        connection.close();
+                    }
                 }
             } catch (IOException | TimeoutException e) {
                 throw new RuntimeException(e);

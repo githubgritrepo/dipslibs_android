@@ -885,7 +885,6 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
         dialogEnd.setCustomView(dialogView);
         dialogEnd.setCancelable(false);
         dialogEnd.hideConfirmButton();
-        dialogEnd.show();
 
         btnConfirmDialog.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -918,6 +917,10 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
                 flagClickEnd = false;
             }
         });
+
+        dialogEnd.show();
+
+
     }
 
     private void MirroringEnd(){

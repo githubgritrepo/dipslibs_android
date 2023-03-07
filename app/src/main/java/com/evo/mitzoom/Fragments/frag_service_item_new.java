@@ -479,7 +479,9 @@ public class frag_service_item_new extends Fragment {
     private void processGetForm(int formId) {
         Log.e("CEK", this+" MASUK processGetForm formId : "+formId);
         Log.e("CEK", this+" MASUK formCode : "+formCode);
-        Server.getAPIWAITING_PRODUCT().getFormBuilder(formId).enqueue(new Callback<JsonObject>() {
+        String authAccess = "Bearer "+sessions.getAuthToken();
+        String exchangeToken = sessions.getExchangeToken();
+        Server.getAPIWAITING_PRODUCT().getFormBuilder(formId,authAccess,exchangeToken).enqueue(new Callback<JsonObject>() {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
                 swipe.setRefreshing(false);
@@ -492,6 +494,12 @@ public class frag_service_item_new extends Fragment {
                     llFormBuild.removeAllViewsInLayout();
                     try {
                         JSONObject dataObj = new JSONObject(dataS);
+                        if (dataObj.has("token")) {
+                            String accessToken = dataObj.getString("token");
+                            String exchangeToken = dataObj.getString("exchange");
+                            sessions.saveAuthToken(accessToken);
+                            sessions.saveExchangeToken(exchangeToken);
+                        }
                         JSONObject dataObjForm = dataObj.getJSONObject("data");
                         String dataForm = dataObjForm.getString("data");
                         Log.e("CEK","dataForm : "+dataForm);
@@ -538,6 +546,7 @@ public class frag_service_item_new extends Fragment {
                                 String finalValKurung = valKurung;
                                 if (llFormBuild.getChildAt(i) instanceof EditText) {
                                     EditText ed = (EditText) llFormBuild.getChildAt(i);
+                                    objEl.put(nameDataEl, "");
                                     ed.setOnFocusChangeListener(new View.OnFocusChangeListener() {
                                         @Override
                                         public void onFocusChange(View view, boolean b) {
@@ -592,7 +601,10 @@ public class frag_service_item_new extends Fragment {
                                         }
                                     });
 
-                                    if (nameDataEl.contains("nama")) {
+                                    if (nameDataEl.contains("nama") && nameDataEl.contains("ibu")) {
+                                        Log.e("CEK","MASUK IF Ibu kandung");
+                                    }
+                                    else if (nameDataEl.contains("nama")) {
                                         Log.e("CEK","MASUK IF identitas");
                                         objEl.put(nameDataEl, namaLengkap);
                                         dataForms.put(keys,objEl);
@@ -724,13 +736,16 @@ public class frag_service_item_new extends Fragment {
                                                 Log.e("CEK","no rekening");
                                                 String getListRekNasabah = sessions.getRekNasabah();
                                                 JSONArray listRekNasabah = new JSONArray(getListRekNasabah);
+                                                Log.e("CEK","listRekNasabah : "+listRekNasabah.toString());
                                                 ArrayList<FormSpin> dataDropDown = new ArrayList<>();
                                                 for (int ij = 0; ij < listRekNasabah.length(); ij++) {
+                                                    Log.e("CEK","LOOP ke-"+ij);
                                                     String accountNo = listRekNasabah.getJSONObject(ij).getString("accountNo");
                                                     String accountName = listRekNasabah.getJSONObject(ij).getString("accountName");
                                                     String labelGab = accountNo;
                                                     dataDropDown.add(new FormSpin(ij, accountNo, labelGab, labelGab));
                                                 }
+                                                Log.e("CEK","dataDropDown : "+dataDropDown.toString());
                                                 ArrayAdapter<FormSpin> adapter2 = new ArrayAdapter<FormSpin>(mContext, R.layout.simple_spinner_dropdown_customitem, dataDropDown);
                                                 spin.setAdapter(adapter2);
                                             }
@@ -942,10 +957,12 @@ public class frag_service_item_new extends Fragment {
 
     private void processSendFormCompaint(JSONObject objAPI) {
         Log.e("CEK","processSendFormCompaint : "+objAPI.toString());
+        String authAccess = "Bearer "+sessions.getAuthToken();
+        String exchangeToken = sessions.getExchangeToken();
         RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), objAPI.toString());
 
         ApiService API = Server.getAPIService();
-        Call<JsonObject> call = API.formComplaint(requestBody);
+        Call<JsonObject> call = API.formComplaint(requestBody,authAccess,exchangeToken);
         Log.e("CEK","processSendFormCompaint call : "+call.request().url());
         Log.e("CEK","processSendFormCompaint call body : "+call.request().body().toString());
         call.enqueue(new Callback<JsonObject>() {
@@ -957,6 +974,12 @@ public class frag_service_item_new extends Fragment {
                     Log.e("CEK","processSendFormCompaint dataS : "+dataS);
                     try {
                         JSONObject dataObj = new JSONObject(dataS);
+                        if (dataObj.has("token")) {
+                            String accessToken = dataObj.getString("token");
+                            String exchangeToken = dataObj.getString("exchange");
+                            sessions.saveAuthToken(accessToken);
+                            sessions.saveExchangeToken(exchangeToken);
+                        }
                         noPengaduan = dataObj.getJSONObject("data").getString("noPengaduan");
                         sessions.saveNoComplaint(noPengaduan);
                     } catch (JSONException e) {
@@ -1047,7 +1070,7 @@ public class frag_service_item_new extends Fragment {
             RequestBody requestFileMedia = RequestBody.create(MediaType.parse(type),fileMedia);
 
             multipartBody = new MultipartBody.Builder()
-                    .addPart(MultipartBody.Part.createFormData("ttd", file.getName(), requestFile))
+                    .addPart(MultipartBody.Part.createFormData("ktp", file.getName(), requestFile))
                     .addPart(MultipartBody.Part.createFormData("noPengaduan", null, requestnoComplaint))
                     .addPart(MultipartBody.Part.createFormData("buktiPendukung1", fileMedia.getName(), requestFileMedia))
                     .build();
@@ -1077,7 +1100,7 @@ public class frag_service_item_new extends Fragment {
             RequestBody requestFileMedia2 = RequestBody.create(MediaType.parse(type2),fileMedia2);
 
             multipartBody = new MultipartBody.Builder()
-                    .addPart(MultipartBody.Part.createFormData("ttd", file.getName(), requestFile))
+                    .addPart(MultipartBody.Part.createFormData("ktp", file.getName(), requestFile))
                     .addPart(MultipartBody.Part.createFormData("noPengaduan", null, requestnoComplaint))
                     .addPart(MultipartBody.Part.createFormData("buktiPendukung1", fileMedia.getName(), requestFileMedia))
                     .addPart(MultipartBody.Part.createFormData("buktiPendukung2", fileMedia2.getName(), requestFileMedia2))
@@ -1120,7 +1143,7 @@ public class frag_service_item_new extends Fragment {
             RequestBody requestFileMedia3 = RequestBody.create(MediaType.parse(type3),fileMedia3);
 
             multipartBody = new MultipartBody.Builder()
-                    .addPart(MultipartBody.Part.createFormData("ttd", file.getName(), requestFile))
+                    .addPart(MultipartBody.Part.createFormData("ktp", file.getName(), requestFile))
                     .addPart(MultipartBody.Part.createFormData("noPengaduan", null, requestnoComplaint))
                     .addPart(MultipartBody.Part.createFormData("buktiPendukung1", fileMedia.getName(), requestFileMedia))
                     .addPart(MultipartBody.Part.createFormData("buktiPendukung2", fileMedia2.getName(), requestFileMedia2))
@@ -1128,13 +1151,21 @@ public class frag_service_item_new extends Fragment {
                     .build();
         }
 
+        String authAccess = "Bearer "+sessions.getAuthToken();
+        String exchangeToken = sessions.getExchangeToken();
+
         String contentType = "multipart/form-data; charset=utf-8; boundary=" + multipartBody.boundary();
 
         ApiService API = Server.getAPIService2();
-        Call<JsonObject> call = API.formComplaintMedia(contentType,multipartBody);
+        Call<JsonObject> call = API.formComplaintMedia(contentType,authAccess,exchangeToken,multipartBody);
         call.enqueue(new Callback<JsonObject>() {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                if (isSessionZoom) {
+                    BaseMeetingActivity.showProgress(false);
+                } else {
+                    DipsSwafoto.showProgress(false);
+                }
                 if (response.isSuccessful()) {
                     JSONObject dataMirr = null;
                     try {
@@ -1145,13 +1176,34 @@ public class frag_service_item_new extends Fragment {
                         e.printStackTrace();
                     }
                     RabbitMirroring.MirroringSendKey(dataForms);
-                    processSendOTP();
+                    new Handler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            ((Activity) mContext).runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    RabbitMirroring.MirroringSendEndpoint(130);
+                                    Bundle bundle = new Bundle();
+                                    bundle.putBoolean("newComplain",true);
+                                    Fragment fragment = new frag_service_resi();
+                                    fragment.setArguments(bundle);
+                                    getFragmentPage(fragment);
+                                }
+                            });
+                        }
+                    },1000);
+
+                    //processSendOTP();
                 }
             }
 
             @Override
             public void onFailure(Call<JsonObject> call, Throwable t) {
-
+                if (isSessionZoom) {
+                    BaseMeetingActivity.showProgress(false);
+                } else {
+                    DipsSwafoto.showProgress(false);
+                }
             }
         });
     }
@@ -1237,9 +1289,11 @@ public class frag_service_item_new extends Fragment {
 
         Log.e("CEK","processSendOTP : "+ dataObjOTP);
 
+        String authAccess = "Bearer "+sessions.getAuthToken();
+        String exchangeToken = sessions.getExchangeToken();
         RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), dataObjOTP.toString());
 
-        Server.getAPIService().SendOTP(requestBody).enqueue(new Callback<JsonObject>() {
+        Server.getAPIService().SendOTP(requestBody,authAccess,exchangeToken).enqueue(new Callback<JsonObject>() {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
                 if (isSessionZoom) {
@@ -1253,6 +1307,12 @@ public class frag_service_item_new extends Fragment {
                     Log.e("CEK","processSendOTP : "+dataS);
                     try {
                         JSONObject dataObj = new JSONObject(dataS);
+                        if (dataObj.has("token")) {
+                            String accessToken = dataObj.getString("token");
+                            String exchangeToken = dataObj.getString("exchange");
+                            sessions.saveAuthToken(accessToken);
+                            sessions.saveExchangeToken(exchangeToken);
+                        }
                         transactionId = dataObj.getJSONObject("data").getString("transactionId");
                         RabbitMirroring.MirroringSendEndpoint(11);
                         pageOTP();
@@ -1288,8 +1348,10 @@ public class frag_service_item_new extends Fragment {
 
         Log.e("CEK","processValidateOTP : "+ dataObjOTP);
 
+        String authAccess = "Bearer "+sessions.getAuthToken();
+        String exchangeToken = sessions.getExchangeToken();
         RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), dataObjOTP.toString());
-        Server.getAPIService().ValidateOTP(requestBody).enqueue(new Callback<JsonObject>() {
+        Server.getAPIService().ValidateOTP(requestBody,authAccess,exchangeToken).enqueue(new Callback<JsonObject>() {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
                 if (isSessionZoom) {
@@ -1301,6 +1363,17 @@ public class frag_service_item_new extends Fragment {
                 if (response.isSuccessful()) {
                     String dataS = response.body().toString();
                     Log.e("CEK","processValidateOTP : "+dataS);
+                    try {
+                        JSONObject dataObj = new JSONObject(dataS);
+                        if (dataObj.has("token")) {
+                            String accessToken = dataObj.getString("token");
+                            String exchangeToken = dataObj.getString("exchange");
+                            sessions.saveAuthToken(accessToken);
+                            sessions.saveExchangeToken(exchangeToken);
+                        }
+                    } catch (JSONException e) {
+                        throw new RuntimeException(e);
+                    }
                     RabbitMirroring.MirroringSendEndpoint(130);
                     Bundle bundle = new Bundle();
                     bundle.putBoolean("newComplain",true);
@@ -1440,7 +1513,9 @@ public class frag_service_item_new extends Fragment {
     private void processGetDynamicURL(Spinner spin, String urlPath, String nameDataEl) {
         flagStuckSpin = false;
         Log.e("CEK","processGetDynamicURL : "+urlPath);
-        Server.getAPIService().getDynamicUrl(urlPath).enqueue(new Callback<JsonObject>() {
+        String authAccess = "Bearer "+sessions.getAuthToken();
+        String exchangeToken = sessions.getExchangeToken();
+        Server.getAPIService().getDynamicUrl(urlPath,authAccess,exchangeToken).enqueue(new Callback<JsonObject>() {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
                 Log.e("CEK","processGetDynamicURL code : "+response.code());
@@ -1449,6 +1524,12 @@ public class frag_service_item_new extends Fragment {
                     Log.e("CEK","processGetDynamicURL dataS : "+dataS);
                     try {
                         JSONObject dataObj = new JSONObject(dataS);
+                        if (dataObj.has("token")) {
+                            String accessToken = dataObj.getString("token");
+                            String exchangeToken = dataObj.getString("exchange");
+                            sessions.saveAuthToken(accessToken);
+                            sessions.saveExchangeToken(exchangeToken);
+                        }
                         String nameOpr = dataObj.getString("name");
                         JSONArray dataArr = dataObj.getJSONArray("data");
                         ArrayList<FormSpin> dataDropDown = new ArrayList<>();

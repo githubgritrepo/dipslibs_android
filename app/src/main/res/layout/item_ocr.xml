@@ -315,15 +315,37 @@
             android:background="@drawable/bg_textinput"
             android:inputType="textCapCharacters"
             android:textSize="12dp"
-            tools:ignore="SpeakableTextPresentCheck" />
+            tools:ignore="SpeakableTextPresentCheck"/>
         <TextView
+            android:id="@+id/tvError"
+            android:textColor="@color/red_btn_bg_color"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+            android:textSize="13dp"
+            android:text="@string/please_check_mothername"
+            android:visibility="gone"/>
+        <TextView
+            android:id="@+id/tvMandatory"
             android:textColor="@color/red_btn_bg_color"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/required"
             android:layout_marginBottom="10dp"
             android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-            android:textSize="15dp" />
+            android:textSize="13dp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <CheckBox
+                android:id="@+id/chkDataCorrect"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/data_sudah_benar"/>
+        </LinearLayout>
 
         <LinearLayout
             android:layout_margin="10dp"

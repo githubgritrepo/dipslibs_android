@@ -103,7 +103,8 @@ public class DipsLivenessResult extends AppCompatActivity {
             String imgBase64 = Base64.encodeToString(resultImage, Base64.NO_WRAP);
             Bitmap bitmap = BitmapFactory.decodeByteArray(resultImage, 0, resultImage.length);
             mask_view.setImageBitmap(bitmap);
-            processH5Advance(imgBase64);
+            //processH5Advance(imgBase64);
+            processCaptureIdentifyAuth(imgBase64);
         }
     }
 
@@ -195,7 +196,7 @@ public class DipsLivenessResult extends AppCompatActivity {
                 if (response.isSuccessful()) {
                     
                     String dataS = response.body().toString();
-                    Log.e("CEK","dataS: "+dataS);
+                    Log.e("CEK","CaptureIdentifyAuth dataS: "+dataS);
                     try {
                         JSONObject dataObj = new JSONObject(dataS);
                         llCircle.setVisibility(View.VISIBLE);
@@ -216,20 +217,33 @@ public class DipsLivenessResult extends AppCompatActivity {
                             }
                             String custName = dataCustomer.getString("namaLengkap");
                             String idDipsNew = dataCustomer.getString("idDips");
+                            boolean isSwafoto = dataCustomer.getBoolean("isSwafoto");
+                            isSwafoto = false;
                             Log.e("CEK", "idDipsNew : " + idDipsNew + " | idDips : " + idDips);
-                            String accessToken = dataToken.getString("accessToken");
+                            String accessToken = "";
+                            String exchangeToken = "";
+                            if (dataToken.has("accessToken")) {
+                                accessToken = dataToken.getString("accessToken");
+                                exchangeToken = dataToken.getString("exchangeToken");
+                            } else {
+                                accessToken = dataToken.getString("token");
+                                exchangeToken = dataToken.getString("exchange");
+                            }
 
                             sessions.saveIdDips(idDipsNew);
                             sessions.saveIsCust(isCust);
                             sessions.saveAuthToken(accessToken);
+                            sessions.saveExchangeToken(exchangeToken);
                             sessions.saveNoCIF(noCIF);
                             sessions.saveNasabahName(custName);
                             sessions.saveNasabah(dataCustomer.toString());
+                            sessions.saveIsSwafoto(isSwafoto);
 
                             idDips = idDipsNew;
 
                             sessions.saveIdDips(idDips);
 
+                            boolean finalIsSwafoto = isSwafoto;
                             new Handler().postDelayed(new Runnable() {
                                 @Override
                                 public void run() {
@@ -244,6 +258,8 @@ public class DipsLivenessResult extends AppCompatActivity {
                                             } else {
                                                 intent = new Intent(mContext, DipsSwafoto.class);
                                                 intent.putExtra("CUSTNAME", custName);
+                                                intent.putExtra("formCode", 22); //4 Upload KTP, 22 Swafoto
+                                                intent.putExtra("OCRKTP",true);
                                             }
                                             startActivity(intent);
                                             finishAffinity();
@@ -272,6 +288,14 @@ public class DipsLivenessResult extends AppCompatActivity {
             public void onFailure(Call<JsonObject> call, Throwable t) {
                 Log.e("CEK","onFailure MESSAGE : "+t.getMessage());
                 Toast.makeText(mContext, t.getMessage(), Toast.LENGTH_SHORT).show();
+                if (t.getMessage().contains("connect")) {
+                    new Handler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            processCaptureIdentifyAuth(imgBase64);
+                        }
+                    }, 4000);
+                }
             }
         });
     }

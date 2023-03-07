@@ -172,25 +172,36 @@ public class RatingActivity extends AppCompatActivity {
     }
 
     private void RatingAgent() {
+        String getKritik = kritik.getText().toString().trim();
+        int getStar = (int) rating.getRating();
+        String stars = String.valueOf(getStar);
+        Log.e(TAG,"KRITIK : "+getKritik+" | stars : "+stars);
+
         JSONObject jsons = new JSONObject();
         try {
             jsons.put("idAgent",Integer.parseInt(idAgent));
             jsons.put("idDips",idDips);
-            jsons.put("rating",thumb);
+            jsons.put("rating",stars);
+            jsons.put("komentar",getKritik);
+            jsons.put("noTiket","");
         } catch (JSONException e) {
             e.printStackTrace();
         }
 
         Log.e(TAG,"RatingAgent : "+ jsons);
+        String authAccess = "Bearer "+sessions.getAuthToken();
+        String exchangeToken = sessions.getExchangeToken();
 
         RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), jsons.toString());
 
-        Server.getAPIService().RateAgent(requestBody).enqueue(new Callback<JsonObject>() {
+        Server.getAPIService().RateAgent(requestBody,authAccess,exchangeToken).enqueue(new Callback<JsonObject>() {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
                 Log.e(TAG,"RatingAgent ResponCode : "+response.code());
                 if (response.isSuccessful()) {
-                    RatingApps();
+                    //RatingApps();
+                    sessions.clearIdDiPSCSID();
+                    PopUp();
                 } else {
                     showProgress(false);
                 }
@@ -218,10 +229,12 @@ public class RatingActivity extends AppCompatActivity {
         }
 
         Log.e(TAG,"RatingApps : "+ jsons);
+        String authAccess = "Bearer "+sessions.getAuthToken();
+        String exchangeToken = sessions.getExchangeToken();
 
         RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), jsons.toString());
 
-        Server.getAPIService().RateApp(requestBody).enqueue(new Callback<JsonObject>() {
+        Server.getAPIService().RateApp(requestBody,authAccess,exchangeToken).enqueue(new Callback<JsonObject>() {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
                 Log.e(TAG,"RatingApps ResponCode : "+response.code());

@@ -169,9 +169,10 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_below="@id/cardSurf"
-            android:layout_marginBottom="54dp" />
+            android:layout_above="@id/incNavBottom"/>
 
         <include
+            android:id="@+id/incNavBottom"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             layout="@layout/layout_bottom_action_bar_swafoto"

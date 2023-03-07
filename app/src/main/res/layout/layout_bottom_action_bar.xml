@@ -95,7 +95,7 @@
                 android:background="@drawable/oval_background_10dp"
                 android:backgroundTint="@color/zm_button"
                 android:onClick="onClickEnd"
-                android:text="@string/tutup"
+                android:text="@string/end_call2"
                 android:textColor="@color/white"
                 android:textStyle="bold" />
         </LinearLayout>

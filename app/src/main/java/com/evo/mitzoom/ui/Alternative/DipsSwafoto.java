@@ -48,6 +48,7 @@ import androidx.work.WorkRequest;
 
 import com.evo.mitzoom.API.ApiService;
 import com.evo.mitzoom.API.Server;
+import com.evo.mitzoom.Fragments.frag_cif_new;
 import com.evo.mitzoom.Fragments.frag_inputdata_new;
 import com.evo.mitzoom.Helper.MyWorker;
 import com.evo.mitzoom.Helper.OutboundServiceNew;
@@ -150,11 +151,20 @@ public class DipsSwafoto extends AppCompatActivity implements com.wdullaer.mater
         useFacing = intent.getIntExtra(KEY_USE_FACING, Camera.CameraInfo.CAMERA_FACING_FRONT);
 
         custName = getIntent().getExtras().getString("CUSTNAME");
+        int formCode = getIntent().getExtras().getInt("formCode");
+        boolean ocrKTP = getIntent().getExtras().getBoolean("OCRKTP");
 
-        Fragment fragment = new frag_inputdata_new();
+        Fragment fragment = null;
         Bundle bundle = new Bundle();
-        sessions.saveIsCust(isCust);
-        bundle.putString("CUSTNAME",custName);
+        if (formCode == 22) {
+            sessions.saveFormCOde(formCode);
+            fragment = new frag_cif_new();
+            bundle.putBoolean("OCRKTP",ocrKTP);
+        } else {
+            fragment = new frag_inputdata_new();
+            sessions.saveIsCust(isCust);
+            bundle.putString("CUSTNAME", custName);
+        }
         fragment.setArguments(bundle);
         getFragmentPage(fragment);
 
@@ -183,6 +193,8 @@ public class DipsSwafoto extends AppCompatActivity implements com.wdullaer.mater
             }
         });
 
+        sessions.saveScheduledDate(null);
+        sessions.saveScheduledTime(null);
         new AsyncProcess().execute();
 
         btnSchedule.setOnClickListener(new View.OnClickListener() {
@@ -457,6 +469,7 @@ public class DipsSwafoto extends AppCompatActivity implements com.wdullaer.mater
                     //Toast.makeText(context.getApplicationContext(), getResources().getString(R.string.schedule) + tanggal + " & " + getResources().getString(R.string.jam) + waktu, Toast.LENGTH_LONG).show();
                     sweetAlertDialog.dismiss();
                     sessions.saveIDSchedule(0);
+                    showProgress(true);
                     saveSchedule();
                 }
 
@@ -474,14 +487,17 @@ public class DipsSwafoto extends AppCompatActivity implements com.wdullaer.mater
         } catch (JSONException e) {
             e.printStackTrace();
         }
+        String authAccess = "Bearer "+sessions.getAuthToken();
+        String exchangeToken = sessions.getExchangeToken();
         Log.e("CEK","PARAMS saveSchedule : "+ jsons);
         Log.d("PARAMS JADWAL","idDips = "+idDips+", Tanggal = "+Savetanggal);
         RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), jsons.toString());
         ApiService API = Server.getAPIService();
-        Call<JsonObject> call = API.saveSchedule(requestBody);
+        Call<JsonObject> call = API.saveSchedule(requestBody,authAccess,exchangeToken);
         call.enqueue(new Callback<JsonObject>() {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                showProgress(false);
                 Log.e("CEK","saveSchedule Respon Code : "+response.code());
                 if (response.isSuccessful() && response.body().size() > 0) {
                     Log.e("CEK","saveSchedule Respon : "+ response.body());
@@ -491,6 +507,12 @@ public class DipsSwafoto extends AppCompatActivity implements com.wdullaer.mater
                         JSONObject dataObj = new JSONObject(dataS);
                         int idSchedule = dataObj.getJSONObject("data").getInt("id");
                         sessions.saveIDSchedule(idSchedule);
+                        if (dataObj.has("token")) {
+                            String accessToken = dataObj.getString("token");
+                            String exchangeToken = dataObj.getString("exchange");
+                            sessions.saveAuthToken(accessToken);
+                            sessions.saveExchangeToken(exchangeToken);
+                        }
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
@@ -508,8 +530,8 @@ public class DipsSwafoto extends AppCompatActivity implements com.wdullaer.mater
                         }
                     }*/
 
-                    doWorkMyWorker();
-                    //serviceOutbound();
+                    //doWorkMyWorker();
+                    serviceOutbound();
 
                     LayoutInflater inflater = getLayoutInflater();
                     View dialogView = inflater.inflate(R.layout.layout_dialog_sweet, null);
@@ -544,6 +566,7 @@ public class DipsSwafoto extends AppCompatActivity implements com.wdullaer.mater
 
             @Override
             public void onFailure(Call<JsonObject> call, Throwable t) {
+                showProgress(false);
                 Toast.makeText(mContext,t.getMessage(),Toast.LENGTH_SHORT).show();
             }
         });
@@ -649,14 +672,23 @@ public class DipsSwafoto extends AppCompatActivity implements com.wdullaer.mater
     }
 
     private void processGetCheckSchedule() {
-        Server.getAPIService().GetCheckSchedule().enqueue(new Callback<JsonObject>() {
+        String authAccess = "Bearer "+sessions.getAuthToken();
+        String exchangeToken = sessions.getExchangeToken();
+        Server.getAPIService().GetCheckSchedule(authAccess,exchangeToken).enqueue(new Callback<JsonObject>() {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
                 if (response.isSuccessful()) {
                     String dataS = response.body().toString();
                     try {
                         JSONObject dataObj = new JSONObject(dataS);
+                        sessions.saveScheduledDate(dataObj.toString());
                         int errCode = dataObj.getInt("code");
+                        if (dataObj.has("token")) {
+                            String accessToken = dataObj.getString("token");
+                            String exchangeToken = dataObj.getString("exchange");
+                            sessions.saveAuthToken(accessToken);
+                            sessions.saveExchangeToken(exchangeToken);
+                        }
                         if (errCode == 200) {
                             tanggalPenuh = dataObj.getJSONObject("data").getJSONArray("tanggalPenuh");
                             periodePenuh = dataObj.getJSONObject("data").getJSONArray("periodePenuh");
@@ -678,7 +710,9 @@ public class DipsSwafoto extends AppCompatActivity implements com.wdullaer.mater
     }
 
     private void processGetScheduleTimes() {
-        Server.getAPIService().GetScheduleTimes().enqueue(new Callback<JsonObject>() {
+        String authAccess = "Bearer "+sessions.getAuthToken();
+        String exchangeToken = sessions.getExchangeToken();
+        Server.getAPIService().GetScheduleTimes(authAccess,exchangeToken).enqueue(new Callback<JsonObject>() {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
                 if (response.isSuccessful()) {
@@ -686,9 +720,16 @@ public class DipsSwafoto extends AppCompatActivity implements com.wdullaer.mater
                     try {
                         JSONObject dataObj = new JSONObject(dataS);
                         int errCode = dataObj.getInt("code");
+                        if (dataObj.has("token")) {
+                            String accessToken = dataObj.getString("token");
+                            String exchangeToken = dataObj.getString("exchange");
+                            sessions.saveAuthToken(accessToken);
+                            sessions.saveExchangeToken(exchangeToken);
+                        }
                         if (errCode == 200) {
                             JSONArray dataArrTimes = dataObj.getJSONArray("data");
                             Log.e("CEK","dataArrTimes : "+dataArrTimes);
+                            sessions.saveScheduledTime(dataArrTimes.toString());
                             for (int i = 0; i < dataArrTimes.length(); i++) {
                                 int periodeId = dataArrTimes.getJSONObject(i).getInt("id");
                                 String periode = dataArrTimes.getJSONObject(i).getString("periode");

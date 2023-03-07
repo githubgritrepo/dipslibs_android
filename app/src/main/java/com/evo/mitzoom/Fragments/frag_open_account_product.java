@@ -167,7 +167,9 @@ public class frag_open_account_product extends Fragment {
     }
 
     private void processGetTNC() {
-        Server.getAPIService().getTNC(1).enqueue(new Callback<JsonObject>() {
+        String authAccess = "Bearer "+sessions.getAuthToken();
+        String exchangeToken = sessions.getExchangeToken();
+        Server.getAPIService().getTNC(1,authAccess,exchangeToken).enqueue(new Callback<JsonObject>() {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
                 if (isSessionZoom) {
@@ -179,6 +181,12 @@ public class frag_open_account_product extends Fragment {
                     String dataS = response.body().toString();
                     try {
                         JSONObject dataObj = new JSONObject(dataS);
+                        if (dataObj.has("token")) {
+                            String accessToken = dataObj.getString("token");
+                            String exchangeToken = dataObj.getString("exchange");
+                            sessions.saveAuthToken(accessToken);
+                            sessions.saveExchangeToken(exchangeToken);
+                        }
                         String cekdataTnC = dataObj.getJSONObject("data").getString("data");
                         if (cekdataTnC.contains("{")) {
                             JSONObject labelTNC = new JSONObject(cekdataTnC);
