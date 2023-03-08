@@ -379,7 +379,7 @@ public class DipsWaitingRoom extends AppCompatActivity implements DatePickerDial
     private void initialWaitingRoom() {
         Log.d(TAG, "idDips : "+idDips);
         subscribeReqTicket();
-        funcThreadPopupWaiting();
+        //funcThreadPopupWaiting();
     }
 
     private void funcThreadPopupWaiting() {
@@ -462,6 +462,10 @@ public class DipsWaitingRoom extends AppCompatActivity implements DatePickerDial
             } catch (IOException | TimeoutException e) {
                 throw new RuntimeException(e);
             }
+        }
+
+        if (popupWaitingThread != null) {
+            popupWaitingThread.interrupt();
         }
 
         Intent intent = new Intent(Intent.ACTION_MAIN);
@@ -1197,6 +1201,9 @@ public class DipsWaitingRoom extends AppCompatActivity implements DatePickerDial
                 @Override
                 public void onClick(View view) {
                     dialogWaiting.dismissWithAnimation();
+                    if (!startWaiting) {
+                        startWaiting = true;
+                    }
                 }
             });
             btnCancelDialog.setOnClickListener(new View.OnClickListener() {
@@ -1204,6 +1211,7 @@ public class DipsWaitingRoom extends AppCompatActivity implements DatePickerDial
                 public void onClick(View view) {
                     dialogWaiting.dismissWithAnimation();
                     PopUpSchedule();
+                    startWaiting = false;
                 }
             });
         }
@@ -1519,6 +1527,7 @@ public class DipsWaitingRoom extends AppCompatActivity implements DatePickerDial
             @Override
             public void onClick(View view) {
                 sweetAlertDialog.dismiss();
+                startWaiting = false;
                 OutApps();
             }
         });
@@ -1768,11 +1777,13 @@ public class DipsWaitingRoom extends AppCompatActivity implements DatePickerDial
         }
 
         Log.e(TAG,"processSignature REQ : "+ jsons);
+        String authAccess = "Bearer "+sessions.getAuthToken();
+        String exchangeToken = sessions.getExchangeToken();
 
         RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), jsons.toString());
 
         ApiService API = Server.getAPIService();
-        Call<JsonObject> call = API.Signature(requestBody);
+        Call<JsonObject> call = API.Signature(requestBody,authAccess,exchangeToken);
         Log.e(TAG,"Signature URL : "+call.request().url());
         call.enqueue(new Callback<JsonObject>() {
             @Override
@@ -1783,6 +1794,12 @@ public class DipsWaitingRoom extends AppCompatActivity implements DatePickerDial
                     Log.e(TAG,"Signature dataS : "+dataS);
                     try {
                         JSONObject jsObj = new JSONObject(dataS);
+                        if (jsObj.has("token")) {
+                            String accessToken = jsObj.getString("token");
+                            String exchangeToken = jsObj.getString("exchange");
+                            sessions.saveAuthToken(accessToken);
+                            sessions.saveExchangeToken(exchangeToken);
+                        }
                         String signatures = "";
                         if (jsObj.has("data")) {
                             JSONObject dataSign = jsObj.getJSONObject("data");
@@ -1930,15 +1947,20 @@ public class DipsWaitingRoom extends AppCompatActivity implements DatePickerDial
                     try {
                         JSONObject dataObj = new JSONObject(dataS);
                         JSONArray dataConfig = dataObj.getJSONArray("data");
-                        int l = 0;
-                        while (dataConfig.length() > l) {
+                        for (int l = 0; l < dataConfig.length(); l++) {
                             String nameList = dataConfig.getJSONObject(l).getString("name");
-                            if (nameList.contains("waitingTimer")) {
-                                JSONObject valList = dataConfig.getJSONObject(l).getJSONObject("value");
-                                timesWaiting = valList.getInt("time");
-                                countWaiting = valList.getInt("count");
+                            if (nameList.contains("waitingTime")) {
+                                String valList = dataConfig.getJSONObject(l).getString("value");
+                                if (valList.contains("{")) {
+                                    JSONObject objVal = new JSONObject(valList);
+                                    String timeS = objVal.getString("time");
+                                    timesWaiting = Integer.parseInt(timeS) * 1000;
+                                    String countS = objVal.getString("count");
+                                    countWaiting = Integer.parseInt(countS);
+                                    handlerTimesWaiting();
+                                }
+                                break;
                             }
-                            l++;
                         }
                     } catch (JSONException e) {
                         throw new RuntimeException(e);
@@ -1951,6 +1973,27 @@ public class DipsWaitingRoom extends AppCompatActivity implements DatePickerDial
 
             }
         });
+    }
+
+    private void handlerTimesWaiting() {
+        if (startWaiting) {
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    ((Activity) mContext).runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Log.e(TAG, "handlerTimesWaiting countWaiting : " + countWaiting + " | loopWaiting : " + loopWaiting);
+                            if (countWaiting > loopWaiting) {
+                                PopUpWaiting();
+                                loopWaiting++;
+                                handlerTimesWaiting();
+                            }
+                        }
+                    });
+                }
+            }, timesWaiting);
+        }
     }
 
     private void processGetScheduleTimes() {

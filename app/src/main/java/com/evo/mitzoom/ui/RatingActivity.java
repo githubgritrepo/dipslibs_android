@@ -71,12 +71,13 @@ public class RatingActivity extends AppCompatActivity {
         rating.setClickable(false);
         rating.setFocusable(false);
         rating.setRating(0);
-        thumbs_up = findViewById(R.id.thumbs_up);
-        thumbs_down = findViewById(R.id.thumbs_down);
+        /*thumbs_up = findViewById(R.id.thumbs_up);
+        thumbs_down = findViewById(R.id.thumbs_down);*/
         btnSend = findViewById(R.id.btnSend);
         kritik = findViewById(R.id.et_kritik);
-        btnSend.setBackgroundTintList(RatingActivity.this.getResources().getColorStateList(R.color.btnFalse));
-        thumbs_down.setOnClickListener(new View.OnClickListener() {
+        btnSend.setBackgroundTintList(RatingActivity.this.getResources().getColorStateList(R.color.zm_button));
+        btnSend.setEnabled(true);
+        /*thumbs_down.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 rating.setClickable(false);
@@ -100,13 +101,13 @@ public class RatingActivity extends AppCompatActivity {
                 thumbs_down.setImageResource(R.drawable.thumbs_down);
                 thumb = "thumbUp";
             }
-        });
+        });*/
 
 
        btnSend.setOnClickListener(new View.OnClickListener() {
            @Override
            public void onClick(View v) {
-               Log.e(TAG,"thumb : "+thumb+" | rating getNumStars : "+rating.getNumStars()+" | rating getRating : "+rating.getRating());
+               //Log.e(TAG,"thumb : "+thumb+" | rating getNumStars : "+rating.getNumStars()+" | rating getRating : "+rating.getRating());
                Log.e(TAG,"idDips : "+idDips+" | idAgent : "+idAgent);
                if (idDips != null && idAgent != null) {
                    showProgress(true);

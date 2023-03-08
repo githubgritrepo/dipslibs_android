@@ -234,7 +234,7 @@ public class OutboundServiceNew extends Service {
                                         PendingIntent pendingIntent = null;
                                         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
                                             pendingIntent = PendingIntent.getBroadcast
-                                                    (mContext, 0, intent, PendingIntent.FLAG_MUTABLE);
+                                                    (mContext, 0, intent, PendingIntent.FLAG_IMMUTABLE);
                                         } else {
                                             pendingIntent = PendingIntent.getBroadcast
                                                     (mContext, 0, intent, 0);

@@ -1193,11 +1193,13 @@ public class DipsOutboundCall extends AppCompatActivity implements DatePickerDia
         }
 
         Log.e(TAG,"processSignature REQ : "+ jsons);
+        String authAccess = "Bearer "+sessions.getAuthToken();
+        String exchangeToken = sessions.getExchangeToken();
 
         RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), jsons.toString());
 
         ApiService API = Server.getAPIService();
-        Call<JsonObject> call = API.Signature(requestBody);
+        Call<JsonObject> call = API.Signature(requestBody,authAccess,exchangeToken);
         Log.e(TAG,"Signature URL : "+call.request().url());
         call.enqueue(new Callback<JsonObject>() {
             @Override
@@ -1208,6 +1210,12 @@ public class DipsOutboundCall extends AppCompatActivity implements DatePickerDia
                     Log.e(TAG,"Signature dataS : "+dataS);
                     try {
                         JSONObject jsObj = new JSONObject(dataS);
+                        if (jsObj.has("token")) {
+                            String accessToken = jsObj.getString("token");
+                            String exchangeToken = jsObj.getString("exchange");
+                            sessions.saveAuthToken(accessToken);
+                            sessions.saveExchangeToken(exchangeToken);
+                        }
                         String signatures = "";
                         if (jsObj.has("data")) {
                             JSONObject dataSign = jsObj.getJSONObject("data");

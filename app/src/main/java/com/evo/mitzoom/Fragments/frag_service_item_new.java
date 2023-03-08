@@ -141,6 +141,9 @@ public class frag_service_item_new extends Fragment {
     private String namaLengkap = "";
     private String email = "";
     private String no_handphone = "";
+    private String tempatLahir = "";
+    private String tanggalLahir = "";
+    private String namaIbu = "";
     private String numberOTP = "";
     private JSONObject dataNasabahObj;
     JSONObject valSpinProv = new JSONObject();
@@ -187,6 +190,24 @@ public class frag_service_item_new extends Fragment {
                     email = dataNasabahObj.getString("email");
                     if (email == "null") {
                         email = "";
+                    }
+                }
+                if (dataNasabahObj.has("tempatLahir")) {
+                    tempatLahir = dataNasabahObj.getString("tempatLahir");
+                    if (tempatLahir == "null") {
+                        tempatLahir = "";
+                    }
+                }
+                if (dataNasabahObj.has("tanggalLahir")) {
+                    tanggalLahir = dataNasabahObj.getString("tanggalLahir");
+                    if (tanggalLahir == "null") {
+                        tanggalLahir = "";
+                    }
+                }
+                if (dataNasabahObj.has("namaIbu")) {
+                    namaIbu = dataNasabahObj.getString("namaIbu");
+                    if (namaIbu == "null") {
+                        namaIbu = "";
                     }
                 }
                 /*if (dataNasabahObj.has("alamat")) {
@@ -507,6 +528,13 @@ public class frag_service_item_new extends Fragment {
                         idElement = MyParserFormBuilder.getForm();
                         Log.e("CEK","dataElement : "+ idElement);
                         processValidationActionForm();
+                        objEl.put("nama", namaLengkap);
+                        objEl.put("alamatemail", email);
+                        objEl.put("nomorhandphone", no_handphone);
+                        objEl.put("tempatlahir", tempatLahir);
+                        objEl.put("tanggallahir", tanggalLahir);
+                        objEl.put("namaibukandung", namaIbu);
+                        dataForms.put(keys,objEl);
                         Log.e("CEK","DATA FORM : "+dataForms.toString());
                         RabbitMirroring.MirroringSendKey(dataForms);
                     } catch (JSONException e) {
@@ -848,6 +876,7 @@ public class frag_service_item_new extends Fragment {
                                                             Toast.makeText(mContext,R.string.max_upfile, Toast.LENGTH_SHORT).show();
                                                             return;
                                                         }
+                                                        sessions.saveMedia(2);
                                                         Intent intent = new Intent();
                                                         intent.setType("*/*");
                                                         intent.setAction(Intent.ACTION_OPEN_DOCUMENT);
@@ -881,6 +910,7 @@ public class frag_service_item_new extends Fragment {
                                                         Toast.makeText(mContext,R.string.max_upfile, Toast.LENGTH_SHORT).show();
                                                         return;
                                                     }
+                                                    sessions.saveMedia(2);
                                                     Intent intent = new Intent();
                                                     intent.setType("*/*");
                                                     intent.setAction(Intent.ACTION_OPEN_DOCUMENT);
@@ -1042,8 +1072,8 @@ public class frag_service_item_new extends Fragment {
     }
 
     private void processSendComplainMedia() {
-        File file = new File(FilePaths);
-        RequestBody requestFile = RequestBody.create(MediaType.parse("image/jpeg"),file);
+        /*File file = new File(FilePaths);
+        RequestBody requestFile = RequestBody.create(MediaType.parse("image/jpeg"),file);*/
 
         RequestBody requestnoComplaint = RequestBody.create(MediaType.parse("text/plain"), noPengaduan);
 
@@ -1070,7 +1100,7 @@ public class frag_service_item_new extends Fragment {
             RequestBody requestFileMedia = RequestBody.create(MediaType.parse(type),fileMedia);
 
             multipartBody = new MultipartBody.Builder()
-                    .addPart(MultipartBody.Part.createFormData("ktp", file.getName(), requestFile))
+                    //.addPart(MultipartBody.Part.createFormData("ktp", file.getName(), requestFile))
                     .addPart(MultipartBody.Part.createFormData("noPengaduan", null, requestnoComplaint))
                     .addPart(MultipartBody.Part.createFormData("buktiPendukung1", fileMedia.getName(), requestFileMedia))
                     .build();
@@ -1100,7 +1130,7 @@ public class frag_service_item_new extends Fragment {
             RequestBody requestFileMedia2 = RequestBody.create(MediaType.parse(type2),fileMedia2);
 
             multipartBody = new MultipartBody.Builder()
-                    .addPart(MultipartBody.Part.createFormData("ktp", file.getName(), requestFile))
+                    //.addPart(MultipartBody.Part.createFormData("ktp", file.getName(), requestFile))
                     .addPart(MultipartBody.Part.createFormData("noPengaduan", null, requestnoComplaint))
                     .addPart(MultipartBody.Part.createFormData("buktiPendukung1", fileMedia.getName(), requestFileMedia))
                     .addPart(MultipartBody.Part.createFormData("buktiPendukung2", fileMedia2.getName(), requestFileMedia2))
@@ -1143,7 +1173,7 @@ public class frag_service_item_new extends Fragment {
             RequestBody requestFileMedia3 = RequestBody.create(MediaType.parse(type3),fileMedia3);
 
             multipartBody = new MultipartBody.Builder()
-                    .addPart(MultipartBody.Part.createFormData("ktp", file.getName(), requestFile))
+                    //.addPart(MultipartBody.Part.createFormData("ktp", file.getName(), requestFile))
                     .addPart(MultipartBody.Part.createFormData("noPengaduan", null, requestnoComplaint))
                     .addPart(MultipartBody.Part.createFormData("buktiPendukung1", fileMedia.getName(), requestFileMedia))
                     .addPart(MultipartBody.Part.createFormData("buktiPendukung2", fileMedia2.getName(), requestFileMedia2))
@@ -1821,6 +1851,7 @@ public class frag_service_item_new extends Fragment {
                     chooseImage.setVisibility(View.GONE);
                 }
             } else if (requestCode == REQUESTCODE_FILE) {
+                sessions.saveFlagUpDoc(true);
                 Log.e("CEK","RESULT FILE");
                 Uri uri = data.getData();
                 Log.e("CEK","uri : "+uri);

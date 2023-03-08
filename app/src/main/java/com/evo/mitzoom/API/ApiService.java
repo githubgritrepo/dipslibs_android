@@ -54,7 +54,9 @@ public interface ApiService {
 
     @Headers("Content-Type: "+ MyConstants.CONTENT_TYPE)
     @POST("credential/zoom-signature")
-    Call<JsonObject> Signature(@Body RequestBody body);
+    Call<JsonObject> Signature(@Body RequestBody body,
+                               @Header("Authorization") String authHeader,
+                               @Header("exchangeToken") String exchangeToken);
 
     @Headers("Content-Type: "+ MyConstants.CONTENT_TYPE)
     @POST("queue/tiket")
@@ -166,6 +168,12 @@ public interface ApiService {
     @Headers("Content-Type: "+ MyConstants.CONTENT_TYPE)
     @POST("middleware/validate-otp")
     Call<JsonObject> ValidateOTP(@Body RequestBody body,
+                                 @Header("Authorization") String authHeader,
+                                 @Header("exchangeToken") String exchangeToken);
+
+    @Headers("Content-Type: "+ MyConstants.CONTENT_TYPE)
+    @POST("middleware/inquery-cif-by-nik")
+    Call<JsonObject> InquieryCIFbyNIK(@Body RequestBody body,
                                  @Header("Authorization") String authHeader,
                                  @Header("exchangeToken") String exchangeToken);
 

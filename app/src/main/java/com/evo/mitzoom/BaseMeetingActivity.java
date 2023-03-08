@@ -5,6 +5,7 @@ import static com.evo.mitzoom.ui.DipsVideoConfren.text_timer;
 import static com.evo.mitzoom.ui.DipsVideoConfren.timer;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.app.Dialog;
 import android.app.Service;
 import android.content.Context;
@@ -901,7 +902,12 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
                 trimCache(mContext);
                 startActivity(new Intent(getApplicationContext(), RatingActivity.class));
                 finish();
-                RabbitMirroring.closeThreadConnection();
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        RabbitMirroring.closeThreadConnection();
+                    }
+                }, 2000);
             }
         });
         btnCancelDialog.setOnClickListener(new View.OnClickListener() {
