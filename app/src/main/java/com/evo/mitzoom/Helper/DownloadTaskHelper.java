@@ -9,6 +9,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.evo.mitzoom.R;
+import com.evo.mitzoom.Session.SessionManager;
 
 import java.io.File;
 import java.io.IOException;
@@ -33,12 +34,14 @@ import javax.net.ssl.X509TrustManager;
 public class DownloadTaskHelper extends AsyncTask<String, Integer, String> {
 
     private final Context context;
+    private final SessionManager sessionManager;
     private PowerManager.WakeLock mWakeLock;
     private final ProgressDialog mProgressDialog;
 
     public DownloadTaskHelper(Context context, ProgressDialog progressDialog) {
         this.context = context;
         this.mProgressDialog = progressDialog;
+        sessionManager = new SessionManager(this.context);
     }
 
     @Override
@@ -70,6 +73,8 @@ public class DownloadTaskHelper extends AsyncTask<String, Integer, String> {
             URL url = new URL(sUrl[0]);
             Log.e("CEK","url : "+url);
             connection = (HttpsURLConnection) url.openConnection();
+            connection.setRequestProperty("Authorization","Bearer "+sessionManager.getAuthToken());
+            connection.setRequestProperty("exchangeToken",sessionManager.getExchangeToken());
             connection.connect();
 
             // expect HTTP 200 OK, so we don't mistakenly save error report

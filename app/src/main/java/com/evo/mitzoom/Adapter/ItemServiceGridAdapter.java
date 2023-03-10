@@ -96,9 +96,9 @@ public class ItemServiceGridAdapter extends RecyclerView.Adapter<ItemServiceGrid
                     break;
                 case "2" :/* SUDAH MIRRORING */
                     if (isSessionZoom) {
-                        BaseMeetingActivity.showProgress(false);
+                        BaseMeetingActivity.showProgress(true);
                     } else {
-                        DipsSwafoto.showProgress(false);
+                        DipsSwafoto.showProgress(true);
                     }
                     processInqCIFbyNIK();
                     break;

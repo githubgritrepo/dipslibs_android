@@ -263,6 +263,7 @@
     <string name="success_create_card" translatable="false">SELAMAT!\nPermohonan Kartu Anda Berhasil</string>
     <string name="tnc_atm" translatable="false">Dengan ini Saya/Kami mengajukan permohonan Kartu ATM. Segala Resiko yang akan timbul adalah merupakan tanggung jawab Saya/Kami sepenuhnya dan dalam hal ini Saya/Kami membebaskan pihak Bank dari segala tuntutan.</string>
     <string name="prepare_id_card" translatable="false">Harap untuk menyiapkan Kartu Tanda Penduduk (KTP) Anda.</string>
+    <string name="prepare_id_card_glasses" translatable="false">Harap untuk menyiapkan Kartu Tanda Penduduk (KTP) Anda dan mohon tidak menggunakan kacamata.</string>
     <string name="open_account" translatable="false">Buka Rekening</string>
     <string name="ktp_swafoto" translatable="false">Foto diri dengan KTP</string>
     <string name="photo_swafoto" translatable="false">Foto Diri\ndengan\nKTP</string>

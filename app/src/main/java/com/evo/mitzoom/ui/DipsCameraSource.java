@@ -362,8 +362,15 @@ public class DipsCameraSource extends AppCompatActivity implements CameraSource.
         if (width < height) {
             matrix.postScale(-1, 1);
         } else {
-            matrix.postScale(1, -1);
+            cx = (int) (height / 6.5);
+            cy = (int) (width / 9.6);
+            widthB = (int) (height / 1.9);
+            heightB = (int) (width / 2.7);
+            matrix.postScale(1, -1); //xiaomi cx itu brarti sudut Y dan cy brarti sudut X
+            //untuk cx dan width di hitung dari sisi kiri ke kanan dan cy dan height dari bawah ke atas
         }
+
+        Log.e("CEK","getResizedBitmap cx : "+cx+" | cy : "+cy+" | widthB : "+widthB+" | heightB : "+heightB);
 
         // "RECREATE" THE NEW BITMAP
         Bitmap resizedBitmap = Bitmap.createBitmap(

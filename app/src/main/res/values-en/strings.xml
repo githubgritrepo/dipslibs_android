@@ -261,6 +261,7 @@
     <string name="success_create_card">CONGRATULATIONS!\nYour Card Application Successful</string>
     <string name="tnc_atm">Me/Us hereby apply for an ATM Card. All risks that will arise are the full responsibility of Me/Us and in this case Me/Us free the bank from all claims.</string>
     <string name="prepare_id_card">Please prepare your Identity Card (KTP).</string>
+    <string name="prepare_id_card_glasses">Please prepare your Identity Card (KTP) and please don\'t wear glasses.</string>
     <string name="open_account">Open Account</string>
     <string name="ktp_swafoto">Self-portrait with ID card</string>
     <string name="photo_swafoto">Self-portrait\nwith\nID card</string>

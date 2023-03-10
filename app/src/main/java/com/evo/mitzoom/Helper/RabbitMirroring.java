@@ -77,7 +77,7 @@ public class RabbitMirroring {
                         chSendKey.waitForConfirmsOrDie();
 
                     } catch (IOException | InterruptedException e) {
-                        Log.e(TAG, "publishToAMQP Connection broken: " + e.getClass().getName());
+                        Log.e(TAG, "MirroringSendKey Connection broken: " + e.getClass().getName());
                         try {
                             Thread.sleep(4000); //sleep and then try again
                             MirroringSendKey(jsons);
@@ -131,7 +131,7 @@ public class RabbitMirroring {
                         chSendEndpoint.waitForConfirmsOrDie();
 
                     } catch (IOException | InterruptedException e) {
-                        Log.e(TAG, "publishToAMQP Connection broken: " + e.getClass().getName());
+                        Log.e(TAG, "MirroringSendEndpoint Connection broken: " + e.getClass().getName());
                         try {
                             Thread.sleep(4000); //sleep and then try again
                         } catch (InterruptedException e1) {

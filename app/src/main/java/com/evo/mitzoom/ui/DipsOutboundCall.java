@@ -443,6 +443,8 @@ public class DipsOutboundCall extends AppCompatActivity implements DatePickerDia
                 URL url = new URL(urls[0]);
                 Log.e(TAG,"url : "+url);
                 connection = (HttpsURLConnection) url.openConnection();
+                connection.setRequestProperty("Authorization","Bearer "+sessions.getAuthToken());
+                connection.setRequestProperty("exchangeToken",sessions.getExchangeToken());
                 connection.connect();
 
                 InputStream in = connection.getInputStream();

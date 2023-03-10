@@ -902,12 +902,7 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
                 trimCache(mContext);
                 startActivity(new Intent(getApplicationContext(), RatingActivity.class));
                 finish();
-                new Handler().postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        RabbitMirroring.closeThreadConnection();
-                    }
-                }, 2000);
+                RabbitMirroring.closeThreadConnection();
             }
         });
         btnCancelDialog.setOnClickListener(new View.OnClickListener() {

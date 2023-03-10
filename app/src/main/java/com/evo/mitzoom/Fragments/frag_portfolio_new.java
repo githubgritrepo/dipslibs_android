@@ -70,7 +70,7 @@ public class frag_portfolio_new extends Fragment {
             rgb("#90e610"), rgb("#f2ad0c"), rgb("#0af28a"), rgb("#f20a4c"), rgb("#f20a7a")
     };
     private String idDips;
-    private JSONObject dataNasabah = null;
+    private JSONObject dataNasabah = new JSONObject();
     private String customerName;
     private JSONArray listTypeProduk;
     private JSONArray typeProdukListArr;
@@ -199,6 +199,7 @@ public class frag_portfolio_new extends Fragment {
         JSONObject jsons = new JSONObject();
         try {
             jsons.put("noCif",noCif);
+            jsons.put("bahasa",bahasa);
         } catch (JSONException e) {
             e.printStackTrace();
         }

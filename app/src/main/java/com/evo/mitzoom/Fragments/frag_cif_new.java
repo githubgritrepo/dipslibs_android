@@ -68,6 +68,7 @@ import com.evo.mitzoom.ui.Alternative.DipsSwafoto;
 import com.evo.mitzoom.ui.DipsCameraActivity;
 import com.evo.mitzoom.ui.DipsCameraSource;
 import com.evo.mitzoom.ui.DipsWaitingRoom;
+import com.evo.mitzoom.ui.RatingActivity;
 import com.google.gson.JsonObject;
 
 import org.json.JSONArray;
@@ -187,6 +188,7 @@ public class frag_cif_new extends Fragment {
     JSONObject dataObjProDesa = new JSONObject();
     private boolean ocrKTP = false;
     private boolean flagMother = false;
+    private int loopValidMother = 0;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -555,22 +557,6 @@ public class frag_cif_new extends Fragment {
             Toast.makeText(mContext, getString(R.string.invalidate_email), Toast.LENGTH_SHORT).show();
         }
         return flag;
-
-        /*String emailPattern = "[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+";
-
-        boolean flag = false;
-        // onClick of button perform this simplest code.
-        if (data.matches(emailPattern))
-        {
-            flag = true;
-        }
-        else
-        {
-            Toast.makeText(mContext, getString(R.string.invalidate_email), Toast.LENGTH_SHORT).show();
-            flag = false;
-        }
-
-        return flag;*/
     }
 
     private void processAction() {
@@ -2326,6 +2312,35 @@ public class frag_cif_new extends Fragment {
         }
     }
 
+    private void PopUpLimitValidateMother(){
+        LayoutInflater inflater = getLayoutInflater();
+        View dialogView = inflater.inflate(R.layout.layout_dialog_sweet, null);
+
+        ImageView imgDialog = dialogView.findViewById(R.id.imgDialog);
+        TextView tvTitleDialog = dialogView.findViewById(R.id.tvTitleDialog);
+        TextView tvBodyDialog = dialogView.findViewById(R.id.tvBodyDialog);
+        Button btnCancelDialog = dialogView.findViewById(R.id.btnCancelDialog);
+        Button btnConfirmDialog = dialogView.findViewById(R.id.btnConfirmDialog);
+
+        tvTitleDialog.setVisibility(View.GONE);
+
+        imgDialog.setImageDrawable(mContext.getDrawable(R.drawable.v_dialog_info));
+        tvBodyDialog.setText("Mohon menunggu 2 menit untuk melanjutkan.");
+
+        SweetAlertDialog sweetAlertDialog = new SweetAlertDialog(mContext, SweetAlertDialog.NORMAL_TYPE);
+        sweetAlertDialog.setCustomView(dialogView);
+        sweetAlertDialog.setCancelable(false);
+        sweetAlertDialog.hideConfirmButton();
+        sweetAlertDialog.show();
+
+        btnConfirmDialog.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                sweetAlertDialog.dismiss();
+            }
+        });
+    }
+
     private void PopUpOCR(){
         LayoutInflater inflater = getLayoutInflater();
         View dialogView = inflater.inflate(R.layout.item_ocr, null);
@@ -2423,6 +2438,11 @@ public class frag_cif_new extends Fragment {
             @Override
             public void onClick(View v) {
                 if (chkDataCorrect.isChecked()) {
+                    loopValidMother++;
+                    if (loopValidMother > 3) {
+                        PopUpLimitValidateMother();
+                        return;
+                    }
                     tvError.setVisibility(View.GONE);
                     ((Activity)mContext).runOnUiThread(new Runnable() {
                         @Override
@@ -3124,7 +3144,6 @@ public class frag_cif_new extends Fragment {
                         else{
                             chkDataCorrect.setChecked(false);
                             flagMother = false;
-                            //tvError.setText(msg);
                             tvError.setVisibility(View.VISIBLE);
                             tvMandatory.setVisibility(View.GONE);
                         }
@@ -4098,7 +4117,7 @@ public class frag_cif_new extends Fragment {
                     } else {
                         Log.e("CEK","response errorBody : "+response.errorBody().toString());
                     }
-                    Toast.makeText(mContext,getString(R.string.msg_error),Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(mContext,getString(R.string.msg_error),Toast.LENGTH_SHORT).show();
                 }
             }
 
@@ -5247,9 +5266,41 @@ public class frag_cif_new extends Fragment {
                             }
                         }
                     });
+                    String msg = "";
+                    if (response.body() != null) {
+                        String dataS = response.body().toString();
+                        try {
+                            Log.e("CEK","processSwafotoCheck DIATAS 300 dataS : "+dataS);
+                            JSONObject dataObj = new JSONObject(dataS);
+                            msg = dataObj.getString("message");
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    } else {
+                        if (response.errorBody().toString().isEmpty()) {
+                            String dataS = response.errorBody().toString();
+                            try {
+                                JSONObject dataObj = new JSONObject(dataS);
+                                msg = dataObj.getString("message");
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                        } else {
+                            String dataS = null;
+                            try {
+                                dataS = response.errorBody().string();
+                                Log.e("CEK","processSwafotoCheck DIATAS 300 dataS-2 : "+dataS);
+                                JSONObject dataObj = new JSONObject(dataS);
+                                msg = dataObj.getString("message");
+                            } catch (IOException | JSONException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }
+                    Log.e("CEK","processSwafotoCheck DIATAS 300 : "+msg);
                     btnNext.setClickable(false);
                     btnNext.setBackgroundTintList(mContext.getResources().getColorStateList(R.color.btnFalse));
-                    Toast.makeText(mContext, R.string.capture_back,Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(mContext, R.string.capture_back,Toast.LENGTH_SHORT).show();
                     dialogFailedValidation("swafotocheck");
                 }
             }

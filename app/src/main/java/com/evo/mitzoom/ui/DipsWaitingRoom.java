@@ -182,7 +182,6 @@ public class DipsWaitingRoom extends AppCompatActivity implements DatePickerDial
     private int timesWaiting = 0;
     private int countWaiting = 0;
     private int loopWaiting = 0;
-    private Thread popupWaitingThread;
     private boolean startWaiting = true;
 
     @RequiresApi(api = Build.VERSION_CODES.O)
@@ -332,28 +331,7 @@ public class DipsWaitingRoom extends AppCompatActivity implements DatePickerDial
         if (subscribeThreadCall != null) {
             subscribeThreadCall.interrupt();
         }
-        if (popupWaitingThread != null) {
-            popupWaitingThread.interrupt();
-        }
 
-        /*if (connection != null) {
-            try {
-                if (channelSubscribeReqTicket != null) {
-                    channelSubscribeReqTicket.close();
-                }
-                if (channelSubscribe != null) {
-                    channelSubscribe.close();
-                }
-                if (channelCall != null) {
-                    channelCall.close();
-                }
-                if (connection != null) {
-                    connection.close();
-                }
-            } catch (IOException | TimeoutException e) {
-                throw new RuntimeException(e);
-            }
-        }*/
     }
 
     private void requestPermissionWrite() {
@@ -379,43 +357,6 @@ public class DipsWaitingRoom extends AppCompatActivity implements DatePickerDial
     private void initialWaitingRoom() {
         Log.d(TAG, "idDips : "+idDips);
         subscribeReqTicket();
-        //funcThreadPopupWaiting();
-    }
-
-    private void funcThreadPopupWaiting() {
-        popupWaitingThread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                Log.e(TAG,"timesWaiting : "+timesWaiting);
-                Log.e(TAG,"countWaiting : "+countWaiting);
-                while (startWaiting) {
-                    Log.e(TAG,"timesWaiting LOOP : "+timesWaiting);
-                    Log.e(TAG,"countWaiting LOOP : "+countWaiting);
-                    if (timesWaiting > 0) {
-                        new Handler().postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                ((Activity) mContext).runOnUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        if (countWaiting > loopWaiting) {
-                                            PopUpWaiting();
-                                            loopWaiting++;
-                                        }
-                                    }
-                                });
-                            }
-                        },timesWaiting);
-                    }
-                    try {
-                        Thread.sleep(1000);
-                    } catch (InterruptedException e) {
-                        throw new RuntimeException(e);
-                    }
-                }
-            }
-        });
-        popupWaitingThread.start();
     }
 
     private void serviceOutbound() {
@@ -462,10 +403,6 @@ public class DipsWaitingRoom extends AppCompatActivity implements DatePickerDial
             } catch (IOException | TimeoutException e) {
                 throw new RuntimeException(e);
             }
-        }
-
-        if (popupWaitingThread != null) {
-            popupWaitingThread.interrupt();
         }
 
         Intent intent = new Intent(Intent.ACTION_MAIN);
@@ -837,6 +774,7 @@ public class DipsWaitingRoom extends AppCompatActivity implements DatePickerDial
                                                     if (!isFinishing()) {
                                                         try {
                                                             if (flagShowJoin == false) {
+                                                                startWaiting = false;
                                                                 PopUpSucces(csId);
                                                             }
                                                         } catch (
@@ -1188,7 +1126,11 @@ public class DipsWaitingRoom extends AppCompatActivity implements DatePickerDial
         imgDialog.setImageDrawable(getDrawable(R.drawable.v_dialog_info));
         tvBodyDialog.setText(getString(R.string.headline_waiting));
         btnCancelDialog.setText(getString(R.string.schedule_a_task));
-        btnConfirmDialog.setText(getString(R.string.waiting));
+        if (loopWaiting == 2) {
+            btnConfirmDialog.setText(getString(R.string.end_call2));
+        } else {
+            btnConfirmDialog.setText(getString(R.string.waiting));
+        }
 
         if (!((Activity) mContext).isFinishing()) {
             SweetAlertDialog dialogWaiting = new SweetAlertDialog(DipsWaitingRoom.this, SweetAlertDialog.NORMAL_TYPE);
@@ -1197,21 +1139,31 @@ public class DipsWaitingRoom extends AppCompatActivity implements DatePickerDial
             dialogWaiting.setCancelable(false);
             dialogWaiting.show();
 
-            btnConfirmDialog.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    dialogWaiting.dismissWithAnimation();
-                    if (!startWaiting) {
-                        startWaiting = true;
+            if (loopWaiting == 2) {
+                btnConfirmDialog.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        dialogWaiting.dismissWithAnimation();
+                        EndCall();
                     }
-                }
-            });
+                });
+            } else {
+                btnConfirmDialog.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        dialogWaiting.dismissWithAnimation();
+                        if (!startWaiting) {
+                            startWaiting = true;
+                            handlerTimesWaiting();
+                        }
+                    }
+                });
+            }
             btnCancelDialog.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     dialogWaiting.dismissWithAnimation();
                     PopUpSchedule();
-                    startWaiting = false;
                 }
             });
         }
@@ -1224,6 +1176,14 @@ public class DipsWaitingRoom extends AppCompatActivity implements DatePickerDial
         sweetAlertDialog.setCustomView(dialogView);
         sweetAlertDialog.hideConfirmButton();
         sweetAlertDialog.show();
+
+        sweetAlertDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
+            @Override
+            public void onCancel(DialogInterface dialog) {
+                startWaiting = true;
+                handlerTimesWaiting();
+            }
+        });
 
         ImageView btnclose = dialogView.findViewById(R.id.btn_close_schedule);
         et_Date = dialogView.findViewById(R.id.et_Date);
@@ -1648,6 +1608,7 @@ public class DipsWaitingRoom extends AppCompatActivity implements DatePickerDial
         btnConfirmDialog.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                startWaiting = false;
                 sweetAlertDialog.dismissWithAnimation();
                 //Toast.makeText(context,getResources().getString(R.string.end_call2), Toast.LENGTH_LONG).show();
                 OutApps();
@@ -1984,10 +1945,10 @@ public class DipsWaitingRoom extends AppCompatActivity implements DatePickerDial
                         @Override
                         public void run() {
                             Log.e(TAG, "handlerTimesWaiting countWaiting : " + countWaiting + " | loopWaiting : " + loopWaiting);
-                            if (countWaiting > loopWaiting) {
+                            if ((countWaiting > loopWaiting) && startWaiting) {
                                 PopUpWaiting();
                                 loopWaiting++;
-                                handlerTimesWaiting();
+                                startWaiting = false;
                             }
                         }
                     });
