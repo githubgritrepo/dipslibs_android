@@ -1114,11 +1114,11 @@ public class DipsWaitingRoom extends AppCompatActivity implements DatePickerDial
         Button btnCancelDialog = dialogView.findViewById(R.id.btnCancelDialog);
         Button btnConfirmDialog = dialogView.findViewById(R.id.btnConfirmDialog);
 
-        if (sessions.getLANG().equals("en")) {
+        /*if (sessions.getLANG().equals("en")) {
             llBtnWaiting.setOrientation(LinearLayout.HORIZONTAL);
         } else {
             llBtnWaiting.setOrientation(LinearLayout.VERTICAL);
-        }
+        }*/
 
         tvTitleDialog.setVisibility(View.GONE);
         btnCancelDialog.setVisibility(View.VISIBLE);
@@ -1129,7 +1129,7 @@ public class DipsWaitingRoom extends AppCompatActivity implements DatePickerDial
         if (loopWaiting == 2) {
             btnConfirmDialog.setText(getString(R.string.end_call2));
         } else {
-            btnConfirmDialog.setText(getString(R.string.waiting));
+            btnConfirmDialog.setText(getString(R.string.waitingln));
         }
 
         if (!((Activity) mContext).isFinishing()) {

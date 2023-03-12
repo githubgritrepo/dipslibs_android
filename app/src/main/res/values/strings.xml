@@ -19,7 +19,7 @@
     <string name="call_is_being_connected3" translatable="false">Panggilan terhubung . . .</string>
     <string name="schedule_a_task" translatable="false">Jadwalkan Panggilan</string>
     <string name="end_call" translatable="false">Akhiri</string>
-    <string name="end_call2" translatable="false">Akhiri Panggilan</string>
+    <string name="end_call2" translatable="false">Akhiri\nPanggilan</string>
     <string name="headline_schedule" translatable="false">saat ini seluruh petugas kami belum dapat menjawab panggilan Anda, mohon jadwalkan waktu terbaik bagi kami untuk menghubungi Anda kembali.</string>
     <string name="day_date_schedule" translatable="false"><![CDATA[Hari & Tanggal]]></string>
     <string name="time" translatable="false">Waktu</string>
@@ -28,6 +28,7 @@
     <string name="headline_endcall" translatable="false">Apakah Anda ingin mengakhiri panggilan ?</string>
     <string name="headline_waiting" translatable="false">Saat ini seluruh petugas kami sedang melayani transaksi nasabah lain. Mohon untuk menunggu beberapa saat.</string>
     <string name="waiting" translatable="false">Bersedia menunggu</string>
+    <string name="waitingln" translatable="false">Bersedia\nMenunggu</string>
     <string name="headline_success" translatable="false">Customer Support sudah siap melayani Anda.</string>
     <string name="btn_continue" translatable="false">Lanjut</string>
     <string name="back" translatable="false">Kembali</string>
@@ -332,4 +333,5 @@
     <string name="ambil_gambar" translatable="false">Ambil Gambar</string>
     <string name="please_check_mothername" translatable="false">Silakan periksa lagi nama Ibu Kandung Anda</string>
     <string name="accept_mother" translatable="false">Harap Menyetujui Data Sudah Benar</string>
+    <string name="content_waiting_mother" translatable="false">Mohon menunggu 2 menit untuk melanjutkan.</string>
 </resources>

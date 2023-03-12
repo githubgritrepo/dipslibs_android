@@ -66,11 +66,11 @@ public class AdapterPortofolioNew extends RecyclerView.Adapter<AdapterPortofolio
                         .into(holder.img_logo_porto);
             } else {
                 String nameProd = typeProd.toLowerCase();
-                if (nameProd.contains("tabungan")) {
+                if (nameProd.toLowerCase().contains("tabungan") || nameProd.toLowerCase().contains("saving")) {
                     holder.img_logo_porto.setImageDrawable(mContext.getDrawable(R.drawable.ic_porto_tabungan));
-                } else if (nameProd.contains("giro")) {
+                } else if (nameProd.toLowerCase().contains("giro")) {
                     holder.img_logo_porto.setImageDrawable(mContext.getDrawable(R.drawable.ic_porto_giro));
-                } else if (nameProd.contains("deposito")) {
+                } else if (nameProd.toLowerCase().contains("deposito") || nameProd.toLowerCase().contains("deposit")) {
                     holder.img_logo_porto.setImageDrawable(mContext.getDrawable(R.drawable.ic_porto_deposito));
                 } else {
                     holder.img_logo_porto.setImageDrawable(mContext.getDrawable(R.drawable.ic_porto_reksa));

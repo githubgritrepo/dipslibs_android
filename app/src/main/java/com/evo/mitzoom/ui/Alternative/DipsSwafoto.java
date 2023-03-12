@@ -177,7 +177,7 @@ public class DipsSwafoto extends AppCompatActivity implements com.wdullaer.mater
 
         imgDialog.setImageDrawable(getDrawable(R.drawable.v_dialog_info));
         tvTitleDialog.setVisibility(View.GONE);
-        tvBodyDialog.setText(getString(R.string.prepare_id_card));
+        tvBodyDialog.setText(getString(R.string.prepare_id_card_glasses));
         btnCancelDialog.setVisibility(View.GONE);
 
         SweetAlertDialog sweet = new SweetAlertDialog(mContext,SweetAlertDialog.NORMAL_TYPE);

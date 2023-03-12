@@ -2325,7 +2325,7 @@ public class frag_cif_new extends Fragment {
         tvTitleDialog.setVisibility(View.GONE);
 
         imgDialog.setImageDrawable(mContext.getDrawable(R.drawable.v_dialog_info));
-        tvBodyDialog.setText("Mohon menunggu 2 menit untuk melanjutkan.");
+        tvBodyDialog.setText(R.string.content_waiting_mother);
 
         SweetAlertDialog sweetAlertDialog = new SweetAlertDialog(mContext, SweetAlertDialog.NORMAL_TYPE);
         sweetAlertDialog.setCustomView(dialogView);
@@ -2438,11 +2438,6 @@ public class frag_cif_new extends Fragment {
             @Override
             public void onClick(View v) {
                 if (chkDataCorrect.isChecked()) {
-                    loopValidMother++;
-                    if (loopValidMother > 3) {
-                        PopUpLimitValidateMother();
-                        return;
-                    }
                     tvError.setVisibility(View.GONE);
                     ((Activity)mContext).runOnUiThread(new Runnable() {
                         @Override
@@ -3128,7 +3123,7 @@ public class frag_cif_new extends Fragment {
                     });
                     try {
                         String dataS = response.body().toString();
-                        Log.d("HASIL ValidateIbuKandung",""+dataS);
+                        Log.e("HASIL ValidateIbuKandung",""+dataS);
                         JSONObject dataObj = new JSONObject(dataS);
                         if (dataObj.has("token")) {
                             String accessToken = dataObj.getString("token");
@@ -3142,6 +3137,10 @@ public class frag_cif_new extends Fragment {
                             flagMother = true;
                         }
                         else{
+                            //loopValidMother++;
+                            if (msg.contains("maksimum")) {
+                                PopUpLimitValidateMother();
+                            }
                             chkDataCorrect.setChecked(false);
                             flagMother = false;
                             tvError.setVisibility(View.VISIBLE);
