@@ -1119,15 +1119,19 @@ public class DipsWaitingRoom extends AppCompatActivity implements DatePickerDial
         } else {
             llBtnWaiting.setOrientation(LinearLayout.VERTICAL);
         }*/
+        LinearLayout.LayoutParams lpBt = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        lpBt.setMargins(5,10,5,5);
+        btnCancelDialog.setLayoutParams(lpBt);
+        btnConfirmDialog.setLayoutParams(lpBt);
 
         tvTitleDialog.setVisibility(View.GONE);
         btnCancelDialog.setVisibility(View.VISIBLE);
 
         imgDialog.setImageDrawable(getDrawable(R.drawable.v_dialog_info));
         tvBodyDialog.setText(getString(R.string.headline_waiting));
-        btnCancelDialog.setText(getString(R.string.schedule_a_task));
+        btnCancelDialog.setText(getString(R.string.schedule_a_taskln));
         if (loopWaiting == 2) {
-            btnConfirmDialog.setText(getString(R.string.end_call2));
+            btnConfirmDialog.setText(getString(R.string.end_callln));
         } else {
             btnConfirmDialog.setText(getString(R.string.waitingln));
         }

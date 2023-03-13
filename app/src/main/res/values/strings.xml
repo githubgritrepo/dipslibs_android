@@ -18,8 +18,10 @@
     <string name="call_is_being_connected2" translatable="false">Panggilan terhubung . .</string>
     <string name="call_is_being_connected3" translatable="false">Panggilan terhubung . . .</string>
     <string name="schedule_a_task" translatable="false">Jadwalkan Panggilan</string>
+    <string name="schedule_a_taskln" translatable="false">Jadwalkan\nPanggilan</string>
     <string name="end_call" translatable="false">Akhiri</string>
-    <string name="end_call2" translatable="false">Akhiri\nPanggilan</string>
+    <string name="end_call2" translatable="false">Akhiri Panggilan</string>
+    <string name="end_callln" translatable="false">Akhiri\nPanggilan</string>
     <string name="headline_schedule" translatable="false">saat ini seluruh petugas kami belum dapat menjawab panggilan Anda, mohon jadwalkan waktu terbaik bagi kami untuk menghubungi Anda kembali.</string>
     <string name="day_date_schedule" translatable="false"><![CDATA[Hari & Tanggal]]></string>
     <string name="time" translatable="false">Waktu</string>

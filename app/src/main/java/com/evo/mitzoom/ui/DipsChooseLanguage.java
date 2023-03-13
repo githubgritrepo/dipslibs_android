@@ -191,39 +191,36 @@ public class DipsChooseLanguage extends AppCompatActivity {
 //                    sweetAlertDialog.dismissWithAnimation();
                     RadioButton radioButton = radioGroup.findViewById(selectedId);
                     int idRb = radioButton.getId();
-                    switch(idRb) {
-                        case R.id.rbId:
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    String langCode = "id";
-                                    sessions.saveLANG(langCode);
-                                    //LocaleHelper.setLocale(DipsChooseLanguage.this,langCode);
-                                    setLocale(DipsChooseLanguage.this,langCode);
+                    if (idRb == R.id.rbId) {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                String langCode = "id";
+                                sessions.saveLANG(langCode);
+                                //LocaleHelper.setLocale(DipsChooseLanguage.this,langCode);
+                                setLocale(DipsChooseLanguage.this, langCode);
                                     /*Intent intent = new Intent(mContext, DipsCameraSource.class);
                                     intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
                                     startActivityForResult(intent, 100001);*/
-                                    startApp();
-                                    //radioGroup.clearCheck();
-                                }
-                            });
-                            break;
-                        case R.id.rbEn:
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    String langCode = "en";
-                                    sessions.saveLANG(langCode);
-                                    //LocaleHelper.setLocale(DipsChooseLanguage.this,langCode);
-                                    setLocale(DipsChooseLanguage.this,langCode);
+                                startApp();
+                                //radioGroup.clearCheck();
+                            }
+                        });
+                    } else if (idRb == R.id.rbEn) {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                String langCode = "en";
+                                sessions.saveLANG(langCode);
+                                //LocaleHelper.setLocale(DipsChooseLanguage.this,langCode);
+                                setLocale(DipsChooseLanguage.this, langCode);
                                     /*Intent intent = new Intent(mContext, DipsCameraSource.class);
                                     intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
                                     startActivityForResult(intent, 100001);*/
-                                    startApp();
-                                    //radioGroup.clearCheck();
-                                }
-                            });
-                            break;
+                                startApp();
+                                //radioGroup.clearCheck();
+                            }
+                        });
                     }
                 }
             }
@@ -254,13 +251,16 @@ public class DipsChooseLanguage extends AppCompatActivity {
         boolean checked = ((RadioButton) view).isChecked();
 
         // Check which radio button was clicked
-        switch(view.getId()) {
-            case R.id.rbId:
-                if (checked)
-                    break;
-            case R.id.rbEn:
-                if (checked)
-                    break;
+        int id = view.getId();
+        if (id == R.id.rbId) {
+            if (checked)
+                return;
+
+            if (checked) {
+            }
+        } else if (id == R.id.rbEn) {
+            if (checked) {
+            }
         }
     }
 
@@ -465,9 +465,10 @@ public class DipsChooseLanguage extends AppCompatActivity {
     }
 
     private void processAPIGetAuthAdvanceAI() {
+        String packageName = getApplicationContext().getPackageName();
         JSONObject jsons = new JSONObject();
         try {
-            jsons.put("applicationId","default,com.evo.mitzoom");
+            jsons.put("applicationId",packageName);
         } catch (JSONException e) {
             e.printStackTrace();
         }
