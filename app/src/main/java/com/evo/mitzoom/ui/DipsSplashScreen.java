@@ -1,5 +1,6 @@
 package com.evo.mitzoom.ui;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
@@ -37,9 +38,11 @@ public class DipsSplashScreen extends AppCompatActivity {
         Log.e(TAG,"MASUK onCreate");
         tvVersion = findViewById(R.id.tvVersion);
         rlBGTransparant = findViewById(R.id.rlBGTransparant);
+
+
         //Untuk mengambil version dari Apps
         try {
-            PackageInfo info = this.getPackageManager().getPackageInfo(this.getPackageName(),0);
+            PackageInfo info = getApplication().getPackageManager().getPackageInfo(getPackageName(),0);
             String version = info.versionName;
             version = "V "+version;
             tvVersion.setText(version);

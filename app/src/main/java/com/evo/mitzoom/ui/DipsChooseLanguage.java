@@ -68,6 +68,7 @@ public class DipsChooseLanguage extends AppCompatActivity {
     public static final int REQUEST_CODE_LIVENESS = 1001;
     public static final int READ_EXTERNAL_STORAGE = 780;
     public static final int REQUEST_CAMERA = 781;
+    protected final static int REQUEST_VIDEO_AUDIO_CODE = 1010;
     public static final int WRITE_EXTERNAL_STORAGE = 782;
     public static final int REQUEST_WRITE_PERMISSION = 786;
     private static final int ATTACHMENT_MANAGE_ALL_FILE = 308;
@@ -274,11 +275,12 @@ public class DipsChooseLanguage extends AppCompatActivity {
                 ActivityCompat.checkSelfPermission(mContext, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED &&
                 ActivityCompat.checkSelfPermission(mContext, Manifest.permission.RECEIVE_SMS) != PackageManager.PERMISSION_GRANTED &&
                 ActivityCompat.checkSelfPermission(mContext, Manifest.permission.READ_SMS) != PackageManager.PERMISSION_GRANTED &&
-                ActivityCompat.checkSelfPermission(mContext, Manifest.permission.READ_PHONE_NUMBERS) != PackageManager.PERMISSION_GRANTED){
+                ActivityCompat.checkSelfPermission(mContext, Manifest.permission.READ_PHONE_NUMBERS) != PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission(mContext, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED){
 
             Log.e(TAG,"MASUK IF reqPermission");
             requestPermissions(new String[]{Manifest.permission.READ_PHONE_STATE,Manifest.permission.CAMERA,readImagePermission,Manifest.permission.RECEIVE_SMS,
-                    Manifest.permission.READ_SMS,Manifest.permission.READ_PHONE_NUMBERS}, REQUEST_ALL);
+                    Manifest.permission.READ_SMS,Manifest.permission.READ_PHONE_NUMBERS,Manifest.permission.RECORD_AUDIO}, REQUEST_ALL);
         } else {
             Log.e(TAG,"MASUK ELSE reqPermission");
             if (ActivityCompat.checkSelfPermission(mContext, readImagePermission) != PackageManager.PERMISSION_GRANTED) {
@@ -287,6 +289,9 @@ public class DipsChooseLanguage extends AppCompatActivity {
             } else if (ActivityCompat.checkSelfPermission(mContext, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
                 Log.e(TAG,"MASUK ELSE reqPermission CAMERA");
                 ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, REQUEST_CAMERA);
+            } else if (ActivityCompat.checkSelfPermission(mContext, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
+                Log.e(TAG,"MASUK ELSE reqPermission RECORD_AUDIO");
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.RECORD_AUDIO}, REQUEST_VIDEO_AUDIO_CODE);
             } else if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.Q) {
                 if (ActivityCompat.checkSelfPermission(mContext, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
                     Log.e(TAG, "MASUK ELSE reqPermission WRITE_EXTERNAL_STORAGE");
@@ -352,6 +357,12 @@ public class DipsChooseLanguage extends AppCompatActivity {
                 }
             }
         } else if (requestCode == REQUEST_CAMERA) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                if (ActivityCompat.checkSelfPermission(mContext, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
+                    ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.RECORD_AUDIO}, REQUEST_VIDEO_AUDIO_CODE);
+                }
+            }
+        } else if (requestCode == REQUEST_VIDEO_AUDIO_CODE) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 if (ActivityCompat.checkSelfPermission(mContext, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
                     ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, WRITE_EXTERNAL_STORAGE);

@@ -265,13 +265,15 @@ public class DipsWaitingRoom extends AppCompatActivity implements DatePickerDial
     protected void onResume() {
         super.onResume();
 
-        Log.d(TAG,"MASUK onResume inPreview : "+inPreview+" | camera : "+camera);
+        Log.e(TAG,"MASUK onResume inPreview : "+inPreview+" | camera : "+camera);
 
         isConfigure = false;
 
         if (checkSelfPermission(Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+            Log.e(TAG,"MASUK PERMISSION CAMERA");
             requestPermissions(new String[]{Manifest.permission.CAMERA}, MY_CAMERA_PERMISSION_CODE);
         } else {
+            Log.e(TAG,"MASUK PERMISSION requestPermissionWrite");
             requestPermissionWrite();
         }
     }
@@ -338,16 +340,19 @@ public class DipsWaitingRoom extends AppCompatActivity implements DatePickerDial
         Log.e(TAG,"MASUK requestPermissionWrite");
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
             if (checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                Log.e(TAG,"MASUK PERMISSION WRITE_EXTERNAL_STORAGE");
                 requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},  REQUEST_WRITE_PERMISSION);
             } else {
                 if (camera == null) {
                     camera = Camera.open(useFacing);
+                    Log.e(TAG,"MASUK Camera.open");
                     startPreview();
                 }
             }
         } else {
             if (camera == null) {
                 camera = Camera.open(useFacing);
+                Log.e(TAG,"MASUK Camera.open 2");
                 startPreview();
             }
         }
@@ -1044,6 +1049,7 @@ public class DipsWaitingRoom extends AppCompatActivity implements DatePickerDial
 
                 isConfigure = false;
                 camera = Camera.open(useFacing);
+                Log.e(TAG,"MASUK Camera.open 3");
                 startPreview();
 
                 try {
