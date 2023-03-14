@@ -138,17 +138,19 @@ public class DipsChooseLanguage extends AppCompatActivity {
         Log.e(TAG,"getBatteryOptimizationPreferenceKey : "+getPreferences().getBoolean(getBatteryOptimizationPreferenceKey(), true));
 
         if (isFlagALL_FILES_ACCESS) {
-            if (!Settings.canDrawOverlays(this)) {
-                Log.e(TAG,"MASUK canDrawOverlays");
-                if ("xiaomi".equals(Build.MANUFACTURER.toLowerCase(Locale.ROOT))) {
-                    final Intent intent =new Intent("miui.intent.action.APP_PERM_EDITOR");
-                    intent.setClassName("com.miui.securitycenter",
-                            "com.miui.permcenter.permissions.PermissionsEditorActivity");
-                    intent.putExtra("extra_pkgname", getPackageName());
-                    startActivity(intent);
-                }else {
-                    Intent overlaySettings = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:" + getPackageName()));
-                    startActivityForResult(overlaySettings, 1);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                if (!Settings.canDrawOverlays(this)) {
+                    Log.e(TAG,"MASUK canDrawOverlays");
+                    if ("xiaomi".equals(Build.MANUFACTURER.toLowerCase(Locale.ROOT))) {
+                        final Intent intent =new Intent("miui.intent.action.APP_PERM_EDITOR");
+                        intent.setClassName("com.miui.securitycenter",
+                                "com.miui.permcenter.permissions.PermissionsEditorActivity");
+                        intent.putExtra("extra_pkgname", getPackageName());
+                        startActivity(intent);
+                    }else {
+                        Intent overlaySettings = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:" + getPackageName()));
+                        startActivityForResult(overlaySettings, 1);
+                    }
                 }
             }
         }
@@ -279,8 +281,10 @@ public class DipsChooseLanguage extends AppCompatActivity {
                 ActivityCompat.checkSelfPermission(mContext, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED){
 
             Log.e(TAG,"MASUK IF reqPermission");
-            requestPermissions(new String[]{Manifest.permission.READ_PHONE_STATE,Manifest.permission.CAMERA,readImagePermission,Manifest.permission.RECEIVE_SMS,
-                    Manifest.permission.READ_SMS,Manifest.permission.READ_PHONE_NUMBERS,Manifest.permission.RECORD_AUDIO}, REQUEST_ALL);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                requestPermissions(new String[]{Manifest.permission.READ_PHONE_STATE,Manifest.permission.CAMERA,readImagePermission,Manifest.permission.RECEIVE_SMS,
+                        Manifest.permission.READ_SMS,Manifest.permission.READ_PHONE_NUMBERS,Manifest.permission.RECORD_AUDIO}, REQUEST_ALL);
+            }
         } else {
             Log.e(TAG,"MASUK ELSE reqPermission");
             if (ActivityCompat.checkSelfPermission(mContext, readImagePermission) != PackageManager.PERMISSION_GRANTED) {
@@ -308,16 +312,18 @@ public class DipsChooseLanguage extends AppCompatActivity {
                 }
             }
 
-            if (Settings.canDrawOverlays(this)) {
-                Log.e(TAG,"MASUK canDrawOverlays true");
-                if (isOptimizingBattery() && getPreferences().getBoolean(getBatteryOptimizationPreferenceKey(), true)) {
-                    Intent intent = new Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS);
-                    Uri uri = Uri.parse("package:" + getPackageName());
-                    intent.setData(uri);
-                    try {
-                        startActivityForResult(intent, REQUEST_BATTERY_OP);
-                    } catch (ActivityNotFoundException e) {
-                        Toast.makeText(this, "Your device does not support opting out of battery optimization", Toast.LENGTH_SHORT).show();
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                if (Settings.canDrawOverlays(this)) {
+                    Log.e(TAG,"MASUK canDrawOverlays true");
+                    if (isOptimizingBattery() && getPreferences().getBoolean(getBatteryOptimizationPreferenceKey(), true)) {
+                        Intent intent = new Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS);
+                        Uri uri = Uri.parse("package:" + getPackageName());
+                        intent.setData(uri);
+                        try {
+                            startActivityForResult(intent, REQUEST_BATTERY_OP);
+                        } catch (ActivityNotFoundException e) {
+                            Toast.makeText(this, "Your device does not support opting out of battery optimization", Toast.LENGTH_SHORT).show();
+                        }
                     }
                 }
             }
@@ -453,7 +459,10 @@ public class DipsChooseLanguage extends AppCompatActivity {
 
     protected boolean isOptimizingBattery() {
         final PowerManager pm = (PowerManager) getSystemService(POWER_SERVICE);
-        return pm != null && !pm.isIgnoringBatteryOptimizations(getPackageName());
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            return pm != null && !pm.isIgnoringBatteryOptimizations(getPackageName());
+        }
+        return true;
     }
 
     private String getBatteryOptimizationPreferenceKey() {

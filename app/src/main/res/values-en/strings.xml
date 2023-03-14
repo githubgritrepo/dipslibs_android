@@ -276,7 +276,7 @@
     <string name="inter_bank_transaction">Inter Bank Transactions</string>
     <string name="alert_ktp">Make sure the picture or photo of the KTP is clear (not blurry, damaged, or covered with fingers/light reflections)</string>
     <string name="alert_swafoto">Make sure your face and ID card are clear and not blurry.</string>
-    <string name="alert_npwp">Make sure the NPWP image or photo is clear and not blurry. Pass this step if didn\'t have NPSP</string>
+    <string name="alert_npwp">Make sure the NPWP image or photo is clear and not blurry. Pass this step if didn\'t have NPWP</string>
     <string name="alert_ttd">Make sure the signature image or photo is clear and not blurry.</string>
     <string name="state_complaint">I certify that all the data I have provided in this complaint form is correct.</string>
     <string name="accept_state">Please agree with the statement</string>
@@ -334,4 +334,5 @@
     <string name="please_check_mothername">Please check again Your Mother Name</string>
     <string name="accept_mother">Please Agree Data Is Correct</string>
     <string name="content_waiting_mother">Please wait 2 minutes to continue</string>
+    <string name="not_compatible" translatable="false">Sorry, your device is not compatible.</string>
 </resources>

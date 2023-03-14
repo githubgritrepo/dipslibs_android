@@ -6,7 +6,7 @@ android {
     compileSdk 33
     defaultConfig {
         applicationId "com.evo.mitzoom"
-        minSdk 26
+        minSdk 21
         targetSdk 33
         versionCode 82
         versionName "3.2.22"
