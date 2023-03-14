@@ -1373,7 +1373,8 @@ public class frag_inputdata_new extends Fragment {
                                         } else {
                                             getFragmentPageDefault(fragment);
                                         }
-                                    } else {
+                                    }
+                                    else {
                                         //if (chkFlow == 1) {
                                         Log.e("CEK_INPUT_DATA","getNoCIF : "+session.getNoCIF());
                                             Intent intent = new Intent(mContext, DipsWaitingRoom.class);
@@ -1387,7 +1388,8 @@ public class frag_inputdata_new extends Fragment {
                                             getFragmentPage(fragment);
                                         }*/
                                     }
-                                } else {
+                                }
+                                else {
                                     //if (chkFlow == 1) {
                                     Log.e("CEK_INPUT_DATA","getNoCIF : "+session.getNoCIF());
                                         Intent intent = new Intent(mContext, DipsWaitingRoom.class);

@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -15,6 +16,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
@@ -58,7 +60,13 @@ public class DipsSplashScreen extends AppCompatActivity {
             dialogShowError();
         }
         else {
-            processNext();
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N){
+                PopUpNotCompatible();
+            }
+            else {
+                processNext();
+            }
+
         }
     }
 
@@ -105,7 +113,33 @@ public class DipsSplashScreen extends AppCompatActivity {
             }
         });
     }
+    private void PopUpNotCompatible(){
+        LayoutInflater inflater = getLayoutInflater();
+        View dialogView = inflater.inflate(R.layout.layout_dialog_sweet, null);
+        ImageView imgDialog = dialogView.findViewById(R.id.imgDialog);
+        TextView tvTitleDialog = dialogView.findViewById(R.id.tvTitleDialog);
+        TextView tvBodyDialog = dialogView.findViewById(R.id.tvBodyDialog);
+        Button btnCancelDialog = dialogView.findViewById(R.id.btnCancelDialog);
+        Button btnConfirmDialog = dialogView.findViewById(R.id.btnConfirmDialog);
+        tvTitleDialog.setVisibility(View.GONE);
 
+        imgDialog.setImageDrawable(getDrawable(R.drawable.v_dialog_failed));
+        tvBodyDialog.setText(getString(R.string.not_compatible));
+        btnConfirmDialog.setText(getString(R.string.exit));
+
+        SweetAlertDialog sweetAlertDialog = new SweetAlertDialog(this, SweetAlertDialog.NORMAL_TYPE);
+        sweetAlertDialog.setCustomView(dialogView);
+        sweetAlertDialog.hideConfirmButton();
+        sweetAlertDialog.setCancelable(false);
+        sweetAlertDialog.show();
+
+        btnConfirmDialog.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                OutApps();
+            }
+        });
+    }
     private void OutApps(){
         Intent intent = new Intent(Intent.ACTION_MAIN);
         intent.addCategory(Intent.CATEGORY_HOME);
@@ -114,7 +148,6 @@ public class DipsSplashScreen extends AppCompatActivity {
         overridePendingTransition(0,0);
         finish();
     }
-
     private void processNext() {
         Log.e("CEK","processNext");
         new Handler().postDelayed(new Runnable() {
@@ -131,7 +164,6 @@ public class DipsSplashScreen extends AppCompatActivity {
             }
         },1000);
     }
-
     private void startApp() {
         Log.e(TAG,"startApp");
         startActivity(new Intent(DipsSplashScreen.this, DipsChooseLanguage.class));
