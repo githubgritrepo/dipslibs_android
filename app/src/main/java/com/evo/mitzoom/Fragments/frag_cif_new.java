@@ -2979,9 +2979,18 @@ public class frag_cif_new extends Fragment {
     }
 
     private JSONObject dataReqOCR2() {
-        String[] pisahrtrw = rtrw.split("/");
-        String rt = pisahrtrw[0];
-        String rw = pisahrtrw[1];
+        String rt = "";
+        String rw = "";
+        if (rtrw != null ) {
+            if (rtrw.contains("/")) {
+                String[] pisahrtrw = rtrw.split("/");
+                rt = pisahrtrw[0];
+                rw = pisahrtrw[1];
+            } else {
+                rt = rtrw.substring(0,3);
+                rw = rtrw.substring(3,6);
+            }
+        }
 
         String tglLahir = "-";
         if (ttl.indexOf(",") > 0) {
@@ -3123,7 +3132,7 @@ public class frag_cif_new extends Fragment {
                     });
                     try {
                         String dataS = response.body().toString();
-                        Log.e("HASIL ValidateIbuKandung",""+dataS);
+                        Log.e("CEK","HASIL ValidateIbuKandung : "+dataS);
                         JSONObject dataObj = new JSONObject(dataS);
                         if (dataObj.has("token")) {
                             String accessToken = dataObj.getString("token");
@@ -3167,7 +3176,7 @@ public class frag_cif_new extends Fragment {
                             }
                         });
                         String dataS = response.body().toString();
-                        Log.d("HASIL ValidateIbuKandung",""+dataS);
+                        Log.d("CEK","HASIL ValidateIbuKandung : "+dataS);
                         JSONObject dataObj = new JSONObject(dataS);
                         String status = dataObj.getString("status");
                         String msg = dataObj.getString("message");

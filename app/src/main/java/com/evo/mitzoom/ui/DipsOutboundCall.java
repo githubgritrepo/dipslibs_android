@@ -144,7 +144,6 @@ public class DipsOutboundCall extends AppCompatActivity implements DatePickerDia
     List<Integer> periodeInt = new ArrayList<>();
     HashMap<Integer,String> dataPeriode = new HashMap<>();
     HashMap<String,Integer> dataPeriodeId = new HashMap<>();
-    private Button btnSchedule2;
     private Context mContext;
     private SessionManager sessions;
     private boolean isCust = false;
@@ -627,6 +626,8 @@ public class DipsOutboundCall extends AppCompatActivity implements DatePickerDia
         sweetAlertDialog.hideConfirmButton();
         sweetAlertDialog.show();
 
+        TextView textHeadSchedule = (TextView) dialogView.findViewById(R.id.textHeadSchedule);
+        textHeadSchedule.setText(R.string.content_schedule_call);
         ImageView btnclose = dialogView.findViewById(R.id.btn_close_schedule);
         et_Date = dialogView.findViewById(R.id.et_Date);
         et_time = dialogView.findViewById(R.id.et_time);
@@ -634,7 +635,11 @@ public class DipsOutboundCall extends AppCompatActivity implements DatePickerDia
         ArrayAdapter<String> adapterTime = new ArrayAdapter<String>(mContext,R.layout.list_item, time);
         et_time.setAdapter(adapterTime);
 
-        btnSchedule2 = dialogView.findViewById(R.id.btnSchedule2);
+        Button end_call = (Button) dialogView.findViewById(R.id.btnSchedule2);
+        Button btnSchedule2 = (Button) dialogView.findViewById(R.id.end_call);
+
+        end_call.setText(getString(R.string.end_call));
+        btnSchedule2.setText(getString(R.string.schedule_a_task));
         et_Date.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -717,6 +722,13 @@ public class DipsOutboundCall extends AppCompatActivity implements DatePickerDia
             @Override
             public void onClick(View v) {
                 sweetAlertDialog.dismiss();
+            }
+        });
+
+        end_call.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                OutApps();
             }
         });
         btnSchedule2.setOnClickListener(new View.OnClickListener() {

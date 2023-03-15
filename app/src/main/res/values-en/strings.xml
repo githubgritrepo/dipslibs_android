@@ -8,7 +8,7 @@
     <string name="not_using_dips">Sorry You Can\'t Use DiPS361 Services</string>
     <string name="tutup">Close</string>
     <string name="chat">Chat</string>
-    <string name="confirm_accept">For the sake of mutual convenience, this conversation will be recorded automatically.\nDo you agree to use the Digital Operations Victoria Bank Service?</string>
+    <string name="confirm_accept">For mutual convenience, this conversation will be recorded automatically. Do you agree to use Bank Victoria\'s Digital Operations services?</string>
     <string name="tidak_not">Disagree</string>
     <string name="setuju_accept">Agree</string>
     <string name="leave_message">Are you sure you want to end the call?</string>
@@ -337,4 +337,5 @@
     <string name="accept_mother">Please Agree Data Is Correct</string>
     <string name="content_waiting_mother">Please wait 2 minutes to continue</string>
     <string name="not_compatible">Sorry, your device is not compatible.</string>
+    <string name="content_schedule_call">Would you like to schedule a call?</string>
 </resources>
