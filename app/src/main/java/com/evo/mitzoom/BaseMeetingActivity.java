@@ -302,41 +302,7 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
             }
         });
         chatListView.setLayoutManager(new LinearLayoutManager(this, RecyclerView.VERTICAL, false));
-//        if (sessions.getKEY_CHAT() != null){
-//            String dataChat = sessions.getKEY_CHAT();
-//            Log.d("CEK START PESAN ",dataChat);
-//            try {
-//                JSONArray jsonArray2 = new JSONArray(dataChat);
-//                int panjang = jsonArray2.length();
-//                for (int a=0;a<panjang;a++){
-//                    String dataChat2 = jsonArray2.get(a).toString();
-//                    JSONObject jsonObject = new JSONObject(dataChat2);
-//                    boolean isSelf2 = jsonObject.getBoolean("isSelf");
-//                    boolean isHost2 = jsonObject.getBoolean("isHost");
-//                    String message = jsonObject.getString("message");
-//
-//                    String [] message2 = message.split("\n");
-//                    String SenderName = message2[0]+"\n";
-//                    String content = message2[1];
-//                    SpannableStringBuilder builder = new SpannableStringBuilder();
-//                    builder.append(SenderName).append(content);
-//                    builder.setSpan(new ForegroundColorSpan(Color.parseColor("#000000")),0,SenderName.length(), Spannable.SPAN_EXCLUSIVE_INCLUSIVE);
-//                    builder.setSpan(new ForegroundColorSpan(Color.parseColor("#000000")),SenderName.length(), builder.length(), Spannable.SPAN_EXCLUSIVE_INCLUSIVE); //设置前面的字体颜色
-//
-//                    isSelf.add(isSelf2);
-//                    isHost.add(isHost2);
-//                    list.add(builder);
-//
-//                }
-//            } catch (JSONException e) {
-//                e.printStackTrace();
-//            }
-//        }
-//        else {
-//            Log.d("CEK START PESAN ","MASUK ELSE");
-//        }
         chatListView.setAdapter(chatMsgAdapter);
-        //updateChatLayoutParams();
         if (!bottomSheetDialog.isShowing()){
             SavedInstanceChat();
         }
@@ -364,7 +330,6 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
         }
         String dataArr = jsonArray.toString();
         sessions.saveChat(dataArr);
-        Log.d("CEK PESAN ARRAY",dataArr);
     }
     private void getFragmentPage(Fragment fragment){
         getSupportFragmentManager()
@@ -377,7 +342,6 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
     @Override
     protected void onResume() {
         super.onResume();
-        Log.d("CEK","onResume");
 
         if (isActivityPaused) {
             resumeSubscribe();
@@ -430,7 +394,6 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
     }
 
     private void startVideoHandler() {
-        Log.d("CEK","MASUK startVideoHandler");
         if (isOn == 1) {
             new Thread(new Runnable() {
                 @Override
@@ -438,11 +401,9 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
                     try {
                         sessions.saveFlagUpDoc(false);
                         //Thread.sleep(1000);
-                        Log.d("CEK","ON OFF VIDEO is OFF");
                         onOffVideo();
                         onClickMoreSwitchCamera();
                         Thread.sleep(1000);
-                        Log.d("CEK","ON OFF VIDEO is ON");
                         onOffVideo();
                         onClickMoreSwitchCamera();
                     } catch (InterruptedException e) {
@@ -453,7 +414,6 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
         } else {
             sessions.saveFlagUpDoc(false);
             sessions.saveMedia(0);
-            Log.d("CEK","ON OFF VIDEO is ON");
             onOffVideo();
 
         }
@@ -464,7 +424,6 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
     protected void onPause() {
         super.onPause();
         int valMedia = sessions.getMedia();
-        Log.d("CEK","onPause valMedia : "+valMedia);
         if (valMedia == 1 || valMedia == 2) {
             ZoomVideoSDK.getInstance().getVideoHelper().stopVideo();
         }
@@ -503,9 +462,6 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
         switch (requestCode) {
             case REQUEST_SHARE_SCREEN_PERMISSION:
                 if (resultCode != RESULT_OK) {
-//                    if (BuildConfig.DEBUG)
-//                        Log.d(TAG, "onActivityResult REQUEST_SHARE_SCREEN_PERMISSION no ok ");
-//                    break;
                 }
                 startShareScreen(data);
                 break;
@@ -623,7 +579,6 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
         try {
             startActivity(home);
         } catch (Exception e) {
-            Log.e(TAG, e.toString());
         }
     }
 
@@ -684,7 +639,6 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
         int widthDisp = displayMetrics.widthPixels;
         int dyWidth = (int) Math.ceil(widthDisp / 2);
 
-        Log.e(TAG,"dyWidth : "+dyWidth);
 
         gifLoading = findViewById(R.id.gifLoading);
         rlprogress = findViewById(R.id.rlprogress);
@@ -709,9 +663,7 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
         cardSurfOff.setVisibility(View.VISIBLE);
 
         int widthCard = cardSurfOff.getMeasuredWidth();
-        Log.e(TAG,"widthCard : "+widthCard);
         int dyCardWidth = (int) Math.ceil(widthCard / 2);
-        Log.e(TAG,"dyCardWidth : "+dyCardWidth);
         if (dyCardWidth > 0) {
             dyWidth = dyCardWidth;
         }
@@ -942,7 +894,6 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
         call.enqueue(new Callback<JsonObject>() {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
-                Log.d("MIRROR","Mirroring Sukses");
                 Intent serviceIntent = new Intent(mContext, OutboundServiceNew.class);
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                     startForegroundService(serviceIntent);
@@ -951,7 +902,6 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
 
             @Override
             public void onFailure(Call<JsonObject> call, Throwable t) {
-                Log.d("MIRROR","Mirroring Gagal");
             }
         });
     }
@@ -1088,7 +1038,6 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
             int maxWidth = (int) (325 * displayMetrics.scaledDensity);
             width = maxWidth;
         }
-        Log.e(TAG,"updateVideoListLayout width : "+width+" | preWidth : "+preWidth+" | params height : "+params.height);
         if (width != preWidth) {
             params.width = width;
             userVideoList.setLayoutParams(params);
@@ -1157,7 +1106,6 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
         try {
             File dir = context.getCacheDir();
             if (dir != null && dir.isDirectory()) {
-                Log.e("CEK","trimCache : "+dir.getPath());
                 deleteDir(dir);
             }
         } catch (Exception e) {
@@ -1170,7 +1118,6 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
             String[] children = dir.list();
             for (int i = 0; i < children.length; i++) {
                 boolean success = deleteDir(new File(dir, children[i]));
-                Log.e("CEK","deleteDir ke-+"+i+" : "+success);
                 if (!success) {
                     return false;
                 }
@@ -1222,7 +1169,6 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
 
     @Override
     public void onSessionLeave() {
-        Log.e("CEK","onSessionLeave");
         if (flagUserLeave == false) {
             if (flagShowLeave == false) {
                 dialogAgentLeave();
@@ -1259,7 +1205,6 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
 
     @Override
     public void onUserJoin(ZoomVideoSDKUserHelper zoomVideoSDKUserHelper, List<ZoomVideoSDKUser> userList) {
-        Log.e("CEK","onUserJoin userList.size : "+userList.size()+" | isActivityPaused : "+isActivityPaused);
         updateVideoListLayout();
         if (!isActivityPaused) {
             adapter.onUserJoin(userList);
@@ -1270,7 +1215,6 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
 
     @Override
     public void onUserLeave(ZoomVideoSDKUserHelper zoomVideoSDKUserHelper, List<ZoomVideoSDKUser> userList) {
-        Log.e("CEK","onUserLeave userList.size : "+userList.size());
         updateVideoListLayout();
         adapter.onUserLeave(userList);
         if (adapter.getItemCount() == 0) {
@@ -1289,7 +1233,6 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
 
     @Override
     public void onUserVideoStatusChanged(ZoomVideoSDKVideoHelper zoomVideoSDKVideoHelper, List<ZoomVideoSDKUser> userList) {
-        Log.d(TAG, "onUserVideoStatusChanged userList : "+userList.size());
         if (null == iconVideo) {
             return;
         }
@@ -1311,7 +1254,6 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
             sessions.saveCamera(isOn);
 
             boolean flagDoc = sessions.getFlagUpDoc();
-            Log.d("CEK","flagDoc : "+flagDoc);
             if (flagDoc) {
                 startVideoHandler();
             } else {
@@ -1343,17 +1285,16 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
 
     @Override
     public void onUserShareStatusChanged(ZoomVideoSDKShareHelper zoomVideoSDKShareHelper, ZoomVideoSDKUser zoomVideoSDKUser, ZoomVideoSDKShareStatus zoomVideoSDKShareStatus) {
-        Log.d(TAG, "onUserShareStatusChanged ");
     }
 
     @Override
     public void onLiveStreamStatusChanged(ZoomVideoSDKLiveStreamHelper zoomVideoSDKLiveStreamHelper, ZoomVideoSDKLiveStreamStatus zoomVideoSDKLiveStreamStatus) {
-        Log.d(TAG, "onLiveStreamStatusChanged ");
+
     }
 
     @Override
     public void onChatNewMessageNotify(ZoomVideoSDKChatHelper zoomVideoSDKChatHelper, ZoomVideoSDKChatMessage messageItem) {
-        Log.d(TAG, "onChatNewMessageNotify ");
+
         chatMsgAdapter.onReceive(messageItem);
         if(bottomSheetDialog.isShowing()){
             iconBubble.setVisibility(View.GONE);
@@ -1361,7 +1302,6 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
         else{
             iconBubble.setVisibility(View.VISIBLE);
         }
-        Log.d("CEK PESAN",messageItem.getContent());
     }
 
     @Override
@@ -1371,34 +1311,34 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
 
     @Override
     public void onUserHostChanged(ZoomVideoSDKUserHelper zoomVideoSDKUserHelper, ZoomVideoSDKUser zoomVideoSDKUser) {
-        Log.d(TAG, "onUserHostChanged ");
+
     }
 
     @Override
     public void onUserManagerChanged(ZoomVideoSDKUser zoomVideoSDKUser) {
-        Log.d(TAG, "onUserManagerChanged ");
+
     }
 
     @Override
     public void onUserNameChanged(ZoomVideoSDKUser zoomVideoSDKUser) {
-        Log.d(TAG, "onUserNameChanged ");
+
     }
 
     @Override
     public void onUserActiveAudioChanged(ZoomVideoSDKAudioHelper zoomVideoSDKAudioHelper, List<ZoomVideoSDKUser> list) {
-        Log.d(TAG, "onUserActiveAudioChanged ");
+
         adapter.onUserActiveAudioChanged(list, userVideoList);
     }
 
     @Override
     public void onSessionNeedPassword(ZoomVideoSDKPasswordHandler handler) {
-        Log.d(TAG, "onSessionNeedPassword ");
+
         showInputPwdDialog(handler);
     }
 
     @Override
     public void onSessionPasswordWrong(ZoomVideoSDKPasswordHandler handler) {
-        Log.d(TAG, "onSessionPasswordWrong ");
+
         Toast.makeText(this, "Password wrong", Toast.LENGTH_LONG).show();
         showInputPwdDialog(handler);
     }
@@ -1420,12 +1360,12 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
 
     @Override
     public void onCommandReceived(ZoomVideoSDKUser zoomVideoSDKUser, String s) {
-        Log.d(TAG, "onCommandReceived ");
+
     }
 
     @Override
     public void onCommandChannelConnectResult(boolean b) {
-        Log.d(TAG, "onCommandChannelConnectResult "+b);
+
     }
 
     @Override
@@ -1440,7 +1380,7 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
 
     @Override
     public void onInviteByPhoneStatus(ZoomVideoSDKPhoneStatus zoomVideoSDKPhoneStatus, ZoomVideoSDKPhoneFailedReason zoomVideoSDKPhoneFailedReason) {
-        Log.d(TAG, "onInviteByPhoneStatus ");
+
     }
 
     @Override
@@ -1495,13 +1435,12 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
 
     @Override
     public void onSingleTap(ZoomVideoSDKUser user) {
-        Log.d(TAG, "onSingleTap ");
         subscribeVideoByUser(user);
     }
 
     @Override
     public void onPointerCaptureChanged(boolean hasCapture) {
-        Log.d(TAG, "onPointerCaptureChanged ");
+
         super.onPointerCaptureChanged(hasCapture);
     }
 

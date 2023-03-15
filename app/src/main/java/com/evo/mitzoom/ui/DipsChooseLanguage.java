@@ -131,16 +131,12 @@ public class DipsChooseLanguage extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        Log.e(TAG,"MASUK onResume");
         reqPermission();
-        Log.e(TAG,"openBatteryOptimizationDialogIfNeeded");
-        Log.e(TAG,"isOptimizingBattery : "+isOptimizingBattery());
-        Log.e(TAG,"getBatteryOptimizationPreferenceKey : "+getPreferences().getBoolean(getBatteryOptimizationPreferenceKey(), true));
 
         if (isFlagALL_FILES_ACCESS) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                 if (!Settings.canDrawOverlays(this)) {
-                    Log.e(TAG,"MASUK canDrawOverlays");
+
                     if ("xiaomi".equals(Build.MANUFACTURER.toLowerCase(Locale.ROOT))) {
                         final Intent intent =new Intent("miui.intent.action.APP_PERM_EDITOR");
                         intent.setClassName("com.miui.securitycenter",
@@ -232,7 +228,7 @@ public class DipsChooseLanguage extends AppCompatActivity {
 
     private void startApp() {
         String licenseAI = sessions.getAuthAdvanceAI();
-        Log.e(TAG,"licenseAI : "+licenseAI);
+
         if (licenseAI != null) {
             startLivenessDetection(licenseAI);
         } else {
@@ -280,32 +276,32 @@ public class DipsChooseLanguage extends AppCompatActivity {
                 ActivityCompat.checkSelfPermission(mContext, Manifest.permission.READ_PHONE_NUMBERS) != PackageManager.PERMISSION_GRANTED &&
                 ActivityCompat.checkSelfPermission(mContext, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED){
 
-            Log.e(TAG,"MASUK IF reqPermission");
+
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 requestPermissions(new String[]{Manifest.permission.READ_PHONE_STATE,Manifest.permission.CAMERA,readImagePermission,Manifest.permission.RECEIVE_SMS,
                         Manifest.permission.READ_SMS,Manifest.permission.READ_PHONE_NUMBERS,Manifest.permission.RECORD_AUDIO}, REQUEST_ALL);
             }
         } else {
-            Log.e(TAG,"MASUK ELSE reqPermission");
+
             if (ActivityCompat.checkSelfPermission(mContext, readImagePermission) != PackageManager.PERMISSION_GRANTED) {
-                Log.e(TAG,"MASUK ELSE reqPermission READ_EXTERNAL_STORAGE");
+
                 ActivityCompat.requestPermissions(this, new String[]{readImagePermission}, READ_EXTERNAL_STORAGE);
             } else if (ActivityCompat.checkSelfPermission(mContext, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
-                Log.e(TAG,"MASUK ELSE reqPermission CAMERA");
+
                 ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, REQUEST_CAMERA);
             } else if (ActivityCompat.checkSelfPermission(mContext, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
-                Log.e(TAG,"MASUK ELSE reqPermission RECORD_AUDIO");
+
                 ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.RECORD_AUDIO}, REQUEST_VIDEO_AUDIO_CODE);
             } else if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.Q) {
                 if (ActivityCompat.checkSelfPermission(mContext, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-                    Log.e(TAG, "MASUK ELSE reqPermission WRITE_EXTERNAL_STORAGE");
+
                     ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, WRITE_EXTERNAL_STORAGE);
                 }
             } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                Log.e(TAG,"MASUK ELSE reqPermission isExternalStorageManager");
+
                 if (!Environment.isExternalStorageManager() && isFlagALL_FILES_ACCESS == false){
                     isFlagALL_FILES_ACCESS = true;
-                    Log.e(TAG,"MASUK ELSE reqPermission isExternalStorageManager 2");
+
                     Intent getpermission = new Intent();
                     getpermission.setAction(Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION);
                     startActivityForResult(getpermission,ATTACHMENT_MANAGE_ALL_FILE);
@@ -314,7 +310,7 @@ public class DipsChooseLanguage extends AppCompatActivity {
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 if (Settings.canDrawOverlays(this)) {
-                    Log.e(TAG,"MASUK canDrawOverlays true");
+
                     if (isOptimizingBattery() && getPreferences().getBoolean(getBatteryOptimizationPreferenceKey(), true)) {
                         Intent intent = new Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS);
                         Uri uri = Uri.parse("package:" + getPackageName());
@@ -333,10 +329,10 @@ public class DipsChooseLanguage extends AppCompatActivity {
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        Log.e(TAG,"onRequestPermissionsResult : "+requestCode);
+
         if (requestCode == REQUEST_ALL) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                Log.e(TAG,"MASUK PERMISSION_GRANTED");
+
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
                     if (!Environment.isExternalStorageManager() && isFlagALL_FILES_ACCESS == false){
                         isFlagALL_FILES_ACCESS = true;
@@ -350,14 +346,13 @@ public class DipsChooseLanguage extends AppCompatActivity {
             }
         } else if (requestCode == READ_EXTERNAL_STORAGE) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                Log.e(TAG,"READ_EXTERNAL_STORAGE PERMISSION_GRANTED");
+
                 if (ActivityCompat.checkSelfPermission(mContext, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
-                    Log.e(TAG,"READ_EXTERNAL_STORAGE PERMISSION_GRANTED CAMERA");
+
                     ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, REQUEST_CAMERA);
                 } else {
-                    Log.e(TAG,"READ_EXTERNAL_STORAGE PERMISSION_GRANTED WRITE_EXTERNAL_STORAGE");
                     if (ActivityCompat.checkSelfPermission(mContext, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-                        Log.e(TAG,"READ_EXTERNAL_STORAGE PERMISSION_GRANTED WRITE_EXTERNAL_STORAGE 2");
+
                         ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, WRITE_EXTERNAL_STORAGE);
                     }
                 }
@@ -402,18 +397,17 @@ public class DipsChooseLanguage extends AppCompatActivity {
         GuardianLivenessDetectionSDK.init(getApplication(), yourMarket);
         GuardianLivenessDetectionSDK.letSDKHandleCameraPermission();
         String yourLicense = licenseAI;
-        Log.e(TAG,"yourLicense : "+yourLicense);
         GuardianLivenessDetectionSDK.setCameraType(CameraType.FRONT);// The back camera is CameraType.BACK
         GuardianLivenessDetectionSDK.setActionSequence(true, Detector.DetectionType.BLINK);
         GuardianLivenessDetectionSDK.setResultPictureSize(300); // Settable input range: [300,1000], unit: pixels
         GuardianLivenessDetectionSDK.setActionTimeoutMills(20000);
         GuardianLivenessDetectionSDK.isDetectOcclusion(true);
         String checkResult = GuardianLivenessDetectionSDK.setLicenseAndCheck(yourLicense);
-        Log.e(TAG,"checkResult : "+checkResult);
+
         if ("SUCCESS".equals(checkResult)) {
             startActivityForResult(new Intent(this, LivenessActivity.class), REQUEST_CODE_LIVENESS);
         } else {
-            Log.e("LivenessSDK", "License check failed:" + checkResult);
+
         }
     }
 
@@ -493,8 +487,6 @@ public class DipsChooseLanguage extends AppCompatActivity {
             e.printStackTrace();
         }
 
-        Log.e(TAG,"APIGetAuthAdvanceAI : "+ jsons);
-
         RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), jsons.toString());
         Server.getAPIService2().APIAuthLicenseLiveness(requestBody).enqueue(new Callback<JsonObject>() {
             @Override
@@ -505,9 +497,9 @@ public class DipsChooseLanguage extends AppCompatActivity {
                         showProgress(false);
                     }
                 });
-                Log.e(TAG,"RESPONSE AUTH API AI : "+response.code());
+
                 if (response.isSuccessful()) {
-                    Log.e(TAG,"RESPONSE AUTH API AI BODY : "+response.body().toString());
+
                     try {
                         JSONObject dataObj = new JSONObject(response.body().toString());
                         String dataLicense = dataObj.getJSONObject("data").getString("license");
@@ -542,14 +534,14 @@ public class DipsChooseLanguage extends AppCompatActivity {
         }
 
         String AccessKey = "9daf9d6e9dfe6cdd";
-        Log.e(TAG,"REUQEST AUTH AI : "+ jsons);
+
         RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), jsons.toString());
         Server.getAPIServiceAdvanceAI().AuthLicenseLiveness(requestBody,AccessKey).enqueue(new Callback<JsonObject>() {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
-                Log.e(TAG,"RESPONSE AUTH AI : "+response.code());
+
                 if (response.isSuccessful()) {
-                    Log.e(TAG,"RESPONSE AUTH AI SUCCESS : "+response.body().toString());
+
                     try {
                         JSONObject dataObj = new JSONObject(response.body().toString());
                         String sttcode = dataObj.getString("code");
@@ -566,7 +558,7 @@ public class DipsChooseLanguage extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<JsonObject> call, Throwable t) {
-                Log.e(TAG,"onFailure AUTH AI : "+t.getMessage());
+
             }
         });
     }

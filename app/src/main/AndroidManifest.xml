@@ -45,11 +45,8 @@
     <application
         android:allowBackup="false"
         android:dataExtractionRules="@xml/data_extraction_rules"
-        android:icon="@mipmap/dips361"
-        android:label="@string/app_name_dips"
         android:preserveLegacyExternalStorage="true"
         android:requestLegacyExternalStorage="true"
-        android:roundIcon="@mipmap/dips361_round"
         android:supportsRtl="true"
         android:usesCleartextTraffic="true">
         <activity
@@ -128,11 +125,6 @@
             android:screenOrientation="portrait"
             android:theme="@style/Theme.MITZoom"
             android:launchMode="singleTop">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
 
         <provider

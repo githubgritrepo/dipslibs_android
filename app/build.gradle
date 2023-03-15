@@ -1,11 +1,10 @@
 plugins {
-    id 'com.android.application'
+    id 'com.android.library'
 }
 
 android {
     compileSdk 33
     defaultConfig {
-        applicationId "com.evo.mitzoom"
         minSdk 21
         targetSdk 33
         versionCode 84
@@ -68,16 +67,17 @@ dependencies {
     }
     implementation 'ai.advance.mobile-sdk.android:liveness-detection:2.0.1'
     // Import the BoM for the Firebase platform
-    implementation platform('com.google.firebase:firebase-bom:30.2.0')
+    /*implementation platform('com.google.firebase:firebase-bom:30.2.0')
     // Declare the dependencies for the Crashlytics and Analytics libraries
     // When using the BoM, you don't specify versions in Firebase library dependencies
     implementation 'com.google.firebase:firebase-crashlytics'
     implementation 'com.google.firebase:firebase-analytics'
-    implementation 'com.google.firebase:firebase-perf'
+    implementation 'com.google.firebase:firebase-perf'*/
     implementation project(':mobilertc')
     implementation project(':liveness')
 }
 
+/*
 apply plugin: 'com.google.gms.google-services'
 apply plugin: 'com.google.firebase.crashlytics'
-apply plugin: 'com.google.firebase.firebase-perf'
+apply plugin: 'com.google.firebase.firebase-perf'*/

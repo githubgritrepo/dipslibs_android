@@ -65,7 +65,7 @@ public class RatingActivity extends AppCompatActivity {
 
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
         //getSupportActionBar().hide();
-        Log.e(TAG,"idDips : "+idDips+" | idAgent : "+idAgent);
+
         rlprogress = findViewById(R.id.rlprogress);
         rating = findViewById(R.id.ratingBar);
         rating.setClickable(false);
@@ -107,8 +107,6 @@ public class RatingActivity extends AppCompatActivity {
        btnSend.setOnClickListener(new View.OnClickListener() {
            @Override
            public void onClick(View v) {
-               //Log.e(TAG,"thumb : "+thumb+" | rating getNumStars : "+rating.getNumStars()+" | rating getRating : "+rating.getRating());
-               Log.e(TAG,"idDips : "+idDips+" | idAgent : "+idAgent);
                if (idDips != null && idAgent != null) {
                    showProgress(true);
                    new AsyncRating().execute();
