@@ -182,10 +182,12 @@ public class frag_service_resi extends Fragment {
         String authAccess = "Bearer "+sessions.getAuthToken();
         String exchangeToken = sessions.getExchangeToken();
         if (newComplain) {
-            call = API.getNewResiComplaint(noPengaduan,authAccess,exchangeToken);
+            call = API.getNewResiComplaint(noPengaduan,authAccess,exchangeToken,sessions.getLANG());
         } else {
             call = API.getResiComplaint(noPengaduan,authAccess,exchangeToken);
         }
+
+        Log.e("CEK","getResumeResi URL "+call.request());
         call.enqueue(new Callback<JsonObject>() {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {

@@ -21,7 +21,8 @@
     <string name="schedule_a_task">Schedule a call</string>
     <string name="schedule_a_taskln">Schedule\na call</string>
     <string name="end_call">End</string>
-    <string name="end_call2">End\nCall</string>
+    <string name="end_call2">End Call</string>
+    <string name="end_callln">End\nCall</string>
     <string name="headline_schedule">Currently all of our agents is busy to answer your call, please schedule the best time for us to call you back.</string>
     <string name="day_date_schedule"><![CDATA[Date]]></string>
     <string name="time">Time</string>
@@ -30,7 +31,7 @@
     <string name="headline_endcall">Are you sure to end voice call ?</string>
     <string name="headline_waiting">Currently all of our officers are serving other customer transactions. Please wait a while.</string>
     <string name="waiting">Ready to wait</string>
-    <string name="waitingln" translatable="false">Ready\nto wait</string>
+    <string name="waitingln">Ready\nto wait</string>
     <string name="headline_success">Customer Support ready to serve you.</string>
     <string name="btn_continue">Continue</string>
     <string name="back">Back</string>
@@ -324,6 +325,7 @@
     <string name="ktpnotread">Unread ID.\nPlease try again</string>
     <string name="validate_dukcapil">Invalid KTP Data. Make sure the KTP you use is correct and registered</string>
     <string name="btn_validate_dukcapil">Re-Take KTP</string>
+    <string name="validate_dtott">Sorry You Cannot Use Bank Victoria\'s Digital Operations Service. For further information please contact Bank Victoria Call Center.</string>
     <string name="max_upfile">Max 3 file</string>
     <string name="alert_upimage">Please upload a photo.</string>
     <string name="alert_upfile">Please upload a File.</string>
@@ -334,5 +336,5 @@
     <string name="please_check_mothername">Please check again Your Mother Name</string>
     <string name="accept_mother">Please Agree Data Is Correct</string>
     <string name="content_waiting_mother">Please wait 2 minutes to continue</string>
-    <string name="not_compatible" translatable="false">Sorry, your device is not compatible.</string>
+    <string name="not_compatible">Sorry, your device is not compatible.</string>
 </resources>

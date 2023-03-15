@@ -286,6 +286,9 @@ public class frag_portfolio_new extends Fragment {
             try {
                 String type = listTypeProduk.getJSONObject(i).getString("type");
                 int persentase = listTypeProduk.getJSONObject(i).getInt("persentase");
+                if (persentase == 0) {
+                    persentase = 100;
+                }
 
                 if (type.toLowerCase().equals("tabungan") || type.toLowerCase().equals("saving")) {
                     colorsProd.add(mContext.getColor(R.color.zm_tabungan));

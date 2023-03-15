@@ -240,7 +240,7 @@ public class OutboundServiceNew extends Service {
                                                     (mContext, 0, intent, 0);
                                         }
 
-                                        long addTimes = System.currentTimeMillis() + 2000;
+                                        long addTimes = System.currentTimeMillis() + 1000;
 
                                         AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
                                         alarmManager.set(AlarmManager.RTC_WAKEUP, addTimes, pendingIntent);
@@ -256,7 +256,7 @@ public class OutboundServiceNew extends Service {
                                                     }
                                                 });
                                             }
-                                        }, 3000);
+                                        }, 2000);
                                     }
 
                                 } catch (JSONException e) {
@@ -574,32 +574,35 @@ public class OutboundServiceNew extends Service {
         NotificationManager notificationManagerCompat = (NotificationManager) getApplicationContext().getSystemService(Context.NOTIFICATION_SERVICE);
 
         Intent intent1 = new Intent(getApplicationContext(), DipsOutboundCall.class);
-        intent1.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent1.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent1.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
 
         PendingIntent pendingIntentCall = null;
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
             pendingIntentCall = PendingIntent.getActivity
-                    (this, 0, intent1, PendingIntent.FLAG_MUTABLE);
+                    (this, 0, intent1, PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT);
         }
         else
         {
             pendingIntentCall = PendingIntent.getActivity
-                    (this, 0, intent1, PendingIntent.FLAG_CANCEL_CURRENT);
+                    (this, 0, intent1, PendingIntent.FLAG_UPDATE_CURRENT);
         }
 
         Intent intent2 = new Intent(getApplicationContext(), DipsOutboundCall.class);
-        intent2.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+        //intent2.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        intent2.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent2.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
         intent2.setAction("endcall");
 
         PendingIntent pendingIntentEnd = null;
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
             pendingIntentEnd = PendingIntent.getActivity
-                    (this, 0, intent2, PendingIntent.FLAG_MUTABLE);
+                    (this, 0, intent2, PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT);
         }
         else
         {
             pendingIntentEnd = PendingIntent.getActivity
-                    (this, 0, intent2, PendingIntent.FLAG_CANCEL_CURRENT);
+                    (this, 0, intent2, PendingIntent.FLAG_UPDATE_CURRENT);
         }
 
         String nameApps = getResources().getString(R.string.app_name_dips);
