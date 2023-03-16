@@ -38,6 +38,14 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1">
 
+                    <ImageView
+                        android:id="@+id/imgPort"
+                        android:layout_width="15dp"
+                        android:layout_height="15dp"
+                        android:src="@drawable/v_people_2"
+                        android:layout_marginEnd="@dimen/dp_10"
+                        android:layout_centerVertical="true"/>
+
                     <TextView
                         android:id="@+id/headline"
                         android:layout_width="wrap_content"
@@ -46,7 +54,8 @@
                         android:textAlignment="textStart"
                         android:textAppearance="@style/TextAppearance.AppCompat.Headline"
                         android:textSize="18dp"
-                        android:textStyle="bold" />
+                        android:textStyle="bold"
+                        android:layout_toRightOf="@id/imgPort"/>
 
                 </RelativeLayout>
 
@@ -61,12 +70,21 @@
                     android:textSize="18dp"
                     android:textColor="@color/zm_text"/>
             </LinearLayout>
+
+            <TextView
+                android:id="@+id/tvInfo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/info_portofolio"
+                android:layout_below="@id/LLHeadline"
+                android:textSize="18dp"
+                android:textColor="@color/zm_text"/>
             <LinearLayout
                 android:layout_marginBottom="10dp"
                 android:id="@+id/LL1"
                 android:layout_width="match_parent"
                 android:layout_height="200dp"
-                android:layout_below="@+id/LLHeadline"
+                android:layout_below="@+id/tvInfo"
                 android:orientation="horizontal">
 
                 <com.github.mikephil.charting.charts.PieChart

@@ -637,6 +637,7 @@ public class DipsOutboundCall extends AppCompatActivity implements DatePickerDia
 
         Button end_call = (Button) dialogView.findViewById(R.id.btnSchedule2);
         Button btnSchedule2 = (Button) dialogView.findViewById(R.id.end_call);
+        btnSchedule2.setVisibility(View.VISIBLE);
 
         end_call.setText(getString(R.string.end_call));
         btnSchedule2.setText(getString(R.string.schedule_a_task));
@@ -728,6 +729,7 @@ public class DipsOutboundCall extends AppCompatActivity implements DatePickerDia
         end_call.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                sweetAlertDialog.dismiss();
                 OutApps();
             }
         });
@@ -750,7 +752,7 @@ public class DipsOutboundCall extends AppCompatActivity implements DatePickerDia
                     sweetAlertDialog.dismiss();
                     String csId = sessions.getCSID();
                     /*if (csId != null && !csId.isEmpty()) {
-                        OutboundServiceNew.rejectCall();
+                        OutboundServiceNew. ();
                     }*/
                     sessions.saveIDSchedule(0);
                     saveSchedule();
@@ -798,8 +800,8 @@ public class DipsOutboundCall extends AppCompatActivity implements DatePickerDia
                     }
 
                     //doWorkMyWorker();
-                    serviceOutbound();
                     OutApps();
+                    serviceOutbound();
                 }
             }
 
@@ -1301,7 +1303,7 @@ public class DipsOutboundCall extends AppCompatActivity implements DatePickerDia
         intent.putExtra("render_type", renderType);
         startActivity(intent);
         finish();
-        OutboundServiceNew.stopServiceSocket();
+        //OutboundServiceNew.stopServiceSocket();
     }
 
 }
