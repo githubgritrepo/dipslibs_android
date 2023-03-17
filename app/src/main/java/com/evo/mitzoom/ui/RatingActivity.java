@@ -144,8 +144,8 @@ public class RatingActivity extends AppCompatActivity {
         tvTitleDialog.setVisibility(View.GONE);
 
         imgDialog.setImageDrawable(getDrawable(R.drawable.v_dialog_success));
-        tvBodyDialog.setText(getString(R.string.rating_pop_up_content));
-        btnConfirmDialog.setText(getString(R.string.done));
+        tvBodyDialog.setText(getResources().getString(R.string.rating_pop_up_content));
+        btnConfirmDialog.setText(getResources().getString(R.string.done));
 
         SweetAlertDialog sweetAlertDialog = new SweetAlertDialog(RatingActivity.this, SweetAlertDialog.NORMAL_TYPE);
         sweetAlertDialog.setCustomView(dialogView);
