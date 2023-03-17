@@ -338,4 +338,7 @@
     <string name="content_waiting_mother" translatable="false">Mohon menunggu 2 menit untuk melanjutkan.</string>
     <string name="not_compatible" translatable="false">Maaf perangkat anda tidak kompatibel.</string>
     <string name="content_schedule_call" translatable="false">Apakah Anda ingin menjadwalkan panggilan?</string>
+    <string name="info_portofolio" translatable="false">Informasi Portofolio</string>
+    <string name="try_again" translatable="false">Coba Lagi</string>
+    <string name="fail_call" translatable="false">Gagal menghubungkan panggilan</string>
 </resources>

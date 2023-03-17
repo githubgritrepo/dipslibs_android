@@ -66,10 +66,11 @@ public class DipsChooseLanguage extends AppCompatActivity {
 
     private final String TAG = "CEK_DipsChooseLanguage";
     public static final int REQUEST_CODE_LIVENESS = 1001;
+    protected final static int REQUEST_VIDEO_AUDIO_CODE = 1010;
     public static final int READ_EXTERNAL_STORAGE = 780;
     public static final int REQUEST_CAMERA = 781;
-    protected final static int REQUEST_VIDEO_AUDIO_CODE = 1010;
     public static final int WRITE_EXTERNAL_STORAGE = 782;
+    public static final int REQUEST_RECEIVE_SMS = 783;
     public static final int REQUEST_WRITE_PERMISSION = 786;
     private static final int ATTACHMENT_MANAGE_ALL_FILE = 308;
     protected static final int REQUEST_BATTERY_OP = 0x49ff;
@@ -286,6 +287,9 @@ public class DipsChooseLanguage extends AppCompatActivity {
             if (ActivityCompat.checkSelfPermission(mContext, readImagePermission) != PackageManager.PERMISSION_GRANTED) {
 
                 ActivityCompat.requestPermissions(this, new String[]{readImagePermission}, READ_EXTERNAL_STORAGE);
+            } else if (ActivityCompat.checkSelfPermission(mContext, Manifest.permission.RECEIVE_SMS) != PackageManager.PERMISSION_GRANTED) {
+                Log.e(TAG,"MASUK ELSE reqPermission RECEIVE_SMS");
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.RECEIVE_SMS}, REQUEST_RECEIVE_SMS);
             } else if (ActivityCompat.checkSelfPermission(mContext, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
 
                 ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, REQUEST_CAMERA);
@@ -346,26 +350,26 @@ public class DipsChooseLanguage extends AppCompatActivity {
             }
         } else if (requestCode == READ_EXTERNAL_STORAGE) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-
-                if (ActivityCompat.checkSelfPermission(mContext, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
-
+                Log.e(TAG,"READ_EXTERNAL_STORAGE PERMISSION_GRANTED");
+                /*if (ActivityCompat.checkSelfPermission(mContext, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+                    Log.e(TAG,"READ_EXTERNAL_STORAGE PERMISSION_GRANTED CAMERA");
                     ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, REQUEST_CAMERA);
                 } else {
                     if (ActivityCompat.checkSelfPermission(mContext, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
 
                         ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, WRITE_EXTERNAL_STORAGE);
                     }
-                }
+                }*/
             }
         } else if (requestCode == REQUEST_CAMERA) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                if (ActivityCompat.checkSelfPermission(mContext, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
+                /*if (ActivityCompat.checkSelfPermission(mContext, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
                     ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.RECORD_AUDIO}, REQUEST_VIDEO_AUDIO_CODE);
-                }
+                }*/
             }
         } else if (requestCode == REQUEST_VIDEO_AUDIO_CODE) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                if (ActivityCompat.checkSelfPermission(mContext, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                /*if (ActivityCompat.checkSelfPermission(mContext, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
                     ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, WRITE_EXTERNAL_STORAGE);
                 } else {
                     if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
@@ -377,17 +381,17 @@ public class DipsChooseLanguage extends AppCompatActivity {
                             }
                         }
                     }
-                }
+                }*/
             }
         } else if (requestCode == WRITE_EXTERNAL_STORAGE) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                /*if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
                     if (!Environment.isExternalStorageManager()){
                         Intent getpermission = new Intent();
                         getpermission.setAction(Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION);
                         startActivityForResult(getpermission,ATTACHMENT_MANAGE_ALL_FILE);
                     }
-                }
+                }*/
             }
         }
     }

@@ -1308,6 +1308,7 @@ public class DipsWaitingRoom extends AppCompatActivity implements DatePickerDial
                         publishCallAccept(csId, "cancel"); //RabbitMQ
                     }
                     sessions.saveIDSchedule(0);
+                    showProgress(true);
                     saveSchedule();
                 }
 
@@ -1335,6 +1336,7 @@ public class DipsWaitingRoom extends AppCompatActivity implements DatePickerDial
         call.enqueue(new Callback<JsonObject>() {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                showProgress(false);
                 Log.e(TAG,"saveSchedule Respon Code : "+response.code());
                 if (response.isSuccessful() && response.body().size() > 0) {
                     Log.e(TAG,"saveSchedule Respon : "+ response.body());
@@ -1375,6 +1377,7 @@ public class DipsWaitingRoom extends AppCompatActivity implements DatePickerDial
 
             @Override
             public void onFailure(Call<JsonObject> call, Throwable t) {
+                showProgress(false);
                 Toast.makeText(mContext,t.getMessage(),Toast.LENGTH_SHORT).show();
             }
         });
@@ -1496,6 +1499,10 @@ public class DipsWaitingRoom extends AppCompatActivity implements DatePickerDial
         btnConfirmDialog.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                String csId = sessions.getCSID();
+                if (csId != null && !csId.isEmpty()) {
+                    publishCallAccept(csId, "cancel"); //RabbitMQ
+                }
                 sweetAlertDialog.dismiss();
                 startWaiting = false;
                 OutApps();
@@ -1620,6 +1627,10 @@ public class DipsWaitingRoom extends AppCompatActivity implements DatePickerDial
             public void onClick(View view) {
                 startWaiting = false;
                 sweetAlertDialog.dismissWithAnimation();
+                String csId = sessions.getCSID();
+                if (csId != null && !csId.isEmpty()) {
+                    publishCallAccept(csId, "cancel"); //RabbitMQ
+                }
                 //Toast.makeText(context,getResources().getString(R.string.end_call2), Toast.LENGTH_LONG).show();
                 OutApps();
             }
@@ -1785,13 +1796,61 @@ public class DipsWaitingRoom extends AppCompatActivity implements DatePickerDial
                         e.printStackTrace();
                     }
                 } else {
-                    Toast.makeText(mContext,"Terjadi Kesalahan. Silakan dicoba kembali",Toast.LENGTH_SHORT).show();
+                    PopUpFailSignature();
                 }
             }
 
             @Override
             public void onFailure(Call<JsonObject> call, Throwable t) {
                 Toast.makeText(mContext,t.getMessage(),Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void PopUpFailSignature(){
+        LayoutInflater inflater = getLayoutInflater();
+        View dialogView = inflater.inflate(R.layout.layout_dialog_sweet, null);
+
+        ImageView imgDialog = dialogView.findViewById(R.id.imgDialog);
+        TextView tvTitleDialog = dialogView.findViewById(R.id.tvTitleDialog);
+        TextView tvBodyDialog = dialogView.findViewById(R.id.tvBodyDialog);
+        LinearLayout llBtnWaiting = dialogView.findViewById(R.id.llBtnWaiting);
+        Button btnCancelDialog = dialogView.findViewById(R.id.btnCancelDialog);
+        Button btnConfirmDialog = dialogView.findViewById(R.id.btnConfirmDialog);
+
+        btnConfirmDialog.setText(R.string.try_again);
+        btnCancelDialog.setText(getString(R.string.end_call));
+
+        tvTitleDialog.setVisibility(View.GONE);
+        btnCancelDialog.setVisibility(View.VISIBLE);
+
+        imgDialog.setImageDrawable(getDrawable(R.drawable.v_dialog_info));
+        tvBodyDialog.setText(R.string.fail_call);
+
+        SweetAlertDialog dialogFailCall = new SweetAlertDialog(DipsWaitingRoom.this, SweetAlertDialog.NORMAL_TYPE);
+        dialogFailCall.setCustomView(dialogView);
+        dialogFailCall.hideConfirmButton();
+        dialogFailCall.setCancelable(false);
+        dialogFailCall.show();
+
+        btnConfirmDialog.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialogFailCall.dismiss();
+                startActivity(new Intent(mContext, DipsChooseLanguage.class));
+                finishAffinity();
+            }
+        });
+
+        btnCancelDialog.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialogFailCall.dismiss();
+                String csId = sessions.getCSID();
+                if (csId != null && !csId.isEmpty()) {
+                    publishCallAccept(csId, "cancel"); //RabbitMQ
+                }
+                OutApps();
             }
         });
     }

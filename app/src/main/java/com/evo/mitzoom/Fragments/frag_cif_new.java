@@ -30,6 +30,7 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
@@ -2371,18 +2372,6 @@ public class frag_cif_new extends Fragment {
         sweetAlertDialog.setCustomView(dialogView);
         sweetAlertDialog.hideConfirmButton();
         sweetAlertDialog.setCancelable(false);
-        sweetAlertDialog.show();
-
-        int width = mContext.getResources().getDisplayMetrics().widthPixels;
-        int height = mContext.getResources().getDisplayMetrics().heightPixels;
-
-        Log.e("CEK","PopUpOCR width : "+width+" | height : "+height);
-        int newWidth = (int)(width*0.8);
-        int newHeight = (int)(height*0.85);
-        Log.e("CEK","PopUpOCR newWidth : "+newWidth+" | newHeight : "+newHeight);
-
-        sweetAlertDialog.getWindow().setGravity(Gravity.CENTER_HORIZONTAL);
-        sweetAlertDialog.getWindow().setLayout(newWidth,newHeight);
         sweetAlertDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
             @Override
             public void onDismiss(DialogInterface dialogInterface) {
@@ -2975,6 +2964,39 @@ public class frag_cif_new extends Fragment {
                 imgDelete.setVisibility(View.GONE);
             }
         });
+
+        int width = mContext.getResources().getDisplayMetrics().widthPixels;
+        int height = mContext.getResources().getDisplayMetrics().heightPixels;
+
+        Log.e("CEK","PopUpOCR width : "+width+" | height : "+height);
+        int newWidth = (int)(width*0.8);
+        int newHeight = (int)(height*0.85);
+        Log.e("CEK","PopUpOCR newWidth : "+newWidth+" | newHeight : "+newHeight);
+
+        sweetAlertDialog.show();
+//        sweetAlertDialog.getWindow().setLayout(newWidth,newHeight);
+        WindowManager.LayoutParams lp = new WindowManager.LayoutParams();
+
+        lp.copyFrom(sweetAlertDialog.getWindow().getAttributes());
+        lp.width = newWidth;
+        lp.height = newHeight;
+        if (height > width) {
+            double diffs = (double) height / width;
+            Log.e("CEK","DIFF diffs : "+diffs);
+            if (diffs < 2.055) {
+                Log.e("CEK","MASUK IF diffs");
+                lp.x=50;
+            }
+        } else {
+            double diffs = (double) width / height;
+            Log.e("CEK","DIFF diffs 2 : "+diffs);
+            if (diffs < 2.055) {
+                Log.e("CEK","MASUK IF diffs 2");
+                lp.y=50;
+            }
+        }
+        sweetAlertDialog.getWindow().setAttributes(lp);
+        sweetAlertDialog.getWindow().setGravity(Gravity.CENTER_HORIZONTAL | Gravity.CENTER_VERTICAL);
 
     }
 

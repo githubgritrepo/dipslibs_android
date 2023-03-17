@@ -127,9 +127,11 @@
             android:launchMode="singleTop">
         </activity>
 
+        <!--android:authorities="${applicationId}.provider"-->
+
         <provider
             android:name="androidx.core.content.FileProvider"
-            android:authorities="${applicationId}.provider"
+            android:authorities="com.evo.mitzoom.provider"
             android:exported="false"
             android:grantUriPermissions="true">
             <meta-data
