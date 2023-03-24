@@ -252,6 +252,8 @@ public class DipsLivenessResult extends AppCompatActivity {
                                         public void run() {
                                             Intent intent = null;
                                             String noCif = sessions.getNoCIF();
+                                            /*intent = new Intent(mContext, DipsSwafoto.class);
+                                            intent.putExtra("CUSTNAME", custName);*/
                                             if (!noCif.isEmpty()) {
                                                 intent = new Intent(mContext, DipsWaitingRoom.class);
                                                 intent.putExtra("CUSTNAME", custName);

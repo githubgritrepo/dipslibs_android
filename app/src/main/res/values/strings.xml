@@ -341,4 +341,6 @@
     <string name="info_portofolio" translatable="false">Informasi Portofolio</string>
     <string name="try_again" translatable="false">Coba Lagi</string>
     <string name="fail_call" translatable="false">Gagal menghubungkan panggilan</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

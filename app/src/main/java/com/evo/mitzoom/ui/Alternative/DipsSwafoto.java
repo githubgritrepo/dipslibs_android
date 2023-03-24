@@ -37,6 +37,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.cardview.widget.CardView;
+import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.work.Constraints;
 import androidx.work.Data;
@@ -151,8 +152,13 @@ public class DipsSwafoto extends AppCompatActivity implements com.wdullaer.mater
         useFacing = intent.getIntExtra(KEY_USE_FACING, Camera.CameraInfo.CAMERA_FACING_FRONT);
 
         custName = getIntent().getExtras().getString("CUSTNAME");
-        int formCode = getIntent().getExtras().getInt("formCode");
-        boolean ocrKTP = getIntent().getExtras().getBoolean("OCRKTP");
+        boolean cekformCode = getIntent().hasExtra("formCode");
+        int formCode = 0;
+        boolean ocrKTP = false;
+        if (cekformCode) {
+            formCode = getIntent().getExtras().getInt("formCode");
+            ocrKTP = getIntent().getExtras().getBoolean("OCRKTP");
+        }
 
         Fragment fragment = null;
         Bundle bundle = new Bundle();
@@ -281,9 +287,9 @@ public class DipsSwafoto extends AppCompatActivity implements com.wdullaer.mater
     private void requestPermission() {
         Log.e("CEK","requestPermission");
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
-            if (checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            if (ActivityCompat.checkSelfPermission(mContext,Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
                 Log.e("CEK","WRITE_EXTERNAL_STORAGE");
-                requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},  REQUEST_WRITE_PERMISSION);
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_WRITE_PERMISSION);
             } else {
                 Log.e("CEK","Camera.open");
                 camera = Camera.open(useFacing);

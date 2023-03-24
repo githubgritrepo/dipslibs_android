@@ -1500,9 +1500,9 @@ public class DipsWaitingRoom extends AppCompatActivity implements DatePickerDial
             @Override
             public void onClick(View view) {
                 String csId = sessions.getCSID();
-                if (csId != null && !csId.isEmpty()) {
+                /*if (csId != null && !csId.isEmpty()) {
                     publishCallAccept(csId, "cancel"); //RabbitMQ
-                }
+                }*/
                 sweetAlertDialog.dismiss();
                 startWaiting = false;
                 OutApps();

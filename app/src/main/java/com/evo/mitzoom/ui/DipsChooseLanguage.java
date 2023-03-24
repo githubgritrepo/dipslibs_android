@@ -300,7 +300,7 @@ public class DipsChooseLanguage extends AppCompatActivity {
             } else if (ActivityCompat.checkSelfPermission(mContext, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
                 Log.e(TAG,"MASUK ELSE reqPermission RECORD_AUDIO");
                 ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.RECORD_AUDIO}, REQUEST_VIDEO_AUDIO_CODE);
-            } else if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.Q) {
+            } else if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
                 if (ActivityCompat.checkSelfPermission(mContext, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
                     Log.e(TAG, "MASUK ELSE reqPermission WRITE_EXTERNAL_STORAGE");
                     ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, WRITE_EXTERNAL_STORAGE);
