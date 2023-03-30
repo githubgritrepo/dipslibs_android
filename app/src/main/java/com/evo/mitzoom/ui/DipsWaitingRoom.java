@@ -1134,11 +1134,12 @@ public class DipsWaitingRoom extends AppCompatActivity implements DatePickerDial
         btnCancelDialog.setVisibility(View.VISIBLE);
 
         imgDialog.setImageDrawable(getDrawable(R.drawable.v_dialog_info));
-        tvBodyDialog.setText(getString(R.string.headline_waiting));
         btnCancelDialog.setText(getString(R.string.schedule_a_taskln));
         if (loopWaiting == 2) {
+            tvBodyDialog.setText(getString(R.string.headline_waiting2));
             btnConfirmDialog.setText(getString(R.string.end_callln));
         } else {
+            tvBodyDialog.setText(getString(R.string.headline_waiting));
             btnConfirmDialog.setText(getString(R.string.waitingln));
         }
 

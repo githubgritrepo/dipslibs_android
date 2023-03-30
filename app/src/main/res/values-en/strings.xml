@@ -30,6 +30,7 @@
     <string name="no">Cancel</string>
     <string name="headline_endcall">Are you sure to end voice call ?</string>
     <string name="headline_waiting">Currently all of our officers are serving other customer transactions. Please wait a while.</string>
+    <string name="headline_waiting2">Currently all of our officers are serving other customer transactions.</string>
     <string name="waiting">Ready to wait</string>
     <string name="waitingln">Ready\nto wait</string>
     <string name="headline_success">Customer Support ready to serve you.</string>

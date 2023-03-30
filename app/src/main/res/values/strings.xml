@@ -29,6 +29,7 @@
     <string name="no" translatable="false">Tidak</string>
     <string name="headline_endcall" translatable="false">Apakah Anda ingin mengakhiri panggilan ?</string>
     <string name="headline_waiting" translatable="false">Saat ini seluruh petugas kami sedang melayani transaksi nasabah lain. Mohon untuk menunggu beberapa saat.</string>
+    <string name="headline_waiting2" translatable="false">Saat ini seluruh petugas kami sedang melayani transaksi nasabah lain.</string>
     <string name="waiting" translatable="false">Bersedia menunggu</string>
     <string name="waitingln" translatable="false">Bersedia\nMenunggu</string>
     <string name="headline_success" translatable="false">Customer Support sudah siap melayani Anda.</string>
