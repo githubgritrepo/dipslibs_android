@@ -199,9 +199,6 @@ public class DipsLivenessResult extends AppCompatActivity {
                     Log.e("CEK","CaptureIdentifyAuth dataS: "+dataS);
                     try {
                         JSONObject dataObj = new JSONObject(dataS);
-                        llCircle.setVisibility(View.VISIBLE);
-                        imgCheck.setVisibility(View.VISIBLE);
-                        tip_text_view.setVisibility(View.GONE);
 
                         try {
                             JSONObject dataCustomer = dataObj.getJSONObject("data").getJSONObject("customer");
@@ -217,6 +214,17 @@ public class DipsLivenessResult extends AppCompatActivity {
                             }
                             String custName = dataCustomer.getString("namaLengkap");
                             String idDipsNew = dataCustomer.getString("idDips");
+                            boolean blacklist = dataCustomer.getBoolean("blacklist");
+                            if (blacklist) {
+                                Intent intent = new Intent(mContext, DipsSplashScreen.class);
+                                intent.putExtra("BLACKLIST", blacklist);
+                                startActivity(intent);
+                                finishAffinity();
+                                return;
+                            }
+                            llCircle.setVisibility(View.VISIBLE);
+                            imgCheck.setVisibility(View.VISIBLE);
+                            tip_text_view.setVisibility(View.GONE);
                             boolean isSwafoto = dataCustomer.getBoolean("isSwafoto");
                             isSwafoto = false;
                             Log.e("CEK", "idDipsNew : " + idDipsNew + " | idDips : " + idDips);
@@ -279,10 +287,9 @@ public class DipsLivenessResult extends AppCompatActivity {
                     }
                 }  else {
                     Intent intent = new Intent(mContext, DipsSplashScreen.class);
-                    intent.putExtra("RESPONSECODE", response.code());
+                    intent.putExtra("BLACKLIST", true);
                     startActivity(intent);
                     finishAffinity();
-
                 }
             }
 

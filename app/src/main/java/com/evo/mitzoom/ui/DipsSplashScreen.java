@@ -53,7 +53,7 @@ public class DipsSplashScreen extends AppCompatActivity {
             e.printStackTrace();
         }
         //Cek balikan dari liveness
-        boolean cekConstain = getIntent().hasExtra("RESPONSECODE");
+        boolean cekConstain = getIntent().hasExtra("BLACKLIST");
         if (cekConstain) {
             //Jika ada, maka muncul pop up untuk nasabah yang ditolak
             rlBGTransparant.setVisibility(View.VISIBLE);
