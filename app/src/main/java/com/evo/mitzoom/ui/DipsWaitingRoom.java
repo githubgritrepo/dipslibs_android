@@ -1134,11 +1134,12 @@ public class DipsWaitingRoom extends AppCompatActivity implements DatePickerDial
         btnCancelDialog.setVisibility(View.VISIBLE);
 
         imgDialog.setImageDrawable(getDrawable(R.drawable.v_dialog_info));
-        tvBodyDialog.setText(getString(R.string.headline_waiting));
         btnCancelDialog.setText(getString(R.string.schedule_a_taskln));
         if (loopWaiting == 2) {
+            tvBodyDialog.setText(getString(R.string.headline_waiting2));
             btnConfirmDialog.setText(getString(R.string.end_callln));
         } else {
+            tvBodyDialog.setText(getString(R.string.headline_waiting));
             btnConfirmDialog.setText(getString(R.string.waitingln));
         }
 
@@ -1500,9 +1501,9 @@ public class DipsWaitingRoom extends AppCompatActivity implements DatePickerDial
             @Override
             public void onClick(View view) {
                 String csId = sessions.getCSID();
-                if (csId != null && !csId.isEmpty()) {
+                /*if (csId != null && !csId.isEmpty()) {
                     publishCallAccept(csId, "cancel"); //RabbitMQ
-                }
+                }*/
                 sweetAlertDialog.dismiss();
                 startWaiting = false;
                 OutApps();

@@ -102,6 +102,9 @@ public class ItemServiceGridAdapter extends RecyclerView.Adapter<ItemServiceGrid
                     }
                     processInqCIFbyNIK();
                     break;
+                case "3" :
+
+                    break;
             }
         });
     }

@@ -3186,26 +3186,41 @@ public class frag_cif_new extends Fragment {
                 else {
                     chkDataCorrect.setChecked(false);
                     flagMother = false;
-                    try {
-                        ((Activity)mContext).runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                if (isSessionZoom) {
-                                    BaseMeetingActivity.showProgress(false);
-                                } else {
-                                    DipsSwafoto.showProgress(false);
-                                }
+                    ((Activity)mContext).runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (isSessionZoom) {
+                                BaseMeetingActivity.showProgress(false);
+                            } else {
+                                DipsSwafoto.showProgress(false);
                             }
-                        });
-                        String dataS = response.body().toString();
-                        Log.d("CEK","HASIL ValidateIbuKandung : "+dataS);
-                        JSONObject dataObj = new JSONObject(dataS);
-                        String status = dataObj.getString("status");
-                        String msg = dataObj.getString("message");
-                        Toast.makeText(mContext, "Failed "+status+","+msg, Toast.LENGTH_SHORT).show();
-                    } catch (JSONException e) {
-                        e.printStackTrace();
+                        }
+                    });
+                    String msg = "";
+                    if (response.errorBody().toString().isEmpty()) {
+                        String dataS = response.errorBody().toString();
+                        Log.e("CEK","ERROR RESPONSE ValidateIbuKandung : "+dataS);
+                        try {
+                            JSONObject dataObj = new JSONObject(dataS);
+                            msg = dataObj.getString("message");
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
                     }
+                    else {
+                        String dataS = null;
+                        try {
+                            dataS = response.errorBody().string();
+                            Log.e("CEK","ERROR RESPONSE ValidateIbuKandung 2 : "+dataS);
+                            JSONObject dataObj = new JSONObject(dataS);
+                            if (dataObj.has("message")) {
+                                msg = dataObj.getString("message");
+                            }
+                        } catch (IOException | JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    Toast.makeText(mContext, "Failed,"+msg, Toast.LENGTH_SHORT).show();
                 }
             }
 

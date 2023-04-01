@@ -29,6 +29,7 @@
     <string name="no" translatable="false">Tidak</string>
     <string name="headline_endcall" translatable="false">Apakah Anda ingin mengakhiri panggilan ?</string>
     <string name="headline_waiting" translatable="false">Saat ini seluruh petugas kami sedang melayani transaksi nasabah lain. Mohon untuk menunggu beberapa saat.</string>
+    <string name="headline_waiting2" translatable="false">Saat ini seluruh petugas kami sedang melayani transaksi nasabah lain.</string>
     <string name="waiting" translatable="false">Bersedia menunggu</string>
     <string name="waitingln" translatable="false">Bersedia\nMenunggu</string>
     <string name="headline_success" translatable="false">Customer Support sudah siap melayani Anda.</string>
@@ -341,4 +342,6 @@
     <string name="info_portofolio" translatable="false">Informasi Portofolio</string>
     <string name="try_again" translatable="false">Coba Lagi</string>
     <string name="fail_call" translatable="false">Gagal menghubungkan panggilan</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

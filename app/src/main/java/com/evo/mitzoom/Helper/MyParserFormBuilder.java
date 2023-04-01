@@ -9,9 +9,11 @@ import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.text.Editable;
 import android.text.Html;
 import android.text.InputFilter;
 import android.text.InputType;
+import android.text.TextWatcher;
 import android.text.method.LinkMovementMethod;
 import android.text.method.ScrollingMovementMethod;
 import android.util.Base64;
@@ -43,6 +45,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.math.BigDecimal;
+import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -289,7 +293,8 @@ public class MyParserFormBuilder {
                                     dataObjEl.put("label", compLabelGab2);
                                     dataObjEl.put("required", compRequired);
                                     dataArrElement.put(dataObjEl);
-                                } else if (compType.equals("email")) {
+                                }
+                                else if (compType.equals("email")) {
                                     if (!compLabel.isEmpty()) {
                                         LinearLayout.LayoutParams lpTv = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
                                         lpTv.setMargins(0, 15, 0, 0);
@@ -322,7 +327,8 @@ public class MyParserFormBuilder {
                                     dataObjEl.put("label", compLabel);
                                     dataObjEl.put("keyIndo", keyLabelInd);
                                     dataArrElement.put(dataObjEl);
-                                } else if (compType.equals("number")) {
+                                }
+                                else if (compType.equals("number")) {
                                     if (!compLabel.isEmpty()) {
                                         LinearLayout.LayoutParams lpTv = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
                                         lpTv.setMargins(0, 15, 0, 0);
@@ -357,7 +363,8 @@ public class MyParserFormBuilder {
                                     dataObjEl.put("keyIndo", keyLabelInd);
                                     dataArrElement.put(dataObjEl);
 
-                                } else if (compType.equals("radio")) {
+                                }
+                                else if (compType.equals("radio")) {
                                     if (!compLabel.isEmpty()) {
                                         parentLabel = compLabel;
                                         parentLabelIndo = keyLabel;
@@ -473,7 +480,8 @@ public class MyParserFormBuilder {
                                         dataArrElement.put(dataObjEl);
                                     }
 
-                                } else if (compType.equals("checkbox")) {
+                                }
+                                else if (compType.equals("checkbox")) {
                                     if (!compLabel.isEmpty()) {
                                         parentLabel = compLabel;
                                         parentLabelIndo = keyLabel;
@@ -510,7 +518,8 @@ public class MyParserFormBuilder {
                                     dataObjEl.put("label", parentLabel);
                                     dataArrElement.put(dataObjEl);
 
-                                } else if (compType.equals("file")) {
+                                }
+                                else if (compType.equals("file")) {
                                     int intAplhabet = randomId();
 
                                     lp.setMargins(0, 10, 0, 10);
@@ -592,6 +601,59 @@ public class MyParserFormBuilder {
                                     dataObjEl.put("keyIndo", keyLabelInd);
                                     dataObjEl.put("label", compLabel);
                                     dataArrElement.put(dataObjEl);
+                                }
+                                else if (compType.equals("currency")) {
+
+                                    if (!compLabel.isEmpty()) {
+                                        parentLabel = compLabel;
+                                        parentLabelIndo = keyLabel;
+                                        TextView tv = new TextView(mContext);
+                                        tv.setText(compLabel);
+                                        tv.setLayoutParams(lp);
+                                        llFormBuild.addView(tv);
+                                    }
+
+                                    LayoutInflater inflater = LayoutInflater.from(mContext);
+                                    LinearLayout lnCurr = (LinearLayout) inflater.inflate(R.layout.layout_currency, null, false);
+
+                                    if (compObj.has("currency")) {
+                                        String locale = compObj.getJSONObject("currency").getString("locale");
+                                        String prefix = compObj.getJSONObject("currency").getString("prefix");
+                                        TextView tvCurr = (TextView) lnCurr.findViewById(R.id.tvCurrency);
+                                        EditText tvContentCurr = (EditText) lnCurr.findViewById(R.id.tvContentCurr);
+
+                                        tvCurr.setText(prefix);
+
+                                        tvContentCurr.addTextChangedListener(new TextWatcher() {
+                                            @Override
+                                            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+                                            }
+
+                                            @Override
+                                            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+                                            }
+
+                                            @Override
+                                            public void afterTextChanged(Editable s) {
+                                                String val = s.toString();
+                                                if (!val.isEmpty()) {
+                                                    tvContentCurr.removeTextChangedListener(this);
+                                                    NumberFormat nf = NumberFormat.getInstance(new Locale(locale));
+                                                    String cleanString = val.replaceAll("[$,.]", "");
+                                                    BigDecimal parsed = new BigDecimal(cleanString);
+                                                    String nfS = nf.format(parsed);
+                                                    tvContentCurr.setText(nfS);
+                                                    tvContentCurr.setSelection(nfS.length());
+                                                    tvContentCurr.addTextChangedListener(this);
+                                                }
+                                            }
+                                        });
+
+                                    }
+
+                                    llFormBuild.addView(lnCurr);
                                 }
                                 break;
                             case "textarea":
