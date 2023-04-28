@@ -1,5 +1,6 @@
 plugins {
     id 'com.android.library'
+    id 'maven-publish'
 }
 
 android {
@@ -8,7 +9,6 @@ android {
         minSdk 21
         targetSdk 33
         versionCode 88
-        versionName "3.2.23"
         vectorDrawables.useSupportLibrary = true
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -20,8 +20,8 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_11
+        targetCompatibility JavaVersion.VERSION_11
     }
 }
 
@@ -65,7 +65,7 @@ dependencies {
     runtimeOnly('io.jsonwebtoken:jjwt-orgjson:0.11.2') {
         exclude group: 'org.json', module: 'json' //provided by Android natively
     }
-    implementation 'ai.advance.mobile-sdk.android:liveness-detection:2.0.1'
+    implementation 'ai.advance.mobile-sdk.android:liveness-detection:2.1.2'
     // Import the BoM for the Firebase platform
     /*implementation platform('com.google.firebase:firebase-bom:30.2.0')
     // Declare the dependencies for the Crashlytics and Analytics libraries
@@ -75,6 +75,32 @@ dependencies {
     implementation 'com.google.firebase:firebase-perf'*/
     implementation project(':mobilertc')
     implementation project(':liveness')
+}
+
+afterEvaluate {
+    publishing {
+        publications {
+            // Creates a Maven publication called "release".
+            release(MavenPublication) {
+                // Applies the component for the release build variant.
+                from components.release
+
+                // You can then customize attributes of the publication as shown below.
+                groupId = 'com.github.DiPS361'
+                artifactId = 'finaldipslibs361'
+                version = '1.0.4'
+            }
+            /*// Creates a Maven publication called “debug”.
+            debug(MavenPublication) {
+                // Applies the component for the debug build variant.
+                from components.debug
+
+                groupId = 'com.example.MyLibrary'
+                artifactId = 'library-android-debug'
+                version = 'v.1.0.11'
+            }*/
+        }
+    }
 }
 
 /*

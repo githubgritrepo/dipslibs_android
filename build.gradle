@@ -16,6 +16,45 @@ buildscript {
     }
 }
 
-task clean(type: Delete) {
-    delete rootProject.buildDir
+allprojects {
+    group = "com.github.DiPS361"
+    version = "1.0.4"
+    repositories {
+        google()
+        mavenCentral()
+        maven { url 'https://jitpack.io' }
+    }
+}
+
+subprojects {
+    apply plugin: "maven-publish"
+    afterEvaluate {
+        if (!plugins.hasPlugin("android")) {
+            publishing {
+                publications {
+                    maven(MavenPublication) {
+                        afterEvaluate {
+                            artifactId = "$project.name"
+                            if (plugins.hasPlugin("java")) {
+                                from components.java
+                            } else if (plugins.hasPlugin("android-library")) {
+                                from components.release
+                            } else if ("$project.name" == "mobilertc") {
+                                artifact("$rootDir/$project.name/mobilertc.aar")
+                            }
+                        }
+                        repositories {
+                            maven {
+                                url = "https://maven.pkg.github.com/DiPS361/library_android/"
+                                credentials {
+                                    username = "mutaqin0714"
+                                    password = "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"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
 }
