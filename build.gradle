@@ -17,7 +17,7 @@ buildscript {
 }
 
 allprojects {
-    group = "com.github.DiPS361"
+    group = "com.github.githubgritrepo"
     version = "1.0.4"
     repositories {
         google()
