@@ -45,10 +45,10 @@ subprojects {
                         }
                         repositories {
                             maven {
-                                url = "https://maven.pkg.github.com/githubgritrepo/dipslibs_android/"
+                                url = "https://maven.pkg.github.com/DiPS361/library_android/"
                                 credentials {
                                     username = "mutaqin0714"
-                                    password = "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"
+                                    password = "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"
                                 }
                             }
                         }
