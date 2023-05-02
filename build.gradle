@@ -48,7 +48,7 @@ subprojects {
                                 url = "https://maven.pkg.github.com/githubgritrepo/dipslibs_android/"
                                 credentials {
                                     username = "mutaqin0714"
-                                    password = "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"
+                                    password = "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"
                                 }
                             }
                         }
