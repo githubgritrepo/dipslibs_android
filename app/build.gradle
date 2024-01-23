@@ -59,6 +59,7 @@ dependencies {
     implementation 'com.github.chrisbanes:PhotoView:2.3.0'
     implementation 'com.wdullaer:materialdatetimepicker:4.2.3'
     implementation 'pl.droidsonroids.gif:android-gif-drawable:1.2.24'
+    implementation 'com.github.barteksc:android-pdf-viewer:2.8.2'
     implementation "androidx.work:work-runtime:2.8.0"
     api 'io.jsonwebtoken:jjwt-api:0.11.2'
     runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.2'
@@ -88,7 +89,7 @@ afterEvaluate {
                 // You can then customize attributes of the publication as shown below.
                 groupId = 'com.github.DiPS361'
                 artifactId = 'dipslibs361'
-                version = '1.0.5'
+                version = '1.0.6'
             }
             /*// Creates a Maven publication called “debug”.
             debug(MavenPublication) {
