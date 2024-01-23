@@ -18,7 +18,9 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
 import android.os.PowerManager;
+import android.os.StrictMode;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.util.Base64;
@@ -37,9 +39,13 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.app.ActivityCompat;
+import androidx.fragment.app.Fragment;
 
 import com.evo.mitzoom.API.Server;
+import com.evo.mitzoom.Fragments.frag_service_resi;
+import com.evo.mitzoom.Helper.ConnectionRabbitHttp;
 import com.evo.mitzoom.Helper.OutboundServiceNew;
+import com.evo.mitzoom.Helper.RabbitMirroring;
 import com.evo.mitzoom.R;
 import com.evo.mitzoom.Session.SessionManager;
 import com.google.gson.JsonObject;
@@ -48,6 +54,10 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Locale;
 
 import ai.advance.liveness.lib.CameraType;
@@ -95,11 +105,15 @@ public class DipsChooseLanguage extends AppCompatActivity {
 
         mContext = this;
         sessions = new SessionManager(mContext);
+        sessions.clearPartData();
+        sessions.clearCIF();
+
         idDips = sessions.getKEY_IdDips();
         sessions.saveKTP(null);
         sessions.saveSWAFOTO(null);
         sessions.saveNPWP(null);
         sessions.saveTTD(null);
+        sessions.savePhotoLiveness(null);
 
         if (idDips == null) {
             idDips = "";
@@ -115,6 +129,8 @@ public class DipsChooseLanguage extends AppCompatActivity {
         rlprogress = findViewById(R.id.rlprogress);
 
         radioGroup.clearCheck();
+
+        trimCache(mContext);
 
         onClickListener();
 
@@ -137,7 +153,6 @@ public class DipsChooseLanguage extends AppCompatActivity {
         if (isFlagALL_FILES_ACCESS) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                 if (!Settings.canDrawOverlays(this)) {
-
                     if ("xiaomi".equals(Build.MANUFACTURER.toLowerCase(Locale.ROOT))) {
                         final Intent intent =new Intent("miui.intent.action.APP_PERM_EDITOR");
                         intent.setClassName("com.miui.securitycenter",
@@ -163,6 +178,30 @@ public class DipsChooseLanguage extends AppCompatActivity {
             sessions.saveAuthAdvanceAI(null,0);
             new AsyncAuth().execute();
         }
+    }
+
+    private void trimCache(Context context) {
+        try {
+            File dir = context.getCacheDir();
+            if (dir != null && dir.isDirectory()) {
+                deleteDir(dir);
+            }
+        } catch (Exception e) {
+            // TODO: handle exception
+        }
+    }
+
+    private boolean deleteDir(File dir) {
+        if (dir != null && dir.isDirectory()) {
+            String[] children = dir.list();
+            for (int i = 0; i < children.length; i++) {
+                boolean success = deleteDir(new File(dir, children[i]));
+                if (!success) {
+                    return false;
+                }
+            }
+        }
+        return dir.delete();
     }
 
     public boolean foregroundServiceRunning(){
@@ -229,7 +268,6 @@ public class DipsChooseLanguage extends AppCompatActivity {
 
     private void startApp() {
         String licenseAI = sessions.getAuthAdvanceAI();
-
         if (licenseAI != null) {
             startLivenessDetection(licenseAI);
         } else {
@@ -277,35 +315,26 @@ public class DipsChooseLanguage extends AppCompatActivity {
                 ActivityCompat.checkSelfPermission(mContext, Manifest.permission.READ_PHONE_NUMBERS) != PackageManager.PERMISSION_GRANTED &&
                 ActivityCompat.checkSelfPermission(mContext, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED){
 
-
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 requestPermissions(new String[]{Manifest.permission.READ_PHONE_STATE,Manifest.permission.CAMERA,readImagePermission,Manifest.permission.RECEIVE_SMS,
                         Manifest.permission.READ_SMS,Manifest.permission.READ_PHONE_NUMBERS,Manifest.permission.RECORD_AUDIO}, REQUEST_ALL);
             }
         } else {
-
             if (ActivityCompat.checkSelfPermission(mContext, readImagePermission) != PackageManager.PERMISSION_GRANTED) {
-
                 ActivityCompat.requestPermissions(this, new String[]{readImagePermission}, READ_EXTERNAL_STORAGE);
             } else if (ActivityCompat.checkSelfPermission(mContext, Manifest.permission.RECEIVE_SMS) != PackageManager.PERMISSION_GRANTED) {
-                Log.e(TAG,"MASUK ELSE reqPermission RECEIVE_SMS");
                 ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.RECEIVE_SMS}, REQUEST_RECEIVE_SMS);
             } else if (ActivityCompat.checkSelfPermission(mContext, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
-
                 ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, REQUEST_CAMERA);
             } else if (ActivityCompat.checkSelfPermission(mContext, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
-
                 ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.RECORD_AUDIO}, REQUEST_VIDEO_AUDIO_CODE);
             } else if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
                 if (ActivityCompat.checkSelfPermission(mContext, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-
                     ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, WRITE_EXTERNAL_STORAGE);
                 }
             } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-
-                if (!Environment.isExternalStorageManager() && isFlagALL_FILES_ACCESS == false){
+                if (!Environment.isExternalStorageManager() && !isFlagALL_FILES_ACCESS){
                     isFlagALL_FILES_ACCESS = true;
-
                     Intent getpermission = new Intent();
                     getpermission.setAction(Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION);
                     startActivityForResult(getpermission,ATTACHMENT_MANAGE_ALL_FILE);
@@ -314,7 +343,6 @@ public class DipsChooseLanguage extends AppCompatActivity {
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 if (Settings.canDrawOverlays(this)) {
-
                     if (isOptimizingBattery() && getPreferences().getBoolean(getBatteryOptimizationPreferenceKey(), true)) {
                         Intent intent = new Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS);
                         Uri uri = Uri.parse("package:" + getPackageName());
@@ -333,12 +361,10 @@ public class DipsChooseLanguage extends AppCompatActivity {
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-
         if (requestCode == REQUEST_ALL) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                    if (!Environment.isExternalStorageManager() && isFlagALL_FILES_ACCESS == false){
+                    if (!Environment.isExternalStorageManager() && !isFlagALL_FILES_ACCESS){
                         isFlagALL_FILES_ACCESS = true;
                         Intent getpermission = new Intent();
                         getpermission.setAction(Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION);
@@ -350,48 +376,17 @@ public class DipsChooseLanguage extends AppCompatActivity {
             }
         } else if (requestCode == READ_EXTERNAL_STORAGE) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                Log.e(TAG,"READ_EXTERNAL_STORAGE PERMISSION_GRANTED");
-                /*if (ActivityCompat.checkSelfPermission(mContext, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
-                    Log.e(TAG,"READ_EXTERNAL_STORAGE PERMISSION_GRANTED CAMERA");
-                    ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, REQUEST_CAMERA);
-                } else {
-                    if (ActivityCompat.checkSelfPermission(mContext, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-
-                        ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, WRITE_EXTERNAL_STORAGE);
-                    }
-                }*/
             }
         } else if (requestCode == REQUEST_CAMERA) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                /*if (ActivityCompat.checkSelfPermission(mContext, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
-                    ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.RECORD_AUDIO}, REQUEST_VIDEO_AUDIO_CODE);
-                }*/
             }
         } else if (requestCode == REQUEST_VIDEO_AUDIO_CODE) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                /*if (ActivityCompat.checkSelfPermission(mContext, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-                    ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, WRITE_EXTERNAL_STORAGE);
-                } else {
-                    if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                            if (!Environment.isExternalStorageManager()){
-                                Intent getpermission = new Intent();
-                                getpermission.setAction(Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION);
-                                startActivityForResult(getpermission,ATTACHMENT_MANAGE_ALL_FILE);
-                            }
-                        }
-                    }
-                }*/
+
             }
         } else if (requestCode == WRITE_EXTERNAL_STORAGE) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                /*if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                    if (!Environment.isExternalStorageManager()){
-                        Intent getpermission = new Intent();
-                        getpermission.setAction(Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION);
-                        startActivityForResult(getpermission,ATTACHMENT_MANAGE_ALL_FILE);
-                    }
-                }*/
+
             }
         }
     }
@@ -407,11 +402,14 @@ public class DipsChooseLanguage extends AppCompatActivity {
         GuardianLivenessDetectionSDK.setActionTimeoutMills(20000);
         GuardianLivenessDetectionSDK.isDetectOcclusion(true);
         String checkResult = GuardianLivenessDetectionSDK.setLicenseAndCheck(yourLicense);
-
         if ("SUCCESS".equals(checkResult)) {
             startActivityForResult(new Intent(this, LivenessActivity.class), REQUEST_CODE_LIVENESS);
         } else {
-
+            if (checkResult.contains("EXPIRE")) {
+                showProgress(true);
+                sessions.saveAuthAdvanceAI(null,0);
+                new AsyncAuth().execute();
+            }
         }
     }
 
@@ -432,6 +430,7 @@ public class DipsChooseLanguage extends AppCompatActivity {
                 Bitmap livenessBitmap = LivenessResult.getLivenessBitmap();// picture
                 String imgBase64 = imgtoBase64(livenessBitmap);
                 byte[] bytePhoto = Base64.decode(imgBase64, Base64.NO_WRAP);
+
                 sessions.saveNoCIF(null);
                 Intent intent = new Intent(mContext, DipsLivenessResult.class);
                 intent.putExtra("RESULT_IMAGE_AI",bytePhoto);
@@ -439,9 +438,7 @@ public class DipsChooseLanguage extends AppCompatActivity {
                 startActivity(intent);
                 finishAffinity();
             } else {// Failure
-                //String errorCode = LivenessResult.getErrorCode();// error code
                 String errorMsg = LivenessResult.getErrorMsg();// error message
-                //String transactionId = LivenessResult.getTransactionId(); // Transaction number, which can be used to troubleshoot problems with us
                 if (errorMsg != null) {
                     Toast.makeText(mContext, errorMsg, Toast.LENGTH_LONG).show();
                 }
@@ -449,6 +446,29 @@ public class DipsChooseLanguage extends AppCompatActivity {
         } else if (requestCode == REQUEST_BATTERY_OP) {
             setNeverAskForBatteryOptimizationsAgain();
         }
+    }
+
+    private File createTemporaryFile(byte[] byteImage) throws Exception {
+        String appName = getString(R.string.app_name_dips);
+        String IMAGE_DIRECTORY_NAME = appName;
+        File mediaStorageDir = new File(
+                Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), IMAGE_DIRECTORY_NAME);
+        if (!mediaStorageDir.exists()) {
+            if (!mediaStorageDir.mkdirs()) {
+                return null;
+            }
+        }
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss_SSS",
+                Locale.getDefault()).format(new Date());
+        File mediaFile;
+        mediaFile = new File(mediaStorageDir.getPath() + File.separator +
+                "IMG_" + timeStamp + ".jpg");
+
+        FileOutputStream fos = new FileOutputStream(mediaFile);
+        fos.write(byteImage);
+        fos.close();
+
+        return mediaFile;
     }
 
     private void setNeverAskForBatteryOptimizationsAgain() {
@@ -501,9 +521,7 @@ public class DipsChooseLanguage extends AppCompatActivity {
                         showProgress(false);
                     }
                 });
-
                 if (response.isSuccessful()) {
-
                     try {
                         JSONObject dataObj = new JSONObject(response.body().toString());
                         String dataLicense = dataObj.getJSONObject("data").getString("license");
@@ -538,14 +556,11 @@ public class DipsChooseLanguage extends AppCompatActivity {
         }
 
         String AccessKey = "9daf9d6e9dfe6cdd";
-
         RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), jsons.toString());
         Server.getAPIServiceAdvanceAI().AuthLicenseLiveness(requestBody,AccessKey).enqueue(new Callback<JsonObject>() {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
-
                 if (response.isSuccessful()) {
-
                     try {
                         JSONObject dataObj = new JSONObject(response.body().toString());
                         String sttcode = dataObj.getString("code");
@@ -562,7 +577,6 @@ public class DipsChooseLanguage extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<JsonObject> call, Throwable t) {
-
             }
         });
     }

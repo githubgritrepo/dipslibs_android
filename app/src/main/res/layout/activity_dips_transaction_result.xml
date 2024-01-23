@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.DipsTransactionResult"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:id="@+id/TopBar"
+            android:layout_width="match_parent"
+            android:layout_height="?android:actionBarSize"
+            android:background="@color/white"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:id="@+id/btn_back4"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_margin="10dp"
+                android:src="@drawable/ic_baseline_arrow_back_24"
+                android:visibility="gone"/>
+
+            <TextView
+                android:id="@+id/tvtitleHead"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:gravity="center"
+                android:text="@string/transaction"
+                android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                android:textSize="16dp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:rotation="180"
+            android:scaleType="fitXY"
+            android:src="@drawable/batik_bvic" />
+
+        <androidx.core.widget.NestedScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:fillViewport="true"
+            android:scrollbars="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:gravity="center">
+
+                <ImageView
+                    android:id="@+id/imgDialog"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:layout_centerHorizontal="true"
+                    android:src="@drawable/v_dialog_success" />
+
+                <TextView
+                    android:id="@+id/tvTitleDialog"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textStyle="bold"
+                    android:textColor="@color/black"
+                    android:textSize="15dp"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="10dp"
+                    android:gravity="center"
+                    android:text="@string/selamat"/>
+
+                <TextView
+                    android:id="@+id/tvBodyDialog"
+                    android:layout_width="350dp"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/tvTitleDialog"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="10dp"
+                    android:textColor="@color/zm_text"
+                    android:textSize="15dp"
+                    android:gravity="center"
+                    android:text="@string/contentqr" />
+
+                <ImageView
+                    android:id="@+id/imgQR"
+                    android:layout_width="200dp"
+                    android:layout_height="200dp"
+                    android:layout_margin="@dimen/dp_20"/>
+
+                <TextView
+                    android:layout_width="350dp"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/imgQR"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="10dp"
+                    android:textColor="@color/zm_text"
+                    android:textSize="15dp"
+                    android:gravity="center"
+                    android:text="@string/choose_transaction_connect" />
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:orientation="horizontal"
+                    android:layout_below="@id/tvBodyDialog"
+                    android:layout_centerHorizontal="true"
+                    android:gravity="center">
+
+                    <Button
+                        android:id="@+id/btnTransacMenu"
+                        android:layout_width="140dp"
+                        android:layout_height="35dp"
+                        android:background="@drawable/oval_background_10dp"
+                        android:text="Menu Transaksi"
+                        android:textColor="@color/zm_button"
+                        android:textSize="13dp"
+                        android:layout_marginTop="10dp"
+                        android:layout_marginStart="5dp"
+                        android:layout_marginEnd="5dp"
+                        android:layout_marginBottom="5dp" />
+                    <Button
+                        android:id="@+id/btnContinue"
+                        android:layout_width="140dp"
+                        android:layout_height="35dp"
+                        android:text="@string/connect"
+                        android:background="@drawable/oval_background_10dp"
+                        android:backgroundTint="@color/zm_button"
+                        android:textColor="@color/white"
+                        android:textSize="13dp"
+                        android:layout_marginTop="10dp"
+                        android:layout_marginStart="5dp"
+                        android:layout_marginEnd="5dp"
+                        android:layout_marginBottom="5dp"/>
+                </LinearLayout>
+
+            </LinearLayout>
+
+        </androidx.core.widget.NestedScrollView>
+
+        <include
+            android:id="@+id/incNavBottom"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            layout="@layout/layout_bottom_action_bar_swafoto"
+            android:layout_alignParentBottom="true"/>
+
+        <include
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            layout="@layout/progress_loading"
+            android:layout_centerInParent="true"/>
+
+    </RelativeLayout>
+
+</LinearLayout>

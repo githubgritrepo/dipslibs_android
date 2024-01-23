@@ -3,4 +3,9 @@
     <item name="open_eye" type="id"/>
     <item name="close_eye" type="id"/>
     <item name="tv_nominal_porto" type="id"/>
+    <item name="alert_user" type="id"/>
+    <item name="alert_password" type="id"/>
+    <item name="alert_confirm_password" type="id"/>
+    <item name="et_rek_penerima" type="id"/>
+    <item name="et_nominal" type="id"/>
 </resources>

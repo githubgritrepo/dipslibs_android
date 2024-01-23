@@ -41,7 +41,6 @@ public class AdapterSlide extends RecyclerView.Adapter<AdapterSlide.ViewHolder> 
         this.dataArr = dataArr;
         this.isArr = new ArrayList<InputStream>();
         this.contentType = new ArrayList<String>();
-        Log.e("CEK", mContext+" dataArr : "+dataArr.toString());
     }
 
     @NonNull
@@ -53,7 +52,6 @@ public class AdapterSlide extends RecyclerView.Adapter<AdapterSlide.ViewHolder> 
 
     @Override
     public void onBindViewHolder(@NonNull AdapterSlide.ViewHolder holder, int position) {
-        Log.e("CEK","AdapterSlide onBindViewHolder : "+position);
 
         try {
             if(dataArr.getJSONObject(position).has("content_Type")){
@@ -83,7 +81,6 @@ public class AdapterSlide extends RecyclerView.Adapter<AdapterSlide.ViewHolder> 
     }
 
     private void setSourceAndStartPlay(File dataFileStream, ViewHolder holder) {
-        Log.e("CEK","setSourceAndStartPlay");
         holder.vv.setVideoPath(dataFileStream.getAbsolutePath());
         holder.vv.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
             @Override
@@ -91,7 +88,6 @@ public class AdapterSlide extends RecyclerView.Adapter<AdapterSlide.ViewHolder> 
                 holder.imgBtnPlay.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        Log.e("CEK","MASUK ONCLICK");
                         holder.imgBtnPlay.setVisibility(View.GONE);
                         //mediaPlayer.start();
                         holder.vv.start();
@@ -113,7 +109,6 @@ public class AdapterSlide extends RecyclerView.Adapter<AdapterSlide.ViewHolder> 
         holder.vv.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
-                Log.e("CEK","MASUK onTouch");
                 holder.vv.stopPlayback();
                 holder.vv.setVideoPath(dataFileStream.getAbsolutePath());
                 holder.vv.requestFocus();
@@ -125,7 +120,6 @@ public class AdapterSlide extends RecyclerView.Adapter<AdapterSlide.ViewHolder> 
         holder.vv.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
             public void onCompletion(MediaPlayer mediaPlayer) {
-                Log.e("CEK","MASUK onCompletion");
                 holder.imgBtnPlay.setVisibility(View.VISIBLE);
             }
         });

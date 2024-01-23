@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.DipsTransactionsCreate">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:rotation="180"
+            android:scaleType="fitXY"
+            android:src="@drawable/batik_bvic" />
+
+        <LinearLayout
+            android:id="@+id/TopBar"
+            android:layout_width="match_parent"
+            android:layout_height="?android:actionBarSize"
+            android:background="@color/white"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:id="@+id/btn_back4"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_margin="10dp"
+                android:src="@drawable/ic_baseline_arrow_back_24" />
+
+            <TextView
+                android:id="@+id/tvtitleHead"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginStart="6dp"
+                android:text="@string/transaction"
+                android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                android:textSize="16dp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/btnFavorite"
+            android:layout_width="match_parent"
+            android:layout_height="55dp"
+            android:layout_gravity="center"
+            android:layout_marginTop="@dimen/dp_10"
+            android:layout_marginBottom="@dimen/dp_10"
+            android:layout_marginStart="@dimen/dp_20"
+            android:layout_marginEnd="@dimen/dp_20"
+            android:background="@drawable/oval_background_10dp"
+            android:text="@string/choose_favorite"
+            android:textColor="@color/white"
+            android:backgroundTint="@color/zm_button"
+            android:padding="0dp"
+            android:textSize="13dp"
+            android:layout_below="@id/TopBar"
+            android:visibility="gone"/>
+
+        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+            android:id="@+id/swipe"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@id/btnFavorite">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <androidx.core.widget.NestedScrollView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:fillViewport="true"
+                    android:scrollbars="vertical">
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <RelativeLayout
+                            android:id="@+id/rlServiceType"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="@dimen/dp_20"
+                            android:layout_marginEnd="@dimen/dp_20"
+                            android:layout_marginBottom="@dimen/dp_20"
+                            android:visibility="gone">
+
+                            <TextView
+                                android:id="@+id/tvServiceType"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="@string/jenis_layanan"
+                                android:textColor="@color/zm_text"
+                                android:textSize="14dp"/>
+
+                            <RadioGroup
+                                android:id="@+id/rgServiceType"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal"
+                                android:layout_below="@id/tvServiceType">
+                                <RadioButton
+                                    android:id="@+id/rbTarik"
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:gravity="center"
+                                    android:button="@android:color/transparent"
+                                    android:background="@drawable/selector_radiobutton_box"
+                                    android:layout_marginEnd="@dimen/dp_10"
+                                    android:text="@string/tarik_tunai"
+                                    android:textColor="@color/zm_button"
+                                    android:textSize="14dp"
+                                    android:onClick="onRBServiceType"/>
+                                <RadioButton
+                                    android:id="@+id/rbSetor"
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:gravity="center"
+                                    android:button="@android:color/transparent"
+                                    android:background="@drawable/selector_radiobutton_box"
+                                    android:layout_marginStart="@dimen/dp_10"
+                                    android:text="Setor Tunai"
+                                    android:textColor="@color/zm_button"
+                                    android:textSize="14dp"
+                                    android:onClick="onRBServiceType"/>
+                            </RadioGroup>
+
+                        </RelativeLayout>
+
+                        <LinearLayout
+                            android:id="@+id/llFormBuild"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="@dimen/dp_20"
+                            android:layout_marginEnd="@dimen/dp_20"
+                            android:layout_marginBottom="@dimen/dp_20"
+                            android:orientation="vertical"
+                            android:layout_below="@id/rlServiceType"/>
+
+                        <Button
+                            android:id="@+id/btnProcess"
+                            android:layout_width="wrap_content"
+                            android:layout_height="38dp"
+                            android:layout_alignParentEnd="true"
+                            android:layout_below="@id/llFormBuild"
+                            android:layout_centerHorizontal="true"
+                            android:layout_marginBottom="20dp"
+                            android:background="@drawable/oval_background_10dp"
+                            android:backgroundTint="@color/zm_button"
+                            android:paddingStart="@dimen/dp_20"
+                            android:paddingEnd="@dimen/dp_20"
+                            android:layout_marginStart="@dimen/dp_20"
+                            android:layout_marginEnd="@dimen/dp_20"
+                            android:text="@string/btn_continue"
+                            android:textAppearance="@style/TextAppearance.AppCompat.Button"
+                            android:textColor="@color/white"
+                            android:textSize="13dp"
+                            android:textStyle="bold"
+                            android:textAlignment="center"/>
+
+                    </RelativeLayout>
+                </androidx.core.widget.NestedScrollView>
+
+            </RelativeLayout>
+
+        </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+        <include
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            layout="@layout/progress_loading"
+            android:layout_centerInParent="true" />
+
+    </RelativeLayout>
+
+</LinearLayout>

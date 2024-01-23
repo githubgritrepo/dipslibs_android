@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.DipsConnectionForm">
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:rotation="180"
+        android:scaleType="fitXY"
+        android:src="@drawable/batik_bvic" />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_centerInParent="true">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/connect_to_agent"
+            android:textColor="@color/zm_text"
+            android:textSize="15dp"
+            android:layout_gravity="center"/>
+
+        <Button
+            android:id="@+id/btnConnection"
+            android:layout_width="150dp"
+            android:layout_height="35dp"
+            android:layout_gravity="center"
+            android:layout_marginTop="@dimen/dp_10"
+            android:background="@drawable/oval_background_10dp"
+            android:text="@string/connect"
+            android:textColor="@color/white"
+            android:backgroundTint="@color/zm_button"
+            android:padding="0dp"
+            android:textSize="13dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/or"
+            android:textColor="@color/zm_text"
+            android:textSize="15dp"
+            android:layout_gravity="center"
+            android:layout_marginTop="@dimen/dp_10"/>
+
+        <Button
+            android:id="@+id/btnForm"
+            android:layout_width="150dp"
+            android:layout_height="35dp"
+            android:layout_gravity="center"
+            android:layout_marginTop="@dimen/dp_10"
+            android:background="@drawable/oval_background_10dp"
+            android:text="QRCode"
+            android:textColor="@color/white"
+            android:backgroundTint="@color/zm_button"
+            android:padding="0dp"
+            android:textSize="13dp" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_gravity="center"
+            android:layout_marginTop="25dp">
+
+            <TextView
+                android:id="@+id/tvSeconds"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                tools:text="30"
+                android:textColor="@color/zm_text"
+                android:textSize="15dp"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/second"
+                android:textColor="@color/zm_text"
+                android:textSize="15dp"
+                android:layout_marginStart="4dp"/>
+
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/auto_connect_agent"
+            android:textColor="@color/zm_text"
+            android:textSize="15dp"
+            android:layout_gravity="center"
+            android:gravity="center" />
+
+    </LinearLayout>
+
+
+</RelativeLayout>

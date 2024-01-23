@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:cardCornerRadius="@dimen/dp_10"
+        android:layout_marginBottom="@dimen/dp_10">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:layout_width="250dp"
+                android:layout_height="148dp"
+                android:src="@drawable/part_batik"
+                android:scaleType="fitXY"
+                android:layout_alignParentRight="true"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <RelativeLayout
+                    android:id="@+id/rlHead"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@color/zm_green"
+                    android:paddingStart="@dimen/dp_20"
+                    android:paddingTop="@dimen/dp_5"
+                    android:paddingBottom="@dimen/dp_5"
+                    android:paddingEnd="@dimen/dp_10">
+
+                    <TextView
+                        android:id="@+id/tvTitleCardDeposit"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        tools:text="KJAI3KL (ARO Pokok)"
+                        android:textColor="@color/white"/>
+
+                    <ImageView
+                        android:id="@+id/imgPencil"
+                        android:layout_width="@dimen/dp_20"
+                        android:layout_height="@dimen/dp_20"
+                        android:src="@drawable/pencil2"
+                        android:layout_alignParentRight="true"
+                        android:visibility="gone"/>
+
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="120dp"
+                    android:padding="20dp">
+
+                    <TextView
+                        android:id="@+id/tvJangka"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/jangka_waktu"
+                        android:textSize="12dp"
+                        android:textColor="@color/zm_text"/>
+                    <TextView
+                        android:id="@+id/tvTempo"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/jatuh_tempo"
+                        android:textSize="12dp"
+                        android:textColor="@color/zm_text"
+                        android:layout_toRightOf="@id/tvJangka"
+                        android:layout_marginStart="30dp"/>
+                    <TextView
+                        android:id="@+id/tvValueJangka"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        tools:text="6 Bulan"
+                        android:textSize="12dp"
+                        android:textColor="@color/zm_text"
+                        android:layout_below="@id/tvJangka"
+                        android:textStyle="bold"/>
+                    <TextView
+                        android:id="@+id/tvValueTempo"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        tools:text="5 November 2023"
+                        android:textSize="12dp"
+                        android:textColor="@color/zm_text"
+                        android:layout_below="@id/tvTempo"
+                        android:textStyle="bold"
+                        android:layout_alignStart="@id/tvTempo"/>
+
+                    <TextView
+                        android:id="@+id/tvNominal"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        tools:text="Rp 2.050.000,00"
+                        android:textSize="20dp"
+                        android:textColor="@color/zm_text"
+                        android:layout_below="@id/tvValueJangka"
+                        android:textStyle="bold"
+                        android:layout_marginTop="@dimen/dp_10"/>
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="5dp"
+                        android:background="@drawable/line_dash"
+                        android:layout_below="@id/tvNominal"/>
+
+                </RelativeLayout>
+
+            </LinearLayout>
+
+        </RelativeLayout>
+
+    </androidx.cardview.widget.CardView>
+
+</RelativeLayout>

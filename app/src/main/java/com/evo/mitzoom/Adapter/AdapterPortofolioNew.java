@@ -19,6 +19,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.evo.mitzoom.Fragments.frag_portfolio_new;
 import com.evo.mitzoom.GlideApp;
 import com.evo.mitzoom.R;
+import com.evo.mitzoom.Session.SessionManager;
 import com.github.florent37.expansionpanel.ExpansionLayout;
 import com.github.florent37.expansionpanel.viewgroup.ExpansionLayoutCollection;
 
@@ -26,26 +27,29 @@ import org.json.JSONArray;
 import org.json.JSONException;
 
 import java.math.BigDecimal;
+import java.text.NumberFormat;
+import java.util.Locale;
+import java.util.Random;
 
 public class AdapterPortofolioNew extends RecyclerView.Adapter<AdapterPortofolioNew.ViewHolder> {
 
     private final JSONArray dataList;
     private final Context mContext;
     private final ExpansionLayoutCollection expansionsCollection = new ExpansionLayoutCollection();
+    private final SessionManager sessions;
 
     public AdapterPortofolioNew(Context ctx, JSONArray dataList){
         this.dataList = dataList;
         this.mContext = ctx;
+        this.sessions = new SessionManager(mContext);
     }
 
     @NonNull
-    @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View views = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_portfolio_new,parent,false);
         return new ViewHolder(views);
     }
 
-    @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         try {
             String typeProd = dataList.getJSONObject(position).getString("typeProduct");
@@ -54,8 +58,6 @@ public class AdapterPortofolioNew extends RecyclerView.Adapter<AdapterPortofolio
                 linkIcon = dataList.getJSONObject(position).getString("icon");
             }
             JSONArray dataListPorto = dataList.getJSONObject(position).getJSONArray("dataList");
-            //Log.e("CEK","dataListPorto length : "+dataListPorto.length());
-            //Log.e("CEK","dataListPorto : "+dataListPorto.toString());
 
             holder.tv_nama_product.setText(typeProd);
 
@@ -80,7 +82,6 @@ public class AdapterPortofolioNew extends RecyclerView.Adapter<AdapterPortofolio
             for (int i = 0; i < dataListPorto.length(); i++) {
                 String idRelatifs = "11" + i;
                 int idRelatif = Integer.valueOf(idRelatifs);
-                //Log.e("CEK","dataListPorto ke-"+i+" | idRelatif : "+idRelatif);
                 String namaProduk = "";
                 String noRekening = "";
                 String jumlahDana = "";
@@ -92,6 +93,8 @@ public class AdapterPortofolioNew extends RecyclerView.Adapter<AdapterPortofolio
                     noRekening = dataListPorto.getJSONObject(i).getString("noRekening");
                     jumlahDana = String.valueOf(dataListPorto.getJSONObject(i).getLong("jumlahDana"));
                     kurs = dataListPorto.getJSONObject(i).getString("kurs");
+
+                    namaProduk = namaProduk.replace("R/K","").trim();
 
                     namaProduk = namaProduk+" - "+noRekening;
 
@@ -130,8 +133,18 @@ public class AdapterPortofolioNew extends RecyclerView.Adapter<AdapterPortofolio
                 tv.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 15);
                 linearLayout.addView(tv);
 
-                BigDecimal parsed = frag_portfolio_new.parseCurrencyValue(jumlahDana);
-                String formatted = frag_portfolio_new.numberFormat.format(parsed);
+                /*BigDecimal parsed = frag_portfolio_new.parseCurrencyValue(jumlahDana);
+                String formatted = frag_portfolio_new.numberFormat.format(parsed);*/
+
+                Double d = (double) dataListPorto.getJSONObject(i).getLong("jumlahDana") / 100;
+                NumberFormat formatter = null;
+                if (sessions.getLANG().equals("id")) {
+                    formatter = NumberFormat.getInstance(new Locale("id", "ID"));
+                } else {
+                    formatter = NumberFormat.getInstance(new Locale("en", "US"));
+                }
+                formatter.setMinimumFractionDigits(2);
+                String formatted = formatter.format(d);
 
                 String dataN = kurs + " " + formatted;
                 TextView tv2 = new TextView(mContext);
@@ -140,7 +153,18 @@ public class AdapterPortofolioNew extends RecyclerView.Adapter<AdapterPortofolio
                 tv2.setLayoutParams(lp2);
                 tv2.setTextColor(Color.BLACK);
                 tv2.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 15);
+                tv2.setVisibility(View.GONE);
                 linearLayout.addView(tv2);
+
+                String dataHid = kurs + " ******";
+                TextView tv3 = new TextView(mContext);
+                int randId = randomId();
+                tv3.setId(randId);
+                tv3.setText(dataHid);
+                tv3.setLayoutParams(lp2);
+                tv3.setTextColor(Color.BLACK);
+                tv3.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 15);
+                linearLayout.addView(tv3);
 
                 rlExpandLayout.setLayoutParams(relativeParams);
                 rlExpandLayout.addView(linearLayout);
@@ -178,28 +202,24 @@ public class AdapterPortofolioNew extends RecyclerView.Adapter<AdapterPortofolio
             expansionsCollection.add(holder.expansionLayout);
 
             int countChild = holder.container.getChildCount();
-            Log.e("CEK",typeProd+" countChild : "+countChild);
             for (int i = 0; i < countChild; i++) {
                 int getId = holder.container.getChildAt(i).getId();
-                Log.e("CEK","getId ke-"+i+" | "+getId);
                 if (getId > 0) {
                     RelativeLayout rlExpandLayout = (RelativeLayout) holder.container.getChildAt(i);
-                    Log.e("CEK","rlExpandLayout getChildCount : "+rlExpandLayout.getChildCount());
                     LinearLayout llExp = (LinearLayout) rlExpandLayout.getChildAt(0);
                     TextView tvNominal = (TextView) llExp.getChildAt(1);
                     String getNominal = tvNominal.getText().toString();
+
+                    TextView tvNominalHid = (TextView) llExp.getChildAt(2);
+                    String getNominalHid = tvNominalHid.getText().toString();
 
                     if (rlExpandLayout.getChildAt(1).getId() == R.id.open_eye) {
                         rlExpandLayout.getChildAt(1).setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
-                                String getNominal2 = tvNominal.getText().toString();
-                                Log.e("CEK","MASUK EYE OPEN : "+getNominal2);
-                                String[] sp = getNominal2.split(" ");
-                                String nominal = sp[1];
-                                nominal = nominal.replace(nominal,"XXXXXX");
-                                String hidNominal = sp[0] + " " + nominal;
-                                tvNominal.setText(hidNominal);
+                                tvNominalHid.setVisibility(View.GONE);
+                                tvNominal.setVisibility(View.VISIBLE);
+                                tvNominal.setText(getNominal);
                                 view.setVisibility(View.GONE);
                                 rlExpandLayout.getChildAt(2).setVisibility(View.VISIBLE);
                             }
@@ -210,8 +230,11 @@ public class AdapterPortofolioNew extends RecyclerView.Adapter<AdapterPortofolio
                         rlExpandLayout.getChildAt(2).setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
-                                Log.e("CEK","MASUK EYE CLOSE : "+getNominal);
-                                tvNominal.setText(getNominal);
+                                tvNominalHid.setVisibility(View.VISIBLE);
+                                tvNominal.setVisibility(View.GONE);
+                                String getNominal2 = tvNominalHid.getText().toString();
+                                String hidNominal = getNominal2;
+                                tvNominal.setText(hidNominal);
                                 view.setVisibility(View.GONE);
                                 rlExpandLayout.getChildAt(1).setVisibility(View.VISIBLE);
                             }
@@ -226,9 +249,14 @@ public class AdapterPortofolioNew extends RecyclerView.Adapter<AdapterPortofolio
 
     }
 
-    @Override
     public int getItemCount() {
         return dataList.length();
+    }
+
+    private static int randomId() {
+        Random random=new Random();
+        int dataInt = random.nextInt(99999999);
+        return dataInt;
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {

@@ -78,13 +78,11 @@ public class AudioRawDataUtil {
 
         @Override
         public void onMixedAudioRawDataReceived(ZoomVideoSDKAudioRawData rawData) {
-            Log.d(TAG,"onMixedAudioRawDataReceived:"+rawData);
             saveAudioRawData(rawData, ZoomVideoSDK.getInstance().getSession().getMySelf().getUserName());
 
         }
 
         public void onOneWayAudioRawDataReceived(ZoomVideoSDKAudioRawData rawData, ZoomVideoSDKUser user) {
-            Log.d(TAG,"onOneWayAudioRawDataReceived:"+rawData);
             saveAudioRawData(rawData, user.getUserName());
         }
 

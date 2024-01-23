@@ -16,6 +16,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -26,6 +28,7 @@ import androidx.fragment.app.Fragment;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.evo.mitzoom.API.Server;
+import com.evo.mitzoom.Helper.ConnectionRabbitHttp;
 import com.evo.mitzoom.Helper.DownloadTaskHelper;
 import com.evo.mitzoom.Helper.RabbitMirroring;
 import com.evo.mitzoom.Helper.SingleMediaScanner;
@@ -53,12 +56,13 @@ public class frag_cif_resi extends Fragment {
 
     private Context mContext;
     private SessionManager sessions;
-    private PhotoView imgResume;
+    private ImageView imgResume;
     private Button btnOK;
     private String idDips;
     private Button btnUnduh;
     private TextView tvTitle;
     private TextView tvSubTitle;
+    private TextView tvPlsActiveAccount;
     private TextView tvMsgThanks;
     private byte[] bytePhoto = null;
     private String dataCIF;
@@ -81,24 +85,20 @@ public class frag_cif_resi extends Fragment {
         mContext = getContext();
         sessions = new SessionManager(mContext);
         dataCIF = sessions.getCIF();
-        Log.e("CEK","dataCIF : "+dataCIF);
         if (dataCIF != null) {
             try {
                 objValCIF = new JSONObject(dataCIF);
-                Log.e("CEK", "CIF FULL objValCIF : " + objValCIF);
-            /*JSONObject objEl = objValCIF.getJSONObject("datadiri");
-            no_handphone = objEl.getString("noponsel");*/
             } catch (JSONException e) {
                 e.printStackTrace();
             }
         }
         isSessionZoom = ZoomVideoSDK.getInstance().isInSession();
-        /*if (isSessionZoom) {
-            rabbitMirroring = new RabbitMirroring(mContext);
-        }*/
+        ConnectionRabbitHttp.init(mContext);
         if (getArguments() != null) {
             formCode = getArguments().getInt("formCode");
-            idForm = getArguments().getString("idForm");
+            if (getArguments().containsKey("idForm")) {
+                idForm = getArguments().getString("idForm");
+            }
         }
 
     }
@@ -112,6 +112,7 @@ public class frag_cif_resi extends Fragment {
         tvSubTitle = v.findViewById(R.id.tvSubTitle);
         swipe = v.findViewById(R.id.swipe);
         imgResume = v.findViewById(R.id.imgResume);
+        tvPlsActiveAccount = (TextView) v.findViewById(R.id.tvPlsActiveAccount);
         tvMsgThanks = v.findViewById(R.id.tvMsgThanks);
         btnOK = v.findViewById(R.id.btnSelesai);
         btnUnduh = v.findViewById(R.id.btnUnduh);
@@ -135,7 +136,7 @@ public class frag_cif_resi extends Fragment {
         titleSuccess = titleSuccess.replace("Akun","Rekening");
 
         String titleHeadline = getString(R.string.headline_cardless);
-        titleHeadline = titleHeadline.replace("Bank XYZ",getString(R.string.bank_name)).replace("XYZ Bank",getString(R.string.bank_name));
+        titleHeadline = titleHeadline.replace("XYZ",getString(R.string.bank_name2)).replace("XYZ",getString(R.string.bank_name2));
         titleHeadline = titleHeadline.replace("Gunakan Aplikasi XYZ Mobile Banking untuk pengalaman transaksi penuh keuntungan.","");
 
         tvTitle.setText(titleSuccess);
@@ -159,8 +160,8 @@ public class frag_cif_resi extends Fragment {
         btnOK.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.e("CEK","MASUK BUTTON OK");
-                RabbitMirroring.MirroringSendEndpoint(14);
+                //RabbitMirroring.MirroringSendEndpoint(14);
+                ConnectionRabbitHttp.mirroringEndpoint(14);
                 sessions.clearCIF();
                 sessions.clearPartData();
                 bytePhoto = null;
@@ -171,7 +172,6 @@ public class frag_cif_resi extends Fragment {
         btnUnduh.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Log.e("CEK","MASUK BUTTON UnduhResi");
                 if (bytePhoto == null) {
                     Toast.makeText(mContext,"Tidak dapat mengunduh Formulir",Toast.LENGTH_SHORT).show();
                     return;
@@ -249,7 +249,6 @@ public class frag_cif_resi extends Fragment {
         myFiles = mediaStorageDir.list();
         if (myFiles != null) {
             for (int i = 0; i < myFiles.length; i++) {
-                Log.d("CEK","myFiles ke-"+i+" : "+myFiles[i]);
                 File myFile = new File(mediaStorageDir, myFiles[i]);
                 myFile.delete();
             }
@@ -280,13 +279,11 @@ public class frag_cif_resi extends Fragment {
     }
 
     private void getResumeResiCIFReady() {
-        Log.e("CEK","getResumeResiCIFReady");
         String authAccess = "Bearer "+sessions.getAuthToken();
         String exchangeToken = sessions.getExchangeToken();
         Server.getAPIService().getResiCIFReady(idForm,authAccess,exchangeToken).enqueue(new Callback<JsonObject>() {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
-                Log.e("CEK","getResumeResi CODE : "+response.code());
                 if (response.isSuccessful()) {
                     swipe.setRefreshing(false);
                     btnUnduh.setEnabled(true);
@@ -306,6 +303,14 @@ public class frag_cif_resi extends Fragment {
                         filenames = pdfFile.substring(pdfFile.lastIndexOf("/") );
                         bytePhoto = Base64.decode(base64Image, Base64.DEFAULT);
                         Bitmap bitmap = BitmapFactory.decodeByteArray(bytePhoto, 0, bytePhoto.length);
+                        RelativeLayout.LayoutParams lpImg = new RelativeLayout.LayoutParams(250, 300);
+                        lpImg.addRule(RelativeLayout.CENTER_HORIZONTAL);
+                        lpImg.setMargins(10,120,10,10);
+                        imgResume.setLayoutParams(lpImg);
+                        imgResume.setScaleX(2.5f);
+                        imgResume.setScaleY(3f);
+                        imgResume.setScaleType(ImageView.ScaleType.CENTER_CROP);
+                        imgResume.setImageBitmap(bitmap);
                         imgResume.setImageBitmap(bitmap);
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -340,13 +345,11 @@ public class frag_cif_resi extends Fragment {
     }
 
     private void getResumeResi() {
-        Log.e("CEK","getResumeResi");
         String authAccess = "Bearer "+sessions.getAuthToken();
         String exchangeToken = sessions.getExchangeToken();
         Server.getAPIService().getResiCIF(idDips,authAccess,exchangeToken).enqueue(new Callback<JsonObject>() {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
-                Log.e("CEK","getResumeResi CODE : "+response.code());
                 if (response.isSuccessful()) {
                     swipe.setRefreshing(false);
                     btnUnduh.setEnabled(true);

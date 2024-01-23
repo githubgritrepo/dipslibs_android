@@ -1,20 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout android:layout_height="50dp"
     android:layout_width="match_parent"
-    android:paddingLeft="16dp"
-    android:paddingRight="16dp"
     xmlns:android="http://schemas.android.com/apk/res/android">
 
     <LinearLayout
         android:id="@+id/llProduct"
-        android:layout_height="50dp"
+        android:layout_height="wrap_content"
         android:layout_width="match_parent"
         android:orientation="horizontal"
-        android:layout_centerVertical="true">
+        android:layout_centerVertical="true"
+        android:paddingTop="@dimen/dp_5"
+        android:paddingBottom="5dp">
 
         <ImageView
             android:id="@+id/imgProd"
-            android:layout_width="35dp"
+            android:layout_width="30dp"
             android:layout_height="match_parent"
             android:src="@drawable/ic_prod_saving" />
 
@@ -24,8 +24,8 @@
             android:layout_height="match_parent"
             android:layout_marginStart="10dp"
             android:text="@string/savings"
-            android:textColor="#3E3E3E"
-            android:textSize="20dp"
+            android:textColor="@color/zm_text"
+            android:textSize="16dp"
             android:textStyle="bold"
             android:gravity="center"/>
 

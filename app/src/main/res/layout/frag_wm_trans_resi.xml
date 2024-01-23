@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".Fragments.frag_wm_trans_resi"
+    android:background="@color/white">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:rotation="180"
+            android:scaleType="fitXY"
+            android:src="@drawable/batik_bvic" />
+
+        <LinearLayout
+            android:id="@+id/TopBar"
+            android:layout_width="match_parent"
+            android:layout_height="?android:actionBarSize"
+            android:background="@color/white"
+            android:orientation="horizontal"
+            android:visibility="gone">
+
+            <ImageView
+                android:id="@+id/btnBack"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_margin="10dp"
+                android:src="@drawable/ic_baseline_arrow_back_24" />
+
+            <TextView
+                android:id="@+id/tvtitleHead"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginStart="6dp"
+                android:text="@string/produk_layanan"
+                android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                android:textSize="16dp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/llTop"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginBottom="@dimen/dp_20"
+            android:layout_below="@id/TopBar">
+
+            <TextView
+                android:id="@+id/tvTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:gravity="center|center_vertical"
+                android:text="@string/selamat"
+                android:textAlignment="center"
+                android:textAppearance="@style/TextAppearance.AppCompat.Headline"
+                android:textSize="16dp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tvSubTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center|center_vertical"
+                android:text="@string/transaksi_anda_berhasil"
+                android:textAlignment="center"
+                android:textAppearance="@style/TextAppearance.AppCompat.Headline"
+                android:textSize="16dp"
+                android:textStyle="bold" />
+            
+            <LinearLayout
+                android:id="@+id/llTopHistory"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:visibility="gone">
+
+                <TextView
+                    android:id="@+id/tvTypeWMDate"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/zm_text"
+                    android:gravity="center"
+                    tools:text="PEMBELIAN - 10:12:01 19/05/23" />
+
+                <TextView
+                    android:id="@+id/tvTitleProd"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/zm_text"
+                    android:textStyle="bold"
+                    android:gravity="center"
+                    tools:text="REKSA DANA LANCAR VICTORIA MERKURIUS" />
+
+                <TextView
+                    android:id="@+id/tvPtProd"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/zm_text"
+                    android:gravity="center"
+                    android:text="PT. VICTORIA MANAJEMEN INVESTASI" />
+                
+            </LinearLayout>
+        </LinearLayout>
+
+        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+            android:id="@+id/swipe"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@id/llTop">
+
+            <androidx.core.widget.NestedScrollView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="30dp">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <com.github.chrisbanes.photoview.PhotoView
+                        android:id="@+id/imgResume"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:maxHeight="900dp"
+                        android:layout_centerHorizontal="true"
+                        android:layout_marginStart="@dimen/dp_10"
+                        android:layout_marginTop="@dimen/dp_10"
+                        android:layout_marginEnd="@dimen/dp_10"
+                        android:layout_marginBottom="@dimen/dp_10"
+                        android:paddingBottom="@dimen/dp_20"
+                        android:src="@drawable/sedangmemuat" />
+
+                    <LinearLayout
+                        android:id="@+id/tvllThanks"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/imgResume"
+                        android:layout_marginTop="40dp"
+                        android:orientation="vertical">
+
+
+                        <TextView
+                            android:id="@+id/tvMsgThanks"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="@dimen/dp_10"
+                            android:layout_marginEnd="10dp"
+                            android:layout_marginStart="@dimen/dp_10"
+                            android:gravity="center|center_vertical"
+                            android:text="@string/body2_complaint"
+                            android:textAlignment="center"
+                            android:textColor="@color/black"
+                            android:textSize="14dp"
+                            android:textStyle="bold" />
+
+                    </LinearLayout>
+
+                    <!--<com.github.chrisbanes.photoview.PhotoView
+                        android:id="@+id/imgResume"
+                        android:layout_width="match_parent"
+                        android:layout_height="250dp"
+                        android:layout_centerHorizontal="true"
+                        android:layout_marginStart="@dimen/dp_10"
+                        android:layout_marginTop="@dimen/dp_10"
+                        android:layout_marginEnd="@dimen/dp_10"
+                        android:layout_marginBottom="@dimen/dp_10"
+                        android:paddingBottom="@dimen/dp_20"
+                        android:src="@drawable/sedangmemuat" />-->
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/tvllThanks"
+                        android:layout_margin="@dimen/dp_15"
+                        android:layout_marginTop="20dp"
+                        android:orientation="horizontal">
+
+                        <Button
+                            android:id="@+id/btnUnduh"
+                            android:layout_width="0dp"
+                            android:layout_height="40dp"
+                            android:layout_marginEnd="10dp"
+                            android:layout_weight="1.5"
+                            android:background="@drawable/oval_background_10dp"
+                            android:backgroundTint="@color/btnFalse"
+                            android:drawableStart="@drawable/ic_unduh"
+                            android:text="@string/unduh_resi"
+                            android:textColor="@color/white"
+                            android:textSize="12dp"
+                            android:textStyle="bold" />
+
+                        <Button
+                            android:id="@+id/btnSelesai"
+                            android:layout_width="0dp"
+                            android:layout_height="40dp"
+                            android:layout_weight="1"
+                            android:background="@drawable/oval_background_10dp"
+                            android:backgroundTint="@color/zm_button"
+                            android:text="@string/selesai"
+                            android:textColor="@color/white"
+                            android:textSize="12dp"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+
+                </RelativeLayout>
+
+            </androidx.core.widget.NestedScrollView>
+
+        </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+    </RelativeLayout>
+
+</FrameLayout>

@@ -16,6 +16,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -27,6 +29,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.evo.mitzoom.API.ApiService;
 import com.evo.mitzoom.API.Server;
+import com.evo.mitzoom.Helper.ConnectionRabbitHttp;
 import com.evo.mitzoom.Helper.DownloadTaskHelper;
 import com.evo.mitzoom.Helper.RabbitMirroring;
 import com.evo.mitzoom.Helper.SingleMediaScanner;
@@ -50,7 +53,7 @@ public class frag_service_resi extends Fragment {
 
     private Context mContext;
     private SessionManager sessions;
-    private PhotoView imgResume;
+    private ImageView imgResume;
     private Button btnOK;
     private String idDips;
     private Button btnUnduh;
@@ -82,15 +85,16 @@ public class frag_service_resi extends Fragment {
         /*if (isSessionZoom) {
             rabbitMirroring = new RabbitMirroring(mContext);
         }*/
+        ConnectionRabbitHttp.init(mContext);
 
         no_Form = sessions.getNoComplaint();
         noPengaduan = sessions.getNoComplaint();
 
         if (getArguments() != null) {
-            newComplain = getArguments().getBoolean("newComplain");
+            if (getArguments().containsKey("newComplain")) {
+                newComplain = getArguments().getBoolean("newComplain");
+            }
         }
-
-        Log.e("CEK",this+" noPengaduan : "+noPengaduan);
 
     }
 
@@ -149,8 +153,8 @@ public class frag_service_resi extends Fragment {
         btnOK.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.e("CEK","MASUK BUTTON OK");
-                RabbitMirroring.MirroringSendEndpoint(14);
+                //RabbitMirroring.MirroringSendEndpoint(14);
+                ConnectionRabbitHttp.mirroringEndpoint(14);
                 sessions.clearCIF();
                 getFragmentPage(new frag_portfolio_new());
             }
@@ -159,7 +163,6 @@ public class frag_service_resi extends Fragment {
         btnUnduh.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Log.e("CEK","MASUK BUTTON UnduhResi");
                 if (bytePhoto == null) {
                     Toast.makeText(mContext,"Tidak dapat mengunduh Formulir",Toast.LENGTH_SHORT).show();
                     return;
@@ -176,7 +179,6 @@ public class frag_service_resi extends Fragment {
     }
 
     private void getResumeResi() {
-        Log.e("CEK","getResumeResi");
         ApiService API = Server.getAPIService();
         Call<JsonObject> call = null;
         String authAccess = "Bearer "+sessions.getAuthToken();
@@ -187,11 +189,9 @@ public class frag_service_resi extends Fragment {
             call = API.getResiComplaint(noPengaduan,authAccess,exchangeToken);
         }
 
-        Log.e("CEK","getResumeResi URL "+call.request());
         call.enqueue(new Callback<JsonObject>() {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
-                Log.e("CEK","getResumeResi CODE : "+response.code());
                 if (response.isSuccessful()) {
                     swipe.setRefreshing(false);
                     btnUnduh.setEnabled(true);
@@ -211,6 +211,13 @@ public class frag_service_resi extends Fragment {
                         filenames = pdfFile.substring(pdfFile.lastIndexOf("/") );
                         bytePhoto = Base64.decode(base64Image, Base64.DEFAULT);
                         Bitmap bitmap = BitmapFactory.decodeByteArray(bytePhoto, 0, bytePhoto.length);
+                        RelativeLayout.LayoutParams lpImg = new RelativeLayout.LayoutParams(250, 300);
+                        lpImg.addRule(RelativeLayout.CENTER_HORIZONTAL);
+                        lpImg.setMargins(10,180,10,10);
+                        imgResume.setLayoutParams(lpImg);
+                        imgResume.setScaleX(2.5f);
+                        imgResume.setScaleY(3f);
+                        imgResume.setScaleType(ImageView.ScaleType.CENTER_CROP);
                         imgResume.setImageBitmap(bitmap);
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -274,7 +281,6 @@ public class frag_service_resi extends Fragment {
         myFiles = mediaStorageDir.list();
         if (myFiles != null) {
             for (int i = 0; i < myFiles.length; i++) {
-                Log.d("CEK","myFiles ke-"+i+" : "+myFiles[i]);
                 File myFile = new File(mediaStorageDir, myFiles[i]);
                 myFile.delete();
             }
@@ -297,11 +303,20 @@ public class frag_service_resi extends Fragment {
     }
 
     private void getFragmentPage(Fragment fragment){
-        getActivity().getSupportFragmentManager()
-                .beginTransaction()
-                .replace(R.id.layout_frame2, fragment)
-                .addToBackStack(null)
-                .commit();
+        if (isSessionZoom) {
+            getActivity().getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.layout_frame2, fragment)
+                    .addToBackStack(null)
+                    .commit();
+        } else {
+            getActivity().getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.layout_frame, fragment)
+                    .addToBackStack(null)
+                    .commit();
+        }
+
     }
 
 }

@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.StrictMode;
 import android.util.Base64;
@@ -39,7 +40,12 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 
 import ai.advance.liveness.lib.CameraType;
 import ai.advance.liveness.lib.Detector;
@@ -188,19 +194,113 @@ public class DipsLivenessResult extends AppCompatActivity {
 
         ApiService API = Server.getAPIService2();
         Call<JsonObject> call = API.CaptureAuth(requestBody);
-        Log.e("CEK","REQUEST CALL : "+call.request().url());
         call.enqueue(new Callback<JsonObject>() {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
-                Log.e("CEK","RESPONSE CODE: "+response.code());
                 if (response.isSuccessful()) {
                     
                     String dataS = response.body().toString();
-                    Log.e("CEK","CaptureIdentifyAuth dataS: "+dataS);
                     try {
                         JSONObject dataObj = new JSONObject(dataS);
-
                         try {
+                            /*String dataHard = "{\n" +
+                                    "        \"id\": 930,\n" +
+                                    "        \"namaLengkap\": \"NUR RAHMAWATI\",\n" +
+                                    "        \"gelar\": \"\",\n" +
+                                    "        \"alamat\": \"DESA PURBASARI\",\n" +
+                                    "        \"noHp\": \"085349596636\",\n" +
+                                    "        \"idDips\": \"NEsNem0nV15apqeO\",\n" +
+                                    "        \"noCif\": \"80704972\",\n" +
+                                    "        \"email\": \"NR.RAHMAWATI04@GMAIL.COM\",\n" +
+                                    "        \"nik\": \"6201054410990003\",\n" +
+                                    "        \"jenisKelamin\": \"PEREMPUAN\",\n" +
+                                    "        \"foto\": \"/home/hadi/dips/customer/faceData/foto-NEsNem0nV15apqeO.png\",\n" +
+                                    "        \"isSwafoto\": true,\n" +
+                                    "        \"meta\": \"{\\\"filename\\\":\\\"foto-NEsNem0nV15apqeO.png\\\"}\",\n" +
+                                    "        \"blacklist\": false,\n" +
+                                    "        \"branchCode\": \"088\",\n" +
+                                    "        \"createdAt\": \"2023-10-11T03:36:08.491Z\",\n" +
+                                    "        \"updatedAt\": \"2023-10-30T09:35:09.730Z\"\n" +
+                                    "    }";*/
+                            /*String dataHard = "{\n" +
+                                    "\"id\":301,\n" +
+                                    "\"namaLengkap\":\"MOHAMMAD RAFII BURHANUDDIN\",\n" +
+                                    "\"gelar\":null,\n" +
+                                    "\"alamat\":\"JL. GANESHA TENGAH NO.84\",\n" +
+                                    "\"noHp\":\"081215702727\",\n" +
+                                    "\"idDips\":\"sz76KGMmz3N0lghG\",\n" +
+                                    "\"noCif\":\"51691813\",\n" +
+                                    "\"email\":\"MOHAMMADRAFII480@GMAIL.COM\",\n" +
+                                    "\"nik\":\"3374150804000005\",\n" +
+                                    "\"jenisKelamin\":\"LAKI-LAKI\",\n" +
+                                    "\"foto\":\"/home/hadi/dips/customer/faceData/foto-sz76KGMmz3N0lghG.png\",\n" +
+                                    "\"isSwafoto\":true,\n" +
+                                    "\"meta\":\"{\\\"filename\\\":\\\"foto-sz76KGMmz3N0lghG.png\\\"}\",\n" +
+                                    "\"blacklist\":false,\n" +
+                                    "\"branchCode\":\"020\",\n" +
+                                    "\"createdAt\":\"2023-07-12T09:42:59.572Z\",\n" +
+                                    "\"updatedAt\":\"2023-07-12T09:44:22.294Z\"\n" +
+                                    "}";*/
+                            /*String dataHard = "{\n" +
+                                    "        \"id\": 410,\n" +
+                                    "        \"namaLengkap\": \"FAJAR DWI SAKTI\",\n" +
+                                    "        \"gelar\": null,\n" +
+                                    "        \"alamat\": \"TAMAN WISMA ASRI BLOK BB 31/14\",\n" +
+                                    "        \"noHp\": \"087778297027\",\n" +
+                                    "        \"idDips\": \"q9uRDwcR6px5tiVx\",\n" +
+                                    "        \"noCif\": \"08800207\",\n" +
+                                    "        \"email\": \"FAJAR_101188@YAHOO.COM\",\n" +
+                                    "        \"nik\": \"3275031011880017\",\n" +
+                                    "        \"jenisKelamin\": \"Laki - Laki\",\n" +
+                                    "        \"foto\": \"/home/hadi/dips/customer/faceData/foto-q9uRDwcR6px5tiVx.png\",\n" +
+                                    "        \"isSwafoto\": true,\n" +
+                                    "        \"meta\": \"{\\\"filename\\\":\\\"foto-q9uRDwcR6px5tiVx.png\\\"}\",\n" +
+                                    "        \"blacklist\": false,\n" +
+                                    "        \"branchCode\": \"088\",\n" +
+                                    "        \"createdAt\": \"2023-07-27T07:13:11.376Z\",\n" +
+                                    "        \"updatedAt\": \"2023-07-27T07:16:00.389Z\"\n" +
+                                    "    }";*/
+                            /*String dataHard = "{\n" +
+                                    "\"id\":544,\n" +
+                                    "\"namaLengkap\":\"KAHFI GHIFARI\",\n" +
+                                    "\"gelar\":\"S1\",\n" +
+                                    "\"alamat\":\"PERUM PESONA CILEBUT I BLOK i-03 NO1\",\n" +
+                                    "\"noHp\":\"081398850764\",\n" +
+                                    "\"idDips\":\"6ou3snkozn7h0ttC\",\n" +
+                                    "\"noCif\":\"29411169\",\n" +
+                                    "\"email\":\"kahfighifari1146@gmail.com\",\n" +
+                                    "\"nik\":\"3201040705960007\",\n" +
+                                    "\"jenisKelamin\":\"LAKI-LAKI\",\n" +
+                                    "\"foto\":\"/home/hadi/dips/customer/faceData/foto-6ou3snkozn7h0ttC.png\",\n" +
+                                    "\"isSwafoto\":true,\n" +
+                                    "\"meta\":\"{\\\"filename\\\":\\\"foto-6ou3snkozn7h0ttC.png\\\"}\",\n" +
+                                    "\"blacklist\":false,\n" +
+                                    "\"branchCode\":\"088\",\n" +
+                                    "\"createdAt\":\"2023-08-18T03:28:48.571Z\",\n" +
+                                    "\"updatedAt\":\"2023-08-18T03:31:48.615Z\"\n" +
+                                    "}";*/
+
+                            //======= DATA KAHFI GHIFARI NASABAH BARU =======///
+                            /*String dataHard = "{\n" +
+                                    "\"id\":544,\n" +
+                                    "\"namaLengkap\":\"KAHFI GHIFARI\",\n" +
+                                    "\"gelar\":null,\n" +
+                                    "\"alamat\":null,\n" +
+                                    "\"noHp\":null,\n" +
+                                    "\"idDips\":\"6ou3snkozn7h0ttC\",\n" +
+                                    "\"noCif\":null,\n" +
+                                    "\"email\":null,\n" +
+                                    "\"nik\":\"3201040705960007\",\n" +
+                                    "\"jenisKelamin\":\"LAKI-LAKI\",\n" +
+                                    "\"foto\":\"/home/hadi/dips/customer/faceData/foto-6ou3snkozn7h0ttC.png\",\n" +
+                                    "\"isSwafoto\":true,\n" +
+                                    "\"meta\":\"{\\\"filename\\\":\\\"foto-6ou3snkozn7h0ttC.png\\\"}\",\n" +
+                                    "\"blacklist\":false,\n" +
+                                    "\"branchCode\":null,\n" +
+                                    "\"createdAt\":\"2023-08-18T03:28:48.571Z\",\n" +
+                                    "\"updatedAt\":\"2023-08-18T03:31:48.615Z\"\n" +
+                                    "}";*/
+                            //JSONObject dataCustomer = new JSONObject(dataHard);
                             JSONObject dataCustomer = dataObj.getJSONObject("data").getJSONObject("customer");
                             JSONObject dataToken = dataObj.getJSONObject("data").getJSONObject("token");
 
@@ -226,8 +326,6 @@ public class DipsLivenessResult extends AppCompatActivity {
                             imgCheck.setVisibility(View.VISIBLE);
                             tip_text_view.setVisibility(View.GONE);
                             boolean isSwafoto = dataCustomer.getBoolean("isSwafoto");
-                            isSwafoto = false;
-                            Log.e("CEK", "idDipsNew : " + idDipsNew + " | idDips : " + idDips);
                             String accessToken = "";
                             String exchangeToken = "";
                             if (dataToken.has("accessToken")) {
@@ -237,6 +335,14 @@ public class DipsLivenessResult extends AppCompatActivity {
                                 accessToken = dataToken.getString("token");
                                 exchangeToken = dataToken.getString("exchange");
                             }
+
+                            /*noCIF = "";
+                            if (noCIF.isEmpty()) {*/
+                                /*idDipsNew = "sz76KGMmz3N0lghG";
+                                noCIF = "51691813";
+                                isCust = false;
+                                isSwafoto = true;*/
+                            //}
 
                             sessions.saveIdDips(idDipsNew);
                             sessions.saveIsCust(isCust);
@@ -260,15 +366,16 @@ public class DipsLivenessResult extends AppCompatActivity {
                                         public void run() {
                                             Intent intent = null;
                                             String noCif = sessions.getNoCIF();
-                                            /*intent = new Intent(mContext, DipsSwafoto.class);
-                                            intent.putExtra("CUSTNAME", custName);*/
+                                            //intent = new Intent(mContext, DipsSwafoto.class);
                                             if (!noCif.isEmpty()) {
+                                                intent = new Intent(mContext, DipsConnectionForm.class);
+                                            } else if (finalIsSwafoto) {
                                                 intent = new Intent(mContext, DipsWaitingRoom.class);
-                                                intent.putExtra("CUSTNAME", custName);
+                                                startActivity(intent);
+                                                finishAffinity();
                                             } else {
                                                 intent = new Intent(mContext, DipsSwafoto.class);
-                                                intent.putExtra("CUSTNAME", custName);
-                                                intent.putExtra("formCode", 22); //4 Upload KTP, 22 Swafoto
+                                                intent.putExtra("formCode", 4); //4 Upload KTP, 22 Swafoto
                                                 intent.putExtra("OCRKTP",true);
                                             }
                                             startActivity(intent);
@@ -277,7 +384,7 @@ public class DipsLivenessResult extends AppCompatActivity {
                                     });
 
                                 }
-                            }, 2000);
+                            }, 1000);
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
@@ -295,7 +402,6 @@ public class DipsLivenessResult extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<JsonObject> call, Throwable t) {
-                Log.e("CEK","onFailure MESSAGE : "+t.getMessage());
                 Toast.makeText(mContext, t.getMessage(), Toast.LENGTH_SHORT).show();
                 if (t.getMessage().contains("connect")) {
                     new Handler().postDelayed(new Runnable() {
@@ -316,12 +422,10 @@ public class DipsLivenessResult extends AppCompatActivity {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        Log.e("CEK","processH5Advance");
         RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), jsons.toString());
         Server.getAPIService().H5Advance(requestBody).enqueue(new Callback<JsonObject>() {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
-                Log.e("CEK","processH5Advance code : "+response.code());
                 if (response.isSuccessful()) {
                     processCaptureIdentifyAuth(imgBase64);
                 }
@@ -348,9 +452,7 @@ public class DipsLivenessResult extends AppCompatActivity {
                             e.printStackTrace();
                         }
                     }
-                    Log.e("CEK","msg ERROR : "+msg);
                     String licenseAI = sessions.getAuthAdvanceAI();
-                    Log.e(TAG,"licenseAI : "+licenseAI);
                     if (licenseAI != null) {
                         dialogShowError(licenseAI);
                     } else {
@@ -362,7 +464,6 @@ public class DipsLivenessResult extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<JsonObject> call, Throwable t) {
-                Log.e("CEK","onFailure MESSAGE : "+t.getMessage());
                 Toast.makeText(mContext, t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
@@ -403,17 +504,14 @@ public class DipsLivenessResult extends AppCompatActivity {
         GuardianLivenessDetectionSDK.init(getApplication(), yourMarket);
         GuardianLivenessDetectionSDK.letSDKHandleCameraPermission();
         String yourLicense = licenseAI;
-        Log.e(TAG,"yourLicense : "+yourLicense);
         GuardianLivenessDetectionSDK.setCameraType(CameraType.FRONT);// The back camera is CameraType.BACK
         GuardianLivenessDetectionSDK.setActionSequence(true, Detector.DetectionType.BLINK);
         GuardianLivenessDetectionSDK.setResultPictureSize(300); // Settable input range: [300,1000], unit: pixels
         GuardianLivenessDetectionSDK.setActionTimeoutMills(20000);
         String checkResult = GuardianLivenessDetectionSDK.setLicenseAndCheck(yourLicense);
-        Log.e(TAG,"checkResult : "+checkResult);
         if ("SUCCESS".equals(checkResult)) {
             startActivityForResult(new Intent(this, LivenessActivity.class), REQUEST_CODE_LIVENESS);
         } else {
-            Log.e("LivenessSDK", "License check failed:" + checkResult);
         }
     }
 
@@ -425,6 +523,13 @@ public class DipsLivenessResult extends AppCompatActivity {
                 Bitmap livenessBitmap = LivenessResult.getLivenessBitmap();// picture
                 String imgBase64 = imgtoBase64(livenessBitmap);
                 byte[] bytePhoto = Base64.decode(imgBase64, Base64.NO_WRAP);
+                try {
+                    File pathPhotoLiveness = createTemporaryFile(bytePhoto);
+                    String filePath = pathPhotoLiveness.getAbsolutePath();
+                    sessions.savePhotoLiveness(filePath);
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
                 sessions.saveNoCIF(null);
                 Intent intent = new Intent(mContext, DipsLivenessResult.class);
                 intent.putExtra("RESULT_IMAGE_AI",bytePhoto);
@@ -440,6 +545,30 @@ public class DipsLivenessResult extends AppCompatActivity {
             }
         }
     }
+
+    private File createTemporaryFile(byte[] byteImage) throws Exception {
+        String appName = getString(R.string.app_name_dips);
+        String IMAGE_DIRECTORY_NAME = appName;
+        File mediaStorageDir = new File(
+                Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), IMAGE_DIRECTORY_NAME);
+        if (!mediaStorageDir.exists()) {
+            if (!mediaStorageDir.mkdirs()) {
+                return null;
+            }
+        }
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss_SSS",
+                Locale.getDefault()).format(new Date());
+        File mediaFile;
+        mediaFile = new File(mediaStorageDir.getPath() + File.separator +
+                "IMG_" + timeStamp + ".jpg");
+
+        FileOutputStream fos = new FileOutputStream(mediaFile);
+        fos.write(byteImage);
+        fos.close();
+
+        return mediaFile;
+    }
+
     private String imgtoBase64(Bitmap bitmap) {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         bitmap.compress(Bitmap.CompressFormat.JPEG,100, baos);

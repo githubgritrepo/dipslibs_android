@@ -21,13 +21,12 @@ public class MyWorker extends Worker {
     @Override
     public Result doWork() {
         boolean start = getInputData().getBoolean(EXTRA_START,false);
-        Log.e("CEK","MASUK MyWorker doWORK : "+start);
         Intent serviceIntent = new Intent(getApplicationContext(), OutboundServiceNew.class);
         if (start) {
             getApplicationContext().startForegroundService(serviceIntent);
         } else {
             getApplicationContext().stopService(serviceIntent);
-            OutboundServiceNew.stopServiceSocket();
+            //OutboundServiceNew.stopServiceSocket();
         }
         return Result.success();
     }

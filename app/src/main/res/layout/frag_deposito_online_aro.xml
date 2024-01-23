@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".Fragments.frag_deposito_online_aro"
+    android:background="@color/white">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:src="@drawable/batik_bvic"
+            android:rotation="180"
+            android:scaleType="fitXY"
+            android:layout_alignParentBottom="true"/>
+
+        <LinearLayout
+            android:id="@+id/TopBar"
+            android:layout_width="match_parent"
+            android:layout_height="?android:actionBarSize"
+            android:background="@color/white"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:id="@+id/btnBack"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_margin="10dp"
+                android:src="@drawable/ic_baseline_arrow_back_24" />
+
+            <TextView
+                android:id="@+id/tvtitleHead"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginStart="6dp"
+                android:text="@string/produk_layanan"
+                android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                android:textSize="16dp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <RelativeLayout
+            android:layout_below="@id/TopBar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/dp_5"
+            android:paddingStart="@dimen/dp_20"
+            android:paddingEnd="@dimen/dp_20">
+
+            <RadioGroup
+                android:id="@+id/rgChooseType"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/dp_20"
+                android:orientation="horizontal"
+                android:layout_marginStart="30dp"
+                android:layout_marginEnd="30dp"
+                android:background="@drawable/bg_border_red"
+                android:layout_marginBottom="@dimen/dp_20"
+                android:visibility="gone">
+
+                <RadioButton
+                    android:id="@+id/valIDR"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_weight="1"
+                    android:background="@drawable/selector_currency"
+                    android:button="@android:color/transparent"
+                    android:gravity="center"
+                    android:checked="true"
+                    android:text="Rupiah"
+                    android:textAlignment="center"
+                    android:textColor="@color/white"
+                    android:textSize="14dp"
+                    android:textStyle="bold" />
+
+                <RadioButton
+                    android:id="@+id/valAsing"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_weight="1"
+                    android:background="@drawable/selector_currency"
+                    android:button="@android:color/transparent"
+                    android:gravity="center"
+                    android:text="Valuta Asing"
+                    android:textAlignment="center"
+                    android:textColor="@color/zm_text"
+                    android:textSize="14dp"
+                    android:textStyle="bold" />
+
+            </RadioGroup>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rv_item"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                tools:ignore="SpeakableTextPresentCheck"
+                tools:listitem="@layout/list_item_deposit"
+                android:paddingTop="@dimen/dp_5"
+                android:layout_below="@id/rgChooseType"/>
+
+            <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+                android:id="@+id/swipe"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:visibility="gone">
+
+                <androidx.core.widget.NestedScrollView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="30dp">
+
+                    <LinearLayout
+                        android:id="@+id/llResiBilyet"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                        <com.github.chrisbanes.photoview.PhotoView
+                            android:id="@+id/imgResume"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:maxHeight="900dp"
+                            android:layout_centerHorizontal="true"
+                            android:layout_marginStart="@dimen/dp_10"
+                            android:layout_marginTop="@dimen/dp_10"
+                            android:layout_marginEnd="@dimen/dp_10"
+                            android:layout_marginBottom="@dimen/dp_10"
+                            android:paddingBottom="@dimen/dp_20"
+                            android:src="@drawable/sedangmemuat" />
+
+                        <TextView
+                            android:id="@+id/tvSyarat"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Lihat Syarat dan ketentuan"
+                            android:textStyle="bold"
+                            android:textSize="16dp"
+                            android:textColor="@color/zm_button"
+                            android:textAlignment="center"/>
+
+                        <Button
+                            android:id="@+id/btnUnduh"
+                            android:layout_width="match_parent"
+                            android:layout_height="40dp"
+                            android:layout_marginTop="@dimen/dp_20"
+                            android:background="@drawable/oval_background_10dp"
+                            android:backgroundTint="@color/btnFalse"
+                            android:drawableStart="@drawable/ic_unduh"
+                            android:text="@string/unduh_e_bilyet"
+                            android:textColor="@color/white"
+                            android:textSize="12dp"
+                            android:textStyle="bold"/>
+
+                    </LinearLayout>
+
+                </androidx.core.widget.NestedScrollView>
+
+            </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+        </RelativeLayout>
+
+    </RelativeLayout>
+
+</FrameLayout>

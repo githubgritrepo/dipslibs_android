@@ -38,102 +38,59 @@
     <string name="name" translatable="false">Nama Lengkap</string>
     <string name="nik" translatable="false">NIK</string>
     <string name="enter_your_message" translatable="false">Masukkan pesan Anda</string>
-    <string name="create_new_account" translatable="false">Informasi &amp; Pembukaan Rekening</string>
     <string name="product_list" translatable="false">Daftar Produk</string>
-    <string name="mutual_funds" translatable="false">Reksadana</string>
+    <string name="mutual_funds" translatable="false">Reksa Dana</string>
     <string name="insurance" translatable="false">Asuransi</string>
     <string name="deposito" translatable="false">Deposito</string>
     <string name="giro" translatable="false">Giro</string>
     <string name="savings" translatable="false">Tabungan</string>
-    <string name="lorem" translatable="false">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</string>
-    <string name="lorem2" translatable="false">\n1. Duis aute irure dolor in reprehenderit.\n2. In voluptate velit esse cillum dolore.\n3. Eu fugiat nulla pariatur.\n4. Excepteur sint occaecat cupidatat.\n5. non proident, suntin culpa qui officia.\n6. deserunt mollit anim.\n7. id est laborum.\n</string>
     <string name="terms_condition2" translatable="false"><![CDATA[Syarat dan Ketentuan]]></string>
     <string name="checkbox_tnc" translatable="false">Saya menyetujui syarat dan ketentuan</string>
     <string name="tnc_content" translatable="false">Syarat dan Ketentuan Umum PT Bank XYZ mengatur mengenai hubungan hukum antara PT XYZ dengan individu/korporasi yang menggunakan jasa/layanan PT Bank XYZ yang merupakan calon atau pemilik rekening di PT Bank XYZ sehubungan dengan segala produk, fasilitas dan/atau layanan yang tersedia bagi nasabah. Berikut ini merupakan poin - poin yang perlu diperhatikan sebelum melakukan pendaftaran ataupun transaksi.\n\n<ol><li><![CDATA[Hanya untuk nasabah perorangan Warga Negara Indonesia dan tidak berlaku Rekening Join]]></li>\n\n<li><![CDATA[Setoran awal pembukaan rekening Rp 20.000,-]]></li>\n\n<li><![CDATA[Setoran tunai selanjutnya Rp 10.000,-]]></li>\n\n<li><![CDATA[Saldo minimum rekening Rp 20.000,-]]></li>\n\n<li><![CDATA[Biaya apabila rekening tidak aktif Rp 2.000,- per bulan]]></li>\n\n<li><![CDATA[Apabila saldo rekening kurang dari Rp 20.000,- maka rekening akan ditutup secara otomatis oleh sistem]]></li>\n\n<li><![CDATA[Biaya penutupan rekening Rp 20.000,-]]></li>\n\n<li><![CDATA[Jumlah minimum penarikan di teller Rp 100.000,- kecuali pada saat nasabah ingin tutup rekening]]></li></ol></string>
-    <string name="Photo_ktp" translatable="false">Foto KTP</string>
-    <string name="Photo_nktp" translatable="false">Foto\nKTP</string>
+    <string name="Photo_ktp" translatable="false">Foto eKTP</string>
+    <string name="Photo_nktp" translatable="false">Foto\neKTP</string>
     <string name="photo_nnpwp" translatable="false">Foto\nNPWP</string>
     <string name="foto_ntanda_ntangan" translatable="false">Foto\nTanda\nTangan</string>
     <string name="formulir_npembukaan_nrekening" translatable="false">Formulir\nPembukaan\nRekening</string>
     <string name="info_first_data" translatable="false">Informasi\nData\nUtama</string>
+    <string name="info_first_data2" translatable="false">Informasi\nData Utama</string>
     <string name="data_account_open" translatable="false">Data Rekening\nYang Akan\nDibuka</string>
     <string name="facilities_services" translatable="false">Fasilitas\nLayanan</string>
     <string name="statement" translatable="false">Pernyataan</string>
     <string name="pastikan_gambar_atau_foto_ktp_sudah_jelas_dan_tidak_buram" translatable="false">Pastikan gambar atau foto\njelas dan tidak buram.</string>
     <string name="pilih_dari_galeri" translatable="false">Pilih Dari Galeri</string>
-    <string name="email" translatable="false">Email</string>
-    <string name="popupktp" translatable="false">Harap menyiapkan dokumen data diri berupa KTP, NPWP, dan foto tanda tangan untuk di upload</string>
     <string name="content_after_schedule" translatable="false">Terima kasih telah menggunakan layanan Digital Operations Bank Victoria. Panggilan Anda sudah terjadwalkan. Kami akan segera menghubungi Anda</string>
     <string name="done" translatable="false">Selesai</string>
-    <string name="content_input" translatable="false">Demi kenyamanan bersama, percakapan ini akan terekam secara otomatis.</string>
     <string name="address" translatable="false">Alamat</string>
     <string name="religion" translatable="false">Agama</string>
-    <string name="status" translatable="false">Status</string>
-    <string name="content_form_bottom" translatable="false">Saya menyatakan bahwa seluruh data yang saya berikan di formulir pembukaan rekening ini benar.</string>
     <string name="process" translatable="false">Proses</string>
     <string name="headline_rating" translatable="false">Terima kasih telah mempercayakan\n transaksi perbankan Anda pada\n Bank Victoria.</string>
-    <string name="apakah_permasalahan_anda_n_selesai_dengan_baik" translatable="false">Apakah agent bank melayani Anda dengan baik?</string>
-    <string name="mohon_berikan_penilaian_anda_atas_npelayanan_dips_hari_ini" translatable="false">Mohon berikan penilaian Anda atas\npelayanan Digital Operations hari ini</string>
+    <string name="apakah_permasalahan_anda_n_selesai_dengan_baik" translatable="false">Apakah agen bank melayani Anda dengan baik?</string>
     <string name="send" translatable="false">kirim</string>
-    <string name="selamat_naktivasi_berhasil_rekening_n_tabungan_anda_sudah_aktif" translatable="false">Selamat!\nAktivasi Berhasil. Rekening\n Tabungan Anda sudah aktif.</string>
     <string name="nama" translatable="false">Nama</string>
-    <string name="no_rekening" translatable="false">No Rekening</string>
-    <string name="kantor_cabang" translatable="false">Kantor Cabang</string>
-    <string name="mohon_aktifkan_rekening_anda_dengan_menyetorkan_dana_maksimal_90_hari_kedepan" translatable="false">Mohon aktifkan rekening Anda dengan menyetorkan dana maksimal 90 hari kedepan.</string>
-    <string name="terima_kasih_telah_mempercayakan_transaksi_perbankan_anda_pada_bank_xyz_gunakan_aplikasi_xyz_mobile_banking_untuk_pengalaman_bertransaksi_penuh_keuntungan" translatable="false">Terima kasih telah mempercayakan transaksi perbankan Anda pada bank XYZ. Detail informasi akun rekening Anda telah dikirim melalui email.</string>
     <string name="selesai" translatable="false">Selesai</string>
-    <string name="user_id" translatable="false">User ID</string>
-    <string name="kata_sandi" translatable="false">Kata Sandi</string>
-    <string name="konfirmasi_kata_sandi" translatable="false">Konfirmasi Kata Sandi</string>
-    <string name="mpin" translatable="false">MPIN</string>
-    <string name="konfirmasi_mpin" translatable="false">Konfirmasi MPIN</string>
-    <string name="tanda_tangan" translatable="false">Tanda Tangan</string>
     <string name="content_otp" translatable="false">Masukan One Time Password (OTP) untuk verifikasi data Anda. Kode OTP telah dikirim ke +62812 3456 7XXX</string>
     <string name="kirim_ulang_kode_otp" translatable="false">Kirim ulang kode OTP</string>
-    <string name="otp_title" translatable="false">Kode OTP Sesuai</string>
-    <string name="otp_content" translatable="false">Formulir sedang dalam proses.\nHarap menunggu beberapa saat</string>
-    <string name="reg_title" translatable="false">Registrasi Berhasil</string>
-    <string name="reg_content" translatable="false">Harap aktivasi akun Anda</string>
-    <string name="activation" translatable="false">Aktivasi</string>
     <string name="rating_pop_up_content" translatable="false">Terima kasih atas penilaian Anda. Penilaian Anda sangat berharga bagi kami.</string>
     <string name="produk_layanan" translatable="false"><![CDATA[Layanan]]></string>
     <string name="verifikasi" translatable="false">Verifikasi</string>
     <string name="Formulir_Transfer" translatable="false">Formulir Transfer</string>
     <string name="FOREX" translatable="false">Transaksi Valas</string>
-    <string name="ReceiverAccount2" translatable="false">Rekening Penerima</string>
-    <string name="ReceiverName2" translatable="false">Nama Penerima</string>
     <string name="Amount" translatable="false">Nominal Transaksi</string>
-    <string name="ResidentType" translatable="false">Jenis Penduduk</string>
-    <string name="penduduk" translatable="false">Penduduk</string>
-    <string name="bukan_penduduk" translatable="false">Bukan Penduduk</string>
-    <string name="berita" translatable="false">Berita</string>
-    <string name="successTransaction" translatable="false">Anda berhasil melakukan transaksi</string>
-    <string name="aktivasi_m_banking" translatable="false">Aktivasi M-Banking</string>
     <string name="pilih_bahasa" translatable="false">Bahasa / Language</string>
     <string name="lan_id" translatable="false">Indonesia</string>
     <string name="lan_en" translatable="false">English</string>
     <string name="select_language" translatable="false">Silakan pilih Bahasa terlebih dahulu</string>
     <string name="portofolio_saya" translatable="false">Portofolio Saya</string>
-    <string name="informasi_portofolio" translatable="false">Informasi Portofolio</string>
     <string name="lanjut_next" translatable="false">Lanjut / Next</string>
     <string name="atau" translatable="false">atau</string>
     <string name="hapus" translatable="false">Hapus</string>
-    <string name="upload_file" translatable="false">Unggah File</string>
     <string name="source_account" translatable="false">Rekening Sumber Dana</string>
-    <string name="BankReceive" translatable="false">Bank Penerima</string>
     <string name="no_formulir" translatable="false">No. Formulir</string>
     <string name="jenis_layanan" translatable="false">Jenis Layanan</string>
-    <string name="penerima_manfaat" translatable="false">Penerima Manfaat</string>
-    <string name="submit" translatable="false">Kirimkan</string>
-    <string name="add" translatable="false">Tambah (+)</string>
-    <string name="dana_pihak_ketiga" translatable="false">Dana Pihak Ketiga</string>
-    <string name="investasi" translatable="false">Investasi</string>
-    <string name="kredit" translatable="false">Kredit</string>
     <string name="antrian_saya" translatable="false">(Nomor Anda)</string>
     <string name="antrian_sekarang" translatable="false">(Saat ini)</string>
     <string name="mata_uang" translatable="false">Rp</string>
-    <string name="currency" translatable="false">Dalam Rp</string>
-    <string name="formulir_rtgs" translatable="false">Formulir Transfer</string>
     <string name="please_wait" translatable="false">Harap Menunggu</string>
     <string name="please_wait1" translatable="false">Harap Menunggu .</string>
     <string name="please_wait2" translatable="false">Harap Menunggu . .</string>
@@ -141,40 +98,16 @@
     <string name="ocr_title" translatable="false">Apakah data anda sudah sesuai ?</string>
     <string name="ttl" translatable="false">Tempat Lahir</string>
     <string name="ttl2" translatable="false">Tgl Lahir</string>
-    <string name="dari" translatable="false">Dari</string>
-    <string name="penerima" translatable="false">Penerima</string>
-    <string name="biaya" translatable="false">Biaya</string>
-    <string name="konfirmasi_transfer" translatable="false">Konfirmasi Transfer</string>
     <string name="transaksi_anda_berhasil" translatable="false">Transaksi Anda Berhasil</string>
-    <string name="resi_ini_akan_otomatis_dikirim_melalui_email_anda" translatable="false">Resi ini akan otomatis\ndikirim melalui email Anda.</string>
     <string name="resi" translatable="false">Resi</string>
     <string name="perorangan" translatable="false">Perorangan</string>
-    <string name="perusahaan" translatable="false">Perusahaan</string>
-    <string name="pemerintah" translatable="false">Pemerintah</string>
-    <string name="INTERBANK_TRANSACTION" translatable="false">Transaksi Antar Bank</string>
-    <string name="ATM_CARD" translatable="false">Kartu ATM</string>
+    <string name="INTERBANK_TRANSACTION" translatable="false">Transfer Antar Bank</string>
     <string name="KYC_UPDATING" translatable="false">Perbarui Data</string>
     <string name="CUSTOMER_COMPLAIN" translatable="false">Pengaduan Nasabah</string>
     <string name="DORMANT_ACTIVATION" translatable="false">Aktivasi Dormant</string>
-    <string name="rto_content" translatable="false">Nominal transaksi minimal Rp. 50.000,00 dan maksimal Rp. 50.000.000,00</string>
-    <string name="skn_content" translatable="false">Nominal transaksi minimal Rp. 50.000,00 dan maksimal Rp. 1.000.000.000,00 pertransaksi</string>
-    <string name="rtgs_content" translatable="false">Nominal transaksi minimal Rp. 100.000.000,00 pertransaksi</string>
-    <string name="nama_pemilik_rekening" translatable="false">Nama Pemilik Rekening</string>
-    <string name="jam" translatable="false">Jam</string>
-    <string name="date" translatable="false">tanggal</string>
     <string name="error_field" translatable="false">Kolom masih kosong</string>
     <string name="error_image" translatable="false">Silahkan upload foto anda</string>
-    <string name="error_pass" translatable="false">Password anda tidak sama</string>
-    <string name="error_mpin" translatable="false">MPIN anda tidak sama</string>
     <string name="alertRTGS" translatable="false">harus diisi/dipilih pada Formulir</string>
-    <string name="label_first" translatable="false">Pertama</string>
-    <string name="label_second" translatable="false">Kedua</string>
-    <string name="label_third" translatable="false">Ketiga</string>
-    <string name="label_fourth" translatable="false">Keempat</string>
-    <string name="label_fifth" translatable="false">Kelima</string>
-    <string name="min_password" translatable="false">Password minimal 8 karakter</string>
-    <string name="min_MPIN" translatable="false">MPIN anda kurang dari 6 digit</string>
-    <string name="max_mpin" translatable="false">Masukkan 6 digit MPIN</string>
     <string name="incoming_call" translatable="false">Panggilan masuk</string>
     <string name="incoming_call1" translatable="false">Panggilan masuk .</string>
     <string name="incoming_call2" translatable="false">Panggilan masuk . .</string>
@@ -183,6 +116,7 @@
     <string name="isi_form" translatable="false">Isi Form</string>
     <string name="konfirmasi_data" translatable="false">Konfirmasi Data</string>
     <string name="pembukaan_akun" translatable="false">Pembukaan Rekening</string>
+    <string name="pembukaan_account" translatable="false">Pembukaan Akun</string>
     <string name="tipe_produk_rekening" translatable="false">Tipe Produk Rekening</string>
     <string name="setoran_awal" translatable="false">Setoran Awal</string>
     <string name="saving_new_acc" translatable="false">Tabungan > Tabungan A</string>
@@ -196,98 +130,45 @@
     <string name="tab_1" translatable="false">Daftar File</string>
     <string name="tab_2" translatable="false">Kirim File</string>
     <string name="selamat_npembukaan_akun_berhasil" translatable="false">Selamat!\nPembukaan Akun Berhasil</string>
-    <string name="nomor_akun" translatable="false">Nomor Akun</string>
     <string name="unduh_formulir" translatable="false">Unduh Formulir</string>
+    <string name="unduh_allformulir" translatable="false">Unduh Seluruh Formulir</string>
     <string name="formulir_komplain" translatable="false">Form Pengaduan</string>
-    <string name="silahkan_isi_formulir_berikut_dengan_keluhan_anda_kami_akan_menindaklanjuti_sesegera_mungkin" translatable="false">Silakan isi formulir berikut. Kami akan meninjau dan menindaklanjuti permintaan Anda sesegera mungkin.</string>
-    <string name="perihal" translatable="false">Perihal</string>
-    <string name="tanggal" translatable="false">Tanggal</string>
-    <string name="detail_komplain" translatable="false">Detail Pengaduan</string>
     <string name="POWER_OF_ATTORNEY" translatable="false">Surat Kuasa</string>
     <string name="IBMB_REGISTRATION" translatable="false">Aktivasi IBMB</string>
     <string name="CREDIT_FORM" translatable="false">Formulir Kredit</string>
-    <string name="REGISTER_WEALTH" translatable="false">Daftar Sumber Kekayaan</string>
-    <string name="WEALTH_RISK_PROFILE" translatable="false">Profil Resiko Kekayaan</string>
-    <string name="FINANCIAL_PLANNING" translatable="false">Rencana Keuangan</string>
-    <string name="WEALTH" translatable="false">Kekayaan</string>
-    <string name="antar_rekening" translatable="false">Antar Rekening</string>
-    <string name="deposit" translatable="false">Setoran</string>
-    <string name="maintenance_deposit" translatable="false">Perubahan Setoran</string>
-    <string name="WEALTH_SUBSCRIPTION" translatable="false">Langganan</string>
-    <string name="WEALTH_SWITCHING" translatable="false">Beralih</string>
-    <string name="WEALTH_REDEMPTION" translatable="false">Tebusan</string>
-    <string name="_12_bulan" translatable="false">12 Bulan</string>
-    <string name="_24_bulan" translatable="false">24 Bulan</string>
-    <string name="_35_bulan" translatable="false">35 Bulan</string>
-    <string name="nominal_pengajuan" translatable="false">Nominal Pengajuan</string>
-    <string name="nomor_npwp" translatable="false">Nomor NPWP</string>
     <string name="tanggal_transaksi" translatable="false">Tanggal Transaksi</string>
-    <string name="mata_uang_asing" translatable="false">Mata Uang Asing</string>
-    <string name="nominal_transaksi" translatable="false">Nominal Transaksi</string>
-    <string name="data_diri" translatable="false">Data Diri</string>
-    <string name="gelar" translatable="false">Gelar</string>
     <string name="kelurahan_desa" translatable="false">Kelurahan/Desa</string>
     <string name="kabupaten_kota" translatable="false">Kabupaten/Kota</string>
     <string name="provinsi" translatable="false">Provinsi</string>
-    <string name="kode_pos" translatable="false">Kode Pos</string>
-    <string name="negara" translatable="false">Negara</string>
-    <string name="jenis_identitas_lain" translatable="false">Jenis Identitas Lain</string>
-    <string name="jumlah_tanggungan" translatable="false">Jumlah Tanggungan</string>
-    <string name="nama_suami_istri_orang_tua" translatable="false">Nama Suami/Istri/Orang Tua</string>
     <string name="jenis_kelamin" translatable="false">Jenis Kelamin</string>
     <string name="goldar" translatable="false">Golongan Darah</string>
-    <string name="pendidikan" translatable="false">Pendidikan</string>
-    <string name="jenis_bukti_identitas" translatable="false">Jenis Bukti Identitas</string>
-    <string name="tanggal_terbit_identitas" translatable="false">Tanggal Terbit Identitas</string>
-    <string name="tanggal_berakhir_identitas" translatable="false">Tanggal Berakhir Identitas</string>
     <string name="nama_ibu_kandung" translatable="false">Nama Ibu Kandung</string>
-    <string name="no_handphone" translatable="false">No Handphone</string>
-    <string name="status_rumah" translatable="false">Status Rumah</string>
     <string name="kecamatan" translatable="false">Kecamatan</string>
-    <string name="kembali" translatable="false">Kembali</string>
     <string name="data_pekerjaan" translatable="false">Data Pekerjaan</string>
-    <string name="nama_perusahaan" translatable="false">Nama Perusahaan</string>
-    <string name="alamat_perusahaan" translatable="false">Alamat Perusahaan</string>
     <string name="data_keuangan" translatable="false">Data Keuangan</string>
-    <string name="cardless" translatable="false">Transaksi Tanpa Kartu</string>
-    <string name="keterangan" translatable="false">Keterangan</string>
+    <string name="cardless" translatable="false">Transfer Tanpa Kartu</string>
     <string name="title_gagal_livenes" translatable="false">Muka Anda Tidak Terdeksi</string>
     <string name="body_gagal_livenes" translatable="false">Harap Ulangi Kembali.</string>
     <string name="button_gagal_livenes" translatable="false">Ulangi</string>
-    <string name="body_resi_cardless" translatable="false">Gunakan kode dibawah ini untuk melakukan transaksi tanpa kartu pada ATM yang tersedia. Jangan bagikan nomor ini kepada orang lain.</string>
     <string name="headline_cardless" translatable="false">Terima kasih telah mempercayakan transaksi perbankan Anda pada Bank XYZ. Gunakan Aplikasi XYZ Mobile Banking untuk pengalaman transaksi penuh keuntungan. <b>Resi Digital Form telah dikirimkan ke alamat email Anda.</b> Harap untuk memeriksa email Anda.</string>
     <string name="unduh_resi" translatable="false">Unduh Resi</string>
-    <string name="alamat_penerima" translatable="false">Alamat Penerima</string>
-    <string name="no_cif" translatable="false">No. CIF</string>
-    <string name="pemegang_kartu_atm" translatable="false">Pemegang Kartu ATM</string>
-    <string name="no_kartu_atm" translatable="false">No. Kartu ATM</string>
-    <string name="mengajukan_penggantian" translatable="false">Mengajukan Penggantian</string>
-    <string name="no_surat_kepolisian" translatable="false">No. Surat Kepolisian</string>
-    <string name="dengan_hormat" translatable="false">Dengan hormat,\nYang bertanda tangan dibawah ini:</string>
-    <string name="success_create_card" translatable="false">SELAMAT!\nPermohonan Kartu Anda Berhasil</string>
-    <string name="tnc_atm" translatable="false">Dengan ini Saya/Kami mengajukan permohonan Kartu ATM. Segala Resiko yang akan timbul adalah merupakan tanggung jawab Saya/Kami sepenuhnya dan dalam hal ini Saya/Kami membebaskan pihak Bank dari segala tuntutan.</string>
-    <string name="prepare_id_card" translatable="false">Harap untuk menyiapkan Kartu Tanda Penduduk (KTP) Anda.</string>
-    <string name="prepare_id_card_glasses" translatable="false">Harap untuk menyiapkan Kartu Tanda Penduduk (KTP) Anda dan mohon tidak menggunakan kacamata.</string>
+    <string name="prepare_id_card_glasses" translatable="false">Harap untuk menyiapkan Kartu Tanda Penduduk (eKTP) Anda dan mohon tidak menggunakan kacamata.</string>
     <string name="open_account" translatable="false">Buka Rekening</string>
-    <string name="ktp_swafoto" translatable="false">Foto diri dengan KTP</string>
-    <string name="photo_swafoto" translatable="false">Foto Diri\ndengan\nKTP</string>
+    <string name="ktp_swafoto" translatable="false">Foto Diri dengan eKTP</string>
+    <string name="photo_swafoto" translatable="false">Foto Diri\ndengan\neKTP</string>
     <string name="bank_name" translatable="false">Bank Victoria</string>
+    <string name="bank_name2" translatable="false">Victoria</string>
     <string name="warn_not_use_app" translatable="false">Maaf Anda tidak dapat menggunakan layanan Digital Operations Bank XYZ</string>
     <string name="warn_hub_calcenter" translatable="false">Untuk info lebih lanjut silakan menghubungi Call Center Bank XYZ</string>
     <string name="failed" translatable="false">Gagal</string>
     <string name="exit" translatable="false">Keluar</string>
     <string name="call_center" translatable="false">Call Center</string>
-    <string name="inter_bank_transaction" translatable="false">Transaksi Inter Bank</string>
-    <string name="alert_ktp" translatable="false">Pastikan gambar atau foto KTP sudah jelas (tidak buram, rusak, atau tertutup jari/pantulan cahaya)</string>
-    <string name="alert_swafoto" translatable="false">Pastikan wajah dan KTP Anda terlihat jelas dan tidak buram.</string>
+    <string name="alert_ktp" translatable="false">Pastikan gambar atau foto eKTP sudah jelas (tidak buram, rusak, atau tertutup jari/pantulan cahaya)</string>
+    <string name="alert_swafoto" translatable="false">Pastikan wajah dan eKTP Anda terlihat jelas dan tidak buram.</string>
     <string name="alert_npwp" translatable="false">Pastikan gambar atau foto NPWP sudah jelas dan tidak buram. Lewati jika tidak memiliki NPWP</string>
     <string name="alert_ttd" translatable="false">Pastikan gambar atau foto Tanda Tangan sudah jelas dan tidak buram.</string>
-    <string name="state_complaint" translatable="false">Saya menyatakan bahwa seluruh data yang saya berikan di formulir pengduan  ini benar.</string>
-    <string name="accept_state" translatable="false">Mohon untuk menyetujui pernyataan</string>
-    <string name="title_safe_complaint" translatable="false">SELAMAT!\nPengaduan Anda Berhasil Tercatat.</string>
     <string name="body_complaint" translatable="false">Pengaduan Anda berhasil tercatat &amp; akan segera kami tangani. Berikut ini adalah nomor tiket aduan Anda.</string>
     <string name="body2_complaint" translatable="false">Terima kasih telah mempercayakan transaksi perbankan Anda pada Bank XYZ. Resi ini telah dikirimkan ke alamat email Anda. Harap untuk memeriksa email Anda.</string>
-    <!-- TODO: Remove or change this placeholder text -->
     <string name="badan_usaha" translatable="false">Badan Usaha</string>
     <string name="join_account" translatable="false">Rekening Gabungan</string>
     <string name="join_account_and" translatable="false">Rekening Gabungan (AND)</string>
@@ -295,7 +176,7 @@
     <string name="tunggal_account" translatable="false">Rekening Tunggal</string>
     <string name="agent_leave" translatable="false">Maaf, Agen sudah mengakhiri sesi.</string>
     <string name="reject" translatable="false">Tolak</string>
-    <string name="label_ya" translatable="false">Ya</string>
+    <string name="label_ya" translatable="false">Iya</string>
     <string name="caliing_comeback" translatable="false">Silakan jadwalkan waktu terbaik bagi kami untuk menghubungi Anda kembali.</string>
     <string name="doesn_match" translatable="false">Data tidak sesuai</string>
     <string name="rtrw" translatable="false">Rt/Rw</string>
@@ -305,26 +186,22 @@
     <string name="titleWrongOTP" translatable="false">Kode OTP Salah.\nHarap periksa kembali kode yang terkirim.</string>
     <string name="block_account" translatable="false">Blokir Rekening</string>
     <string name="label_downloaded" translatable="false">Menunggu File didownload</string>
-    <string name="content_swafoto" translatable="false">Pastikan foto terlihat jelas dan tidak buram</string>
-    <string name="content_swafoto2" translatable="false">Tempatkan Kartu Tanda Penduduk didalam kotak merah. Pastikan wajah dan KTP Anda terlihat jelas dan tidak buram.</string>
+    <string name="content_swafoto2" translatable="false">Tempatkan Kartu Tanda Penduduk didalam kotak merah. Pastikan wajah dan eKTP Anda terlihat jelas dan tidak buram.</string>
     <string name="account_closure" translatable="false">Penutupan Rekening</string>
     <string name="write_here" translatable="false">Tulis disini</string>
     <string name="lbpinjaman" translatable="false">Pinjaman</string>
     <string name="nasabahtype" translatable="false">Tipe Nasabah</string>
     <string name="atm_transaction" translatable="false">Transaksi ATM</string>
     <string name="ibmb_transaction" translatable="false">Transaksi IBMB</string>
-    <string name="credit_transactions" translatable="false">Transaksi Kredit</string>
     <string name="deposit_transactions" translatable="false">Transaksi Titipan</string>
-    <string name="wealth_transactions" translatable="false">Transaksi Wealth Management</string>
+    <string name="wealth_transactions" translatable="false">Wealth Management</string>
     <string name="account_type" translatable="false">Jenis Rekening</string>
     <string name="invalidate_email" translatable="false">Alamat email tidak sah</string>
     <string name="calling" translatable="false">Memanggil...</string>
     <string name="incoming_call_from" translatable="false">Panggilan Masuk dari</string>
     <string name="required" translatable="false">*Wajib diisi</string>
     <string name="capture_back" translatable="false">Gambar tidak sesuai.\nHarap ulangi kembali</string>
-    <string name="ktpnotread" translatable="false">KTP belum terbaca.\nHarap ulangi kembali</string>
-    <string name="validate_dukcapil" translatable="false">Data KTP tidak Valid. Pastikan KTP yang Anda gunakan Benar dan Terdaftar</string>
-    <string name="btn_validate_dukcapil" translatable="false">Masukkan Ulang KTP</string>
+    <string name="ktpnotread" translatable="false">eKTP belum terbaca.\nHarap ulangi kembali</string>
     <string name="validate_nama_ibu" translatable="false">Silakan masukkan nama ibu kandung</string>
     <string name="validate_dtott" translatable="false">Maaf Anda Tidak Dapat Menggunakan Layanan Digital Operations Bank Victoria. Untuk info lebih lanjut silakan menghubungi Call Center Bank Victoria.</string>
     <string name="max_upfile" translatable="false">Maksimal 3 file</string>
@@ -342,6 +219,154 @@
     <string name="info_portofolio" translatable="false">Informasi Portofolio</string>
     <string name="try_again" translatable="false">Coba Lagi</string>
     <string name="fail_call" translatable="false">Gagal menghubungkan panggilan</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="form_transation" translatable="false">Form Transaksi</string>
+    <string name="trax_between_acc" translatable="false">Transfer Antar Rekening</string>
+    <string name="transaction" translatable="false">Transaksi</string>
+    <string name="selamat" translatable="false">SELAMAT!</string>
+    <string name="contentqr" translatable="false">Formulir transaksi Anda telah tersimpan.\nFile QRCode berhasil disimpan di galeri Anda.\nSilakan unggah QRCode terlampir untuk melakukan transaksi saat bertemu dengan Agen Kami.</string>
+    <string name="tambah_formulir" translatable="false">Tambah Formulir</string>
+    <string name="notify_qrcode_saved" translatable="false">Kode QR berhasil disimpan di Galeri</string>
+    <string name="insertqrcode_trx" translatable="false">Masukkan QRCode\nTransaksi</string>
+    <string name="qrcode_notmatch" translatable="false">QRCode tidak sesuai</string>
+    <string name="transaksi_qr" translatable="false">Transaksi QR</string>
+    <string name="transaksi_non_qr" translatable="false">Transaksi Non QR</string>
+    <string name="transaksi_titikdua" translatable="false">Transaksi :</string>
+    <string name="connect_to_agent" translatable="false">Hubungkan dengan Agen sekarang</string>
+    <string name="connect" translatable="false">Hubungkan</string>
+    <string name="or" translatable="false">atau</string>
+    <string name="auto_connect_agent" translatable="false">Otomatis menghubungkan dengan Agen</string>
+    <string name="choose_transaction_connect" translatable="false">Pilih <b>Menu Transaksi</b> untuk kembali ke menu transaksi. Pilih <b>Hubungkan</b> untuk menghubungkan dengan Agen.</string>
+    <string name="choose_favorite" translatable="false">Pilih daftar penerima favorit Anda.</string>
+    <string name="second" translatable="false">detik</string>
+    <string name="personal_account_transactions" translatable="false">Transfer Rekening Sendiri</string>
+    <string name="confirm_trx_error1" translatable="false">Terdapat transaksi yang tidak sesuai.\nAnda dapat menghapus transaksi atau melakukan pengecekkan ulang.</string>
+    <string name="confirm_trx_error2" translatable="false">Gagal terhubung ke server.</string>
+    <string name="redaksi_form" translatable="false">Terima kasih telah mempercayakan transaksi perbankan Anda pada Bank XYZ. Resi ini telah dikirimkan ke alamat email Anda. Harap untuk memeriksa email Anda.</string>
+    <string name="file_downloaded" translatable="false">Berkas diunduh</string>
+    <string name="deposito_online" translatable="false">Deposito Online</string>
+    <string name="penempatan_deposito" translatable="false">Penempatan Deposito</string>
+    <string name="authority" translatable="false">Kuasa</string>
+    <string name="tarik_tunai" translatable="false">Tarik Tunai</string>
+    <string name="dalam_pengerjaan" translatable="false">DALAM PENGERJAAN</string>
+    <string name="under_construction" translatable="false">Halaman ini sedang dalam pengerjaan.</string>
+    <string name="previous" translatable="false"><![CDATA[< Sebelumnya]]></string>
+    <string name="skip" translatable="false"><![CDATA[Lewati >]]></string>
+    <string name="bunga_didapat" translatable="false">Bunga Didapat</string>
+    <string name="info_suku_bunga" translatable="false">Info Suku Bunga</string>
+    <string name="nominal_row1" translatable="false"><![CDATA[8 Jt <= 200 Jt]]></string>
+    <string name="nominal_row2" translatable="false"><![CDATA[200 Jt <= 500 Jt]]></string>
+    <string name="nominal_row3" translatable="false"><![CDATA[500 Jt <= 2 M]]></string>
+    <string name="nominal_row4" translatable="false"><![CDATA[2 M <= 5 M]]></string>
+    <string name="jangka_waktu" translatable="false">Jangka Waktu</string>
+    <string name="month1" translatable="false">1 Bulan</string>
+    <string name="month3" translatable="false">3 Bulan</string>
+    <string name="month6" translatable="false">6 Bulan</string>
+    <string name="month12" translatable="false">12 Bulan</string>
+    <string name="jenis_deposito" translatable="false">Jenis Deposito</string>
+    <string name="pencairan_deposito" translatable="false">Pencairan Deposito</string>
+    <string name="perubahan_aro" translatable="false">Perubahan ARO</string>
+    <string name="jatuh_tempo" translatable="false">Jatuh Tempo</string>
+    <string name="perubahan_aro_non_aro" translatable="false"><![CDATA[Perubahan ARO & Non ARO]]></string>
+    <string name="save" translatable="false">Simpan</string>
+    <string name="update" translatable="false">Proses Perubahan</string>
+    <string name="nomor_referensi" translatable="false">Nomor Referensi</string>
+    <string name="nomor_rekening" translatable="false">Nomor Rekening</string>
+    <string name="choose_nomor_rekening" translatable="false">Pilih Nomor Rekening</string>
+    <string name="instruksi" translatable="false">Instruksi</string>
+    <string name="e_bilyet_deposito" translatable="false">E-Bilyet Deposito</string>
+    <string name="profil_resiko" translatable="false">Profil Resiko</string>
+    <string name="profil_resiko2" translatable="false">Profil Resiko : </string>
+    <string name="not_yet_risk_profile" translatable="false">Anda belum memiliki profil resiko</string>
+    <string name="proses_sid" translatable="false">Proses SID</string>
+    <string name="mulai" translatable="false">Mulai</string>
+    <string name="selanjutnya" translatable="false">Selanjutnya</string>
+    <string name="pertanyaan" translatable="false">Pertanyaan</string>
+    <string name="from" translatable="false">dari</string>
+    <string name="alert_radio" translatable="false">harus dipilih dahulu</string>
+    <string name="sidonprocess" translatable="false"><![CDATA[SID & IFUA Anda akan diproses dalam waktu 7 hari kerja.]]></string>
+    <string name="no_ektp" translatable="false">No. eKTP</string>
+    <string name="no_npwp" translatable="false">No. NPWP</string>
+    <string name="birthdate" translatable="false">Tanggal Lahir</string>
+    <string name="pembelian_reksa_dana" translatable="false">Pembelian Reksa Dana</string>
+    <string name="penjualan_reksa_dana" translatable="false">Penjualan Reksa Dana</string>
+    <string name="pengalihan_reksa_dana" translatable="false">Pengalihan Reksa Dana</string>
+    <string name="risk_terproteksi" translatable="false">Pembelian Reksa Dana Terproteksi</string>
+    <string name="sales_terproteksi" translatable="false">Penjualan Reksa Dana Terproteksi</string>
+    <string name="riwayat_transaksi" translatable="false">Riwayat Transaksi</string>
+    <string name="kategori_produk" translatable="false">Kategori Produk</string>
+    <string name="cairkan" translatable="false">Cairkan</string>
+    <string name="berhasil" translatable="false">Berhasil</string>
+    <string name="contentSuccessRegistration" translatable="false">Pengisian form pendaftaran berhasil.\nSilakan tekan tombol “Iya” untuk melakukan Aktivasi Victoria Mobile</string>
+    <string name="account_receive_not_found" translatable="false">Rekening penerima tidak ditemukan</string>
+    <string name="alert_norek_notmatch" translatable="false">*Rekening penerima tidak boleh sama dengan sumber dana</string>
+    <string name="choose_source_fund" translatable="false">Pilih Sumber Dana</string>
+    <string name="alert_nominal" translatable="false">*Nominal melebihi saldo sumber dana</string>
+    <string name="balance_insufficient" translatable="false">Saldo Anda tidak mencukupi</string>
+    <string name="konfirmasi" translatable="false">Konfirmasi</string>
+    <string name="cari_produk" translatable="false">Cari Produk</string>
+    <string name="saya_setuju" translatable="false">Saya Setuju</string>
+    <string name="informasi_data_diri" translatable="false">Informasi Data Diri</string>
+    <string name="registrasi_aplikasi" translatable="false">Registrasi Aplikasi</string>
+    <string name="bancassurance" translatable="false">Bancassurance</string>
+    <string name="success" translatable="false">Sukses</string>
+    <string name="msg_success_approve" translatable="false">Perubahan Anda telah disetujui</string>
+    <string name="msg_failed_approve" translatable="false">Permintaan Anda gagal</string>
+    <string name="no_mobile_number" translatable="false">Nomor Handphone tidak ada</string>
+    <string name="combine_alert" translatable="false"><![CDATA[* Kombinasi huruf, angka dan simbol (!@#$%^&*) \n* 7 - 21 karakter]]></string>
+    <string name="msg_active_account" translatable="false">Mohon aktifkan Rekening Anda dengan menyetorkan dana maksimal 90 hari kedepan.</string>
+    <string name="yield" translatable="false">Imbal Hasil</string>
+    <string name="transaction_add_cost" translatable="false">Transaksi ini memungkinkan adanya tambahan biaya</string>
+    <string name="nab_per_date" translatable="false">NAB per tanggal</string>
+    <string name="unduh_e_bilyet" translatable="false">Unduh E-Bilyet</string>
+    <string name="nab_unit" translatable="false"><b>NAB</b> / Unit</string>
+    <string name="info_produk" translatable="false">Informasi Produk</string>
+    <string name="level_risk" translatable="false">Tingkat Resiko</string>
+    <string name="manajer_investasi" translatable="false">Manajer Investasi</string>
+    <string name="biaya_pembelian" translatable="false">Biaya Pembelian</string>
+    <string name="pajak_pembelian" translatable="false">Pajak Pembelian</string>
+    <string name="i_have_read" translatable="false">Saya telah membaca</string>
+    <string name="harga_per_unit" translatable="false">Harga Per Unit</string>
+    <string name="pajak_atas_biaya_pembelian" translatable="false">Pajak atas Pembelian</string>
+    <string name="invest_value" translatable="false">Nilai Investasi</string>
+    <string name="minimum_transaksi" translatable="false">Minimum Transaksi Rp 100.000</string>
+    <string name="nominal_fee_tax" translatable="false"><![CDATA[*Nominal belum termasuk biaya pembelian & pajak pembelian]]></string>
+    <string name="i_declare" translatable="false">Saya menyatakan bahwa saya bukan warga negara Amerika dan bukan pemegang Green Card serta tidak berdomisili di wilayah Amerika lebih dari 6 bulan.</string>
+    <string name="biaya_layanan" translatable="false">Biaya Layanan</string>
+    <string name="bulan" translatable="false">Bulan</string>
+    <string name="nama_produk" translatable="false">Nama Produk</string>
+    <string name="purchase" translatable="false">Pembelian</string>
+    <string name="setiap_tanggal" translatable="false">Setiap Tanggal</string>
+    <string name="periode" translatable="false">Periode</string>
+    <string name="i_read_term" translatable="false">Saya telah membaca, memahami dan menyetujui syarat dan ketentuan berkala.</string>
+    <string name="nominal_investasi" translatable="false">Nominal Investasi</string>
+    <string name="detail_portofolio" translatable="false">Detail Portofolio</string>
+    <string name="jumlah_unit" translatable="false">Jumlah Unit</string>
+    <string name="tanggal_nab" translatable="false">Tanggal NAB</string>
+    <string name="nilai_semula" translatable="false">Nilai Semula</string>
+    <string name="nilai_sekarang" translatable="false">Nilai Sekarang</string>
+    <string name="info_nab" translatable="false">Dalam hal penjualan unit Reksa Dana NAB terlampir adalah NAB indikatif</string>
+    <string name="ket_feetaxsale" translatable="false"><![CDATA[Biaya & pajak dipotong dari nominal penjualan]]></string>
+    <string name="biaya_penjualan" translatable="false">Biaya Penjualan</string>
+    <string name="tax_cost_sales" translatable="false">Pajak atas Penjualan</string>
+    <string name="unit_dimiliki" translatable="false">Unit Dimiliki</string>
+    <string name="jumlah_unit_pencairan" translatable="false">Jumlah Unit Pencairan</string>
+    <string name="sisa_unit" translatable="false">Sisa Unit</string>
+    <string name="state_sale_wm" translatable="false">Saya menyatakan bahwa saya bukan warga negara Amerika dan bukan pemegang Green Card serta tidak berdomisili di wilayah Amerika lebih dari 6 bulan.</string>
+    <string name="password_not_match" translatable="false">Konfirmasi Kata Sandi tidak sesuai</string>
+    <string name="mpin_not_match" translatable="false">Konfirmasi MPIN tidak sesuai</string>
+    <string name="penjualan" translatable="false">Penjualan</string>
+    <string name="transaksi_anda_gagal" translatable="false">Transaksi Anda Gagal</string>
+    <string name="please_tryagain_later" translatable="false">Silakan coba kembali beberapa saat lagi.</string>
+    <string name="tambah_rekening" translatable="false">Tambah Rekening</string>
+    <string name="product_wm_not_avail" translatable="false">Produk belum tersedia.\nSilakan coba lagi nanti.</string>
+    <string name="unit_wm_not_avail" translatable="false">Unit Reksa Dana belum tersedia.\nSilakan coba lagi nanti.</string>
+    <string name="nab" translatable="false">NAB</string>
+    <string name="setoran_awal_mininum" translatable="false">Setoran awal mininum Rp 50.000</string>
+    <string name="rekening_penerima_dana" translatable="false">Rekening Penerima Dana</string>
+    <string name="sort_by" translatable="false">Urutkan berdasarkan :</string>
+    <string name="filter_berdasarkan" translatable="false">Filter berdasarkan :</string>
+    <string name="lewati" translatable="false">Lewati</string>
+    <string name="maintenance_and_administration" translatable="false">Pemeliharaan dan Administrasi</string>
+    <string name="blokir_saldo" translatable="false">Blokir Saldo</string>
+    <string name="manajemen_investasi" translatable="false">Manajemen Investasi</string>
 </resources>

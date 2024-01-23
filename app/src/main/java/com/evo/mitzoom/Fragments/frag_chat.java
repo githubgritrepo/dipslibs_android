@@ -119,7 +119,6 @@ public class frag_chat extends Fragment  implements ZoomVideoSDKDelegate {
         chatListView.setLayoutManager(new LinearLayoutManager(context, RecyclerView.VERTICAL, false));
         if (sessionManager.getKEY_CHAT() != null){
             String dataChat = sessionManager.getKEY_CHAT();
-            Log.d("CEK START PESAN ",dataChat);
             try {
                 JSONArray jsonArray2 = new JSONArray(dataChat);
                 int panjang = jsonArray2.length();
@@ -148,7 +147,6 @@ public class frag_chat extends Fragment  implements ZoomVideoSDKDelegate {
             }
         }
         else {
-            Log.d("CEK START PESAN ","MASUK ELSE");
         }
         chatMsgAdapter = new ChatMsgAdapter(context, list,isHost, isSelf);
         chatListView.setAdapter(chatMsgAdapter);
@@ -179,7 +177,6 @@ public class frag_chat extends Fragment  implements ZoomVideoSDKDelegate {
         }
         String dataArr = jsonArray.toString();
         sessionManager.saveChat(dataArr);
-        Log.d("CEK PESAN ARRAY",dataArr);
     }
 
     @Override
@@ -230,7 +227,6 @@ public class frag_chat extends Fragment  implements ZoomVideoSDKDelegate {
     @Override
     public void onChatNewMessageNotify(ZoomVideoSDKChatHelper zoomVideoSDKChatHelper, ZoomVideoSDKChatMessage messageItem) {
         chatMsgAdapter.onReceive(messageItem);
-        Log.d("CEK PESAN",messageItem.getContent());
         updateChatLayoutParams();
     }
 

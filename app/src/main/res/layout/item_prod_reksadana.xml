@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:background="@drawable/bg_textinput_5"
+    android:padding="10dp"
+    android:layout_marginBottom="5dp"
+    android:layout_marginTop="5dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/tvTitleProd"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            tools:text="REKSA DANA LANCAR VICTORIA MERKURIUS"
+            android:textStyle="bold"
+            android:textColor="@color/zm_text"/>
+
+        <TextView
+            android:id="@+id/tvPtProd"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            tools:text="PT. VICTORIA MANAJEMEN INVESTASI"
+            android:textColor="@color/zm_text"
+            android:textSize="12dp"/>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/dp_10"
+            android:layout_marginBottom="@dimen/dp_10">
+
+            <TextView
+                android:id="@+id/tvImbalHasil"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/yield"
+                android:textColor="@color/zm_text"
+                android:textSize="@dimen/dp_10"/>
+            <TextView
+                android:id="@+id/tvNAB"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/nab_per_date"
+                android:textColor="@color/zm_text"
+                android:textSize="@dimen/dp_10"
+                android:layout_toLeftOf="@id/tvNABDate"
+                android:layout_marginEnd="@dimen/dp_5"/>
+            <TextView
+                android:id="@+id/tvNABDate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                tools:text="20/05/23"
+                android:textColor="@color/zm_text"
+                android:textSize="@dimen/dp_10"
+                android:layout_alignParentRight="true"/>
+            <ImageView
+                android:id="@+id/imgImbalHasil"
+                android:layout_width="14dp"
+                android:layout_height="14dp"
+                android:src="@drawable/upgreen"
+                android:layout_below="@id/tvImbalHasil"/>
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_toRightOf="@id/imgImbalHasil"
+                android:layout_below="@id/tvImbalHasil"
+                android:layout_marginStart="5dp">
+                <TextView
+                    android:id="@+id/tvPercent"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    tools:text="0% /Thn"
+                    android:textColor="@color/zm_text"
+                    android:textSize="@dimen/dp_10"/>
+                <TextView
+                    android:id="@+id/tvLabaRugi"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="/laba-rugi"
+                    android:textColor="@color/zm_text"
+                    android:textSize="@dimen/dp_10"
+                    android:layout_marginStart="5dp"
+                    android:visibility="gone"/>
+            </LinearLayout>
+            <TextView
+                android:id="@+id/tvNominal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                tools:text="Rp 1.500,00"
+                android:textColor="@color/zm_text"
+                android:textSize="12dp"
+                android:textStyle="bold"
+                android:layout_alignParentRight="true"
+                android:layout_below="@id/tvNABDate"/>
+        </RelativeLayout>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/transaction_add_cost"
+            android:textStyle="italic"
+            android:textColor="@color/zm_text"
+            android:textSize="@dimen/dp_10"/>
+    </LinearLayout>
+
+</RelativeLayout>

@@ -59,11 +59,8 @@ public class FormSpin {
 
     @Override
     public boolean equals(@Nullable Object obj) {
-        Log.e("CEK","FormSpin equals : "+obj.toString());
         if(obj instanceof FormSpin){
             FormSpin c = (FormSpin ) obj;
-            Log.e("CEK","FormSpin c.getName() : "+c.getName()+" | name : "+name);
-            Log.e("CEK","FormSpin c.getId() : "+c.getId()+" | name : "+id);
             return c.getName().equals(name) && c.getId() == id;
         }
 

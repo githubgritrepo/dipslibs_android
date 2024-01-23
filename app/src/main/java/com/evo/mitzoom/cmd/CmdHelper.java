@@ -57,7 +57,6 @@ public class CmdHelper extends SimpleVideoSDKDelegate {
     public void sendCommand(CmdRequest request) {
         String cmd = request.generateCmdString();
         if (cmd == null) {
-            Log.e(TAG, "Wrong Command Null");
             return;
         }
         int error = ZoomVideoSDK.getInstance().getCmdChannel().sendCommand(request.user, cmd);

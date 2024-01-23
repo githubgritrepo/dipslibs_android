@@ -38,6 +38,7 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
@@ -53,6 +54,7 @@ import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.app.ActivityCompat;
 import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
@@ -60,6 +62,8 @@ import com.chaos.view.PinView;
 import com.evo.mitzoom.API.ApiService;
 import com.evo.mitzoom.API.Server;
 import com.evo.mitzoom.BaseMeetingActivity;
+import com.evo.mitzoom.Helper.ConnectionRabbitHttp;
+import com.evo.mitzoom.Helper.HideSoftKeyboard;
 import com.evo.mitzoom.Helper.MyParserFormBuilder;
 import com.evo.mitzoom.Helper.RabbitMirroring;
 import com.evo.mitzoom.Model.FormSpin;
@@ -108,6 +112,7 @@ public class frag_cif_new extends Fragment {
     private View inclHead;
     private SwipeRefreshLayout swipe;
     private LinearLayout TopBar;
+    private HorizontalScrollView hsvHead;
     private LinearLayout ll_head;
     private View inclBodyUpload;
     private TextView tvFotoKTP;
@@ -119,6 +124,8 @@ public class frag_cif_new extends Fragment {
     private LinearLayout iconNpwp;
     private LinearLayout iconSignature;
     private LinearLayout iconForm;
+    private LinearLayout capture_eKTP;
+    private Button btnUpdateData;
     private ImageView viewImage;
     private LinearLayout LL;
     private LinearLayout chooseImage;
@@ -126,6 +133,8 @@ public class frag_cif_new extends Fragment {
     private ImageView imgDelete;
     private LinearLayout llOR;
     private LinearLayout llFormBuild;
+    private LinearLayout llDataCorrectForm;
+    private CheckBox chkDataCorrectForm;
     private Button btnProses;
     private NestedScrollView scrollOTP;
     private View inclOTP;
@@ -150,6 +159,7 @@ public class frag_cif_new extends Fragment {
     private JSONObject dataFormCIF = null;
     final String STATE_IMGBYTE = "IMGBYTEUPLOAD";
     private byte[] IMG_BYTE = new byte[0];
+    private String imgPathKTP = "";
     private String picturePath = "";
     private String picturePathCrop = "";
     private byte[] imageBytes = new byte[0];
@@ -157,7 +167,23 @@ public class frag_cif_new extends Fragment {
     private String encodedImageCrop;
     private boolean flagOCR = false;
     private String tmptLahir = "-";
-    private String provinsi,kodepos="",kota_kabupaten, nik, nama, ttl, jeniskelamin, golongan_darah, alamat, rtrw, desa_kelurahan, kecamatan, agama, status_perkawinan, kewarganegaraan, pekerjaan = "", namaIbuKandung = "";
+    private String provinsi = "";
+    private String kodepos = "";
+    private String kota_kabupaten = "";
+    private String nik = "";
+    private String nama = "";
+    private String ttl = "";
+    private String jeniskelamin = "";
+    private String golongan_darah = "";
+    private String alamat = "";
+    private String rtrw = "";
+    private String desa_kelurahan = "";
+    private String kecamatan = "";
+    private String agama = "";
+    private String status_perkawinan = "";
+    private String kewarganegaraan = "";
+    private String pekerjaan = "";
+    private String namaIbuKandung = "";
     private JSONObject datasReqOCR = null;
     private int lasLenChar;
     private boolean backSpaceChar;
@@ -178,6 +204,7 @@ public class frag_cif_new extends Fragment {
     private JSONObject reqFormMirroring;
     private int loopStatus = 0;
     private int getRequestCode = 0;
+    private File mediaImgKTP = null;
     private File mediaFilePhoto = null;
     private File mediaFilePhotoCropSwafoto = null;
     private JSONArray idElement;
@@ -188,14 +215,18 @@ public class frag_cif_new extends Fragment {
     private EditText edKodePos = null;
     JSONObject dataObjProDesa = new JSONObject();
     private boolean ocrKTP = false;
+    private boolean swaOCR = false;
     private boolean flagMother = false;
-    private int loopValidMother = 0;
+    private final int loopValidMother = 0;
+    private TextView tvFeKTP = null;
+    private RelativeLayout rlContent;
+    private String tglTerbit = "-";
+    private Button btnOCRNext;
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        Log.e("CEK","frag_cif_new onCreate");
 
         mContext = getContext();
         sessions = new SessionManager(mContext);
@@ -203,12 +234,9 @@ public class frag_cif_new extends Fragment {
         isSwafoto = sessions.getKEY_iSSwafoto();
         formCode = sessions.getFormCode();
         idDips = sessions.getKEY_IdDips();
+        ConnectionRabbitHttp.init(mContext);
 
         isSessionZoom = ZoomVideoSDK.getInstance().isInSession();
-        Log.e("CEK",mContext+" isSessionZoom : "+isSessionZoom);
-        /*if (isSessionZoom) {
-            rabbitMirroring = new RabbitMirroring(mContext);
-        }*/
 
     }
 
@@ -216,18 +244,23 @@ public class frag_cif_new extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View views = inflater.inflate(R.layout.fragment_frag_cif, container, false);
 
-        Log.e("CEK","frag_cif_new onCreateView");
-
         inclHead = views.findViewById(R.id.inclHead);
         TopBar = views.findViewById(R.id.TopBar);
+        hsvHead = (HorizontalScrollView) views.findViewById(R.id.hsvHead);
+
         ll_head = views.findViewById(R.id.ll_head);
         tvAlertDoc = views.findViewById(R.id.tvAlertDoc);
         tvFotoKTP = views.findViewById(R.id.tvFotoKTP);
         iconKtp = views.findViewById(R.id.icon_ktp);
+        tvFeKTP = (TextView) views.findViewById(R.id.tvFeKTP);
         iconSwafoto = views.findViewById(R.id.icon_swafoto);
         iconNpwp = views.findViewById(R.id.icon_npwp);
         iconSignature = views.findViewById(R.id.icon_signature);
         iconForm = views.findViewById(R.id.icon_form);
+        capture_eKTP = (LinearLayout) views.findViewById(R.id.capture_eKTP);
+        btnUpdateData = (Button) views.findViewById(R.id.btnUpdateData);
+
+        rlContent = (RelativeLayout) views.findViewById(R.id.rlContent);
 
         swipe = views.findViewById(R.id.swipe);
 
@@ -243,6 +276,9 @@ public class frag_cif_new extends Fragment {
 
         llFormBuild = views.findViewById(R.id.llFormBuild);
 
+        llDataCorrectForm = (LinearLayout) views.findViewById(R.id.llDataCorrect);
+        chkDataCorrectForm = (CheckBox) views.findViewById(R.id.chkDataCorrect);
+
         scrollOTP = views.findViewById(R.id.scrollOTP);
         inclOTP = views.findViewById(R.id.inclOTP);
         imgDialog = views.findViewById(R.id.imgDialog);
@@ -251,7 +287,6 @@ public class frag_cif_new extends Fragment {
         TimerOTP = views.findViewById(R.id.timer_otp);
         Resend_Otp = views.findViewById(R.id.btn_resend_otp);
         otp = views.findViewById(R.id.otp);
-
         btnProses = views.findViewById(R.id.btnProses);
 
         return views;
@@ -260,18 +295,42 @@ public class frag_cif_new extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
-        Log.e("CEK","frag_cif_new onViewCreated");
+        tglTerbit = "-";
 
         if (getArguments() != null) {
             if (getArguments().containsKey("form_id")) {
                 form_id = getArguments().getInt("form_id");
-            } else if (getArguments().containsKey("NPWP")) {
+            }
+
+            if (getArguments().containsKey("pathKTP")) {
+                imgPathKTP = getArguments().getString("pathKTP");
+                mediaImgKTP = new File(imgPathKTP);
+            }
+
+            if (getArguments().containsKey("NPWP")) {
                 npwp = getArguments().getString("NPWP");
-            } else if (getArguments().containsKey("OCRKTP")) {
-                ocrKTP = getArguments().getBoolean("OCRKTP");
+            }
+
+            if (getArguments().containsKey("swaOCR")) {
+                swaOCR = getArguments().getBoolean("swaOCR");
+            }
+            if (getArguments().containsKey("ocrKTP")) {
+                ocrKTP = getArguments().getBoolean("ocrKTP");
+            }
+            if (getArguments().containsKey("picturePath")) {
+                picturePath = getArguments().getString("picturePath");
+                mediaFilePhoto = new File(picturePath);
+            }
+            if (getArguments().containsKey("picturePathCrop")) {
+                picturePathCrop = getArguments().getString("picturePathCrop");
+                mediaFilePhotoCropSwafoto = new File(picturePathCrop);
             }
         }
+
+        if (formCode == 22) {
+            keysData = "dataKtp";
+        }
+
         if (formCode == 8) {
             keysData = "datadiri";
         }
@@ -284,12 +343,6 @@ public class frag_cif_new extends Fragment {
         else if (formCode == 803) {
             keysData = "keuangan";
         }
-
-        Log.e("CEK", mContext + " isCust : " + isCust);
-        Log.e("CEK", mContext + " isSwafoto : " + isSwafoto);
-        Log.e("CEK", mContext + " formCode : " + formCode);
-        Log.e("CEK", mContext + " idDips : " + idDips);
-        Log.e("CEK", mContext + " form_id : " + form_id);
 
         if (formCode == 22) {
             tvFotoKTP.setText(R.string.ktp_swafoto);
@@ -309,41 +362,83 @@ public class frag_cif_new extends Fragment {
         if (isSessionZoom) {
             TopBar.setVisibility(View.VISIBLE);
             ll_head.setVisibility(View.VISIBLE);
+            iconKtp.setVisibility(View.GONE);
+            tvFeKTP.setVisibility(View.GONE);
         }
         else {
             TopBar.setVisibility(View.GONE);
             ll_head.setVisibility(View.VISIBLE);
         }
 
-        if (formCode > 7 && formCode != 22) {
+        if ((formCode > 7 && formCode != 22) || (formCode == 22 && isSessionZoom)) {
             dataFormCIF = new JSONObject();
             inclBodyUpload.setVisibility(View.GONE);
             llFormBuild.setVisibility(View.VISIBLE);
             if (formCode == 8) {
-                form_id = 10;
+                //form_id = 10;
+                form_id = 74;
+            } else if (formCode == 22) {
+                form_id = 72;
+                btnProses.setEnabled(false);
+                btnProses.setBackgroundTintList(mContext.getResources().getColorStateList(R.color.zm_text_grey));
             }
 
             iconKtp.setBackgroundTintList(mContext.getResources().getColorStateList(R.color.bg_cif_success));
-            iconSwafoto.setBackgroundTintList(mContext.getResources().getColorStateList(R.color.bg_cif_success));
-            iconNpwp.setBackgroundTintList(mContext.getResources().getColorStateList(R.color.bg_cif_success));
-            iconSignature.setBackgroundTintList(mContext.getResources().getColorStateList(R.color.bg_cif_success));
-            iconForm.setBackgroundTintList(mContext.getResources().getColorStateList(R.color.bg_cif));
+            if (formCode == 22) {
+                iconKtp.setVisibility(View.GONE);
+                tvFeKTP.setVisibility(View.GONE);
+                ll_head.setVisibility(View.VISIBLE);
+                capture_eKTP.setVisibility(View.VISIBLE);
+                llDataCorrectForm.setVisibility(View.VISIBLE);
+
+                chkDataCorrectForm.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if (chkDataCorrectForm.isChecked()) {
+                            btnProses.setEnabled(true);
+                            btnProses.setBackgroundTintList(mContext.getResources().getColorStateList(R.color.zm_button));
+                        } else {
+                            btnProses.setEnabled(false);
+                            btnProses.setBackgroundTintList(mContext.getResources().getColorStateList(R.color.zm_text_grey));
+                        }
+                    }
+                });
+                btnUpdateData.setAllCaps(false);
+                btnUpdateData.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        //chooseFromCamera();
+                        Bundle bundle = new Bundle();
+                        bundle.putString("fragDest","cifNew");
+                        bundle.putInt("formCode", 4); //4 Upload KTP, 22 Swafoto
+                        Fragment fragment = new frag_swafoto();
+                        fragment.setArguments(bundle);
+                        getFragmentPageBackStack(fragment);
+                    }
+                });
+                tvFotoKTP.setText(getResources().getText(R.string.pembukaan_account));
+                iconSwafoto.setBackgroundTintList(mContext.getResources().getColorStateList(R.color.bg_cif));
+            } else {
+                iconSwafoto.setBackgroundTintList(mContext.getResources().getColorStateList(R.color.bg_cif_success));
+                iconNpwp.setBackgroundTintList(mContext.getResources().getColorStateList(R.color.bg_cif_success));
+                iconSignature.setBackgroundTintList(mContext.getResources().getColorStateList(R.color.bg_cif_success));
+                iconForm.setBackgroundTintList(mContext.getResources().getColorStateList(R.color.bg_cif));
+            }
 
             swipe.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
                 @Override
                 public void onRefresh() {
+                    tglTerbit = "-";
                     dataFormCIF = new JSONObject();
                     processGetForm(form_id);
                 }
             });
 
             processGetForm(form_id);
-
             processAction();
 
         }
         else {
-
             if (formCode == 22) {
                 llOR.setVisibility(View.GONE);
                 btnGallery.setVisibility(View.GONE);
@@ -380,6 +475,7 @@ public class frag_cif_new extends Fragment {
                 tvAlertDoc.setText(getString(R.string.alert_npwp));
                 btnNext.setVisibility(View.VISIBLE);
                 btnNext.setClickable(true);
+                btnNext.setText(mContext.getResources().getString(R.string.lewati));
             } else if (formCode == 7) {
                 iconSwafoto.setBackgroundTintList(mContext.getResources().getColorStateList(R.color.bg_cif_success));
                 iconNpwp.setBackgroundTintList(mContext.getResources().getColorStateList(R.color.bg_cif_success));
@@ -420,6 +516,45 @@ public class frag_cif_new extends Fragment {
             imgDelete.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+                    if (mediaFilePhoto != null) {
+                        if (mediaFilePhoto.exists()) {
+                            try {
+                                mediaFilePhoto.getCanonicalFile().delete();
+                                if (mediaFilePhoto.exists()) {
+                                    getActivity().getApplicationContext().deleteFile(mediaFilePhoto.getName());
+                                }
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }
+
+                    if (mediaFilePhotoCropSwafoto != null) {
+                        if (mediaFilePhotoCropSwafoto.exists()) {
+                            try {
+                                mediaFilePhotoCropSwafoto.getCanonicalFile().delete();
+                                if (mediaFilePhotoCropSwafoto.exists()) {
+                                    getActivity().getApplicationContext().deleteFile(mediaFilePhotoCropSwafoto.getName());
+                                }
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }
+
+                    if (mediaImgKTP != null) {
+                        if (mediaImgKTP.exists()) {
+                            try {
+                                mediaImgKTP.getCanonicalFile().delete();
+                                if (mediaImgKTP.exists()) {
+                                    getActivity().getApplicationContext().deleteFile(mediaImgKTP.getName());
+                                }
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }
+
                     LL.setBackground(mContext.getResources().getDrawable(R.drawable.bg));
                     btnNext.setVisibility(View.GONE);
                     btnNext.setClickable(false);
@@ -436,7 +571,6 @@ public class frag_cif_new extends Fragment {
             btnNext.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    Log.e("CEK","btnNext formCode : "+formCode+" | IMG_BYTE : "+IMG_BYTE.length);
                     if (formCode == 22) {
                         IMG_BYTE = imageBytes;
                         isSwafoto = true;
@@ -465,21 +599,31 @@ public class frag_cif_new extends Fragment {
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             }
-                            RabbitMirroring.MirroringSendKey(reqOCR);
+                            ConnectionRabbitHttp.mirroringKey(reqOCR);
                         } else {
-                            Toast.makeText(mContext, "Maaf, OCR masih dalam proses...!!!", Toast.LENGTH_SHORT).show();
+                            Bundle bundle = new Bundle();
+                            bundle.putString("pathKTP",picturePath);
+                            bundle.putBoolean("swaOCR",true);
+                            sessions.saveFormCOde(22);
+                            if (isSessionZoom) {
+                                ConnectionRabbitHttp.mirroringEndpoint(7);
+                            }
+                            sendDataFragment(bundle, new frag_cif_new());
+                            //Toast.makeText(mContext, "Maaf, OCR masih dalam proses...!!!", Toast.LENGTH_SHORT).show();
                         }
                     }
                     else if ((imageBytes.length == 0 && formCode == 6)){
                         Bundle bundle = new Bundle();
                         bundle.putString("NPWP",npwp);
                         sessions.saveFormCOde(7);
-                        RabbitMirroring.MirroringSendEndpoint(7);
+                        if (isSessionZoom) {
+                            ConnectionRabbitHttp.mirroringEndpoint(7);
+                        }
                         sendDataFragment(bundle, new frag_cif_new());
                     }
                     else {
                         if (formCode == 22) {
-                            if (ocrKTP && flagOCR) {
+                            if (swaOCR && flagOCR) {
                                 PopUpOCR();
                                 JSONObject dataReq = dataReqOCR2();
                                 JSONObject reqOCR = new JSONObject();
@@ -488,7 +632,8 @@ public class frag_cif_new extends Fragment {
                                 } catch (JSONException e) {
                                     e.printStackTrace();
                                 }
-                                RabbitMirroring.MirroringSendKey(reqOCR);
+                                //RabbitMirroring.MirroringSendKey(reqOCR);
+                                ConnectionRabbitHttp.mirroringKey(reqOCR);
                             } else {
                                 if (!picturePath.isEmpty()) {
                                     String fieldName = "foto";
@@ -584,10 +729,10 @@ public class frag_cif_new extends Fragment {
                                             EditText ed = (EditText) llFormBuild.getChildAt(i);
                                             String results = ed.getText().toString();
                                             if (requiredDataEl && results.isEmpty()) {
-                                                Toast.makeText(mContext, labelDataEl + " harus diisi/dipilih", Toast.LENGTH_SHORT).show();
+                                                Toast.makeText(mContext, labelDataEl + " " + getString(R.string.alertRTGS), Toast.LENGTH_SHORT).show();
                                                 checkEmpty = true;
                                             } else if (nameDataEl.contains("noponsel") && results.isEmpty()) {
-                                                Toast.makeText(mContext, labelDataEl + " harus diisi/dipilih", Toast.LENGTH_SHORT).show();
+                                                Toast.makeText(mContext, labelDataEl + " " + getString(R.string.alertRTGS), Toast.LENGTH_SHORT).show();
                                                 checkEmpty = true;
                                             } else if (nameDataEl.contains("email")) {
                                                 boolean cekFlag = validationEmail(results);
@@ -604,12 +749,12 @@ public class frag_cif_new extends Fragment {
                                                 RadioButton rb = rg.findViewById(selectedId);
                                                 String results = rb.getText().toString();
                                                 if (requiredDataEl && results.isEmpty()) {
-                                                    Toast.makeText(mContext, labelDataEl + " harus diisi/dipilih", Toast.LENGTH_SHORT).show();
+                                                    Toast.makeText(mContext, labelDataEl + " " + getString(R.string.alertRTGS), Toast.LENGTH_SHORT).show();
                                                     checkEmpty = true;
                                                 }
                                                 objEl.put(nameDataEl, results);
-                                            } else if (requiredDataEl){
-                                                Toast.makeText(mContext, labelDataEl + " harus diisi/dipilih", Toast.LENGTH_SHORT).show();
+                                            } else if (requiredDataEl) {
+                                                Toast.makeText(mContext, labelDataEl + " " + getString(R.string.alertRTGS), Toast.LENGTH_SHORT).show();
                                                 checkEmpty = true;
                                             }
                                             break;
@@ -627,7 +772,7 @@ public class frag_cif_new extends Fragment {
                                             if (spin.isSelected()) {
                                                 String results = spin.getSelectedItem().toString();
                                                 if (requiredDataEl && results.isEmpty()) {
-                                                    Toast.makeText(mContext, labelDataEl + " harus diisi/dipilih", Toast.LENGTH_SHORT).show();
+                                                    Toast.makeText(mContext, labelDataEl + " " + getString(R.string.alertRTGS), Toast.LENGTH_SHORT).show();
                                                     checkEmpty = true;
                                                 }
                                                 objEl.put(nameDataEl, results);
@@ -636,8 +781,15 @@ public class frag_cif_new extends Fragment {
                                         } else if (llFormBuild.getChildAt(i) instanceof RelativeLayout) {
                                             RelativeLayout rl = (RelativeLayout) llFormBuild.getChildAt(i);
                                             if (rl.getChildAt(0) instanceof Spinner) {
-                                                if (objEl.getString(nameDataEl).toLowerCase().contains("pilih")) {
-                                                    Toast.makeText(mContext, labelDataEl + " harus diisi/dipilih", Toast.LENGTH_SHORT).show();
+                                                Spinner spin = (Spinner) rl.getChildAt(0);
+                                                if (spin.getSelectedItem() != null) {
+                                                    String results = spin.getSelectedItem().toString();
+
+                                                    if (results.toLowerCase().contains("pilih")) {
+                                                        Toast.makeText(mContext, labelDataEl + " " + getString(R.string.alertRTGS), Toast.LENGTH_SHORT).show();
+                                                        checkEmpty = true;
+                                                    }
+                                                } else {
                                                     checkEmpty = true;
                                                 }
                                                 break;
@@ -646,7 +798,7 @@ public class frag_cif_new extends Fragment {
                                             AutoCompleteTextView autoText = (AutoCompleteTextView) llFormBuild.getChildAt(i);
                                             String results = autoText.getText().toString();
                                             if (requiredDataEl && results.isEmpty()) {
-                                                Toast.makeText(mContext, labelDataEl + " harus diisi/dipilih", Toast.LENGTH_SHORT).show();
+                                                Toast.makeText(mContext, labelDataEl + " " + getString(R.string.alertRTGS), Toast.LENGTH_SHORT).show();
                                                 checkEmpty = true;
                                                 break;
                                             }
@@ -670,9 +822,8 @@ public class frag_cif_new extends Fragment {
                         }
                     }
 
-                    Log.e("CEK","flagNext : "+flagNext);
-                    Log.e("CEK","objEl : "+objEl.toString());
                     if (flagNext) {
+                        HideSoftKeyboard.hideSoftKeyboard(getActivity());
                         processNext();
                     }
                 }
@@ -683,13 +834,18 @@ public class frag_cif_new extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
+        boolean flagDoc = sessions.getFlagUpDoc();
+        int valMedia = sessions.getMedia();
+        if (!flagDoc && valMedia == 1) {
+            sessions.saveFlagUpDoc(true);
+        }
+
         smsReceiver = new BroadcastReceiver() {
 
             @Override
             public void onReceive(Context context, Intent intent) {
                 numberOTP = "";
                 String dataSMS = intent.getExtras().getString("smsMessage");
-                Log.e("CEK","MASUK dataSMS : "+dataSMS);
                 String[] sp = dataSMS.split(" ");
                 for (int i = 0; i < sp.length; i++) {
                     String word = sp[i];
@@ -697,8 +853,6 @@ public class frag_cif_new extends Fragment {
                         numberOTP = word.replaceAll("[^0-9]", "");
                         if (numberOTP.length() == 6) {
                             otp.setText(numberOTP);
-                            /*newString = myFilter(numberOTP);
-                            otp.setText(newString);*/
                         }
                     }
                 }
@@ -719,11 +873,9 @@ public class frag_cif_new extends Fragment {
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
-        //outState.putByteArray(STATE_IMGBYTE,IMG_BYTE);
     }
 
     private void processNext() {
-        Log.e("CEK","MASUK NEXT");
         String getCif = sessions.getCIF();
         try {
             JSONObject dataCIF = null;
@@ -734,6 +886,60 @@ public class frag_cif_new extends Fragment {
             }
             dataCIF.put(keysData,objEl);
             dataFormCIF.put(keysData,objEl);
+
+            if (sessions.getNasabah() != null) {
+                String getDataNasabah = sessions.getNasabah();
+                JSONObject dataEKTP = new JSONObject(getDataNasabah);
+                for(Iterator<String> iter = objEl.keys(); iter.hasNext();) {
+                    String key = iter.next();
+                    String nameDataEl = key;
+                    int indx = key.indexOf("(");
+                    if (indx >= 0) {
+                        nameDataEl = key.substring(0,indx);
+                    }
+
+                    if (nameDataEl.contains("nama") && nameDataEl.contains("identitas")) {
+                        dataEKTP.put("namaCust",objEl.getString(key));
+                    } else if (nameDataEl.contains("alamat") && nameDataEl.contains("identitas")) {
+                        dataEKTP.put("address1",objEl.getString(key));
+                    } else if (nameDataEl.equals("rt")) {
+                        dataEKTP.put("address2",objEl.getString(key));
+                    } else if (nameDataEl.equals("rw")) {
+                        if (dataEKTP.has("address2")) {
+                            String datRT = dataEKTP.getString("address2");
+                            String datRTRW = datRT + objEl.getString(key);
+                            dataEKTP.put("address2",datRTRW);
+                        }
+                    } else if (nameDataEl.contains("kelurahan")) {
+                        dataEKTP.put("address3",objEl.getString(key));
+                    } else if (nameDataEl.contains("kecamatan")) {
+                        dataEKTP.put("address4",objEl.getString(key));
+                    } else if (nameDataEl.contains("kabupaten")) {
+                        dataEKTP.put("address5",objEl.getString(key));
+                    } else if (nameDataEl.contains("provinsi")) {
+                        dataEKTP.put("propinsi",objEl.getString(key));
+                        dataEKTP.put("Prov1",objEl.getString(key));
+                    } else if (nameDataEl.contains("warganegara")) {
+                        String negaraAsal = objEl.getString(key);
+                        if (negaraAsal.equals("WNI")) {
+                            negaraAsal = "ID";
+                        }
+                        dataEKTP.put("negaraAsal",negaraAsal);
+                    } else if (nameDataEl.contains("kelamin")) {
+                        dataEKTP.put("jenisKelamin",objEl.getString(key));
+                    } else if (nameDataEl.contains("agama")) {
+                        dataEKTP.put("agama",objEl.getString(key));
+                    } else if (nameDataEl.contains("status") && (nameDataEl.contains("menikah") || nameDataEl.contains("kawin"))) {
+                        dataEKTP.put("statusNikah",objEl.getString(key));
+                    } else if (nameDataEl.contains("pendidikan")) {
+                        dataEKTP.put("pendAkhir",objEl.getString(key));
+                    } else if ((nameDataEl.contains("no") || nameDataEl.contains("nomor")) && nameDataEl.contains("identitas")) {
+                        dataEKTP.put("nomorId",objEl.getString(key));
+                    }
+                }
+                sessions.saveNasabah(dataEKTP.toString());
+            }
+
             sessions.saveCIF(dataCIF.toString());
         } catch (JSONException e) {
             e.printStackTrace();
@@ -767,8 +973,8 @@ public class frag_cif_new extends Fragment {
                 if (pernyataan) {
                     int intLayoutSelf = 801;
                     reqFormMirroring = dataReqFormMirroring();
-                    RabbitMirroring.MirroringSendKey(reqFormMirroring);
-                    RabbitMirroring.MirroringSendEndpoint(intLayoutSelf);
+                    ConnectionRabbitHttp.mirroringKey(reqFormMirroring);
+                    ConnectionRabbitHttp.mirroringEndpoint(intLayoutSelf);
                     bundle.putInt("form_id",9);
                     sessions.saveFormCOde(intLayoutSelf);
                     sessions.saveFormReq(reqFormSend.toString());
@@ -790,6 +996,13 @@ public class frag_cif_new extends Fragment {
             } catch (JSONException e) {
                 e.printStackTrace();
             }
+        } else if (formCode == 22) {
+            Bundle bundle = new Bundle();
+            sessions.saveFormCOde(6);
+            if (isSessionZoom) {
+                ConnectionRabbitHttp.mirroringEndpoint(6);
+            }
+            sendDataFragment(bundle, new frag_cif_new());
         } else {
             ((Activity)mContext).runOnUiThread(new Runnable() {
                 @Override
@@ -806,19 +1019,15 @@ public class frag_cif_new extends Fragment {
     }
 
     private void processGetForm(int formId) {
-        Log.e("CEK", this+" MASUK processGetForm formId : "+formId);
-        Log.e("CEK", this+" MASUK formCode : "+formCode);
         String authAccess = "Bearer "+sessions.getAuthToken();
         String exchangeToken = sessions.getExchangeToken();
         Server.getAPIWAITING_PRODUCT().getFormBuilder(formId,authAccess,exchangeToken).enqueue(new Callback<JsonObject>() {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
                 swipe.setRefreshing(false);
-                Log.e("CEK","response processGetForm : "+response.code());
                 if (response.isSuccessful()) {
                     btnProses.setVisibility(View.VISIBLE);
                     String dataS = response.body().toString();
-                    Log.e("CEK","response dataS : "+dataS);
                     llFormBuild.removeAllViewsInLayout();
                     try {
                         JSONObject dataObj = new JSONObject(dataS);
@@ -830,32 +1039,24 @@ public class frag_cif_new extends Fragment {
                         }
                         JSONObject dataObjForm = dataObj.getJSONObject("data");
                         String dataForm = dataObjForm.getString("data");
-                        Log.e("CEK","dataForm : "+dataForm);
                         MyParserFormBuilder parseForm = new MyParserFormBuilder(mContext, dataForm, llFormBuild);
                         idElement = MyParserFormBuilder.getForm();
-                        Log.e("CEK","dataElement : "+ idElement);
                         processValidationActionForm();
                         dataFormCIF.put(keysData,objEl);
                         reqFormMirroring = dataReqFormMirroring();
-                        Log.e("CEK","DATA dataFormCIF : "+dataFormCIF.toString());
-                        Log.e("CEK","DATA reqFormMirroring : "+reqFormMirroring.toString());
-                        RabbitMirroring.MirroringSendKey(reqFormMirroring);
+                        ConnectionRabbitHttp.mirroringKey(reqFormMirroring);
                         if (formCode == 8) {
-                            if (sessions.getOCR() != null) {
-                                String dataOCR = sessions.getOCR();
-                                Log.e("CEK","dataOCR : "+ dataOCR);
-                                try {
-                                    JSONObject dataObjOCR = new JSONObject(dataOCR);
-                                    desa_kelurahan = dataObjOCR.getString("desakelurahan");
-                                    kecamatan = dataObjOCR.getString("kecamatan");
-                                    kota_kabupaten = dataObjOCR.getString("kotakabupaten");
-                                    provinsi = dataObjOCR.getString("provinsi");
-                                    getKodePos();
-                                } catch (JSONException e) {
+                            processMatchDataFromeKTP();
+                            getKodePos();
 
-                                }
+                        } else if (formCode == 22) {
+                            if (ocrKTP) {
+                                processMatchData();
+                                processDataFromOCR();
+                            } else {
+                                processMatchDataFromeKTP();
+                                getKodePos();
                             }
-
                         }
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -870,8 +1071,452 @@ public class frag_cif_new extends Fragment {
         });
     }
 
+    private void processMatchDataFromeKTP() {
+        String getNasabah = sessions.getNasabah();
+        JSONObject dataNasabah = null;
+        try {
+            dataNasabah = new JSONObject(getNasabah);
+            int child = llFormBuild.getChildCount();
+
+            if (child > 0 && idElement.length() > 0) {
+                for (int i = 0; i < child; i++) {
+                    int idEl = llFormBuild.getChildAt(i).getId();
+                    if (idEl > 0 || idEl < -1) {
+                        for (int j = 0; j < idElement.length(); j++) {
+                            try {
+                                int idDataEl = idElement.getJSONObject(j).getInt("id");
+                                String nameDataEl = idElement.getJSONObject(j).getString("name");
+                                int indx = nameDataEl.indexOf("(");
+                                if (indx >= 0) {
+                                    nameDataEl = nameDataEl.substring(0,indx);
+                                }
+                                if (idEl == idDataEl) {
+                                    if (llFormBuild.getChildAt(i) instanceof EditText) {
+                                        EditText ed = (EditText) llFormBuild.getChildAt(i);
+
+                                        for(Iterator<String> iter = dataNasabah.keys(); iter.hasNext();) {
+                                            if (iter.hasNext()) {
+                                                String key = iter.next();
+                                                String lowerKey = key.toLowerCase();
+                                                if (nameDataEl.equals(lowerKey)) {
+                                                    String valEl = dataNasabah.getString(key);
+                                                    if (valEl.equals("null") || valEl == null) {
+                                                        valEl = "";
+                                                    }
+                                                    ed.setText(valEl);
+                                                    break;
+                                                }
+                                            }
+                                        }
+
+                                        if (nameDataEl.contains("nama") && nameDataEl.contains("identitas")) {
+                                            String valEl = "";
+                                            if(dataNasabah.has("namaCust")) {
+                                                valEl = dataNasabah.getString("namaCust");
+                                            } else if(dataNasabah.has("namaLengkap")) {
+                                                valEl = dataNasabah.getString("namaLengkap");
+                                            }
+                                            ed.setText(valEl);
+                                        } else if ((nameDataEl.contains("no") || nameDataEl.contains("nomor")) && nameDataEl.contains("identitas")) {
+                                            if(dataNasabah.has("nomorId")) {
+                                                String valEl = dataNasabah.getString("nomorId");
+                                                ed.setText(valEl);
+                                            }
+                                        } else if ((nameDataEl.contains("no") || nameDataEl.contains("nomor")) && (nameDataEl.contains("ponsel") || nameDataEl.contains("handphone"))) {
+                                            if(dataNasabah.has("noHandphone")) {
+                                                String valEl = dataNasabah.getString("noHandphone");
+                                                if (valEl.equals("null") || valEl == null) {
+                                                    valEl = "";
+                                                }
+                                                ed.setText(valEl);
+                                            } else if (dataNasabah.has("noHp")) {
+                                                String valEl = dataNasabah.getString("noHp");
+                                                if (valEl.equals("null") || valEl == null) {
+                                                    valEl = "";
+                                                }
+                                                ed.setText(valEl);
+                                            }
+                                        }
+                                        else if ((nameDataEl.contains("no") || nameDataEl.contains("nomor")) && nameDataEl.contains("telepon")) {
+                                            if(dataNasabah.has("noTelp")) {
+                                                String valEl = dataNasabah.getString("noTelp");
+                                                ed.setText(valEl);
+                                            }
+                                        }
+                                        else if (nameDataEl.contains("tanggal") && nameDataEl.contains("lahir")) {
+                                            if (dataNasabah.has("tglLahir")) {
+                                                String gettglLahir = dataNasabah.getString("tglLahir");
+                                                if (gettglLahir.contains("-")) {
+                                                    String[] sp = gettglLahir.split("-");
+                                                    if (sp[0].trim().length() == 2) {
+                                                        ed.setText(gettglLahir);
+
+                                                        String tahun = sp[2].trim();
+                                                        String bln = sp[1].trim();
+                                                        String tgl = sp[0].trim();
+
+                                                        if (!tahun.isEmpty()) {
+                                                            if(tahun.matches("\\d+(?:\\.\\d+)?")) {
+                                                                int intThn = Integer.parseInt(tahun);
+                                                                int addThn = intThn + 17;
+                                                                tglTerbit = tgl+"-"+bln+"-"+addThn;
+                                                            }
+                                                        }
+                                                    } else if (sp[0].trim().length() == 4) {
+                                                        String tahun = sp[0].trim();
+                                                        String bln = sp[1].trim();
+                                                        String tgl = sp[2].trim();
+                                                        String valEl = tgl+"-"+bln+"-"+tahun;
+                                                        ed.setText(valEl);
+
+                                                        if (!tahun.isEmpty()) {
+                                                            if(tahun.matches("\\d+(?:\\.\\d+)?")) {
+                                                                int intThn = Integer.parseInt(tahun);
+                                                                int addThn = intThn + 17;
+                                                                tglTerbit = tgl+"-"+bln+"-"+addThn;
+                                                            }
+                                                        }
+                                                    }
+                                                } else if (gettglLahir.charAt(0) != '0') {
+                                                    String tahun = gettglLahir.substring(0, 4);
+                                                    String bln = gettglLahir.substring(4, 6);
+                                                    String tgl = gettglLahir.substring(6, 8);
+                                                    String valEl = tgl+"-"+bln+"-"+tahun;
+                                                    ed.setText(valEl);
+
+                                                    if (!tahun.isEmpty()) {
+                                                        if(tahun.matches("\\d+(?:\\.\\d+)?")) {
+                                                            int intThn = Integer.parseInt(tahun);
+                                                            int addThn = intThn + 17;
+                                                            tglTerbit = tgl+"-"+bln+"-"+addThn;
+                                                        }
+                                                    }
+                                                } else {
+                                                    String tahun = gettglLahir.substring(6, 8);
+                                                    String bln = gettglLahir.substring(4, 6);
+                                                    String tgl = gettglLahir.substring(0, 4);
+                                                    String valEl = tgl+"-"+bln+"-"+tahun;
+                                                    ed.setText(valEl);
+
+                                                    if (!tahun.isEmpty()) {
+                                                        if(tahun.matches("\\d+(?:\\.\\d+)?")) {
+                                                            int intThn = Integer.parseInt(tahun);
+                                                            int addThn = intThn + 17;
+                                                            tglTerbit = tgl+"-"+bln+"-"+addThn;
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                        else if (nameDataEl.contains("alamat") && nameDataEl.contains("usaha")) {
+                                            String valEl = "";
+                                            if (dataNasabah.has("empAddress1")) {
+                                                String empAddress1 = dataNasabah.getString("empAddress1");
+                                                valEl = empAddress1;
+                                            }
+                                            if (dataNasabah.has("empAddress2")) {
+                                                String empAddress2 = dataNasabah.getString("empAddress2");
+                                                valEl += " "+empAddress2;
+                                            }
+                                            valEl = valEl.trim();
+                                            ed.setText(valEl);
+                                        }
+                                        else if (nameDataEl.contains("alamat") && nameDataEl.contains("identitas")) {
+                                            String valEl = "";
+                                            if (dataNasabah.has("address1")) {
+                                                valEl = dataNasabah.getString("address1");
+                                            } else if(dataNasabah.has("alamat")) {
+                                                valEl = dataNasabah.getString("alamat");
+                                            }
+                                            ed.setText(valEl);
+                                        } else if (nameDataEl.equals("rt")) {
+                                            String valEl = "";
+                                            if(dataNasabah.has("rt")) {
+                                                valEl = dataNasabah.getString("rt");
+                                            } else if (dataNasabah.has("address2")) {
+                                                String address2 = dataNasabah.getString("address2");
+                                                if (address2.length() == 6) {
+                                                    valEl = address2.substring(0, 3);
+                                                } else if (address2.length() > 6) {
+                                                    if (address2.toLowerCase().contains("rt")) {
+                                                        int indxRT = address2.toLowerCase().indexOf("rt");
+                                                        String getRT = "";
+                                                        if (address2.toLowerCase().contains("rw")) {
+                                                            int indxRW = address2.toLowerCase().indexOf("rw");
+                                                            getRT = address2.substring(indxRT + 2, indxRW);
+                                                        } else {
+                                                            getRT = address2.substring(indxRT + 2);
+                                                        }
+                                                        valEl = getRT.replace(".", "").replace(" ", "");
+                                                    }
+                                                }
+                                            }
+                                            ed.setText(valEl);
+                                        } else if (nameDataEl.equals("rw")) {
+                                            String valEl = "";
+                                            if(dataNasabah.has("rw")) {
+                                                valEl = dataNasabah.getString("rw");
+                                            } else if (dataNasabah.has("address2")) {
+                                                String address2 = dataNasabah.getString("address2");
+                                                if (address2.length() == 6) {
+                                                    valEl = address2.substring(3);
+                                                } else if (address2.length() > 6) {
+                                                    if (address2.toLowerCase().contains("rw")) {
+                                                        int indxRW = address2.toLowerCase().indexOf("rw");
+                                                        String getRW = address2.substring(indxRW + 2);
+                                                        valEl = getRW.replace(".", "").replace(" ", "");
+                                                    }
+                                                }
+                                            }
+                                            ed.setText(valEl);
+                                        } else if (nameDataEl.contains("kelurahan")) {
+                                            String valEl = "";
+                                            if(dataNasabah.has("kelurahan")) {
+                                                valEl = dataNasabah.getString("kelurahan");
+                                            } else if (dataNasabah.has("address3")) {
+                                                valEl = dataNasabah.getString("address3");
+                                            }
+                                            ed.setText(valEl);
+                                        } else if (nameDataEl.contains("kecamatan")) {
+                                            String valEl = "";
+                                            if(dataNasabah.has("kecamatan")) {
+                                                valEl = dataNasabah.getString("kecamatan");
+                                            } else if (dataNasabah.has("address4")) {
+                                                valEl = dataNasabah.getString("address4");
+                                            }
+                                            ed.setText(valEl);
+                                        } else if (nameDataEl.contains("kabupaten")) {
+                                            String valEl = "";
+                                            if(dataNasabah.has("kabupaten")) {
+                                                valEl = dataNasabah.getString("kabupaten");
+                                            } else if (dataNasabah.has("address5")) {
+                                                valEl = dataNasabah.getString("address5");
+                                            }
+                                            ed.setText(valEl);
+                                        } else if (nameDataEl.contains("provinsi")) {
+                                            String valEl = "";
+                                            if(dataNasabah.has("propinsi")) {
+                                                valEl = dataNasabah.getString("propinsi");
+                                            }
+                                            ed.setText(valEl);
+                                        } else if (nameDataEl.contains("kodepos")) {
+                                            String valEl = "";
+                                            if(dataNasabah.has("kodePos")) {
+                                                valEl = dataNasabah.getString("kodePos");
+                                            } else if (dataNasabah.has("zipCode")) {
+                                                valEl = dataNasabah.getString("zipCode");
+                                            }
+                                            if (!valEl.isEmpty()) {
+                                                int intZipCode = Integer.parseInt(valEl);
+                                                ed.setText(String.valueOf(intZipCode));
+                                            }
+                                        } else if (nameDataEl.contains("jumlah") && nameDataEl.contains("anak")) {
+                                            if(dataNasabah.has("jumAnak")) {
+                                                String valEl = dataNasabah.getString("jumAnak");
+                                                if (!valEl.isEmpty()) {
+                                                    int intvalEl = Integer.parseInt(valEl);
+                                                    ed.setText(String.valueOf(intvalEl));
+                                                }
+                                            }
+                                        } else if (nameDataEl.contains("jumlah") && nameDataEl.contains("istri")) {
+                                            if(dataNasabah.has("jumIstri")) {
+                                                String valEl = dataNasabah.getString("jumIstri");
+                                                if (!valEl.isEmpty()) {
+                                                    int intvalEl = Integer.parseInt(valEl);
+                                                    ed.setText(String.valueOf(intvalEl));
+                                                }
+                                            }
+                                        } else if (nameDataEl.contains("jumlah") && nameDataEl.contains("tanggung")) {
+                                            if(dataNasabah.has("jumTanggung")) {
+                                                String valEl = dataNasabah.getString("jumTanggung");
+                                                if (!valEl.isEmpty()) {
+                                                    int intvalEl = Integer.parseInt(valEl);
+                                                    ed.setText(String.valueOf(intvalEl));
+                                                }
+                                            }
+                                        } else if (nameDataEl.contains("kelamin")) {
+                                            String valEl = "";
+                                            if(dataNasabah.has("jenisKelamin")) {
+                                                valEl = dataNasabah.getString("jenisKelamin");
+                                            }
+                                            ed.setText(valEl);
+                                        } else if (nameDataEl.contains("agama")) {
+                                            if (dataNasabah.has("agama")) {
+                                                String valEl = dataNasabah.getString("agama");
+                                                ed.setText(valEl);
+                                            }
+                                        } else if (nameDataEl.contains("status") && (nameDataEl.contains("menikah") || nameDataEl.contains("kawin"))) {
+                                            if (dataNasabah.has("statusKawin")) {
+                                                String valEl = dataNasabah.getString("statusKawin");
+                                                ed.setText(valEl);
+                                            } else if (dataNasabah.has("statusNikah")) {
+                                                String valEl = dataNasabah.getString("statusNikah");
+                                                ed.setText(valEl);
+                                            }
+                                        } else if (nameDataEl.contains("npwp")) {
+                                            if (dataNasabah.has("npwp")) {
+                                                String valEl = dataNasabah.getString("npwp");
+                                                ed.setText(valEl);
+                                            }
+                                        } else if (nameDataEl.contains("nama") && nameDataEl.contains("ibu")) {
+                                            if (dataNasabah.has("namaIbu")) {
+                                                String valEl = dataNasabah.getString("namaIbu");
+                                                ed.setText(valEl);
+                                            }
+                                        } else if (nameDataEl.contains("nomor") && nameDataEl.contains("identitas")) {
+                                            if (dataNasabah.has("nik")) {
+                                                String valEl = dataNasabah.getString("nik");
+                                                ed.setText(valEl);
+                                            }
+                                        } else if (nameDataEl.contains("jenis") && nameDataEl.contains("identitas")) {
+                                            ed.setText("KTP");
+                                        } else if (nameDataEl.contains("tanggal") && nameDataEl.contains("berakhir")) {
+                                            ed.setText("Seumur Hidup");
+                                        } else if (nameDataEl.contains("warganegara")) {
+                                            ed.setText("WNI");
+                                            /*if (dataNasabah.has("negaraAsal")) {
+                                                String negaraAsal = dataNasabah.getString("negaraAsal");
+                                                String warganegara = "WNI";
+                                                if (!negaraAsal.equals("ID")) {
+                                                    warganegara = "WNA";
+                                                }
+                                                ed.setText(warganegara);
+                                            } else {
+                                                ed.setText("WNI");
+                                            }*/
+                                        } else if (nameDataEl.contains("negara")) {
+                                            ed.setText("Indonesia");
+                                            /*if (dataNasabah.has("negaraAsal")) {
+                                                String negaraAsal = dataNasabah.getString("negaraAsal");
+                                                String negara = "";
+                                                if (negaraAsal.equals("ID")) {
+                                                    negara = "Indonesia";
+                                                } else if (negaraAsal.equals("US")) {
+                                                    negara = "United States of America";
+                                                } else if (negaraAsal.equals("CN")) {
+                                                    negara = "China";
+                                                } else {
+                                                    negara = "-";
+                                                }
+                                                ed.setText(negara);
+                                            } else {
+                                                ed.setText("Indonesia");
+                                            }*/
+                                        } else if (nameDataEl.contains("tanggalterbit")) {
+                                            ed.setText(tglTerbit);
+                                        }
+
+                                    } else if (llFormBuild.getChildAt(i) instanceof RadioGroup) {
+                                    } else if (llFormBuild.getChildAt(i) instanceof CheckBox) {
+                                    } else if (llFormBuild.getChildAt(i) instanceof Spinner) {
+                                    } else if (llFormBuild.getChildAt(i) instanceof RelativeLayout) {
+                                        RelativeLayout rl = (RelativeLayout) llFormBuild.getChildAt(i);
+                                        if (rl.getChildAt(0) instanceof Spinner) {
+                                            Spinner spin = (Spinner) rl.getChildAt(0);
+
+                                            String valEl = "";
+                                            if (dataNasabah.has(nameDataEl)) {
+                                                valEl = dataNasabah.getString(nameDataEl);
+                                            } else if (nameDataEl.contains("kelamin")) {
+                                                if (dataNasabah.has("jenisKelamin")) {
+                                                    valEl = dataNasabah.getString("jenisKelamin");
+                                                }
+                                            } else if (nameDataEl.contains("status") && (nameDataEl.contains("menikah") || nameDataEl.contains("kawin"))) {
+                                                if (dataNasabah.has("statusNikah")) {
+                                                    valEl = dataNasabah.getString("statusNikah");
+                                                }
+                                            } else if (nameDataEl.contains("pendidikan")) {
+                                                if (dataNasabah.has("pendAkhir")) {
+                                                    valEl = dataNasabah.getString("pendAkhir");
+                                                }
+                                            } else if (nameDataEl.contains("cabang")) {
+                                                if (dataNasabah.has("branchCode")) {
+                                                    valEl = dataNasabah.getString("branchCode");
+                                                }
+                                            } else if (nameDataEl.contains("kerja")) {
+                                                if (dataNasabah.has("jenisKerja")) {
+                                                    valEl = dataNasabah.getString("jenisKerja");
+                                                }
+                                            } else if (nameDataEl.contains("bidang") && nameDataEl.contains("usaha")) {
+                                                if (dataNasabah.has("badanUsaha")) {
+                                                    valEl = dataNasabah.getString("badanUsaha");
+                                                }
+                                            } else if (nameDataEl.contains("jabatan")) {
+                                                if (dataNasabah.has("jobPosition")) {
+                                                    valEl = dataNasabah.getString("jobPosition");
+
+                                                }
+                                            } else if (nameDataEl.equals("sumberdana")) {
+                                                if (dataNasabah.has("sourceIncome")) {
+                                                    valEl = dataNasabah.getString("sourceIncome");
+                                                }
+                                            } else if (nameDataEl.contains("tujuan") && nameDataEl.contains("pengguna")) {
+                                                if (dataNasabah.has("sourceFund")) {
+                                                    valEl = dataNasabah.getString("sourceFund");
+                                                }
+                                            }
+
+                                            if (!valEl.isEmpty()) {
+                                                for (int ch = 0; ch < spin.getCount(); ch++) {
+                                                    if (valEl.length() <= 5) {
+                                                        if (valEl.matches("\\d+(?:\\.\\d+)?")) {
+                                                            FormSpin dataSpin = (FormSpin) spin.getItemAtPosition(ch);
+                                                            String valueCode = dataSpin.getCode();
+                                                            if (valueCode.equals(valEl)) {
+                                                                spin.setSelection(ch);
+                                                                break;
+                                                            }
+                                                        } else {
+                                                            if (spin.getItemAtPosition(ch).toString().equalsIgnoreCase(valEl)) {
+                                                                spin.setSelection(ch);
+                                                                break;
+                                                            } else if (valEl.equalsIgnoreCase("laki-laki") && spin.getItemAtPosition(ch).toString().equalsIgnoreCase("male")) {
+                                                                spin.setSelection(ch);
+                                                                break;
+                                                            } else if ((valEl.equalsIgnoreCase("perempuan") || valEl.equalsIgnoreCase("wanita")) && spin.getItemAtPosition(ch).toString().equalsIgnoreCase("female")) {
+                                                                spin.setSelection(ch);
+                                                                break;
+                                                            }
+                                                        }
+                                                    } else {
+                                                        if (spin.getItemAtPosition(ch).toString().equalsIgnoreCase(valEl)) {
+                                                            spin.setSelection(ch);
+                                                            break;
+                                                        } else if (valEl.equalsIgnoreCase("laki-laki") && spin.getItemAtPosition(ch).toString().equalsIgnoreCase("male")) {
+                                                            spin.setSelection(ch);
+                                                            break;
+                                                        } else if ((valEl.equalsIgnoreCase("perempuan") || valEl.equalsIgnoreCase("wanita")) && spin.getItemAtPosition(ch).toString().equalsIgnoreCase("female")) {
+                                                            spin.setSelection(ch);
+                                                            break;
+                                                        }
+                                                    }
+                                                }
+                                            }
+
+                                        } else {
+                                        }
+                                    } else if (llFormBuild.getChildAt(i) instanceof AutoCompleteTextView) {
+                                    } else if (llFormBuild.getChildAt(i) instanceof LinearLayout) {
+                                        LinearLayout ll = (LinearLayout) llFormBuild.getChildAt(i);
+                                        if (ll.findViewById(R.id.llCurrency) != null) {
+                                        } else {
+                                        }
+                                    }
+                                }
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }
+                }
+            }
+        } catch (JSONException e) {
+            throw new RuntimeException(e);
+        }
+
+    }
+
     private void processValidationActionForm() {
-        Log.e("CEK","processValidationActionForm");
         try {
             objEl.put("idDips",idDips);
         } catch (JSONException e) {
@@ -903,13 +1548,19 @@ public class frag_cif_new extends Fragment {
                                     if (nameDataEl.contains("npwp") && !npwp.isEmpty()) {
                                         ed.setText(npwp);
                                     }
-                                    else if (nameDataEl.contains("kode") || nameDataEl.contains("pos")){
+                                    else if (nameDataEl.contains("kode") && nameDataEl.contains("pos")){
                                         edKodePos = ed;
                                     }
                                     ed.setOnFocusChangeListener(new View.OnFocusChangeListener() {
                                         @Override
                                         public void onFocusChange(View view, boolean b) {
-                                            Log.e("CEK","onFocusChange : "+b);
+                                            if (nameDataEl.contains("kodepos")) {
+                                                if (desa_kelurahan != null) {
+                                                    if (b && !desa_kelurahan.isEmpty()) {
+                                                        getKodePos();
+                                                    }
+                                                }
+                                            }
                                         }
                                     });
                                     ed.addTextChangedListener(new TextWatcher() {
@@ -922,13 +1573,33 @@ public class frag_cif_new extends Fragment {
 
                                         @Override
                                         public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                                            Log.e("CEK",nameDataEl+" : "+charSequence);
                                             try {
                                                 objEl.put(nameDataEl, charSequence);
+                                                if (nameDataEl.contains("provinsi")){
+                                                    provinsi = charSequence.toString();
+                                                    kodepos = "";
+                                                } else if (nameDataEl.contains("kabupaten") || nameDataEl.contains("kota")) {
+                                                    kota_kabupaten = charSequence.toString();
+                                                    kodepos = "";
+                                                }
+                                                else if(nameDataEl.contains("kecamatan")){
+                                                    kecamatan = charSequence.toString();
+                                                    kodepos = "";
+                                                }
+                                                else if (nameDataEl.contains("kelurahan") || nameDataEl.contains("desa")){
+                                                    desa_kelurahan = charSequence.toString();
+                                                    kodepos = "";
+                                                }
+                                                /*if (desa_kelurahan != null) {
+                                                    if (!desa_kelurahan.isEmpty()) {
+                                                        getKodePos();
+                                                    }
+                                                }*/
                                                 dataFormCIF.put(keysData,objEl);
                                                 if (isSessionZoom) {
                                                     reqFormMirroring = dataReqFormMirroring();
-                                                    RabbitMirroring.MirroringSendKey(reqFormMirroring);
+                                                    //RabbitMirroring.MirroringSendKey(reqFormMirroring);
+                                                    ConnectionRabbitHttp.mirroringKey(reqFormMirroring);
                                                 }
                                             } catch (JSONException e) {
                                                 e.printStackTrace();
@@ -940,12 +1611,13 @@ public class frag_cif_new extends Fragment {
 
                                         @Override
                                         public void afterTextChanged(Editable s) {
+                                            String dataText = s.toString();
+
                                             if (nameDataEl.equals("npwp"+finalValKurung)) {
                                                 ed.removeTextChangedListener(this);
                                                 backSpaceChar = lasLenChar > s.length();
                                                 if (!backSpaceChar) {
-                                                    String dataNPWP = s.toString();
-                                                    Log.e("CEK", "dataNPWP : " + dataNPWP);
+                                                    String dataNPWP = dataText;
                                                     String formatNPWP = "";
                                                     if (dataNPWP.length() == 2 || dataNPWP.length() == 6 || dataNPWP.length() == 10 || dataNPWP.length() == 16) {
                                                         formatNPWP = ".";
@@ -957,6 +1629,25 @@ public class frag_cif_new extends Fragment {
                                                     ed.setSelection(cekBuilder.length());
                                                 }
                                                 ed.addTextChangedListener(this);
+                                            } else if (nameDataEl.equals("rt") || nameDataEl.equals("rw")) {
+                                                if (!dataText.isEmpty()) {
+                                                    if (!dataText.equals("00") && !dataText.equals("0")) {
+                                                        ed.removeTextChangedListener(this);
+                                                        if (dataText.contains("/")) {
+                                                            dataText = dataText.replace("/", "");
+                                                        }
+                                                        dataText = String.format("%03d", Integer.parseInt(dataText));
+                                                        try {
+                                                            objEl.put(nameDataEl, dataText);
+                                                        } catch (JSONException e) {
+                                                            throw new RuntimeException(e);
+                                                        }
+                                                        ed.setText(dataText);
+                                                        ed.setSelection(dataText.length());
+                                                        ed.addTextChangedListener(this);
+                                                    }
+                                                }
+
                                             }
                                         }
                                     });
@@ -979,7 +1670,8 @@ public class frag_cif_new extends Fragment {
                                                     dataFormCIF.put(keysData,objEl);
                                                     if (isSessionZoom) {
                                                         reqFormMirroring = dataReqFormMirroring();
-                                                        RabbitMirroring.MirroringSendKey(reqFormMirroring);
+                                                        //RabbitMirroring.MirroringSendKey(reqFormMirroring);
+                                                        ConnectionRabbitHttp.mirroringKey(reqFormMirroring);
                                                     }
                                                 } catch (JSONException e) {
                                                     e.printStackTrace();
@@ -1019,7 +1711,8 @@ public class frag_cif_new extends Fragment {
                                             }
                                             if (isSessionZoom) {
                                                 reqFormMirroring = dataReqFormMirroring();
-                                                RabbitMirroring.MirroringSendKey(reqFormMirroring);
+                                                //RabbitMirroring.MirroringSendKey(reqFormMirroring);
+                                                ConnectionRabbitHttp.mirroringKey(reqFormMirroring);
                                             }
                                         }
                                     });
@@ -1038,7 +1731,8 @@ public class frag_cif_new extends Fragment {
                                                 dataFormCIF.put(keysData,objEl);
                                                 if (isSessionZoom) {
                                                     reqFormMirroring = dataReqFormMirroring();
-                                                    RabbitMirroring.MirroringSendKey(reqFormMirroring);
+                                                    //RabbitMirroring.MirroringSendKey(reqFormMirroring);
+                                                    ConnectionRabbitHttp.mirroringKey(reqFormMirroring);
                                                 }
                                             } catch (JSONException e) {
                                                 e.printStackTrace();
@@ -1078,7 +1772,6 @@ public class frag_cif_new extends Fragment {
                                         spin.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                                             @Override
                                             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                                                Log.e("CEK","getSelectedItem : "+spin.getSelectedItem().toString());
                                                 FormSpin dataSpin = (FormSpin) spin.getSelectedItem();
                                                 int idData = dataSpin.getId();
                                                 String results = dataSpin.getName();
@@ -1086,7 +1779,12 @@ public class frag_cif_new extends Fragment {
                                                     objEl.put(nameDataEl, results);
                                                     dataFormCIF.put(keysData,objEl);
                                                     if (nameDataEl.contains("provinsi") || nameDataEl.contains("kabupaten") || nameDataEl.contains("kota") || nameDataEl.contains("kecamatan") || (nameDataEl.contains("kelurahan") || nameDataEl.contains("desa"))) {
-                                                        valSpinProv.put(nameDataEl,idData);
+                                                        String newNameDataEl = nameDataEl;
+                                                        if (nameDataEl.contains("(")) {
+                                                            int indxProv = nameDataEl.indexOf("(");
+                                                            newNameDataEl = nameDataEl.substring(0,indxProv).trim();
+                                                        }
+                                                        valSpinProv.put(newNameDataEl,idData);
                                                         if (nameDataEl.contains("provinsi")){
                                                             provinsi = results;
                                                             kodepos = "";
@@ -1109,9 +1807,9 @@ public class frag_cif_new extends Fragment {
                                                     }
                                                     if (isSessionZoom) {
                                                         reqFormMirroring = dataReqFormMirroring();
-                                                        RabbitMirroring.MirroringSendKey(reqFormMirroring);
+                                                        //RabbitMirroring.MirroringSendKey(reqFormMirroring);
+                                                        ConnectionRabbitHttp.mirroringKey(reqFormMirroring);
                                                     }
-                                                    Log.e("CEK","flagStuckSpin : "+flagStuckSpin);
                                                     if (flagStuckSpin) {
                                                         processGetSpinChild(nameDataEl);
                                                     }
@@ -1126,6 +1824,32 @@ public class frag_cif_new extends Fragment {
                                             }
                                         });
                                         break;
+                                    } else if (rl.getChildAt(0) instanceof AutoCompleteTextView) {
+                                        objEl.put(nameDataEl, "");
+                                        AutoCompleteTextView autoText = (AutoCompleteTextView) rl.getChildAt(0);
+                                        autoText.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                                            @Override
+                                            public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
+                                                Object item = adapterView.getItemAtPosition(position);
+                                                if (item instanceof FormSpin) {
+                                                    FormSpin dataSpin = (FormSpin) item;
+                                                    int idData = dataSpin.getId();
+                                                    String results = dataSpin.getName();
+                                                    String valCode = dataSpin.getCode();
+                                                    try {
+                                                        objEl.put(nameDataEl, results);
+                                                    } catch (JSONException e) {
+                                                        throw new RuntimeException(e);
+                                                    }
+                                                }
+
+                                                if (isSessionZoom) {
+                                                    reqFormMirroring = dataReqFormMirroring();
+                                                    ConnectionRabbitHttp.mirroringKey(reqFormMirroring);
+                                                }
+                                            }
+                                        });
+
                                     }
                                 }
                                 else if (llFormBuild.getChildAt(i) instanceof AutoCompleteTextView) {
@@ -1141,7 +1865,8 @@ public class frag_cif_new extends Fragment {
                                                 dataFormCIF.put(keysData,objEl);
                                                 if (isSessionZoom) {
                                                     reqFormMirroring = dataReqFormMirroring();
-                                                    RabbitMirroring.MirroringSendKey(reqFormMirroring);
+                                                    //RabbitMirroring.MirroringSendKey(reqFormMirroring);
+                                                    ConnectionRabbitHttp.mirroringKey(reqFormMirroring);
                                                 }
                                             } catch (JSONException e) {
                                                 e.printStackTrace();
@@ -1157,7 +1882,8 @@ public class frag_cif_new extends Fragment {
                                                 dataFormCIF.put(keysData,objEl);
                                                 if (isSessionZoom) {
                                                     reqFormMirroring = dataReqFormMirroring();
-                                                    RabbitMirroring.MirroringSendKey(reqFormMirroring);
+                                                    //RabbitMirroring.MirroringSendKey(reqFormMirroring);
+                                                    ConnectionRabbitHttp.mirroringKey(reqFormMirroring);
                                                 }
                                             } catch (JSONException e) {
                                                 e.printStackTrace();
@@ -1169,15 +1895,12 @@ public class frag_cif_new extends Fragment {
                                 }
                                 else if (llFormBuild.getChildAt(i) instanceof LinearLayout) {
                                     LinearLayout ll = (LinearLayout) llFormBuild.getChildAt(i);
-                                    Log.e("CEK", "LinearLayout getChildCount : " + ll.getChildCount());
                                     if (ll.getChildCount() > 1) {
                                         if (ll.getChildAt(0) instanceof LinearLayout) {
                                             LinearLayout ll2 = (LinearLayout) ll.getChildAt(0);
-                                            Log.e("CEK", "MASUK LinearLayout CHILD ke-" + i);
 
                                             TextView tvll = (TextView) ll2.getChildAt(1);
                                             String txt = tvll.getText().toString();
-                                            Log.e("CEK", "tvll : " + txt);
                                             if (txt.toLowerCase().indexOf("gambar") > 0 || txt.toLowerCase().indexOf("image") > 0) {
                                                 tvSavedImg = (TextView) ll.getChildAt(1);
                                                 ll2.setOnClickListener(new View.OnClickListener() {
@@ -1246,7 +1969,6 @@ public class frag_cif_new extends Fragment {
                                     ed.setOnFocusChangeListener(new View.OnFocusChangeListener() {
                                         @Override
                                         public void onFocusChange(View view, boolean b) {
-                                            Log.e("CEK","onFocusChange : "+b);
                                         }
                                     });
                                     ed.addTextChangedListener(new TextWatcher() {
@@ -1259,13 +1981,12 @@ public class frag_cif_new extends Fragment {
 
                                         @Override
                                         public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                                            Log.e("CEK",nameDataEl+" : "+charSequence);
                                             try {
                                                 objEl.put(nameDataEl, charSequence);
                                                 dataFormCIF.put(keysData,objEl);
                                                 if (isSessionZoom) {
                                                     reqFormMirroring = dataReqFormMirroring();
-                                                    RabbitMirroring.MirroringSendKey(reqFormMirroring);
+                                                    ConnectionRabbitHttp.mirroringKey(reqFormMirroring);
                                                 }
                                             } catch (JSONException e) {
                                                 e.printStackTrace();
@@ -1282,7 +2003,6 @@ public class frag_cif_new extends Fragment {
                                                 backSpaceChar = lasLenChar > s.length();
                                                 if (!backSpaceChar) {
                                                     String dataNPWP = s.toString();
-                                                    Log.e("CEK", "dataNPWP : " + dataNPWP);
                                                     String formatNPWP = "";
                                                     if (dataNPWP.length() == 2 || dataNPWP.length() == 6 || dataNPWP.length() == 10 || dataNPWP.length() == 16) {
                                                         formatNPWP = ".";
@@ -1325,7 +2045,6 @@ public class frag_cif_new extends Fragment {
                             }
                             if (idEl == idDataEl) {
                                 if (llFormBuild.getChildAt(i) instanceof EditText) {
-                                    Log.e("CEK","processEnableComp nameDataEl : "+nameDataEl+" | nameDataElGab : "+nameDataElGab);
                                     EditText ed = (EditText) llFormBuild.getChildAt(i);
                                     if (!nameDataElGab.isEmpty()) {
                                         if (nameDataElGab.equals(nameDataEl)) {
@@ -1374,8 +2093,6 @@ public class frag_cif_new extends Fragment {
             String lbpernyataan = "alamatdomisili";
 
             for(Iterator<String> iter = objEl.keys(); iter.hasNext();) {
-                Log.e("CEK","iter : "+ iter);
-                Log.e("CEK","iter next : "+iter.next());
                 if(iter.hasNext()) {
                     String key = iter.next();
                     String valKurung = "";
@@ -1415,8 +2132,6 @@ public class frag_cif_new extends Fragment {
                             (key.contains("alamat" + valKurung) && key.contains("berbeda" + valKurung))) {
                         lbpernyataan = key;
                     }
-
-                    Log.e("CEK", "key : " + key + " | valKurung : " + valKurung);
                 }
 
             }
@@ -1570,24 +2285,25 @@ public class frag_cif_new extends Fragment {
                 dataFormObj.put(keysData,dataFormObj2);
             } else if (formCode == 803) {
                 dataFormObj.put(keysData,dataFormObj2);
+            } else if (formCode == 22) {
+                boolean valChk = chkDataCorrectForm.isChecked();
+                dataFormObj2.put("datasudahbenar",valChk);
+                dataFormObj.put(keysData,dataFormObj2);
             }
         } catch (JSONException e) {
             e.printStackTrace();
         }
-
-        Log.e("CEK","dataReqFormMirroring : "+dataFormObj);
         return dataFormObj;
     }
 
     private void processSendFormCIF(JSONObject jsons) {
-        Log.e("CEK","processSendFormCIF : "+jsons.toString());
         String authAccess = "Bearer "+sessions.getAuthToken();
         String exchangeToken = sessions.getExchangeToken();
         RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), jsons.toString());
 
         ApiService API = Server.getAPIService();
         Call<JsonObject> call = null;
-        if (formCode == 8 || formCode == 801) {
+        if (formCode == 8 || formCode == 801 || formCode == 22) {
             call = API.AddDataSelf(requestBody,authAccess,exchangeToken);
         }
         else if (formCode == 802) {
@@ -1597,12 +2313,9 @@ public class frag_cif_new extends Fragment {
             call = API.AddDataFinance(requestBody,authAccess,exchangeToken);
         }
 
-        Log.e("CEK","processSendFormCIF call : "+call.request());
-
         call.enqueue(new Callback<JsonObject>() {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
-                Log.e("CEK","processSendFormCIF code : "+response.code());
                 ((Activity)mContext).runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
@@ -1615,7 +2328,6 @@ public class frag_cif_new extends Fragment {
                 });
                 if (response.isSuccessful()) {
                     String dataS = response.body().toString();
-                    Log.e("CEK","processSendFormCIF dataS : "+dataS);
                     try {
                         JSONObject dataObj = new JSONObject(dataS);
                         if (dataObj.has("token")) {
@@ -1654,36 +2366,39 @@ public class frag_cif_new extends Fragment {
 
                             if (objEl.has(keyPernyataan) && formCode == 8) {
                                 intLayoutWork = 802;
-                                bundle.putInt("form_id",5);
+                                //bundle.putInt("form_id",5);
+                                bundle.putInt("form_id",75);
                             } else if (formCode == 801) {
                                 intLayoutWork = 802;
-                                bundle.putInt("form_id",5);
+                                //bundle.putInt("form_id",5);
+                                bundle.putInt("form_id",75);
                             } else if (formCode == 802) {
                                 intLayoutWork = 803;
-                                bundle.putInt("form_id",14);
+                                //bundle.putInt("form_id",14);
+                                bundle.putInt("form_id",76);
                             } else if (formCode == 803) {
-                                intLayoutWork = 804;
+                                //intLayoutWork = 804;
+                                intLayoutWork = 240;
                             }
 
                             reqFormMirroring = dataReqFormMirroring();
-                            RabbitMirroring.MirroringSendKey(reqFormMirroring);
-                            RabbitMirroring.MirroringSendEndpoint(intLayoutWork);
-                            sessions.saveFormCOde(intLayoutWork);
-                            if (intLayoutWork == 804 && sessions.getCIF() != null) {
+                            if (intLayoutWork != 240) {
+                                ConnectionRabbitHttp.mirroringKey(reqFormMirroring);
+                                ConnectionRabbitHttp.mirroringEndpoint(intLayoutWork);
+                                sessions.saveFormCOde(intLayoutWork);
+                            }
+                            if ((intLayoutWork == 804 && sessions.getCIF() != null) || intLayoutWork == 240) {
                                 JSONObject dataFinance = dataObj.getJSONObject("data");
                                 if (dataFinance.has("noCif")) {
                                     String noCif = dataFinance.getString("noCif");
                                     sessions.saveNoCIF(noCif);
                                 }
-                                //sendDataFragment(bundle, new frag_cif_full());
                                 String valDataCIF = sessions.getCIF();
                                 try {
                                     objValCIF = new JSONObject(valDataCIF);
-                                    Log.e("CEK","CIF FULL objValCIF : "+ objValCIF);
                                     JSONObject getObjEl = objValCIF.getJSONObject("datadiri");
 
                                     String getDataNasabah = sessions.getNasabah();
-                                    Log.e("CEK","getDataNasabah : "+getDataNasabah);
                                     JSONObject dataNasabahObj = null;
                                     if (getDataNasabah != null && !getDataNasabah.isEmpty()) {
                                         dataNasabahObj = new JSONObject(getDataNasabah);
@@ -1715,8 +2430,6 @@ public class frag_cif_new extends Fragment {
                                             }
                                         }
                                     }
-                                    Log.e("CEK","keyNamaIdentitas : "+keyNamaIdentitas);
-                                    Log.e("CEK","keyNoIdentitas : "+keyNoIdentitas);
                                     no_handphone = getObjEl.getString(keyNoponsel);
                                     String namaIdentitas = "";
                                     if (!keyNamaIdentitas.isEmpty()) {
@@ -1731,30 +2444,31 @@ public class frag_cif_new extends Fragment {
                                         gelar = getObjEl.getString(keyGelar);
                                     }
 
-                                    Log.e("CEK","no_handphone : "+no_handphone+" | namaIdentitas : "+namaIdentitas);
-                                    Log.e("CEK","noIdentitas : "+noIdentitas+" | gelar : "+gelar);
-
                                     dataNasabahObj.put("noHp",no_handphone);
                                     dataNasabahObj.put("namaLengkap",namaIdentitas);
                                     dataNasabahObj.put("nik",noIdentitas);
                                     dataNasabahObj.put("gelar",gelar);
-                                    Log.e("CEK","dataNasabahObj : "+ dataNasabahObj);
                                     sessions.saveNasabah(dataNasabahObj.toString());
 
                                 } catch (JSONException e) {
                                     e.printStackTrace();
                                 }
-                                ((Activity)mContext).runOnUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        if (isSessionZoom) {
-                                            BaseMeetingActivity.showProgress(true);
-                                        } else {
-                                            DipsSwafoto.showProgress(true);
+
+                                if (intLayoutWork == 240) {
+                                    PopUpRegistrationCIF();
+                                } else {
+                                    ((Activity) mContext).runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            if (isSessionZoom) {
+                                                BaseMeetingActivity.showProgress(true);
+                                            } else {
+                                                DipsSwafoto.showProgress(true);
+                                            }
                                         }
-                                    }
-                                });
-                                APISaveForm();
+                                    });
+                                    processSendOTP();
+                                }
                             } else {
                                 sendDataFragment(bundle, new frag_cif_new());
                             }
@@ -1816,18 +2530,70 @@ public class frag_cif_new extends Fragment {
         });
     }
 
+    private void PopUpRegistrationCIF(){
+        LayoutInflater inflater = getLayoutInflater();
+        View dialogView = inflater.inflate(R.layout.layout_dialog_sweet, null);
+
+        ImageView imgDialog = dialogView.findViewById(R.id.imgDialog);
+        TextView tvTitleDialog = dialogView.findViewById(R.id.tvTitleDialog);
+        TextView tvBodyDialog = dialogView.findViewById(R.id.tvBodyDialog);
+        Button btnCancelDialog = dialogView.findViewById(R.id.btnCancelDialog);
+        Button btnConfirmDialog = dialogView.findViewById(R.id.btnConfirmDialog);
+        btnConfirmDialog.setEnabled(false);
+        btnConfirmDialog.setBackgroundTintList(mContext.getResources().getColorStateList(R.color.zm_text_grey));
+
+        btnCancelDialog.setVisibility(View.VISIBLE);
+
+        tvTitleDialog.setText(getString(R.string.berhasil));
+        btnConfirmDialog.setText(getString(R.string.label_ya));
+        btnCancelDialog.setText(getString(R.string.tidak_not));
+
+        imgDialog.setImageDrawable(mContext.getDrawable(R.drawable.v_dialog_success));
+        tvBodyDialog.setText(getString(R.string.contentSuccessRegistration));
+
+        SweetAlertDialog sweetAlertDialog = new SweetAlertDialog(mContext, SweetAlertDialog.NORMAL_TYPE);
+        sweetAlertDialog.setCustomView(dialogView);
+        sweetAlertDialog.setCancelable(false);
+        sweetAlertDialog.hideConfirmButton();
+        sweetAlertDialog.show();
+
+        btnConfirmDialog.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                sweetAlertDialog.dismissWithAnimation();
+                ConnectionRabbitHttp.mirroringEndpoint(240);
+                /*sessions.saveFormCOde(240);
+                Bundle bundle = new Bundle();
+                bundle.putInt("form_id",24);
+                Fragment fragment = new frag_cif_new();*/
+                Fragment fragment = new frag_ibmb();
+                getFragmentPageBackStack(fragment);
+            }
+        });
+
+        btnCancelDialog.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (isSessionZoom) {
+                    BaseMeetingActivity.showProgress(true);
+                } else {
+                    DipsSwafoto.showProgress(true);
+                }
+                sweetAlertDialog.dismissWithAnimation();
+                processSendOTP();
+            }
+        });
+    }
+
     private void processGetDynamicURL(Spinner spin, String urlPath, String nameDataEl) {
         flagStuckSpin = false;
-        Log.e("CEK","processGetDynamicURL : "+urlPath);
         String authAccess = "Bearer "+sessions.getAuthToken();
         String exchangeToken = sessions.getExchangeToken();
         Server.getAPIService().getDynamicUrl(urlPath,authAccess,exchangeToken).enqueue(new Callback<JsonObject>() {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
-                Log.e("CEK","processGetDynamicURL code : "+response.code());
                 if (response.isSuccessful()) {
                     String dataS = response.body().toString();
-                    Log.e("CEK","processGetDynamicURL dataS : "+dataS);
                     try {
                         JSONObject dataObj = new JSONObject(dataS);
                         if (dataObj.has("token")) {
@@ -1858,7 +2624,12 @@ public class frag_cif_new extends Fragment {
                             dataDropDown.add(new FormSpin(idData,labelIdn,labelIdn,labelEng));
                             if (i == 0) {
                                 if (nameDataEl.contains("provinsi") || nameDataEl.contains("kabupaten") || nameDataEl.contains("kota") || nameDataEl.contains("kecamatan") || (nameDataEl.contains("kelurahan") || nameDataEl.contains("desa"))) {
-                                    valSpinProv.put(nameDataEl,idData);
+                                    String newNameDataEl = nameDataEl;
+                                    if (nameDataEl.contains("(")) {
+                                        int indxProv = nameDataEl.indexOf("(");
+                                        newNameDataEl = nameDataEl.substring(0,indxProv).trim();
+                                    }
+                                    valSpinProv.put(newNameDataEl,idData);
                                 } else {
                                     valSpin.put(nameDataEl, idData);
                                 }
@@ -1870,6 +2641,19 @@ public class frag_cif_new extends Fragment {
                         }
                         ArrayAdapter<FormSpin> adapter2 = new ArrayAdapter<FormSpin>(mContext, R.layout.simple_spinner_dropdown_customitem, dataDropDown);
                         spin.setAdapter(adapter2);
+
+                        if (formCode == 8) {
+                            processMatchDataFromeKTP();
+
+                        } else if (formCode == 22) {
+                            if (ocrKTP) {
+                                processMatchData();
+                                processDataFromOCR();
+                            } else {
+                                processMatchDataFromeKTP();
+                            }
+                        }
+
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
@@ -1886,7 +2670,6 @@ public class frag_cif_new extends Fragment {
     }
 
     private void processGetSpinChild(String nameDataEl) {
-        Log.e("CEK","processGetSpinChild nameDataEl : "+nameDataEl);
         int child = llFormBuild.getChildCount();
         for (int i = 0; i < child; i++) {
             int idEl = llFormBuild.getChildAt(i).getId();
@@ -1902,7 +2685,6 @@ public class frag_cif_new extends Fragment {
                     if (idEl == idDataEl) {
                         if (llFormBuild.getChildAt(i) instanceof RelativeLayout) {
                             if ((nameDataEl.contains("provinsi") || nameDataEl.contains("province")) && (getnameDataEl.contains("kabupaten") || getnameDataEl.contains("district") || getnameDataEl.contains("kota") || getnameDataEl.contains("city"))) {
-                                Log.e("CEK","processGetSpinChild getnameDataEl : "+getnameDataEl);
                                 if (!urlPath.isEmpty()) {
                                     int idProv = 0;
                                     if (valSpinProv.has("provinsi")) {
@@ -1913,8 +2695,6 @@ public class frag_cif_new extends Fragment {
                                     String idSpin = String.valueOf(idProv);
                                     if (idProv != 0) {
                                         String urlNew = urlPath.replace(":id_provinsi", idSpin);
-
-                                        Log.e("CEK", "urlNew : " + urlNew);
 
                                         RelativeLayout rl = (RelativeLayout) llFormBuild.getChildAt(i);
                                         if (rl.getChildAt(0) instanceof Spinner) {
@@ -1953,8 +2733,6 @@ public class frag_cif_new extends Fragment {
                                     String idSpin = String.valueOf(idProv);
                                     String idSpin2 = String.valueOf(idKabKot);
                                     String urlNew = urlPath.replace(":id_provinsi",idSpin).replace(":id_kabupaten",idSpin2);
-
-                                    Log.e("CEK", "urlNew : "+urlNew);
                                     if (idKabKot != 0) {
                                         RelativeLayout rl = (RelativeLayout) llFormBuild.getChildAt(i);
                                         if (rl.getChildAt(0) instanceof Spinner) {
@@ -2001,8 +2779,6 @@ public class frag_cif_new extends Fragment {
                                     String idSpin3 = String.valueOf(idKec);
                                     String urlNew = urlPath.replace(":id_provinsi",idSpin).replace(":id_kabupaten",idSpin2).replace(":id_kecamatan",idSpin3);
 
-                                    Log.e("CEK", "urlNew : "+urlNew);
-
                                     if (idKec != 0) {
                                         RelativeLayout rl = (RelativeLayout) llFormBuild.getChildAt(i);
                                         if (rl.getChildAt(0) instanceof Spinner) {
@@ -2025,7 +2801,6 @@ public class frag_cif_new extends Fragment {
     }
 
     private void processDataFromOCR() {
-        Log.e("CEK","processDataFromOCR : "+objEl.toString());
         int child = llFormBuild.getChildCount();
 
         if (child > 0 && idElement.length() > 0) {
@@ -2039,8 +2814,162 @@ public class frag_cif_new extends Fragment {
                             if (idEl == idDataEl) {
                                 if (llFormBuild.getChildAt(i) instanceof EditText) {
                                     EditText ed = (EditText) llFormBuild.getChildAt(i);
-                                    String valEl = objEl.getString(nameDataEl);
-                                    ed.setText(valEl);
+                                    if (objEl.has(nameDataEl) && sessions.getOCR() != null) {
+                                        String valEl = objEl.getString(nameDataEl);
+                                        ed.setText(valEl);
+                                    } else if (sessions.getCIF() != null) {
+                                        String dataCIF = sessions.getCIF();
+                                        JSONObject objCIF = new JSONObject(dataCIF);
+                                        if (objCIF.has("dataktp")) {
+                                            JSONObject objDataKTP = objCIF.getJSONObject("dataktp");
+                                            int indx = nameDataEl.indexOf("(");
+                                            if (indx >= 0) {
+                                                nameDataEl = nameDataEl.substring(0,indx);
+                                            }
+                                            if (objDataKTP.has(nameDataEl)) {
+                                                String valEl = objDataKTP.getString(nameDataEl);
+                                                if (valEl.equals("null") || valEl == null) {
+                                                    valEl = "";
+                                                }
+                                                ed.setText(valEl);
+                                            } else if (nameDataEl.contains("nama") && (nameDataEl.contains("identitas") || nameDataEl.contains("lengkap"))) {
+                                                String valEl = "";
+                                                if(objDataKTP.has("namaCust")) {
+                                                    valEl = objDataKTP.getString("namaCust");
+                                                } else if(objDataKTP.has("namaLengkap")) {
+                                                    valEl = objDataKTP.getString("namaLengkap");
+                                                }
+                                                ed.setText(valEl);
+                                            } else if (nameDataEl.contains("tanggal") && nameDataEl.contains("lahir")) {
+                                                if (objDataKTP.has("tglLahir")) {
+                                                    String gettglLahir = objDataKTP.getString("tglLahir");
+                                                    String valEl = "";
+                                                    if (gettglLahir.contains("-")) {
+                                                        valEl = gettglLahir;
+                                                    } else {
+                                                        String tahun = gettglLahir.substring(0, 4);
+                                                        String bln = gettglLahir.substring(4, 6);
+                                                        String tgl = gettglLahir.substring(6, 8);
+                                                        valEl = tgl + "-" + bln + "-" + tahun;
+                                                    }
+                                                    ed.setText(valEl);
+                                                }
+                                            } else if (nameDataEl.contains("alamat") && nameDataEl.contains("identitas")) {
+                                                String valEl = "";
+                                                if (objDataKTP.has("address1")) {
+                                                    valEl = objDataKTP.getString("address1");
+                                                } else if(objDataKTP.has("alamat")) {
+                                                    valEl = objDataKTP.getString("alamat");
+                                                }
+                                                ed.setText(valEl);
+                                            } else if ((nameDataEl.contains("no") && nameDataEl.contains("identitas")) || (nameDataEl.contains("nomor") && nameDataEl.contains("identitas"))) {
+                                                if (objDataKTP.has("nik")) {
+                                                    String valEl = objDataKTP.getString("nik");
+                                                    ed.setText(valEl);
+                                                } else {
+                                                    for (Iterator<String> iter = objDataKTP.keys(); iter.hasNext(); ) {
+                                                        if (iter.hasNext()) {
+                                                            String key = iter.next();
+                                                            if (key.contains("nomor") && key.contains("identitas")) {
+                                                                String valEl = objDataKTP.getString(key);
+                                                                ed.setText(valEl);
+                                                                break;
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            } else if (nameDataEl.contains("nama") && nameDataEl.contains("ibu")) {
+                                                if (objDataKTP.has("namaIbu")) {
+                                                    String valEl = objDataKTP.getString("namaIbu");
+                                                    ed.setText(valEl);
+                                                } else if (objDataKTP.has("namaLengkapIbu")) {
+                                                    String valEl = objDataKTP.getString("namaLengkapIbu");
+                                                    ed.setText(valEl);
+                                                }
+                                            } else if ((nameDataEl.contains("no") || nameDataEl.contains("nomor")) && (nameDataEl.contains("ponsel") || nameDataEl.contains("handphone"))) {
+                                                if(objDataKTP.has("noHandphone")) {
+                                                    String valEl = objDataKTP.getString("noHandphone");
+                                                    if (valEl.equals("null") || valEl == null) {
+                                                        valEl = "";
+                                                    }
+                                                    ed.setText(valEl);
+                                                } else if (objDataKTP.has("noHp")) {
+                                                    String valEl = objDataKTP.getString("noHp");
+                                                    if (valEl.equals("null") || valEl == null) {
+                                                        valEl = "";
+                                                    }
+                                                    ed.setText(valEl);
+                                                }
+                                            } else if (nameDataEl.contains("provinsi")) {
+                                                String valEl = "";
+                                                if(objDataKTP.has("propinsi")) {
+                                                    valEl = objDataKTP.getString("propinsi");
+                                                }
+                                                ed.setText(valEl);
+                                            } else if (nameDataEl.contains("kabupaten")) {
+                                                String valEl = "";
+                                                if(objDataKTP.has("kabupaten")) {
+                                                    valEl = objDataKTP.getString("kabupaten");
+                                                } else if (objDataKTP.has("address5")) {
+                                                    valEl = objDataKTP.getString("address5");
+                                                }
+                                                ed.setText(valEl);
+                                            } else if (nameDataEl.contains("kecamatan")) {
+                                                String valEl = "";
+                                                if(objDataKTP.has("kecamatan")) {
+                                                    valEl = objDataKTP.getString("kecamatan");
+                                                } else if (objDataKTP.has("address4")) {
+                                                    valEl = objDataKTP.getString("address4");
+                                                }
+                                                ed.setText(valEl);
+                                            } else if (nameDataEl.contains("kelurahan")) {
+                                                for(Iterator<String> iter = objDataKTP.keys(); iter.hasNext();) {
+                                                    if (iter.hasNext()) {
+                                                        String key = iter.next();
+                                                        if (key.contains("kelurahan")) {
+                                                            String valEl = objDataKTP.getString(key);
+                                                            ed.setText(valEl);
+                                                            break;
+                                                        }
+                                                    }
+                                                }
+                                            } else if (nameDataEl.contains("warganegara")) {
+                                                ed.setText("WNI");
+                                                /*if (objDataKTP.has("negaraAsal")) {
+                                                    String negaraAsal = objDataKTP.getString("negaraAsal");
+                                                    String warganegara = "WNI";
+                                                    if (!negaraAsal.equals("ID")) {
+                                                        warganegara = "WNA";
+                                                    }
+                                                    ed.setText(warganegara);
+                                                }*/
+                                            } else if (nameDataEl.contains("negara")) {
+                                                ed.setText("Indonesia");
+                                                /*if (objDataKTP.has("negaraAsal")) {
+                                                    String negaraAsal = objDataKTP.getString("negaraAsal");
+                                                    String negara = "";
+                                                    if (negaraAsal.equals("ID")) {
+                                                        negara = "Indonesia";
+                                                    } else if (negaraAsal.equals("US")) {
+                                                        negara = "United States of America";
+                                                    } else if (negaraAsal.equals("CN")) {
+                                                        negara = "China";
+                                                    } else {
+                                                        negara = "-";
+                                                    }
+                                                    ed.setText(negara);
+                                                }*/
+                                            } else if (nameDataEl.contains("jenis") && nameDataEl.contains("identitas")) {
+                                                ed.setText("KTP");
+                                            } else if (nameDataEl.contains("tanggal") && nameDataEl.contains("berakhir")) {
+                                                ed.setText("Seumur Hidup");
+                                            } else if (nameDataEl.contains("warganegara")) {
+                                                ed.setText("WNI");
+                                            } else if (nameDataEl.contains("negara")) {
+                                                ed.setText("Indonesia");
+                                            }
+                                        }
+                                    }
                                 }
                                 else if (llFormBuild.getChildAt(i) instanceof RadioGroup) {
                                     RadioGroup rg = (RadioGroup) llFormBuild.getChildAt(i);
@@ -2049,33 +2978,92 @@ public class frag_cif_new extends Fragment {
                                         int idRad = rg.getChildAt(ch).getId();
                                         RadioButton rb = rg.findViewById(idRad);
                                         String labelRad = rb.getText().toString();
-                                        String valEl = objEl.getString(nameDataEl);
-                                        String valRad = valEl.toLowerCase();
-
-                                        String valKurung = "";
-                                        int indx = valEl.indexOf("(");
-                                        if (indx >= 0) {
-                                            valKurung = valEl.substring(indx);
+                                        String valEl = "";
+                                        if (objEl.has(nameDataEl) && sessions.getOCR() != null) {
+                                            valEl = objEl.getString(nameDataEl);
                                         }
-
-                                        if (valEl.toLowerCase().equals("kawin"+valKurung)) {
-                                            valRad = "menikah";
-                                        }
-                                        Log.e("CEK","labelRad : "+labelRad+" | valEl : "+valEl);
-                                        if (labelRad.toLowerCase().equals(valRad)) {
-                                            rb.setChecked(true);
-                                            break;
-                                        } else {
-
-                                            if (valRad.contains("laki") && valRad.contains("-")) {
-                                                String[] sp = valRad.split("-");
-                                                valRad = sp[0]+" - "+sp[1];
-                                                if (labelRad.toLowerCase().equals(valRad)) {
-                                                    rb.setChecked(true);
-                                                    break;
+                                        else if (sessions.getCIF() != null) {
+                                            String dataCIF = sessions.getCIF();
+                                            JSONObject objCIF = new JSONObject(dataCIF);
+                                            if (objCIF.has("dataktp")) {
+                                                JSONObject objDataKTP = objCIF.getJSONObject("dataktp");
+                                                int indx = nameDataEl.indexOf("(");
+                                                if (indx >= 0) {
+                                                    nameDataEl = nameDataEl.substring(0,indx);
                                                 }
-                                            } else if ((valRad.contains("man") || valRad.contains("woman")) && (labelRad.toLowerCase().contains("kelamin") || labelRad.toLowerCase().contains("gender"))) {
+                                                if (objDataKTP.has(nameDataEl)) {
+                                                    valEl = objDataKTP.getString(nameDataEl);
+                                                } else if (nameDataEl.contains("nama") && (nameDataEl.contains("identitas") || nameDataEl.contains("lengkap"))) {
+                                                    for(Iterator<String> iter = objDataKTP.keys(); iter.hasNext();) {
+                                                        if (iter.hasNext()) {
+                                                            String key = iter.next();
+                                                            if (key.contains("nama") && (key.contains("identitas") || key.contains("lengkap"))) {
+                                                                valEl = objDataKTP.getString(key);
+                                                                break;
+                                                            }
+                                                        }
+                                                    }
+                                                } else if (nameDataEl.contains("alamat") && nameDataEl.contains("identitas")) {
+                                                    for(Iterator<String> iter = objDataKTP.keys(); iter.hasNext();) {
+                                                        if (iter.hasNext()) {
+                                                            String key = iter.next();
+                                                            if (key.contains("alamat") && key.contains("identitas")) {
+                                                                valEl = objDataKTP.getString(key);
+                                                                break;
+                                                            }
+                                                        }
+                                                    }
+                                                } else if ((nameDataEl.contains("no") && nameDataEl.contains("identitas")) || (nameDataEl.contains("nomor") && nameDataEl.contains("identitas"))) {
+                                                    for(Iterator<String> iter = objDataKTP.keys(); iter.hasNext();) {
+                                                        if (iter.hasNext()) {
+                                                            String key = iter.next();
+                                                            if (key.contains("nomor") && key.contains("identitas")) {
+                                                                valEl = objDataKTP.getString(key);
+                                                                break;
+                                                            }
+                                                        }
+                                                    }
+                                                } else if (nameDataEl.contains("kelurahan")) {
+                                                    for(Iterator<String> iter = objDataKTP.keys(); iter.hasNext();) {
+                                                        if (iter.hasNext()) {
+                                                            String key = iter.next();
+                                                            if (key.contains("kelurahan")) {
+                                                                valEl = objDataKTP.getString(key);
+                                                                break;
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+
+                                        if (!valEl.isEmpty() && valEl != null ) {
+                                            String valRad = valEl.toLowerCase();
+
+                                            String valKurung = "";
+                                            int indx = valEl.indexOf("(");
+                                            if (indx >= 0) {
+                                                valKurung = valEl.substring(indx);
+                                            }
+
+                                            if (valEl.toLowerCase().equals("kawin" + valKurung)) {
+                                                valRad = "menikah";
+                                            }
+                                            if (labelRad.toLowerCase().equals(valRad)) {
                                                 rb.setChecked(true);
+                                                break;
+                                            } else {
+
+                                                if (valRad.contains("laki") && valRad.contains("-")) {
+                                                    String[] sp = valRad.split("-");
+                                                    valRad = sp[0] + " - " + sp[1];
+                                                    if (labelRad.toLowerCase().equals(valRad)) {
+                                                        rb.setChecked(true);
+                                                        break;
+                                                    }
+                                                } else if ((valRad.contains("man") || valRad.contains("woman")) && (labelRad.toLowerCase().contains("kelamin") || labelRad.toLowerCase().contains("gender"))) {
+                                                    rb.setChecked(true);
+                                                }
                                             }
                                         }
                                     }
@@ -2095,19 +3083,110 @@ public class frag_cif_new extends Fragment {
                                 }
                                 else if (llFormBuild.getChildAt(i) instanceof Spinner) {
                                     Spinner spin = (Spinner) llFormBuild.getChildAt(i);
-                                    String valEl = objEl.getString(nameDataEl);
-                                    for (int ch = 0; ch < spin.getCount(); ch++) {
-                                        if (spin.getItemAtPosition(ch).toString().equals(valEl)) {
-                                            spin.setSelection(ch);
-                                            break;
+                                    if (objEl.has(nameDataEl)) {
+                                        String valEl = objEl.getString(nameDataEl);
+                                        for (int ch = 0; ch < spin.getCount(); ch++) {
+                                            if (spin.getItemAtPosition(ch).toString().equals(valEl)) {
+                                                spin.setSelection(ch);
+                                                break;
+                                            }
                                         }
                                     }
                                     break;
                                 }
+                                else if (llFormBuild.getChildAt(i) instanceof RelativeLayout) {
+                                    RelativeLayout rl = (RelativeLayout) llFormBuild.getChildAt(i);
+                                    if (rl.getChildAt(0) instanceof Spinner) {
+                                        Spinner spin = (Spinner) rl.getChildAt(0);
+                                        if (objEl.has(nameDataEl) && sessions.getOCR() != null) {
+                                            String valEl = objEl.getString(nameDataEl);
+                                            for (int ch = 0; ch < spin.getCount(); ch++) {
+                                                if (spin.getItemAtPosition(ch).toString().equals(valEl)) {
+                                                    spin.setSelection(ch);
+                                                    break;
+                                                }
+                                            }
+                                        } else if (sessions.getCIF() != null) {
+                                            String dataCIF = sessions.getCIF();
+                                            JSONObject objCIF = new JSONObject(dataCIF);
+                                            if (objCIF.has("dataktp")) {
+                                                JSONObject objDataKTP = objCIF.getJSONObject("dataktp");
+                                                int indx = nameDataEl.indexOf("(");
+                                                if (indx >= 0) {
+                                                    nameDataEl = nameDataEl.substring(0,indx);
+                                                }
+                                                String valEl = "";
+                                                if (objDataKTP.has(nameDataEl)) {
+                                                    valEl = objDataKTP.getString(nameDataEl);
+                                                    for (int ch = 0; ch < spin.getCount(); ch++) {
+                                                        if (spin.getItemAtPosition(ch).toString().contains(valEl)) {
+                                                            spin.setSelection(ch);
+                                                            break;
+                                                        }
+                                                    }
+                                                } else if (nameDataEl.contains("status") && nameDataEl.contains("menikah")){
+                                                    if (objDataKTP.has("statusperkawinan")) {
+                                                        valEl = objDataKTP.getString("statusperkawinan");
+                                                        for (int ch = 0; ch < spin.getCount(); ch++) {
+                                                            if (spin.getItemAtPosition(ch).toString().contains(valEl)) {
+                                                                spin.setSelection(ch);
+                                                                break;
+                                                            }
+                                                        }
+                                                    } else if (objDataKTP.has("statusKawin")) {
+                                                        valEl = objDataKTP.getString("statusKawin");
+                                                    }
+                                                } else if (nameDataEl.contains("kelamin")) {
+                                                    valEl = objDataKTP.getString("jenisKelamin");
+                                                }
+
+                                                if (!valEl.isEmpty()) {
+                                                    for (int ch = 0; ch < spin.getCount(); ch++) {
+                                                        if (valEl.length() <= 5) {
+                                                            if (valEl.matches("\\d+(?:\\.\\d+)?")) {
+                                                                FormSpin dataSpin = (FormSpin) spin.getItemAtPosition(ch);
+                                                                String valueCode = dataSpin.getCode();
+                                                                if (valueCode.equals(valEl)) {
+                                                                    spin.setSelection(ch);
+                                                                    break;
+                                                                }
+                                                            } else {
+                                                                if (spin.getItemAtPosition(ch).toString().equalsIgnoreCase(valEl)) {
+                                                                    spin.setSelection(ch);
+                                                                    break;
+                                                                } else if (valEl.equalsIgnoreCase("laki-laki") && spin.getItemAtPosition(ch).toString().equalsIgnoreCase("male")) {
+                                                                    spin.setSelection(ch);
+                                                                    break;
+                                                                } else if ((valEl.equalsIgnoreCase("perempuan") || valEl.equalsIgnoreCase("wanita")) && spin.getItemAtPosition(ch).toString().equalsIgnoreCase("female")) {
+                                                                    spin.setSelection(ch);
+                                                                    break;
+                                                                }
+                                                            }
+                                                        } else {
+                                                            if (spin.getItemAtPosition(ch).toString().equalsIgnoreCase(valEl)) {
+                                                                spin.setSelection(ch);
+                                                                break;
+                                                            } else if (valEl.equalsIgnoreCase("laki-laki") && spin.getItemAtPosition(ch).toString().equalsIgnoreCase("male")) {
+                                                                spin.setSelection(ch);
+                                                                break;
+                                                            } else if ((valEl.equalsIgnoreCase("perempuan") || valEl.equalsIgnoreCase("wanita")) && spin.getItemAtPosition(ch).toString().equalsIgnoreCase("female")) {
+                                                                spin.setSelection(ch);
+                                                                break;
+                                                            }
+                                                        }
+                                                    }
+                                                }
+
+                                            }
+                                        }
+                                    }
+                                }
                                 else if (llFormBuild.getChildAt(i) instanceof AutoCompleteTextView) {
                                     AutoCompleteTextView autoText = (AutoCompleteTextView) llFormBuild.getChildAt(i);
-                                    String valEl = objEl.getString(nameDataEl);
-                                    autoText.setText(valEl);
+                                    if (objEl.has(nameDataEl)) {
+                                        String valEl = objEl.getString(nameDataEl);
+                                        autoText.setText(valEl);
+                                    }
                                     break;
                                 }
                             }
@@ -2121,195 +3200,187 @@ public class frag_cif_new extends Fragment {
     }
 
     private void getKodePos(){
-        JSONObject json = new JSONObject();
-        Log.e("CEK","MASUK GETKODEPOS");
-        try {
-            json.put("kelurahan", desa_kelurahan);
-            json.put("kecamatan", kecamatan);
-            json.put("kabupaten", kota_kabupaten);
-            json.put("provinsi",provinsi);
-        }
-        catch (JSONException e) {
-            e.printStackTrace();
-        }
-        Log.e("CEK","Kelurahan : "+desa_kelurahan+" | kecamatan : "+kecamatan+" | kabupaten : "+kota_kabupaten+" | provinsi : "+provinsi);
-        Log.e("CEK","PAYLOAD GET KODE POS "+ json);
-        String authAccess = "Bearer "+sessions.getAuthToken();
-        String exchangeToken = sessions.getExchangeToken();
-        RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), json.toString());
-        Log.e("CEK","PAYLOAD GET KODE POS 2"+requestBody);
-        ApiService API = Server.getAPIService();
-        Call<JsonObject> call = API.getKodePos(requestBody,authAccess,exchangeToken);
-        call.enqueue(new Callback<JsonObject>() {
-            @Override
-            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
-                if (response.isSuccessful()){
-                    String dataS = response.body().toString();
-                    Log.d("CEK RESPONSE Berhasil",""+dataS);
-                    try {
-                        JSONObject dataObj = new JSONObject(dataS);
-                        kodepos = dataObj.getJSONObject("data").getString("kodepos");
-                        Log.e("INI KODE POS",""+kodepos);
-                        if (dataObj.has("token")) {
-                            String accessToken = dataObj.getString("token");
-                            String exchangeToken = dataObj.getString("exchange");
-                            sessions.saveAuthToken(accessToken);
-                            sessions.saveExchangeToken(exchangeToken);
-                        }
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                }
-                else {
-                    Log.e("CEK RESPONSE GAGAL",""+response);
-                }
-                if (formCode == 8){
-                    processMatchData();
-                    processDataFromOCR();
-                }
-                else {
-                    edKodePos.setText(kodepos);
-                    //setKodepos();
-                }
+        if (!desa_kelurahan.isEmpty() && !kecamatan.isEmpty() && !kota_kabupaten.isEmpty() && !provinsi.isEmpty()) {
+            JSONObject json = new JSONObject();
+            try {
+                json.put("kelurahan", desa_kelurahan);
+                json.put("kecamatan", kecamatan);
+                json.put("kabupaten", kota_kabupaten);
+                json.put("provinsi", provinsi);
+            } catch (JSONException e) {
+                e.printStackTrace();
             }
-            @Override
-            public void onFailure(Call<JsonObject> call, Throwable t) {
-                Log.e("CEK RESPONSE GAGAL",""+t.getMessage());
-                if (formCode == 8){
-                    processMatchData();
-                    processDataFromOCR();
-                }
-                else {
-                    //setKodepos();
-                }
-            }
-        });
-    }
-    private void processMatchData() {
-        Log.e("CEK","processMatchData");
-        String dataOCR = sessions.getOCR();
-        Log.e("CEK","dataOCR : "+ dataOCR);
-        try {
-            JSONObject dataObjOCR = new JSONObject(dataOCR);
-            String namaOCR = dataObjOCR.getString("nama");
-            String provinsiOCR = dataObjOCR.getString("provinsi");
-            String kabkotOCR = dataObjOCR.getString("kotakabupaten");
-            String nikOCR = dataObjOCR.getString("nik");
-            String ttlOCR = dataObjOCR.getString("ttl");
-            String tempatlahirOCR = dataObjOCR.getString("tempatlahir");
-            String jeniskelaminOCR = dataObjOCR.getString("jeniskelamin");
-            String alamatOCR = dataObjOCR.getString("alamat");
-            String rtrwOCR = dataObjOCR.getString("rtrw");
-            String desaOCR = dataObjOCR.getString("desakelurahan");
-            String kecamatanOCR = dataObjOCR.getString("kecamatan");
-            String agamaOCR = dataObjOCR.getString("agama");
-            String kawinOCR = dataObjOCR.getString("statusperkawinan");
-            String wargaOCR = dataObjOCR.getString("kewarganegaraan");
-            String namaIbuKandung = dataObjOCR.getString("namaibukandung");
-
-            String tgllahirOCR = "";
-            if (ttlOCR.contains(",")) {
-                String[] sp = ttlOCR.split(",");
-                tgllahirOCR = sp[1].trim();
-            } else {
-                tgllahirOCR = ttlOCR;
-            }
-
-            String rtOCR = "";
-            String rwOCR = "";
-            if (rtrwOCR.contains("/")) {
-                String[] sp = rtrwOCR.split("/");
-                rtOCR = sp[0];
-                rwOCR = sp[1];
-            }
-
-            Log.e("CEK","namaOCR : "+namaOCR);
-            for(Iterator<String> iter = objEl.keys(); iter.hasNext();) {
-                if (iter.hasNext()) {
-                    String key = iter.next();
-                    String valKurung = "";
-                    int indx = key.indexOf("(");
-                    if (indx >= 0) {
-                        valKurung = key.substring(indx);
-                    }
-                    if (key.contains("nama") && key.contains("identitas")) {
-                        objEl.put(key, namaOCR);
-                    }
-                    else if (key.contains("ibu")){
-                        objEl.put(key, namaIbuKandung);
-                    }
-                    else if(key.contains("kode") && key.contains("pos")){
-                        objEl.put(key,kodepos);
-                    }
-                    else if (key.contains("provinsi")) {
-                        objEl.put(key, provinsiOCR);
-                    }
-                    else if (key.contains("kabupaten") || key.contains("kota")) {
-                        objEl.put(key, kabkotOCR);
-                    }
-                    else if (key.contains("noidentitas") || key.contains("nomoridentitas")) {
-                        objEl.put(key, nikOCR);
-                    }
-                    else if (key.contains("tempat") && key.contains("lahir")) {
-                        objEl.put(key, tempatlahirOCR);
-                    }
-                    else if (key.contains("tanggal") && key.contains("lahir")) {
-                        objEl.put(key, tgllahirOCR);
-                    }
-                    else if (key.contains("kelamin")) {
-                        if (sessions.getLANG().equals("en")) {
-                            if (jeniskelaminOCR.toLowerCase().contains("laki")) {
-                                objEl.put(key, "Male");
-                            } else {
-                                objEl.put(key, "Female");
+            String authAccess = "Bearer " + sessions.getAuthToken();
+            String exchangeToken = sessions.getExchangeToken();
+            RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), json.toString());
+            ApiService API = Server.getAPIService();
+            Call<JsonObject> call = API.getKodePos(requestBody, authAccess, exchangeToken);
+            call.enqueue(new Callback<JsonObject>() {
+                @Override
+                public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                    if (response.isSuccessful()) {
+                        String dataS = response.body().toString();
+                        try {
+                            JSONObject dataObj = new JSONObject(dataS);
+                            kodepos = dataObj.getJSONObject("data").getString("kodepos");
+                            if (dataObj.has("token")) {
+                                String accessToken = dataObj.getString("token");
+                                String exchangeToken = dataObj.getString("exchange");
+                                sessions.saveAuthToken(accessToken);
+                                sessions.saveExchangeToken(exchangeToken);
                             }
-                        } else {
-                            objEl.put(key, jeniskelaminOCR);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
                         }
+                    } else {
+
                     }
-                    else if (key.contains("alamat") && key.contains("identitas")) {
-                        objEl.put(key, alamatOCR);
-                    }
-                    else if (key.equals("rt" + valKurung)) {
-                        objEl.put(key, rtOCR);
-                    }
-                    else if (key.equals("rw" + valKurung)) {
-                        objEl.put(key, rwOCR);
-                    }
-                    else if (key.contains("kelurahan") || key.contains("desa")) {
-                        objEl.put(key, desaOCR);
-                    }
-                    else if (key.contains("kecamatan")) {
-                        objEl.put(key, kecamatanOCR);
-                    }
-                    else if (key.contains("agama")) {
-                        objEl.put(key, agamaOCR);
-                    }
-                    else if (key.contains("nikah") || key.contains("menikah")) {
-                        objEl.put(key, kawinOCR);
-                    }
-                    else if (key.contains("warganegara")) {
-                        if (sessions.getLANG().equals("en")) {
-                            objEl.put(key, "Indonesian citizens");
-                        } else {
-                            objEl.put(key, wargaOCR);
-                        }
-                    }
-                    else if (key.contains("jenisidentitas")) {
-                        if (sessions.getLANG().equals("en")) {
-                            objEl.put(key, "ID card");
-                        } else {
-                            objEl.put(key, "KTP");
-                        }
-                    }
-                    else if (key.contains("negara") && wargaOCR.equals("WNI")) {
-                        objEl.put(key, "Indonesia");
+                    if (edKodePos != null) {
+                        edKodePos.setText(kodepos);
                     }
                 }
-            }
+
+                @Override
+                public void onFailure(Call<JsonObject> call, Throwable t) {
+                }
+            });
         }
-        catch (JSONException e) {
-            e.printStackTrace();
+    }
+
+    private void processMatchData() {
+        String dataOCR = sessions.getOCR();
+        if (dataOCR != null) {
+            try {
+                JSONObject dataObjOCR = new JSONObject(dataOCR);
+                String namaOCR = dataObjOCR.getString("nama");
+                String provinsiOCR = dataObjOCR.getString("provinsi");
+                String kabkotOCR = dataObjOCR.getString("kotakabupaten");
+                String nikOCR = dataObjOCR.getString("nik");
+                String ttlOCR = dataObjOCR.getString("ttl");
+                String tempatlahirOCR = dataObjOCR.getString("tempatlahir");
+                String jeniskelaminOCR = dataObjOCR.getString("jeniskelamin");
+                String alamatOCR = dataObjOCR.getString("alamat");
+                String rtrwOCR = dataObjOCR.getString("rtrw");
+                String desaOCR = dataObjOCR.getString("desakelurahan");
+                String kecamatanOCR = dataObjOCR.getString("kecamatan");
+                String agamaOCR = dataObjOCR.getString("agama");
+                String kawinOCR = dataObjOCR.getString("statusperkawinan");
+                String wargaOCR = dataObjOCR.getString("kewarganegaraan");
+                String namaIbuKandung = "";
+                if (dataObjOCR.has("namaibukandung")) {
+                    namaIbuKandung = dataObjOCR.getString("namaibukandung");
+                }
+
+                String tgllahirOCR = "";
+                if (ttlOCR.contains(",")) {
+                    String[] sp = ttlOCR.split(",");
+                    tgllahirOCR = sp[1].trim();
+                } else {
+                    tgllahirOCR = ttlOCR;
+                }
+
+                String rtOCR = "";
+                String rwOCR = "";
+                if (rtrwOCR.contains("/")) {
+                    String[] sp = rtrwOCR.split("/");
+                    rtOCR = sp[0];
+                    rwOCR = sp[1];
+                }
+
+                String address2 = rtOCR+rwOCR;
+
+                String getDataNasabah = sessions.getNasabah();
+                JSONObject dataEKTP = new JSONObject(getDataNasabah);
+                dataEKTP.put("namaCust",namaOCR);
+                dataEKTP.put("propinsi",provinsiOCR);
+                dataEKTP.put("Prov1",provinsiOCR);
+                dataEKTP.put("address5",kabkotOCR);
+                dataEKTP.put("address4",kecamatanOCR);
+                dataEKTP.put("address3",desaOCR);
+                dataEKTP.put("nomorId",nikOCR);
+                dataEKTP.put("tempatLahir",tempatlahirOCR);
+                dataEKTP.put("tglLahir",tgllahirOCR);
+                dataEKTP.put("jenisKelamin",jeniskelaminOCR);
+                dataEKTP.put("address1",alamatOCR);
+                dataEKTP.put("address2",address2);
+                dataEKTP.put("agama",agamaOCR);
+                dataEKTP.put("statusNikah",kawinOCR);
+                String negaraAsal = wargaOCR;
+                if (negaraAsal.equals("WNI")) {
+                    negaraAsal = "ID";
+                }
+                dataEKTP.put("negaraAsal",negaraAsal);
+                dataEKTP.put("namaIbu",namaIbuKandung);
+                sessions.saveNasabah(dataEKTP.toString());
+
+                for (Iterator<String> iter = objEl.keys(); iter.hasNext(); ) {
+                    if (iter.hasNext()) {
+                        String key = iter.next();
+                        String valKurung = "";
+                        int indx = key.indexOf("(");
+                        if (indx >= 0) {
+                            valKurung = key.substring(indx);
+                        }
+                        if (key.contains("nama") && key.contains("identitas")) {
+                            objEl.put(key, namaOCR);
+                        } else if (key.contains("ibu")) {
+                            objEl.put(key, namaIbuKandung);
+                        } else if (key.contains("kode") && key.contains("pos")) {
+                            objEl.put(key, kodepos);
+                        } else if (key.contains("provinsi")) {
+                            objEl.put(key, provinsiOCR);
+                        } else if (key.contains("kabupaten") || key.contains("kota")) {
+                            objEl.put(key, kabkotOCR);
+                        } else if (key.contains("noidentitas") || key.contains("nomoridentitas") || (key.contains("nomor") && key.contains("identitas"))) {
+                            objEl.put(key, nikOCR);
+                        } else if (key.contains("tempat") && key.contains("lahir")) {
+                            objEl.put(key, tempatlahirOCR);
+                        } else if (key.contains("tanggal") && key.contains("lahir")) {
+                            objEl.put(key, tgllahirOCR);
+                        } else if (key.contains("kelamin")) {
+                            if (sessions.getLANG().equals("en")) {
+                                if (jeniskelaminOCR.toLowerCase().contains("laki")) {
+                                    objEl.put(key, "Male");
+                                } else {
+                                    objEl.put(key, "Female");
+                                }
+                            } else {
+                                objEl.put(key, jeniskelaminOCR);
+                            }
+                        } else if (key.contains("alamat") && key.contains("identitas")) {
+                            objEl.put(key, alamatOCR);
+                        } else if (key.equals("rt" + valKurung)) {
+                            objEl.put(key, rtOCR);
+                        } else if (key.equals("rw" + valKurung)) {
+                            objEl.put(key, rwOCR);
+                        } else if (key.contains("kelurahan") || key.contains("desa")) {
+                            objEl.put(key, desaOCR);
+                        } else if (key.contains("kecamatan")) {
+                            objEl.put(key, kecamatanOCR);
+                        } else if (key.contains("agama")) {
+                            objEl.put(key, agamaOCR);
+                        } else if (key.contains("nikah") || key.contains("menikah") || key.contains("kawin")) {
+                            objEl.put(key, kawinOCR);
+                        } else if (key.contains("warganegara")) {
+                            if (sessions.getLANG().equals("en")) {
+                                objEl.put(key, "Indonesian citizens");
+                            } else {
+                                objEl.put(key, wargaOCR);
+                            }
+                        } else if (key.contains("jenis") && key.contains("identitas")) {
+                            if (sessions.getLANG().equals("en")) {
+                                objEl.put(key, "ID card");
+                            } else {
+                                objEl.put(key, "KTP");
+                            }
+                        } else if (key.equals("negara") && wargaOCR.equals("WNI")) {
+                            objEl.put(key, "Indonesia");
+                        }
+                    }
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -2363,11 +3434,12 @@ public class frag_cif_new extends Fragment {
         EditText et_warga= dialogView.findViewById(R.id.et_warga);
         EditText et_work= dialogView.findViewById(R.id.et_work);
         EditText et_nama_ibuKandung = dialogView.findViewById(R.id.et_nama_ibu_kandung);
-        TextView tvError = (TextView) dialogView.findViewById(R.id.tvError);
-        TextView tvMandatory = (TextView) dialogView.findViewById(R.id.tvMandatory);
-        CheckBox chkDataCorrect = (CheckBox) dialogView.findViewById(R.id.chkDataCorrect);
+        TextView tvError = dialogView.findViewById(R.id.tvError);
+        TextView tvMandatory = dialogView.findViewById(R.id.tvMandatory);
+        CheckBox chkDataCorrect = dialogView.findViewById(R.id.chkDataCorrect);
+        chkDataCorrect.setChecked(false);
         Button btnOCRCancel = dialogView.findViewById(R.id.btncncl);
-        Button btnOCRNext = dialogView.findViewById(R.id.btnlnjt);
+        btnOCRNext = (Button) dialogView.findViewById(R.id.btnlnjt);
 
         sweetAlertDialog.setCustomView(dialogView);
         sweetAlertDialog.hideConfirmButton();
@@ -2427,6 +3499,18 @@ public class frag_cif_new extends Fragment {
             @Override
             public void onClick(View v) {
                 if (chkDataCorrect.isChecked()) {
+
+                    if (!nik.isEmpty() && !nama.isEmpty() && !tmptLahir.isEmpty() && !ttl.isEmpty() && !jeniskelamin.isEmpty() &&
+                            !alamat.isEmpty() && !rtrw.isEmpty() && !provinsi.isEmpty() && !kota_kabupaten.isEmpty() && !kecamatan.isEmpty() &&
+                            !desa_kelurahan.isEmpty() && !agama.isEmpty() && !status_perkawinan.isEmpty() && !kewarganegaraan.isEmpty() &&
+                            !pekerjaan.isEmpty() && !namaIbuKandung.isEmpty()) {
+                        btnOCRNext.setEnabled(true);
+                        btnOCRNext.setBackgroundTintList(mContext.getResources().getColorStateList(R.color.zm_button));
+                    } else {
+                        btnOCRNext.setEnabled(false);
+                        btnOCRNext.setBackgroundTintList(mContext.getResources().getColorStateList(R.color.zm_text_grey));
+                    }
+
                     tvError.setVisibility(View.GONE);
                     ((Activity)mContext).runOnUiThread(new Runnable() {
                         @Override
@@ -2439,6 +3523,9 @@ public class frag_cif_new extends Fragment {
                         }
                     });
                     processValidateIbuKandung(chkDataCorrect,tvError,tvMandatory);
+                } else {
+                    btnOCRNext.setEnabled(false);
+                    btnOCRNext.setBackgroundTintList(mContext.getResources().getColorStateList(R.color.zm_text_grey));
                 }
             }
         });
@@ -2462,15 +3549,24 @@ public class frag_cif_new extends Fragment {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 nik = s.toString();
+                chkDataCorrect.setChecked(false);
+                if (nik.isEmpty()) {
+                    btnOCRNext.setEnabled(false);
+                    btnOCRNext.setBackgroundTintList(mContext.getResources().getColorStateList(R.color.zm_text_grey));
+                }
+                JSONObject dataReq = dataReqOCR2();
+                JSONObject reqOCR = new JSONObject();
+                String dataOCR = sessions.getOCR();
+                try {
+                    JSONObject dataObjOCR = new JSONObject(dataOCR);
+                    dataObjOCR.put("nik",nik);
+                    sessions.saveOCR(dataObjOCR.toString());
+                    reqOCR.put("ocr",dataReq);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
                 if (isSessionZoom) {
-                    JSONObject dataReq = dataReqOCR2();
-                    JSONObject reqOCR = new JSONObject();
-                    try {
-                        reqOCR.put("ocr",dataReq);
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                    RabbitMirroring.MirroringSendKey(reqOCR);
+                    ConnectionRabbitHttp.mirroringKey(reqOCR);
                 }
             }
 
@@ -2488,15 +3584,24 @@ public class frag_cif_new extends Fragment {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 nama = s.toString();
+                chkDataCorrect.setChecked(false);
+                if (nama.isEmpty()) {
+                    btnOCRNext.setEnabled(false);
+                    btnOCRNext.setBackgroundTintList(mContext.getResources().getColorStateList(R.color.zm_text_grey));
+                }
+                JSONObject dataReq = dataReqOCR2();
+                JSONObject reqOCR = new JSONObject();
+                String dataOCR = sessions.getOCR();
+                try {
+                    JSONObject dataObjOCR = new JSONObject(dataOCR);
+                    dataObjOCR.put("nama",nama);
+                    sessions.saveOCR(dataObjOCR.toString());
+                    reqOCR.put("ocr",dataReq);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
                 if (isSessionZoom) {
-                    JSONObject dataReq = dataReqOCR2();
-                    JSONObject reqOCR = new JSONObject();
-                    try {
-                        reqOCR.put("ocr",dataReq);
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                    RabbitMirroring.MirroringSendKey(reqOCR);
+                    ConnectionRabbitHttp.mirroringKey(reqOCR);
                 }
             }
 
@@ -2514,15 +3619,24 @@ public class frag_cif_new extends Fragment {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 tmptLahir = s.toString();
+                chkDataCorrect.setChecked(false);
+                if (tmptLahir.isEmpty()) {
+                    btnOCRNext.setEnabled(false);
+                    btnOCRNext.setBackgroundTintList(mContext.getResources().getColorStateList(R.color.zm_text_grey));
+                }
+                JSONObject dataReq = dataReqOCR2();
+                JSONObject reqOCR = new JSONObject();
+                String dataOCR = sessions.getOCR();
+                try {
+                    JSONObject dataObjOCR = new JSONObject(dataOCR);
+                    dataObjOCR.put("tempatlahir",tmptLahir);
+                    sessions.saveOCR(dataObjOCR.toString());
+                    reqOCR.put("ocr",dataReq);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
                 if (isSessionZoom) {
-                    JSONObject dataReq = dataReqOCR2();
-                    JSONObject reqOCR = new JSONObject();
-                    try {
-                        reqOCR.put("ocr",dataReq);
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                    RabbitMirroring.MirroringSendKey(reqOCR);
+                    ConnectionRabbitHttp.mirroringKey(reqOCR);
                 }
             }
 
@@ -2540,15 +3654,24 @@ public class frag_cif_new extends Fragment {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 ttl = s.toString();
+                chkDataCorrect.setChecked(false);
+                if (ttl.isEmpty()) {
+                    btnOCRNext.setEnabled(false);
+                    btnOCRNext.setBackgroundTintList(mContext.getResources().getColorStateList(R.color.zm_text_grey));
+                }
+                JSONObject dataReq = dataReqOCR2();
+                JSONObject reqOCR = new JSONObject();
+                String dataOCR = sessions.getOCR();
+                try {
+                    JSONObject dataObjOCR = new JSONObject(dataOCR);
+                    dataObjOCR.put("ttl",ttl);
+                    sessions.saveOCR(dataObjOCR.toString());
+                    reqOCR.put("ocr",dataReq);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
                 if (isSessionZoom) {
-                    JSONObject dataReq = dataReqOCR2();
-                    JSONObject reqOCR = new JSONObject();
-                    try {
-                        reqOCR.put("ocr",dataReq);
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                    RabbitMirroring.MirroringSendKey(reqOCR);
+                    ConnectionRabbitHttp.mirroringKey(reqOCR);
                 }
             }
 
@@ -2566,21 +3689,29 @@ public class frag_cif_new extends Fragment {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 jeniskelamin = s.toString();
+                chkDataCorrect.setChecked(false);
+                if (jeniskelamin.isEmpty()) {
+                    btnOCRNext.setEnabled(false);
+                    btnOCRNext.setBackgroundTintList(mContext.getResources().getColorStateList(R.color.zm_text_grey));
+                }
+                JSONObject dataReq = dataReqOCR2();
+                JSONObject reqOCR = new JSONObject();
+                String dataOCR = sessions.getOCR();
+                try {
+                    JSONObject dataObjOCR = new JSONObject(dataOCR);
+                    dataObjOCR.put("jeniskelamin",jeniskelamin);
+                    sessions.saveOCR(dataObjOCR.toString());
+                    reqOCR.put("ocr",dataReq);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
                 if (isSessionZoom) {
-                    JSONObject dataReq = dataReqOCR2();
-                    JSONObject reqOCR = new JSONObject();
-                    try {
-                        reqOCR.put("ocr",dataReq);
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                    RabbitMirroring.MirroringSendKey(reqOCR);
+                    ConnectionRabbitHttp.mirroringKey(reqOCR);
                 }
             }
 
             @Override
             public void afterTextChanged(Editable s) {
-
             }
         });
         et_goldar.addTextChangedListener(new TextWatcher() {
@@ -2592,15 +3723,19 @@ public class frag_cif_new extends Fragment {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 golongan_darah = s.toString();
+                JSONObject dataReq = dataReqOCR2();
+                JSONObject reqOCR = new JSONObject();
+                String dataOCR = sessions.getOCR();
+                try {
+                    JSONObject dataObjOCR = new JSONObject(dataOCR);
+                    dataObjOCR.put("golongandarah",golongan_darah);
+                    sessions.saveOCR(dataObjOCR.toString());
+                    reqOCR.put("ocr",dataReq);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
                 if (isSessionZoom) {
-                    JSONObject dataReq = dataReqOCR2();
-                    JSONObject reqOCR = new JSONObject();
-                    try {
-                        reqOCR.put("ocr",dataReq);
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                    RabbitMirroring.MirroringSendKey(reqOCR);
+                    ConnectionRabbitHttp.mirroringKey(reqOCR);
                 }
             }
 
@@ -2618,15 +3753,24 @@ public class frag_cif_new extends Fragment {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 alamat = s.toString();
+                chkDataCorrect.setChecked(false);
+                if (alamat.isEmpty()) {
+                    btnOCRNext.setEnabled(false);
+                    btnOCRNext.setBackgroundTintList(mContext.getResources().getColorStateList(R.color.zm_text_grey));
+                }
+                JSONObject dataReq = dataReqOCR2();
+                JSONObject reqOCR = new JSONObject();
+                String dataOCR = sessions.getOCR();
+                try {
+                    JSONObject dataObjOCR = new JSONObject(dataOCR);
+                    dataObjOCR.put("alamat",alamat);
+                    sessions.saveOCR(dataObjOCR.toString());
+                    reqOCR.put("ocr",dataReq);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
                 if (isSessionZoom) {
-                    JSONObject dataReq = dataReqOCR2();
-                    JSONObject reqOCR = new JSONObject();
-                    try {
-                        reqOCR.put("ocr",dataReq);
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                    RabbitMirroring.MirroringSendKey(reqOCR);
+                    ConnectionRabbitHttp.mirroringKey(reqOCR);
                 }
             }
 
@@ -2644,21 +3788,29 @@ public class frag_cif_new extends Fragment {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 rtrw = s.toString();
+                chkDataCorrect.setChecked(false);
+                if (rtrw.isEmpty()) {
+                    btnOCRNext.setEnabled(false);
+                    btnOCRNext.setBackgroundTintList(mContext.getResources().getColorStateList(R.color.zm_text_grey));
+                }
+                JSONObject dataReq = dataReqOCR2();
+                JSONObject reqOCR = new JSONObject();
+                String dataOCR = sessions.getOCR();
+                try {
+                    JSONObject dataObjOCR = new JSONObject(dataOCR);
+                    dataObjOCR.put("rtrw",rtrw);
+                    sessions.saveOCR(dataObjOCR.toString());
+                    reqOCR.put("ocr",dataReq);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
                 if (isSessionZoom) {
-                    JSONObject dataReq = dataReqOCR2();
-                    JSONObject reqOCR = new JSONObject();
-                    try {
-                        reqOCR.put("ocr",dataReq);
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                    RabbitMirroring.MirroringSendKey(reqOCR);
+                    ConnectionRabbitHttp.mirroringKey(reqOCR);
                 }
             }
 
             @Override
             public void afterTextChanged(Editable s) {
-
             }
         });
         et_provinsi.addTextChangedListener(new TextWatcher() {
@@ -2670,15 +3822,24 @@ public class frag_cif_new extends Fragment {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 provinsi = s.toString();
+                chkDataCorrect.setChecked(false);
+                if (provinsi.isEmpty()) {
+                    btnOCRNext.setEnabled(false);
+                    btnOCRNext.setBackgroundTintList(mContext.getResources().getColorStateList(R.color.zm_text_grey));
+                }
+                JSONObject dataReq = dataReqOCR2();
+                JSONObject reqOCR = new JSONObject();
+                String dataOCR = sessions.getOCR();
+                try {
+                    JSONObject dataObjOCR = new JSONObject(dataOCR);
+                    dataObjOCR.put("provinsi",provinsi);
+                    sessions.saveOCR(dataObjOCR.toString());
+                    reqOCR.put("ocr",dataReq);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
                 if (isSessionZoom) {
-                    JSONObject dataReq = dataReqOCR2();
-                    JSONObject reqOCR = new JSONObject();
-                    try {
-                        reqOCR.put("ocr",dataReq);
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                    RabbitMirroring.MirroringSendKey(reqOCR);
+                    ConnectionRabbitHttp.mirroringKey(reqOCR);
                 }
             }
 
@@ -2696,15 +3857,24 @@ public class frag_cif_new extends Fragment {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 kota_kabupaten = s.toString();
+                chkDataCorrect.setChecked(false);
+                if (kota_kabupaten.isEmpty()) {
+                    btnOCRNext.setEnabled(false);
+                    btnOCRNext.setBackgroundTintList(mContext.getResources().getColorStateList(R.color.zm_text_grey));
+                }
+                JSONObject dataReq = dataReqOCR2();
+                JSONObject reqOCR = new JSONObject();
+                String dataOCR = sessions.getOCR();
+                try {
+                    JSONObject dataObjOCR = new JSONObject(dataOCR);
+                    dataObjOCR.put("kotakabupaten",kota_kabupaten);
+                    sessions.saveOCR(dataObjOCR.toString());
+                    reqOCR.put("ocr",dataReq);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
                 if (isSessionZoom) {
-                    JSONObject dataReq = dataReqOCR2();
-                    JSONObject reqOCR = new JSONObject();
-                    try {
-                        reqOCR.put("ocr",dataReq);
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                    RabbitMirroring.MirroringSendKey(reqOCR);
+                    ConnectionRabbitHttp.mirroringKey(reqOCR);
                 }
             }
 
@@ -2722,15 +3892,24 @@ public class frag_cif_new extends Fragment {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 kecamatan = s.toString();
+                chkDataCorrect.setChecked(false);
+                if (kecamatan.isEmpty()) {
+                    btnOCRNext.setEnabled(false);
+                    btnOCRNext.setBackgroundTintList(mContext.getResources().getColorStateList(R.color.zm_text_grey));
+                }
+                JSONObject dataReq = dataReqOCR2();
+                JSONObject reqOCR = new JSONObject();
+                String dataOCR = sessions.getOCR();
+                try {
+                    JSONObject dataObjOCR = new JSONObject(dataOCR);
+                    dataObjOCR.put("kecamatan",kecamatan);
+                    sessions.saveOCR(dataObjOCR.toString());
+                    reqOCR.put("ocr",dataReq);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
                 if (isSessionZoom) {
-                    JSONObject dataReq = dataReqOCR2();
-                    JSONObject reqOCR = new JSONObject();
-                    try {
-                        reqOCR.put("ocr",dataReq);
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                    RabbitMirroring.MirroringSendKey(reqOCR);
+                    ConnectionRabbitHttp.mirroringKey(reqOCR);
                 }
             }
 
@@ -2748,15 +3927,24 @@ public class frag_cif_new extends Fragment {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 desa_kelurahan = s.toString();
+                chkDataCorrect.setChecked(false);
+                if (desa_kelurahan.isEmpty()) {
+                    btnOCRNext.setEnabled(false);
+                    btnOCRNext.setBackgroundTintList(mContext.getResources().getColorStateList(R.color.zm_text_grey));
+                }
+                JSONObject dataReq = dataReqOCR2();
+                JSONObject reqOCR = new JSONObject();
+                String dataOCR = sessions.getOCR();
+                try {
+                    JSONObject dataObjOCR = new JSONObject(dataOCR);
+                    dataObjOCR.put("desakelurahan",desa_kelurahan);
+                    sessions.saveOCR(dataObjOCR.toString());
+                    reqOCR.put("ocr",dataReq);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
                 if (isSessionZoom) {
-                    JSONObject dataReq = dataReqOCR2();
-                    JSONObject reqOCR = new JSONObject();
-                    try {
-                        reqOCR.put("ocr",dataReq);
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                    RabbitMirroring.MirroringSendKey(reqOCR);
+                    ConnectionRabbitHttp.mirroringKey(reqOCR);
                 }
             }
 
@@ -2774,15 +3962,24 @@ public class frag_cif_new extends Fragment {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 agama = s.toString();
-                if (isSessionZoom) {
-                    JSONObject dataReq = dataReqOCR2();
-                    JSONObject reqOCR = new JSONObject();
-                    try {
-                        reqOCR.put("ocr",dataReq);
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                    RabbitMirroring.MirroringSendKey(reqOCR);
+                chkDataCorrect.setChecked(false);
+                if (agama.isEmpty()) {
+                    btnOCRNext.setEnabled(false);
+                    btnOCRNext.setBackgroundTintList(mContext.getResources().getColorStateList(R.color.zm_text_grey));
+                }
+                JSONObject dataReq = dataReqOCR2();
+                JSONObject reqOCR = new JSONObject();
+                String dataOCR = sessions.getOCR();
+                try {
+                    JSONObject dataObjOCR = new JSONObject(dataOCR);
+                    dataObjOCR.put("agama",agama);
+                    sessions.saveOCR(dataObjOCR.toString());
+                    reqOCR.put("ocr",dataReq);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            if (isSessionZoom) {
+                    ConnectionRabbitHttp.mirroringKey(reqOCR);
                 }
             }
 
@@ -2800,15 +3997,24 @@ public class frag_cif_new extends Fragment {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 status_perkawinan = s.toString();
+                chkDataCorrect.setChecked(false);
+                if (status_perkawinan.isEmpty()) {
+                    btnOCRNext.setEnabled(false);
+                    btnOCRNext.setBackgroundTintList(mContext.getResources().getColorStateList(R.color.zm_text_grey));
+                }
+                JSONObject dataReq = dataReqOCR2();
+                JSONObject reqOCR = new JSONObject();
+                String dataOCR = sessions.getOCR();
+                try {
+                    JSONObject dataObjOCR = new JSONObject(dataOCR);
+                    dataObjOCR.put("statusperkawinan",status_perkawinan);
+                    sessions.saveOCR(dataObjOCR.toString());
+                    reqOCR.put("ocr",dataReq);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
                 if (isSessionZoom) {
-                    JSONObject dataReq = dataReqOCR2();
-                    JSONObject reqOCR = new JSONObject();
-                    try {
-                        reqOCR.put("ocr",dataReq);
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                    RabbitMirroring.MirroringSendKey(reqOCR);
+                    ConnectionRabbitHttp.mirroringKey(reqOCR);
                 }
             }
 
@@ -2826,15 +4032,24 @@ public class frag_cif_new extends Fragment {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 kewarganegaraan = s.toString();
+                chkDataCorrect.setChecked(false);
+                if (kewarganegaraan.isEmpty()) {
+                    btnOCRNext.setEnabled(false);
+                    btnOCRNext.setBackgroundTintList(mContext.getResources().getColorStateList(R.color.zm_text_grey));
+                }
+                JSONObject dataReq = dataReqOCR2();
+                JSONObject reqOCR = new JSONObject();
+                String dataOCR = sessions.getOCR();
+                try {
+                    JSONObject dataObjOCR = new JSONObject(dataOCR);
+                    dataObjOCR.put("kewarganegaraan",kewarganegaraan);
+                    sessions.saveOCR(dataObjOCR.toString());
+                    reqOCR.put("ocr",dataReq);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
                 if (isSessionZoom) {
-                    JSONObject dataReq = dataReqOCR2();
-                    JSONObject reqOCR = new JSONObject();
-                    try {
-                        reqOCR.put("ocr",dataReq);
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                    RabbitMirroring.MirroringSendKey(reqOCR);
+                    ConnectionRabbitHttp.mirroringKey(reqOCR);
                 }
             }
 
@@ -2852,15 +4067,24 @@ public class frag_cif_new extends Fragment {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 pekerjaan = s.toString();
+                chkDataCorrect.setChecked(false);
+                if (pekerjaan.isEmpty()) {
+                    btnOCRNext.setEnabled(false);
+                    btnOCRNext.setBackgroundTintList(mContext.getResources().getColorStateList(R.color.zm_text_grey));
+                }
+                JSONObject dataReq = dataReqOCR2();
+                JSONObject reqOCR = new JSONObject();
+                String dataOCR = sessions.getOCR();
+                try {
+                    JSONObject dataObjOCR = new JSONObject(dataOCR);
+                    dataObjOCR.put("pekerjaan",pekerjaan);
+                    sessions.saveOCR(dataObjOCR.toString());
+                    reqOCR.put("ocr",dataReq);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
                 if (isSessionZoom) {
-                    JSONObject dataReq = dataReqOCR2();
-                    JSONObject reqOCR = new JSONObject();
-                    try {
-                        reqOCR.put("ocr",dataReq);
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                    RabbitMirroring.MirroringSendKey(reqOCR);
+                    ConnectionRabbitHttp.mirroringKey(reqOCR);
                 }
             }
 
@@ -2878,17 +4102,26 @@ public class frag_cif_new extends Fragment {
 
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
+                chkDataCorrect.setChecked(false);
                 namaIbuKandung = charSequence.toString();
+                if (namaIbuKandung.isEmpty()) {
+                    btnOCRNext.setEnabled(false);
+                    btnOCRNext.setBackgroundTintList(mContext.getResources().getColorStateList(R.color.zm_text_grey));
+                }
+
+                JSONObject dataReq = dataReqOCR2();
+                JSONObject reqOCR = new JSONObject();
+                String dataOCR = sessions.getOCR();
+                try {
+                    JSONObject dataObjOCR = new JSONObject(dataOCR);
+                    dataObjOCR.put("namaibukandung",namaIbuKandung);
+                    sessions.saveOCR(dataObjOCR.toString());
+                    reqOCR.put("ocr",dataReq);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
                 if (isSessionZoom) {
-                    JSONObject dataReq = dataReqOCR2();
-                    JSONObject reqOCR = new JSONObject();
-                    try {
-                        reqOCR.put("ocr",dataReq);
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                    RabbitMirroring.MirroringSendKey(reqOCR);
+                    ConnectionRabbitHttp.mirroringKey(reqOCR);
                 }
             }
 
@@ -2901,37 +4134,125 @@ public class frag_cif_new extends Fragment {
         btnOCRNext.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                String lbAlert = mContext.getResources().getString(R.string.alertRTGS);
+                if (nik.isEmpty()) {
+                    Toast.makeText(mContext,"NIK "+lbAlert,Toast.LENGTH_LONG).show();
+                    return;
+                } else if (nama.isEmpty()) {
+                    Toast.makeText(mContext,"Nama "+lbAlert,Toast.LENGTH_LONG).show();
+                    return;
+                } else if (tmptLahir.isEmpty()) {
+                    Toast.makeText(mContext,"Tempat lahir "+lbAlert,Toast.LENGTH_LONG).show();
+                    return;
+                } else if (ttl.isEmpty()) {
+                    Toast.makeText(mContext,"Tanggal lahir "+lbAlert,Toast.LENGTH_LONG).show();
+                    return;
+                } else if (jeniskelamin.isEmpty()) {
+                    Toast.makeText(mContext,"Jenis Kelamin "+lbAlert,Toast.LENGTH_LONG).show();
+                    return;
+                } /*else if (golongan_darah.isEmpty()) {
+                    Toast.makeText(mContext,"Golongan Darah "+lbAlert,Toast.LENGTH_LONG).show();
+                    return;
+                }*/ else if (alamat.isEmpty()) {
+                    Toast.makeText(mContext,"Alamat "+lbAlert,Toast.LENGTH_LONG).show();
+                    return;
+                } else if (rtrw.isEmpty()) {
+                    Toast.makeText(mContext,"Rt/RW "+lbAlert,Toast.LENGTH_LONG).show();
+                    return;
+                } else if (provinsi.isEmpty()) {
+                    Toast.makeText(mContext,"provinsi "+lbAlert,Toast.LENGTH_LONG).show();
+                    return;
+                } else if (kota_kabupaten.isEmpty()) {
+                    Toast.makeText(mContext,"Kabupaten/Kota "+lbAlert,Toast.LENGTH_LONG).show();
+                    return;
+                } else if (kecamatan.isEmpty()) {
+                    Toast.makeText(mContext,"Kecamatan "+lbAlert,Toast.LENGTH_LONG).show();
+                    return;
+                } else if (desa_kelurahan.isEmpty()) {
+                    Toast.makeText(mContext,"Kelurahan/Desa "+lbAlert,Toast.LENGTH_LONG).show();
+                    return;
+                } else if (agama.isEmpty()) {
+                    Toast.makeText(mContext,"Agama "+lbAlert,Toast.LENGTH_LONG).show();
+                    return;
+                } else if (status_perkawinan.isEmpty()) {
+                    Toast.makeText(mContext,"Status Perkawinan "+lbAlert,Toast.LENGTH_LONG).show();
+                    return;
+                } else if (pekerjaan.isEmpty()) {
+                    Toast.makeText(mContext,"Pekerjaan "+lbAlert,Toast.LENGTH_LONG).show();
+                    return;
+                } else if (namaIbuKandung.isEmpty()) {
+                    Toast.makeText(mContext,"Nama Ibu Kandung "+lbAlert,Toast.LENGTH_LONG).show();
+                    return;
+                }
+
                 nik = NIK.getText().toString().trim();
                 nama = Nama.getText().toString().trim();
                 tmptLahir = TTL.getText().toString().trim();
                 ttl = TTL2.getText().toString().trim();
-                Log.e("CEK","picturePath : "+picturePath);
+                if (rtrw.contains("/")) {
+                    String[] sp = rtrw.split("/");
+                    String getRt = sp[0].trim();
+                    String getRw = sp[1].trim();
+
+                    String RT = String.format("%03d", Integer.parseInt(getRt));
+                    String Rw = String.format("%03d", Integer.parseInt(getRw));
+                    rtrw = RT+"/"+Rw;
+                }
+
+                String dataOCR = sessions.getOCR();
+                try {
+                    JSONObject dataObjOCR = new JSONObject(dataOCR);
+                    dataObjOCR.put("nik",nik);
+                    dataObjOCR.put("nama",nama);
+                    dataObjOCR.put("tempatlahir",tmptLahir);
+                    dataObjOCR.put("ttl",ttl);
+                    dataObjOCR.put("jeniskelamin",jeniskelamin);
+                    dataObjOCR.put("golongandarah",golongan_darah);
+                    dataObjOCR.put("alamat",alamat);
+                    dataObjOCR.put("rtrw",rtrw);
+                    dataObjOCR.put("provinsi",provinsi);
+                    dataObjOCR.put("kotakabupaten",kota_kabupaten);
+                    dataObjOCR.put("kecamatan",kecamatan);
+                    dataObjOCR.put("desakelurahan",desa_kelurahan);
+                    dataObjOCR.put("agama",agama);
+                    dataObjOCR.put("statusperkawinan",status_perkawinan);
+                    dataObjOCR.put("kewarganegaraan",kewarganegaraan);
+                    dataObjOCR.put("pekerjaan",pekerjaan);
+                    dataObjOCR.put("namaibukandung",namaIbuKandung);
+                    sessions.saveOCR(dataObjOCR.toString());
+                } catch (JSONException e) {
+                    throw new RuntimeException(e);
+                }
+
                 if (chkDataCorrect.isChecked() && flagMother) {
                     if (!picturePath.isEmpty() && !namaIbuKandung.isEmpty()) {
                         sweetAlertDialog.cancel();
                         sweetAlertDialog.dismissWithAnimation();
-                        String fieldName = "ktp";
-                        ((Activity)mContext).runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                if (isSessionZoom) {
-                                    BaseMeetingActivity.showProgress(true);
-                                } else {
-                                    DipsSwafoto.showProgress(true);
+                        if (formCode == 22 && isSessionZoom) {
+                            processMatchData();
+                            processDataFromOCR();
+                        } else {
+                            ((Activity) mContext).runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    if (isSessionZoom) {
+                                        BaseMeetingActivity.showProgress(true);
+                                    } else {
+                                        DipsSwafoto.showProgress(true);
+                                    }
                                 }
+                            });
+                            if (isSessionZoom) {
+                                JSONObject reqOCR = new JSONObject();
+                                try {
+                                    reqOCR.put("startValidasi", true);
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+                                ConnectionRabbitHttp.mirroringKey(reqOCR);
                             }
-                        });
-                        //dataReqOCR();
-                        if (isSessionZoom) {
-                            JSONObject reqOCR = new JSONObject();
-                            try {
-                                reqOCR.put("startValidasi", true);
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            }
-                            RabbitMirroring.MirroringSendKey(reqOCR);
+                            processDTOTT();
                         }
-                        processDukcapil();
                     }
                     else{
                         Toast.makeText(mContext, ""+getString(R.string.validate_nama_ibu), Toast.LENGTH_SHORT).show();
@@ -2967,14 +4288,10 @@ public class frag_cif_new extends Fragment {
 
         int width = mContext.getResources().getDisplayMetrics().widthPixels;
         int height = mContext.getResources().getDisplayMetrics().heightPixels;
-
-        Log.e("CEK","PopUpOCR width : "+width+" | height : "+height);
         int newWidth = (int)(width*0.8);
-        int newHeight = (int)(height*0.85);
-        Log.e("CEK","PopUpOCR newWidth : "+newWidth+" | newHeight : "+newHeight);
+        int newHeight = (int)(height*0.65);
 
         sweetAlertDialog.show();
-//        sweetAlertDialog.getWindow().setLayout(newWidth,newHeight);
         WindowManager.LayoutParams lp = new WindowManager.LayoutParams();
 
         lp.copyFrom(sweetAlertDialog.getWindow().getAttributes());
@@ -2982,16 +4299,12 @@ public class frag_cif_new extends Fragment {
         lp.height = newHeight;
         if (height > width) {
             double diffs = (double) height / width;
-            Log.e("CEK","DIFF diffs : "+diffs);
             if (diffs < 2.055) {
-                Log.e("CEK","MASUK IF diffs");
                 lp.x=50;
             }
         } else {
             double diffs = (double) width / height;
-            Log.e("CEK","DIFF diffs 2 : "+diffs);
             if (diffs < 2.055) {
-                Log.e("CEK","MASUK IF diffs 2");
                 lp.y=50;
             }
         }
@@ -3004,13 +4317,26 @@ public class frag_cif_new extends Fragment {
         String rt = "";
         String rw = "";
         if (rtrw != null ) {
-            if (rtrw.contains("/")) {
-                String[] pisahrtrw = rtrw.split("/");
-                rt = pisahrtrw[0];
-                rw = pisahrtrw[1];
-            } else {
-                rt = rtrw.substring(0,3);
-                rw = rtrw.substring(3,6);
+            if (!rtrw.equals("null")) {
+                if (rtrw.contains("/")) {
+                    String[] pisahrtrw = rtrw.split("/");
+                    if (pisahrtrw.length == 2) {
+                        rt = pisahrtrw[0];
+                        rw = pisahrtrw[1];
+                    } else if (pisahrtrw.length == 1) {
+                        rt = pisahrtrw[0];
+                    }
+                } else {
+                    if (rtrw.length() == 6) {
+                        rt = rtrw.substring(0, 3);
+                        rw = rtrw.substring(3, 6);
+                    } else if (rtrw.length() > 3) {
+                        rt = rtrw.substring(0, 3);
+                        rw = rtrw.substring(3);
+                    } else {
+                        rt = rtrw;
+                    }
+                }
             }
         }
 
@@ -3048,8 +4374,6 @@ public class frag_cif_new extends Fragment {
             e.printStackTrace();
         }
 
-        Log.e("CEK","datasReqOCR2 : "+ datasReqOCR2);
-
         return datasReqOCR2;
     }
     private JSONObject dataReqOCR() {
@@ -3077,14 +4401,21 @@ public class frag_cif_new extends Fragment {
             e.printStackTrace();
         }
 
-        Log.e("CEK","datasReqOCR : "+datasReqOCR.toString());
-
         sessions.saveOCR(datasReqOCR.toString());
 
         return datasReqOCR;
     }
 
     private JSONObject dataReqValidate() {
+
+        String rt = rtrw;
+        String rw = rtrw;
+        if (rtrw.contains("/")) {
+            String[] sp = rtrw.split("/");
+            rt = sp[0].trim();
+            rw = sp[1].trim();
+        }
+
         JSONObject jsons = new JSONObject();
         try {
             jsons.put("idDips",idDips);
@@ -3097,8 +4428,9 @@ public class frag_cif_new extends Fragment {
             jsons.put("jenisKelamin",jeniskelamin);
             jsons.put("namaLengkapIbu",namaIbuKandung);
             jsons.put("alamat",alamat);
-            jsons.put("rt",rtrw);
-            jsons.put("rw",rtrw);
+            jsons.put("agama",agama);
+            jsons.put("rt",rt);
+            jsons.put("rw",rw);
             jsons.put("kelurahan",desa_kelurahan);
             jsons.put("kecamatan",kecamatan);
             jsons.put("statusKawin",status_perkawinan);
@@ -3107,8 +4439,6 @@ public class frag_cif_new extends Fragment {
         catch (JSONException e) {
             e.printStackTrace();
         }
-
-        Log.e("CEK","dataReqValidateIbu : "+jsons.toString());
 
         return jsons;
     }
@@ -3124,8 +4454,6 @@ public class frag_cif_new extends Fragment {
             e.printStackTrace();
         }
 
-        Log.e("CEK","dataReqValidateFace : "+jsons.toString());
-
         return jsons;
     }
 
@@ -3140,7 +4468,6 @@ public class frag_cif_new extends Fragment {
         call.enqueue(new Callback<JsonObject>() {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
-                Log.e("CEK","response ValidateIbuKandung : "+response.code());
                 if (response.isSuccessful()){
                     ((Activity)mContext).runOnUiThread(new Runnable() {
                         @Override
@@ -3154,7 +4481,6 @@ public class frag_cif_new extends Fragment {
                     });
                     try {
                         String dataS = response.body().toString();
-                        Log.e("CEK","HASIL ValidateIbuKandung : "+dataS);
                         JSONObject dataObj = new JSONObject(dataS);
                         if (dataObj.has("token")) {
                             String accessToken = dataObj.getString("token");
@@ -3166,6 +4492,8 @@ public class frag_cif_new extends Fragment {
                         String msg = dataObj.getString("message");
                         if (status.equals("oke")){
                             flagMother = true;
+                            btnOCRNext.setEnabled(true);
+                            btnOCRNext.setBackgroundTintList(mContext.getResources().getColorStateList(R.color.zm_button));
                         }
                         else{
                             //loopValidMother++;
@@ -3174,6 +4502,8 @@ public class frag_cif_new extends Fragment {
                             }
                             chkDataCorrect.setChecked(false);
                             flagMother = false;
+                            btnOCRNext.setEnabled(false);
+                            btnOCRNext.setBackgroundTintList(mContext.getResources().getColorStateList(R.color.zm_text_grey));
                             tvError.setVisibility(View.VISIBLE);
                             tvMandatory.setVisibility(View.GONE);
                         }
@@ -3186,6 +4516,8 @@ public class frag_cif_new extends Fragment {
                 else {
                     chkDataCorrect.setChecked(false);
                     flagMother = false;
+                    btnOCRNext.setEnabled(false);
+                    btnOCRNext.setBackgroundTintList(mContext.getResources().getColorStateList(R.color.zm_text_grey));
                     ((Activity)mContext).runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
@@ -3199,7 +4531,6 @@ public class frag_cif_new extends Fragment {
                     String msg = "";
                     if (response.errorBody().toString().isEmpty()) {
                         String dataS = response.errorBody().toString();
-                        Log.e("CEK","ERROR RESPONSE ValidateIbuKandung : "+dataS);
                         try {
                             JSONObject dataObj = new JSONObject(dataS);
                             msg = dataObj.getString("message");
@@ -3211,7 +4542,6 @@ public class frag_cif_new extends Fragment {
                         String dataS = null;
                         try {
                             dataS = response.errorBody().string();
-                            Log.e("CEK","ERROR RESPONSE ValidateIbuKandung 2 : "+dataS);
                             JSONObject dataObj = new JSONObject(dataS);
                             if (dataObj.has("message")) {
                                 msg = dataObj.getString("message");
@@ -3228,6 +4558,8 @@ public class frag_cif_new extends Fragment {
             public void onFailure(Call<JsonObject> call, Throwable t) {
                 chkDataCorrect.setChecked(false);
                 flagMother = false;
+                btnOCRNext.setEnabled(false);
+                btnOCRNext.setBackgroundTintList(mContext.getResources().getColorStateList(R.color.zm_text_grey));
                 ((Activity)mContext).runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
@@ -3254,10 +4586,8 @@ public class frag_cif_new extends Fragment {
         call.enqueue(new Callback<JsonObject>() {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
-                Log.e("CEK","Response Code processValidateNasabahFace : "+response.code());
                 if (response.isSuccessful()){
                     String dataS = response.body().toString();
-                    Log.e("CEK",""+dataS);
                     try {
                         JSONObject dataObj = new JSONObject(dataS);
                         if (dataObj.has("token")) {
@@ -3270,7 +4600,7 @@ public class frag_cif_new extends Fragment {
                         String status = dataObj.getString("status");
                         String msg = dataObj.getString("message");
                         if (status.equals("oke")){
-                            processDTOTT();
+                            CekDataByNIK();
                         }
                         else{
                             ((Activity)mContext).runOnUiThread(new Runnable() {
@@ -3293,7 +4623,6 @@ public class frag_cif_new extends Fragment {
                     String msg = "";
                     if (response.errorBody().toString().isEmpty()) {
                         String dataS = response.errorBody().toString();
-                        Log.e("CEK","ERROR RESPON : "+dataS);
                         try {
                             JSONObject dataObj = new JSONObject(dataS);
                             msg = dataObj.getString("message");
@@ -3304,7 +4633,6 @@ public class frag_cif_new extends Fragment {
                         String dataS = null;
                         try {
                             dataS = response.errorBody().string();
-                            Log.e("CEK","ERROR RESPON 2 : "+dataS);
                             JSONObject dataObj = new JSONObject(dataS);
                             if (dataObj.has("message")) {
                                 msg = dataObj.getString("message");
@@ -3315,9 +4643,15 @@ public class frag_cif_new extends Fragment {
                     }
                     //dialogFailedValidation("IDEM");
                     if (response.code() == 400) {
-                        processDTOTT();
+                        CekDataByNIK();
+                    } else {
+                        if (isSessionZoom) {
+                            BaseMeetingActivity.showProgress(false);
+                        } else {
+                            DipsSwafoto.showProgress(false);
+                        }
+                        Toast.makeText(mContext,msg,Toast.LENGTH_LONG).show();
                     }
-                    Toast.makeText(mContext,msg,Toast.LENGTH_LONG).show();
                 }
             }
 
@@ -3348,11 +4682,9 @@ public class frag_cif_new extends Fragment {
         call.enqueue(new Callback<JsonObject>() {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
-                Log.e("CEL","RESPONSE Code processDukcapil : "+response.code());
                 if (response.isSuccessful()){
                     try {
                         String dataS = response.body().toString();
-                        Log.d("HASIL VALIDASI DUKCAPIL",""+dataS);
                         JSONObject dataObj = new JSONObject(dataS);
                         if (dataObj.has("token")) {
                             String accessToken = dataObj.getString("token");
@@ -3399,7 +4731,6 @@ public class frag_cif_new extends Fragment {
                     String msg = "";
                     if (response.errorBody().toString().isEmpty()) {
                         String dataS = response.errorBody().toString();
-                        Log.e("CEK","ERROR RESPON : "+dataS);
                         try {
                             JSONObject dataObj = new JSONObject(dataS);
                             msg = dataObj.getString("message");
@@ -3410,7 +4741,6 @@ public class frag_cif_new extends Fragment {
                         String dataS = null;
                         try {
                             dataS = response.errorBody().string();
-                            Log.e("CEK","ERROR RESPON 2 : "+dataS);
                             JSONObject dataObj = new JSONObject(dataS);
                             if (dataObj.has("message")) {
                                 msg = dataObj.getString("message");
@@ -3419,6 +4749,7 @@ public class frag_cif_new extends Fragment {
                             e.printStackTrace();
                         }
                     }
+                    Toast.makeText(mContext,msg,Toast.LENGTH_LONG).show();
                 }
             }
 
@@ -3489,7 +4820,8 @@ public class frag_cif_new extends Fragment {
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-                RabbitMirroring.MirroringSendKey(reqOCR);
+                //RabbitMirroring.MirroringSendKey(reqOCR);
+                ConnectionRabbitHttp.mirroringKey(reqOCR);
                 Intent dialPhoneIntent = new Intent(Intent.ACTION_DIAL, Uri.parse("tel:1500977"));
                 startActivity(dialPhoneIntent);
                 ((Activity)mContext).finishAffinity();
@@ -3512,14 +4844,16 @@ public class frag_cif_new extends Fragment {
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
-                        RabbitMirroring.MirroringSendKey(reqOCR);
+                        //RabbitMirroring.MirroringSendKey(reqOCR);
+                        ConnectionRabbitHttp.mirroringKey(reqOCR);
                     }
                     /*if (kasus.equals("Dukcapil")) {
                         PopUpOCR();
                     } else {*/
                         int ret = ZoomVideoSDK.getInstance().leaveSession(false);
                         sessions.clearPartData();
-                        RabbitMirroring.MirroringSendEndpoint(99);
+                        //RabbitMirroring.MirroringSendEndpoint(99);
+                        ConnectionRabbitHttp.mirroringEndpoint(99);
                         OutApps();
                     //}
                 }
@@ -3549,6 +4883,7 @@ public class frag_cif_new extends Fragment {
         catch (JSONException e) {
             e.printStackTrace();
         }
+
         String authAccess = "Bearer "+sessions.getAuthToken();
         String exchangeToken = sessions.getExchangeToken();
         RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), jsons.toString());
@@ -3560,7 +4895,6 @@ public class frag_cif_new extends Fragment {
                 if (response.isSuccessful()){
                     try {
                         String dataS = response.body().toString();
-                        Log.d("HASIL VALIDASI DTOTT",""+dataS);
                         JSONObject dataObj = new JSONObject(dataS);
                         if (dataObj.has("token")) {
                             String accessToken = dataObj.getString("token");
@@ -3571,8 +4905,7 @@ public class frag_cif_new extends Fragment {
                         String status = dataObj.getString("status");
                         String msg = dataObj.getString("message");
                         if (status.equals("oke")){
-                            CekDataByNIK();
-                            //processFormDataAttachment(fieldName,filePath);
+                            processDukcapil();
                         }
                         else{
                             ((Activity)mContext).runOnUiThread(new Runnable() {
@@ -3607,7 +4940,6 @@ public class frag_cif_new extends Fragment {
                     String msg = "";
                     if (response.errorBody().toString().isEmpty()) {
                         String dataS = response.errorBody().toString();
-                        Log.e("CEK","ERROR RESPON : "+dataS);
                         try {
                             JSONObject dataObj = new JSONObject(dataS);
                             msg = dataObj.getString("message");
@@ -3618,7 +4950,6 @@ public class frag_cif_new extends Fragment {
                         String dataS = null;
                         try {
                             dataS = response.errorBody().string();
-                            Log.e("CEK","ERROR RESPON 2 : "+dataS);
                             JSONObject dataObj = new JSONObject(dataS);
                             if (dataObj.has("message")) {
                                 msg = dataObj.getString("message");
@@ -3627,12 +4958,23 @@ public class frag_cif_new extends Fragment {
                             e.printStackTrace();
                         }
                     }
+                    Toast.makeText(mContext,msg,Toast.LENGTH_LONG).show();
                 }
             }
 
             @Override
             public void onFailure(Call<JsonObject> call, Throwable t) {
-
+                ((Activity)mContext).runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (isSessionZoom) {
+                            BaseMeetingActivity.showProgress(false);
+                        } else {
+                            DipsSwafoto.showProgress(false);
+                        }
+                    }
+                });
+                Toast.makeText(mContext,t.getMessage(),Toast.LENGTH_LONG).show();
             }
         });
     }
@@ -3648,8 +4990,6 @@ public class frag_cif_new extends Fragment {
             e.printStackTrace();
         }
 
-        Log.e("CEL","REQUEST CekDataByNIK : "+jsons.toString());
-
         String authAccess = "Bearer "+sessions.getAuthToken();
         String exchangeToken = sessions.getExchangeToken();
 
@@ -3657,14 +4997,11 @@ public class frag_cif_new extends Fragment {
 
         ApiService API = Server.getAPIService();
         Call<JsonObject> call = API.CekByNIK(requestBody,authAccess,exchangeToken);
-        Log.e("CEL","URL CekDataByNIK : "+call.request().url());
         call.enqueue(new Callback<JsonObject>() {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
-                Log.e("CEL","RESPONSE Code CekDataByNIK : "+response.code());
                 if (response.isSuccessful()) {
                     String dataS = response.body().toString();
-                    Log.e("CEK","RESPONSE CekDataByNIK : "+dataS);
                     try {
                         JSONObject jsObj = new JSONObject(dataS);
                         if (jsObj.has("token")) {
@@ -3681,7 +5018,6 @@ public class frag_cif_new extends Fragment {
                             sessions.saveIdDips(idDips);
 
                             String getDataNasabah = sessions.getNasabah();
-                            Log.e("CEK","getDataNasabah : "+getDataNasabah);
                             JSONObject dataNasabahObj = null;
                             if (getDataNasabah != null && !getDataNasabah.isEmpty()) {
                                 dataNasabahObj = new JSONObject(getDataNasabah);
@@ -3710,7 +5046,12 @@ public class frag_cif_new extends Fragment {
                             dataNasabahObj.put("branchCode",branchCode);
                             sessions.saveNasabah(dataNasabahObj.toString());
                             String getDataNasabah2 = sessions.getNasabah();
-                            Log.e("CEK","getDataNasabah2 : "+getDataNasabah2);
+
+                            if (dataObj.has("isSwafoto")) {
+                                if (!dataObj.isNull("isSwafoto")) {
+                                    sessions.saveIsSwafoto(dataObj.getBoolean("isSwafoto"));
+                                }
+                            }
 
                             if (dataObj.has("noCif")) {
                                 if (!dataObj.isNull("noCif")) {
@@ -3739,7 +5080,6 @@ public class frag_cif_new extends Fragment {
                     String msg = "";
                     if (response.errorBody().toString().isEmpty()) {
                         String dataS = response.errorBody().toString();
-                        Log.e("CEK","ERROR RESPON : "+dataS);
                         try {
                             JSONObject dataObj = new JSONObject(dataS);
                             msg = dataObj.getString("message");
@@ -3750,7 +5090,6 @@ public class frag_cif_new extends Fragment {
                         String dataS = null;
                         try {
                             dataS = response.errorBody().string();
-                            Log.e("CEK","ERROR RESPON 2 : "+dataS);
                             JSONObject dataObj = new JSONObject(dataS);
                             if (dataObj.has("message")) {
                                 msg = dataObj.getString("message");
@@ -3759,6 +5098,7 @@ public class frag_cif_new extends Fragment {
                             e.printStackTrace();
                         }
                     }
+                    Toast.makeText(mContext,msg,Toast.LENGTH_LONG).show();
                 }
             }
 
@@ -3769,6 +5109,7 @@ public class frag_cif_new extends Fragment {
                 } else {
                     DipsSwafoto.showProgress(false);
                 }
+                Toast.makeText(mContext,t.getMessage(),Toast.LENGTH_LONG).show();
             }
         });
     }
@@ -3794,15 +5135,12 @@ public class frag_cif_new extends Fragment {
 
         ApiService API = Server.getAPIService();
         Call<JsonObject> call = API.validasiDataNasabah(requestBody,authAccess,exchangeToken);
-        Log.e("CEL","URL validasiDataNasabah : "+call.request().url());
         call.enqueue(new Callback<JsonObject>() {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
-                Log.e("CEL","RESPONSE Code validasiDataNasabah : "+response.code());
 
                 if (response.isSuccessful()) {
                     String dataS = response.body().toString();
-                    Log.e("CEK","RESPONSE validasiDataNasabah : "+dataS);
                     try {
                         JSONObject dataObj = new JSONObject(dataS);
                         if (dataObj.has("token")) {
@@ -3846,7 +5184,6 @@ public class frag_cif_new extends Fragment {
                     String msg = "";
                     if (response.errorBody().toString().isEmpty()) {
                         String dataS = response.errorBody().toString();
-                        Log.e("CEK","ERROR RESPON : "+dataS);
                         try {
                             JSONObject dataObj = new JSONObject(dataS);
                             msg = dataObj.getString("message");
@@ -3857,7 +5194,6 @@ public class frag_cif_new extends Fragment {
                         String dataS = null;
                         try {
                             dataS = response.errorBody().string();
-                            Log.e("CEK","ERROR RESPON 2 : "+dataS);
                             JSONObject dataObj = new JSONObject(dataS);
                             if (dataObj.has("message")) {
                                 msg = dataObj.getString("message");
@@ -3883,7 +5219,6 @@ public class frag_cif_new extends Fragment {
         File file = new File(filePath);
         RequestBody requestFile = RequestBody.create(MediaType.parse("image/jpeg"),file);
         RequestBody requestidDips = RequestBody.create(MediaType.parse("text/plain"), String.valueOf(idDips));
-        Log.e("CEK","fieldName : "+fieldName+" | filePath : "+filePath+" | requestidDips : "+requestidDips);
         ApiService API = Server.getAPIService2();
         Call<JsonObject> call = null;
         MultipartBody multipartBody = null;
@@ -3899,12 +5234,9 @@ public class frag_cif_new extends Fragment {
 
         call = API.formAttachment(contentType,authAccess,exchangeToken,multipartBody);
 
-        Log.e("CEK","processFormDataAttachment call url : "+call.request().url());
-
         call.enqueue(new Callback<JsonObject>() {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
-                Log.e("CEK","processFormDataAttachment response code : "+response.code());
                 ((Activity)mContext).runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
@@ -3917,7 +5249,6 @@ public class frag_cif_new extends Fragment {
                 });
                 if (response.isSuccessful()) {
                     String dataS = response.body().toString();
-                    Log.e("CEK","processFormDataAttachment : "+dataS);
                     try {
                         JSONObject dataObj = new JSONObject(dataS);
                         if (dataObj.has("token")) {
@@ -3938,14 +5269,19 @@ public class frag_cif_new extends Fragment {
                                     } catch (JSONException e) {
                                         e.printStackTrace();
                                     }
-                                    RabbitMirroring.MirroringSendKey(reqOCR);
-                                    RabbitMirroring.MirroringSendEndpoint(22);
+                                    /*RabbitMirroring.MirroringSendKey(reqOCR);
+                                    RabbitMirroring.MirroringSendEndpoint(22);*/
+                                    ConnectionRabbitHttp.mirroringKey(reqOCR);
+                                    ConnectionRabbitHttp.mirroringEndpoint(22);
                                 } else if (formCode == 22) {
-                                    RabbitMirroring.MirroringSendEndpoint(6);
+                                    //RabbitMirroring.MirroringSendEndpoint(6);
+                                    ConnectionRabbitHttp.mirroringEndpoint(6);
                                 } else if (formCode == 6) {
-                                    RabbitMirroring.MirroringSendEndpoint(7);
+                                    //RabbitMirroring.MirroringSendEndpoint(7);
+                                    ConnectionRabbitHttp.mirroringEndpoint(7);
                                 } else if (formCode == 7) {
-                                    RabbitMirroring.MirroringSendEndpoint(8);
+                                    //RabbitMirroring.MirroringSendEndpoint(8);
+                                    ConnectionRabbitHttp.mirroringEndpoint(8);
                                 }
                             }
 
@@ -3969,7 +5305,7 @@ public class frag_cif_new extends Fragment {
                                 sessions.saveFormCOde(8);
                                 //sessions.saveTTD(encodedImage);
                                 bundle.putInt("form_id",10);
-                                bundle.putString("NPWP",npwp);
+                                //bundle.putString("NPWP",npwp);
                             }
 
                             if (getRequestCode != 0 && getRequestCode != REQUESTCODE_GALLERY) {
@@ -4026,15 +5362,23 @@ public class frag_cif_new extends Fragment {
                             }
                         }
                     }
+
+                    if (mediaImgKTP != null) {
+                        if (mediaImgKTP.exists()) {
+                            try {
+                                mediaImgKTP.getCanonicalFile().delete();
+                                if (mediaImgKTP.exists()) {
+                                    getActivity().getApplicationContext().deleteFile(mediaImgKTP.getName());
+                                }
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }
                 }
                 else {
                     if (fieldName.equals("ktp")) {
                         IMG_BYTE = new byte[0];
-                    }
-                    if (response.body() != null) {
-                        Log.e("CEK","response body : "+ response.body());
-                    } else {
-                        Log.e("CEK","response errorBody : "+response.errorBody().toString());
                     }
                     Toast.makeText(mContext,getString(R.string.msg_error),Toast.LENGTH_SHORT).show();
                 }
@@ -4060,11 +5404,13 @@ public class frag_cif_new extends Fragment {
         });
     }
 
-    private void processFormDataAttachment2(String keys, String picturePath) {
-        File file = new File(picturePath);
+    private void processFormDataAttachment2(String keys, String picturePathAttach) {
+        File file = new File(picturePathAttach);
+        if (!imgPathKTP.isEmpty() && keys.equals("ktp")) {
+            file = new File(imgPathKTP);
+        }
         RequestBody requestFile = RequestBody.create(MediaType.parse("image/jpeg"),file);
         RequestBody requestidDips = RequestBody.create(MediaType.parse("text/plain"), String.valueOf(idDips));
-        Log.e("CEK","filePath : "+ picturePath +" | requestidDips : "+requestidDips);
         ApiService API = Server.getAPIService2();
         Call<JsonObject> call = null;
         MultipartBody multipartBody = null;
@@ -4080,25 +5426,11 @@ public class frag_cif_new extends Fragment {
 
         call = API.formAttachment(contentType,authAccess,exchangeToken,multipartBody);
 
-        Log.e("CEK","processFormDataAttachment call url : "+call.request().url());
-
         call.enqueue(new Callback<JsonObject>() {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
-                Log.e("CEK","processFormDataAttachment response code : "+response.code());
-                ((Activity)mContext).runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (isSessionZoom) {
-                            BaseMeetingActivity.showProgress(false);
-                        } else {
-                            DipsSwafoto.showProgress(false);
-                        }
-                    }
-                });
                 if (response.isSuccessful()) {
                     String dataS = response.body().toString();
-                    Log.e("CEK","processFormDataAttachment : "+dataS);
                     try {
                         JSONObject dataObj = new JSONObject(dataS);
                         if (dataObj.has("token")) {
@@ -4111,44 +5443,30 @@ public class frag_cif_new extends Fragment {
                         String msg = dataObj.getString("message");
                         if (errCode == 200 || errCode == 202) {
                             if (keys.equals("ktp")) {
-                                processFormDataAttachment2("foto",picturePath);
+                                /*if (sessions.getPhotoLiveness() != null) {
+                                    processFormDataAttachment2("foto",sessions.getPhotoLiveness());
+                                } else {*/
+                                    processFormDataAttachment2("foto", picturePath);
+                                //}
                             } else if (keys.equals("foto")) {
                                 processFormDataAttachment2("ttd",picturePathCrop);
                             }
                             if (!isSessionZoom && formCode == 22 && keys.equals("ttd")) {
-                                Intent intent = new Intent(mContext, DipsWaitingRoom.class);
-                                intent.putExtra("CUSTNAME",nama);
-                                startActivity(intent);
-                                ((Activity) mContext).finishAffinity();
 
-                                if (mediaFilePhoto != null) {
-                                    if (mediaFilePhoto.exists()) {
-                                        try {
-                                            mediaFilePhoto.getCanonicalFile().delete();
-                                            if (mediaFilePhoto.exists()) {
-                                                getActivity().getApplicationContext().deleteFile(mediaFilePhoto.getName());
-                                            }
-                                        } catch (IOException e) {
-                                            e.printStackTrace();
-                                        }
-                                    }
-                                }
-
-                                if (mediaFilePhotoCropSwafoto != null) {
-                                    if (mediaFilePhotoCropSwafoto.exists()) {
-                                        try {
-                                            mediaFilePhotoCropSwafoto.getCanonicalFile().delete();
-                                            if (mediaFilePhotoCropSwafoto.exists()) {
-                                                getActivity().getApplicationContext().deleteFile(mediaFilePhotoCropSwafoto.getName());
-                                            }
-                                        } catch (IOException e) {
-                                            e.printStackTrace();
-                                        }
-                                    }
-                                }
+                                prosesCustByIdDips();
                             }
                         }
                         else {
+                            ((Activity)mContext).runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    if (isSessionZoom) {
+                                        BaseMeetingActivity.showProgress(false);
+                                    } else {
+                                        DipsSwafoto.showProgress(false);
+                                    }
+                                }
+                            });
                             Toast.makeText(mContext,msg,Toast.LENGTH_SHORT).show();
                         }
                     }
@@ -4157,12 +5475,16 @@ public class frag_cif_new extends Fragment {
                     }
                 }
                 else {
-                    if (response.body() != null) {
-                        Log.e("CEK","response body : "+ response.body());
-                    } else {
-                        Log.e("CEK","response errorBody : "+response.errorBody().toString());
-                    }
-                    //Toast.makeText(mContext,getString(R.string.msg_error),Toast.LENGTH_SHORT).show();
+                    ((Activity)mContext).runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (isSessionZoom) {
+                                BaseMeetingActivity.showProgress(false);
+                            } else {
+                                DipsSwafoto.showProgress(false);
+                            }
+                        }
+                    });
                 }
             }
 
@@ -4182,6 +5504,168 @@ public class frag_cif_new extends Fragment {
             }
         });
     }
+
+    private void prosesCustByIdDips() {
+        JSONObject dataJson = new JSONObject();
+        try {
+            dataJson.put("idDips",idDips);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        String authAccess = "Bearer "+sessions.getAuthToken();
+        String exchangeToken = sessions.getExchangeToken();
+        RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), dataJson.toString());
+        Server.getAPIService().CustByIdDips(requestBody,authAccess,exchangeToken).enqueue(new Callback<JsonObject>() {
+            @Override
+            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                if (response.isSuccessful()) {
+                    try {
+                        JSONObject jsObj = new JSONObject(response.body().toString());
+                        if (jsObj.has("token")) {
+                            String accessToken = jsObj.getString("token");
+                            String exchangeToken = jsObj.getString("exchange");
+                            sessions.saveAuthToken(accessToken);
+                            sessions.saveExchangeToken(exchangeToken);
+                        }
+
+                        if (jsObj.has("data")) {
+                            JSONObject dataObj = jsObj.getJSONObject("data");
+                            if (dataObj.has("idDips")) {
+                                idDips = dataObj.getString("idDips");
+                                sessions.saveIdDips(idDips);
+                            }
+
+                            String getDataNasabah = sessions.getNasabah();
+                            JSONObject dataNasabahObj = null;
+                            if (getDataNasabah != null && !getDataNasabah.isEmpty()) {
+                                dataNasabahObj = new JSONObject(getDataNasabah);
+                            }
+
+                            String namaIdentitas = "";
+                            if (dataObj.has("namaLengkap")) {
+                                namaIdentitas = dataObj.getString("namaLengkap");
+                            }
+                            String no_handphone = "";
+                            if (dataObj.has("noHp")) {
+                                no_handphone = dataObj.getString("noHp");
+                            }
+                            String noIdentitas = "";
+                            if (dataObj.has("nik")) {
+                                noIdentitas = dataObj.getString("nik");
+                            }
+                            String branchCode = "";
+                            if (dataObj.has("branchCode")) {
+                                branchCode = dataObj.getString("branchCode");
+                            }
+
+                            dataNasabahObj.put("noHp",no_handphone);
+                            dataNasabahObj.put("namaLengkap",namaIdentitas);
+                            dataNasabahObj.put("nik",noIdentitas);
+                            dataNasabahObj.put("branchCode",branchCode);
+                            sessions.saveNasabah(dataNasabahObj.toString());
+
+                            if (dataObj.has("noCif")) {
+                                if (!dataObj.isNull("noCif")) {
+                                    String noCif = dataObj.getString("noCif");
+                                    if (!noCif.isEmpty()) {
+                                        sessions.saveNoCIF(noCif);
+                                        sessions.saveIsCust(true);
+                                    }
+                                }
+                            }
+
+                            if (dataObj.has("isSwafoto")) {
+                                if (!dataObj.isNull("isSwafoto")) {
+                                    sessions.saveIsSwafoto(dataObj.getBoolean("isSwafoto"));
+                                }
+                            }
+
+                            ((Activity)mContext).runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    if (isSessionZoom) {
+                                        BaseMeetingActivity.showProgress(false);
+                                    } else {
+                                        DipsSwafoto.showProgress(false);
+                                    }
+                                }
+                            });
+
+                            Intent intent = new Intent(mContext, DipsWaitingRoom.class);
+                            intent.putExtra("CUSTNAME",nama);
+                            startActivity(intent);
+                            ((Activity) mContext).finishAffinity();
+
+                            if (mediaFilePhoto != null) {
+                                if (mediaFilePhoto.exists()) {
+                                    try {
+                                        mediaFilePhoto.getCanonicalFile().delete();
+                                        if (mediaFilePhoto.exists()) {
+                                            getActivity().getApplicationContext().deleteFile(mediaFilePhoto.getName());
+                                        }
+                                    } catch (IOException e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+                            }
+
+                            if (mediaFilePhotoCropSwafoto != null) {
+                                if (mediaFilePhotoCropSwafoto.exists()) {
+                                    try {
+                                        mediaFilePhotoCropSwafoto.getCanonicalFile().delete();
+                                        if (mediaFilePhotoCropSwafoto.exists()) {
+                                            getActivity().getApplicationContext().deleteFile(mediaFilePhotoCropSwafoto.getName());
+                                        }
+                                    } catch (IOException e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+                            }
+
+                            if (mediaImgKTP != null) {
+                                if (mediaImgKTP.exists()) {
+                                    try {
+                                        mediaImgKTP.getCanonicalFile().delete();
+                                        if (mediaImgKTP.exists()) {
+                                            getActivity().getApplicationContext().deleteFile(mediaImgKTP.getName());
+                                        }
+                                    } catch (IOException e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+                            }
+
+                            /*if (sessions.getPhotoLiveness() != null) {
+                                File mediaFilePhotoLiveness = new File(sessions.getPhotoLiveness());
+                                if (mediaFilePhotoLiveness != null) {
+                                    if (mediaFilePhotoLiveness.exists()) {
+                                        try {
+                                            mediaFilePhotoLiveness.getCanonicalFile().delete();
+                                            if (mediaFilePhotoLiveness.exists()) {
+                                                getActivity().getApplicationContext().deleteFile(mediaFilePhotoLiveness.getName());
+                                            }
+                                        } catch (IOException e) {
+                                            e.printStackTrace();
+                                        }
+                                    }
+                                }
+                            }*/
+
+                        }
+
+                    } catch (JSONException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<JsonObject> call, Throwable t) {
+
+            }
+        });
+    }
+
     private void OutApps(){
         Intent intent = new Intent(Intent.ACTION_MAIN);
         intent.addCategory(Intent.CATEGORY_HOME);
@@ -4193,14 +5677,14 @@ public class frag_cif_new extends Fragment {
 
     private void pageOTP() {
         scrollOTP.setVisibility(View.VISIBLE);
-        swipe.setVisibility(View.GONE);
+        rlContent.setVisibility(View.GONE);
         TopBar.setVisibility(View.GONE);
         ll_head.setVisibility(View.VISIBLE);
 
-        String noHandphone = "089783434XXX";
+        String noHandphone = "089783434***";
         if (!no_handphone.isEmpty()) {
             String sub_no_handphone = no_handphone.substring(no_handphone.length() - 3);
-            noHandphone = no_handphone.replace(sub_no_handphone,"XXX");
+            noHandphone = no_handphone.replace(sub_no_handphone,"***");
         }
 
         String contentText = textTitleOTP.getText().toString();
@@ -4212,37 +5696,13 @@ public class frag_cif_new extends Fragment {
         otp.setAnimationEnable(true);
         otp.setPasswordHidden(true);
         otp.addTextChangedListener(new TextWatcher() {
-            /*private boolean backSpaceOTP;
-            private int lasLenOTP;*/
 
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                //lasLenOTP = s.length();
             }
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                /*String wordOTP = s.toString();
-                Log.e("CEK","wordOTP : "+wordOTP);
-                String patternStr = "[0-9]";
-                Pattern pattern = Pattern.compile(patternStr);
-                Matcher matcher = pattern.matcher(s);
-                if (matcher.find()) {
-                    String getNumberOTP=wordOTP.replaceAll("[^0-9]", "");
-                    if (getNumberOTP.length() > 1 && getNumberOTP.length() <= 6) {
-                        getNumberOTP = getNumberOTP.substring(getNumberOTP.length()-1,getNumberOTP.length());
-                    }
-                    if (numberOTP.length() < 6) {
-                        numberOTP += getNumberOTP;
-                    }
-                    JSONObject otpObj = new JSONObject();
-                    try {
-                        otpObj.put("otp",numberOTP);
-                        rabbitMirroring.MirroringSendKey(otpObj);
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                }*/
             }
 
             @Override
@@ -4251,37 +5711,12 @@ public class frag_cif_new extends Fragment {
                     numberOTP = otp.getText().toString();
                     JSONObject otpObj = new JSONObject();
                     try {
-                        Log.e("CEK","numberOTP : "+numberOTP);
                         otpObj.put("otp",numberOTP);
-                        RabbitMirroring.MirroringSendKey(otpObj);
+                        ConnectionRabbitHttp.mirroringKey(otpObj);
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
                 }
-                /*backSpaceOTP = lasLenOTP > s.length();
-                Log.e("CEK", "backSpaceOTP : " + backSpaceOTP);
-                if (backSpaceOTP) {
-                    int lenOTP = numberOTP.length();
-                    if (lenOTP > 0) {
-                        numberOTP = numberOTP.substring(0, lenOTP - 1);
-                    }
-                }
-                newString = myFilter(s.toString());
-                otp.removeTextChangedListener(this);
-                handler = new Handler();
-                myRunnable = new Runnable() {
-                    @Override
-                    public void run() {
-                        otp.setText(newString);
-                    }
-                };
-                otp.addTextChangedListener(this);
-                handler.postDelayed(myRunnable, 1500);
-                if (otp.length() == 6 || otp.length() == 0){
-                    handler.removeMessages(0);
-                    handler.removeCallbacks(myRunnable);
-                    Log.d("TAG","STOP Loop");
-                }*/
             }
         });
 
@@ -4292,19 +5727,19 @@ public class frag_cif_new extends Fragment {
                     Toast.makeText(mContext, "Kode Otp masih kosong", Toast.LENGTH_SHORT).show();
                 }
                 else {
-                    /*handler.removeMessages(0);
-                    handler.removeCallbacks(myRunnable);*/
                     if (!transactionId.isEmpty()) {
-                        ((Activity)mContext).runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                if (isSessionZoom) {
-                                    BaseMeetingActivity.showProgress(true);
-                                } else {
-                                    DipsSwafoto.showProgress(true);
-                                }
-                            }
-                        });
+                        if (isSessionZoom) {
+                            BaseMeetingActivity.rlprogress.setBackgroundColor(getResources().getColor(R.color.white));
+                            BaseMeetingActivity.tvLoading.setVisibility(View.VISIBLE);
+                            BaseMeetingActivity.showProgress(true);
+                        } else {
+                            DipsSwafoto.rlprogress.setBackgroundColor(getResources().getColor(R.color.white));
+                            DipsSwafoto.tvLoading.setVisibility(View.VISIBLE);
+                            DipsSwafoto.showProgress(true);
+                        }
+                        running = false;
+                        loopStatus = 0;
+                        HideSoftKeyboard.hideSoftKeyboard(getActivity());
                         processValidateOTP();
                     }
                 }
@@ -4341,7 +5776,9 @@ public class frag_cif_new extends Fragment {
         JSONObject dataObjCIF = new JSONObject();
         try {
             JSONObject getObjValCIF = new JSONObject(valDataCIF);
-            Log.e("CEK","APISaveForm CIF FULL objValCIF : "+ getObjValCIF);
+            if (getObjValCIF.has("dataKtp")) {
+                getObjValCIF.remove("dataKtp");
+            }
             dataObjCIF.put("formCode","Opening Cif");
             dataObjCIF.put("idDips",idDips);
             dataObjCIF.put("payload",getObjValCIF);
@@ -4354,10 +5791,8 @@ public class frag_cif_new extends Fragment {
         Server.getAPIService().saveForm(requestBody,authAccess,exchangeToken).enqueue(new Callback<JsonObject>() {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
-                Log.e("CEK","APISaveForm code : "+response.code());
                 if (response.isSuccessful()) {
                     String dataS = response.body().toString();
-                    Log.e("CEK","APISaveForm dataS : "+dataS);
                     try {
                         JSONObject dataObj = new JSONObject(dataS);
                         if (dataObj.has("token")) {
@@ -4369,12 +5804,13 @@ public class frag_cif_new extends Fragment {
                         String idForm = dataObj.getJSONObject("data").getString("idForm");
                         idFormObj = new JSONObject();
                         idFormObj.put("idForm",idForm);
-                        processSendOTP();
-
+                        ConnectionRabbitHttp.mirroringKey(idFormObj);
+                        processApprovalStatus();
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
                 } else {
+                    running = true;
                     ((Activity)mContext).runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
@@ -4391,6 +5827,7 @@ public class frag_cif_new extends Fragment {
 
             @Override
             public void onFailure(Call<JsonObject> call, Throwable t) {
+                running = true;
                 ((Activity)mContext).runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
@@ -4416,18 +5853,14 @@ public class frag_cif_new extends Fragment {
             e.printStackTrace();
         }
 
-        Log.e("CEK","processValidateOTP : "+ dataObjOTP);
-
         String authAccess = "Bearer "+sessions.getAuthToken();
         String exchangeToken = sessions.getExchangeToken();
         RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), dataObjOTP.toString());
         Server.getAPIService().ValidateOTP(requestBody,authAccess,exchangeToken).enqueue(new Callback<JsonObject>() {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
-                Log.e("CEK","processValidateOTP code : "+response.code());
                 if (response.isSuccessful()) {
                     String dataS = response.body().toString();
-                    Log.e("CEK","processValidateOTP : "+dataS);
                     try {
                         JSONObject dataObj = new JSONObject(dataS);
                         if (dataObj.has("token")) {
@@ -4439,27 +5872,33 @@ public class frag_cif_new extends Fragment {
                     } catch (JSONException e) {
                         throw new RuntimeException(e);
                     }
-                    RabbitMirroring.MirroringSendKey(idFormObj);
-                    processApprovalStatus();
+                    APISaveForm();
                 } else {
-                    ((Activity)mContext).runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            if (isSessionZoom) {
-                                BaseMeetingActivity.showProgress(false);
-                            } else {
-                                DipsSwafoto.showProgress(false);
+                    running = true;
+                    if (response.code() == 400) {
+                        ConnectionRabbitHttp.mirroringKey(idFormObj);
+                        processApprovalStatus();
+                    } else {
+                        ((Activity)mContext).runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                if (isSessionZoom) {
+                                    BaseMeetingActivity.showProgress(false);
+                                } else {
+                                    DipsSwafoto.showProgress(false);
+                                }
                             }
-                        }
-                    });
-                    imgDialog.setImageDrawable(AppCompatResources.getDrawable(mContext,R.drawable.v_dialog_failed));
-                    textTitleOTP.setText(R.string.titleWrongOTP);
-                    otp.setText("");
+                        });
+                        imgDialog.setImageDrawable(AppCompatResources.getDrawable(mContext,R.drawable.v_dialog_failed));
+                        textTitleOTP.setText(R.string.titleWrongOTP);
+                        otp.setText("");
+                    }
                 }
             }
 
             @Override
             public void onFailure(Call<JsonObject> call, Throwable t) {
+                running = true;
                 ((Activity)mContext).runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
@@ -4477,7 +5916,6 @@ public class frag_cif_new extends Fragment {
     }
 
     private void processApprovalStatus() {
-        Log.e("CEK", this+" processApprovalStatus PARAMS : "+idFormObj.toString());
         String idForm = "";
         try {
             idForm = idFormObj.getString("idForm");
@@ -4491,20 +5929,22 @@ public class frag_cif_new extends Fragment {
         Server.getAPIService().ApprovalStatus(idForm,authAccess,exchangeToken).enqueue(new Callback<JsonObject>() {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
-                Log.e("CEK", this+" processApprovalStatus code : "+response.code());
                 if (response.isSuccessful()) {
                     ((Activity)mContext).runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
                             if (isSessionZoom) {
+                                BaseMeetingActivity.rlprogress.setBackgroundColor(getResources().getColor(R.color.white_transparent));
+                                BaseMeetingActivity.tvLoading.setVisibility(View.GONE);
                                 BaseMeetingActivity.showProgress(false);
                             } else {
+                                DipsSwafoto.rlprogress.setBackgroundColor(getResources().getColor(R.color.white_transparent));
+                                DipsSwafoto.tvLoading.setVisibility(View.GONE);
                                 DipsSwafoto.showProgress(false);
                             }
                         }
                     });
                     String dataS = response.body().toString();
-                    Log.e("CEK","processApprovalStatus dataS : "+dataS);
                     try {
                         JSONObject dataObj = new JSONObject(dataS);
                         if (dataObj.has("token")) {
@@ -4513,16 +5953,16 @@ public class frag_cif_new extends Fragment {
                             sessions.saveAuthToken(accessToken);
                             sessions.saveExchangeToken(exchangeToken);
                         }
+
                         if (dataObj.getJSONObject("data").has("noCif")) {
                             String noCif = dataObj.getJSONObject("data").getString("noCif");
                             sessions.saveNoCIF(noCif);
                         }
+
                         if (dataObj.getJSONObject("data").has("branchCode")) {
                             String branchCode = dataObj.getJSONObject("data").getString("branchCode");
-                            Log.e("CEK","branchCode : "+branchCode);
                             if (!branchCode.isEmpty()) {
                                 String getDataNasabah = sessions.getNasabah();
-                                Log.e("CEK","getDataNasabah : "+getDataNasabah);
                                 if (!getDataNasabah.isEmpty()) {
                                     JSONObject dataNasabahObj = new JSONObject(getDataNasabah);
                                     dataNasabahObj.put("branchCode",branchCode);
@@ -4533,25 +5973,30 @@ public class frag_cif_new extends Fragment {
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
-                    RabbitMirroring.MirroringSendEndpoint(13);
+                    //RabbitMirroring.MirroringSendEndpoint(13);
+                    ConnectionRabbitHttp.mirroringEndpoint(13);
                     Bundle bundle = new Bundle();
                     bundle.putInt("formCode",13);
                     sendDataFragment(bundle,new frag_cif_resi());
                 } else {
-                    if (loopStatus >= 10) {
+                    /*if (loopStatus >= 99) {
                         Toast.makeText(mContext,getString(R.string.msg_error),Toast.LENGTH_SHORT).show();
                         ((Activity)mContext).runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
                                 if (isSessionZoom) {
+                                    BaseMeetingActivity.rlprogress.setBackgroundColor(getResources().getColor(R.color.white_transparent));
+                                    BaseMeetingActivity.tvLoading.setVisibility(View.GONE);
                                     BaseMeetingActivity.showProgress(false);
                                 } else {
+                                    DipsSwafoto.rlprogress.setBackgroundColor(getResources().getColor(R.color.white_transparent));
+                                    DipsSwafoto.tvLoading.setVisibility(View.GONE);
                                     DipsSwafoto.showProgress(false);
                                 }
                             }
                         });
-                    }
-                    if (loopStatus < 10) {
+                    }*/
+                    //if (loopStatus < 99) {
                         new Handler().postDelayed(new Runnable() {
                             @Override
                             public void run() {
@@ -4561,50 +6006,26 @@ public class frag_cif_new extends Fragment {
                                         processApprovalStatus();
                                     }
                                 });
-                                loopStatus++;
+                                //loopStatus++;
                             }
                         },10000);
-                        /*try {
-                            Thread.sleep(10000);
-                            processApprovalStatus();
-                            loopStatus++;
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }*/
-                    }
+                    //}
                 }
             }
 
             @Override
             public void onFailure(Call<JsonObject> call, Throwable t) {
-                Log.e("CEK", this+" processApprovalStatus onFailure : "+t.getMessage());
-                if (loopStatus >= 10) {
-                    Toast.makeText(mContext, t.getMessage(), Toast.LENGTH_SHORT).show();
-                    ((Activity)mContext).runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            if (isSessionZoom) {
-                                BaseMeetingActivity.showProgress(false);
-                            } else {
-                                DipsSwafoto.showProgress(false);
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        ((Activity) mContext).runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                processApprovalStatus();
                             }
-                        }
-                    });
-                }
-                if (loopStatus < 10) {
-                    new Handler().postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            ((Activity) mContext).runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    processApprovalStatus();
-                                }
-                            });
-                            loopStatus++;
-                        }
-                    },10000);
-                }
+                        });
+                    }
+                },10000);
             }
         });
     }
@@ -4621,8 +6042,6 @@ public class frag_cif_new extends Fragment {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-
-        Log.e("CEK","processSendOTP : "+ dataObjOTP);
 
         String authAccess = "Bearer "+sessions.getAuthToken();
         String exchangeToken = sessions.getExchangeToken();
@@ -4641,10 +6060,8 @@ public class frag_cif_new extends Fragment {
                         }
                     }
                 });
-                Log.e("CEK","processSendOTP code : "+response.code());
                 if (response.isSuccessful()) {
                     String dataS = response.body().toString();
-                    Log.e("CEK","processSendOTP : "+dataS);
                     try {
                         JSONObject dataObj = new JSONObject(dataS);
                         if (dataObj.has("token")) {
@@ -4654,7 +6071,19 @@ public class frag_cif_new extends Fragment {
                             sessions.saveExchangeToken(exchangeToken);
                         }
                         transactionId = dataObj.getJSONObject("data").getString("transactionId");
-                        RabbitMirroring.MirroringSendEndpoint(11);
+                        ConnectionRabbitHttp.mirroringEndpoint(11);
+                        JSONObject dataMirr = null;
+                        try {
+                            dataMirr = new JSONObject();
+                            dataMirr.put("noponsel",no_handphone);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                        ConnectionRabbitHttp.mirroringKey(dataMirr);
+
+                        getMinutes = 2;
+                        seconds = 60;
+                        running = true;
                         pageOTP();
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -4681,7 +6110,7 @@ public class frag_cif_new extends Fragment {
         });
     }
 
-    public void runTimer(TextView timer_run, TextView resend) {
+    private void runTimer(TextView timer_run, TextView resend) {
         Handler handlerTimer = new Handler();
         handlerTimer.post(new Runnable() {
             @Override
@@ -4711,7 +6140,6 @@ public class frag_cif_new extends Fragment {
         File mediaFile = new File(picturePath);
         Bitmap thumbnail = (BitmapFactory.decodeFile(picturePath));
         int file_size = Integer.parseInt(String.valueOf(mediaFile.length()/1024));
-        Log.d("CEK", "file_size : "+file_size);
 
         if (perDiff == 1) {
             if (file_size > 4096) {
@@ -4731,35 +6159,12 @@ public class frag_cif_new extends Fragment {
             thumbnail = getResizedBitmap(thumbnail, (thumbnail.getWidth() / perDiff), (thumbnail.getHeight() / perDiff));
         }
 
-        /*try {
-            byte[] downsizedImageBytes = getDownsizedImageBytes(thumbnail, thumbnail.getWidth(), thumbnail.getHeight());
-            File mediaFile2 = createTemporaryFile(downsizedImageBytes);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }*/
-
-        Log.e("CEK", "bitmapCrop.getWidth() : "+thumbnail.getWidth()+" | bitmapCrop.getHeight() : "+thumbnail.getHeight());
         if (thumbnail.getWidth() < 256 || thumbnail.getHeight() < 256) {
             perDiff--;
             prosesOptimalImage(picturePath,perDiff);
         }
 
         return thumbnail;
-    }
-
-    public byte[] getDownsizedImageBytes(Bitmap fullBitmap, int scaleWidth, int scaleHeight) throws IOException {
-        Bitmap scaledBitmap = Bitmap.createScaledBitmap(fullBitmap, scaleWidth, scaleHeight, true);
-
-        Log.e("CEK", "scaledBitmap.getWidth() : "+scaledBitmap.getWidth()+" | scaledBitmap.getHeight() : "+scaledBitmap.getHeight());
-
-        // 2. Instantiate the downsized image content as a byte[]
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        scaledBitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
-        byte[] downsizedImageBytes = baos.toByteArray();
-
-        return downsizedImageBytes;
     }
 
     public Bitmap getResizedBitmap(Bitmap bm, int newWidth, int newHeight) {
@@ -4788,16 +6193,11 @@ public class frag_cif_new extends Fragment {
                     Thread.sleep(1000);
                     for (int k = 0; k < 10; k++){
                         int onOfCamera = sessions.getCamera();
-                        Log.d("CEK","onOfCamera loop-"+k+" : "+onOfCamera);
                         if (onOfCamera == 1) {
-                            Log.d("CEK","MASUK CAMERA AKTIF");
-                            /*Log.d("CEK","MASUK KIRIM IMAGE");
-                            imgtoBase64(bitmap);*/
                             break;
                         }
                         Thread.sleep(500);
                     }
-                    Log.d("CEK","MASUK KIRIM IMAGE");
                     imgtoBase64(bitmap);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
@@ -4813,15 +6213,17 @@ public class frag_cif_new extends Fragment {
         encodedImage = Base64.encodeToString(imageBytes, Base64.NO_WRAP);
         String imgBase64 = "";
         String keys = "";
-        Log.e("CEK", "formCode : "+formCode);
         if (formCode == 4) {
             imgBase64 = encodedImage;
             keys = "ktp";
-            imgtoBase64OCR();
+            //imgtoBase64OCR();
         } else if (formCode == 22) {
             keys = "swafoto";
             imgBase64 = encodedImage;
         } else if (formCode == 6) {
+            if (imageBytes.length > 0){
+                btnNext.setText(mContext.getResources().getString(R.string.btn_continue));
+            }
             keys = "npwp";
             imgBase64 = encodedImage;
             ocrNPWP();
@@ -4833,7 +6235,8 @@ public class frag_cif_new extends Fragment {
             JSONObject dataImg = new JSONObject();
             try {
                 dataImg.put(keys,imgBase64);
-                RabbitMirroring.MirroringSendKey(dataImg);
+                //RabbitMirroring.MirroringSendKey(dataImg);
+                ConnectionRabbitHttp.mirroringKey(dataImg);
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -4856,11 +6259,27 @@ public class frag_cif_new extends Fragment {
                 chooseImage.setVisibility(View.GONE);
             }
         });
+        provinsi = "";
+        kota_kabupaten = "";
+        nik = "";
+        nama = "";
+        ttl = "";
+        jeniskelamin = "";
+        golongan_darah = "";
+        alamat = "";
+        rtrw = "";
+        desa_kelurahan = "";
+        kecamatan = "";
+        agama = "";
+        status_perkawinan = "";
+        kewarganegaraan = "";
+        pekerjaan = "";
+        tmptLahir = "-";
+        namaIbuKandung = "";
         ocrKTP();
     }
 
     private void ocrNPWP() {
-        Log.d("Masuk OCR NPWP", "");
         JSONObject jsons = new JSONObject();
         try {
             jsons.put("image", encodedImage);
@@ -4872,11 +6291,9 @@ public class frag_cif_new extends Fragment {
         RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), jsons.toString());
         ApiService API = Server.getAPIService();
         Call<JsonObject> call = API.ocrNpwp(requestBody,authAccess,exchangeToken);
-        Log.e("CEK", "url ocrNPWP : " + call.request().url());
         call.enqueue(new Callback<JsonObject>() {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
-                Log.d("Response OCR",""+response.code());
                 ((Activity)mContext).runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
@@ -4889,7 +6306,6 @@ public class frag_cif_new extends Fragment {
                 });
                 if (response.isSuccessful()) {
                     String dataS = response.body().toString();
-                    Log.d("Response OCR",""+dataS);
                     try {
                         JSONObject jsObj = new JSONObject(dataS);
                         npwp = jsObj.getJSONObject("data").getString("npwpId");
@@ -4923,9 +6339,16 @@ public class frag_cif_new extends Fragment {
 
     private void ocrKTP(){
         String baseImages = encodedImage;
-        Log.d("Masuk OCR","ocrKTP : "+ocrKTP);
-        if (ocrKTP) {
-            baseImages = encodedImageCrop;
+        if (swaOCR) {
+            if (!imgPathKTP.isEmpty()) {
+                Bitmap bitmapKTP = BitmapFactory.decodeFile(imgPathKTP);
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                bitmapKTP.compress(Bitmap.CompressFormat.JPEG,100, baos);
+                byte[] imageBytesCrop = baos.toByteArray();
+                baseImages = Base64.encodeToString(imageBytesCrop, Base64.NO_WRAP);
+            } else {
+                baseImages = encodedImageCrop;
+            }
         }
         JSONObject jsons = new JSONObject();
         try {
@@ -4938,11 +6361,9 @@ public class frag_cif_new extends Fragment {
         RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), jsons.toString());
         ApiService API = Server.getAPIService();
         Call<JsonObject> call = API.ocrKtp(requestBody,authAccess,exchangeToken);
-        Log.e("CEK","url ocrKTP : "+call.request().url());
         call.enqueue(new Callback<JsonObject>() {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
-                Log.d("Response OCR",""+response.code());
                 ((Activity)mContext).runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
@@ -4955,7 +6376,6 @@ public class frag_cif_new extends Fragment {
                 });
                 if (response.isSuccessful()) {
                     String dataS = response.body().toString();
-                    Log.d("Response OCR",""+dataS);
                     try {
                         JSONObject jsObj = new JSONObject(dataS);
                         int errCode = jsObj.getInt("code");
@@ -4970,49 +6390,82 @@ public class frag_cif_new extends Fragment {
                             JSONObject dataObj = jsObj.getJSONObject("data");
                             datasReqOCR = dataObj;
                             if (dataObj.has("provinsi")) {
-                                provinsi = dataObj.getString("provinsi");
+                                if (!dataObj.isNull("provinsi")) {
+                                    provinsi = dataObj.getString("provinsi");
+                                }
                             }
                             if (dataObj.has("kota_kabupaten")) {
-                                kota_kabupaten = dataObj.getString("kota_kabupaten");
+                                if (!dataObj.isNull("kota_kabupaten")) {
+                                    kota_kabupaten = dataObj.getString("kota_kabupaten");
+                                }
                             }
                             if (dataObj.has("nik")) {
-                                nik = dataObj.getString("nik");
+                                if (!dataObj.isNull("nik")) {
+                                    nik = dataObj.getString("nik");
+                                }
                             }
                             if (dataObj.has("nama")) {
-                                nama = dataObj.getString("nama");
+                                if (!dataObj.isNull("nama")) {
+                                    nama = dataObj.getString("nama");
+                                }
                             }
                             if (dataObj.has("ttl")) {
-                                ttl = dataObj.getString("ttl");
+                                if (!dataObj.isNull("ttl")) {
+                                    ttl = dataObj.getString("ttl");
+                                }
                             }
                             if (dataObj.has("jeniskelamin")) {
-                                jeniskelamin = dataObj.getString("jeniskelamin");
+                                if (!dataObj.isNull("jeniskelamin")) {
+                                    jeniskelamin = dataObj.getString("jeniskelamin");
+                                }
                             }
                             if (dataObj.has("golongan_darah")) {
-                                golongan_darah = dataObj.getString("golongan_darah");
+                                if (!dataObj.isNull("golongan_darah")) {
+                                    golongan_darah = dataObj.getString("golongan_darah");
+                                }
                             }
                             if (dataObj.has("alamat")) {
-                                alamat = dataObj.getString("alamat");
+                                if (!dataObj.isNull("alamat")) {
+                                    alamat = dataObj.getString("alamat");
+                                }
                             }
                             if (dataObj.has("rtrw")) {
-                                rtrw = dataObj.getString("rtrw");
+                                if (!dataObj.isNull("rtrw")) {
+                                    rtrw = dataObj.getString("rtrw");
+                                }
+                                if (rtrw.equals("null")) {
+                                    rtrw = "";
+                                }
                             }
                             if (dataObj.has("desa_kelurahan")) {
-                                desa_kelurahan = dataObj.getString("desa_kelurahan");
+                                if (!dataObj.isNull("desa_kelurahan")) {
+                                    desa_kelurahan = dataObj.getString("desa_kelurahan");
+                                }
                             }
                             if (dataObj.has("kecamatan")) {
-                                kecamatan = dataObj.getString("kecamatan");
+                                if (!dataObj.isNull("kecamatan")) {
+                                    kecamatan = dataObj.getString("kecamatan");
+                                }
                             }
                             if (dataObj.has("agama")) {
-                                agama = dataObj.getString("agama");
+                                if (!dataObj.isNull("agama")) {
+                                    agama = dataObj.getString("agama");
+                                }
                             }
                             if (dataObj.has("status_perkawinan")) {
-                                status_perkawinan = dataObj.getString("status_perkawinan");
+                                if (!dataObj.isNull("status_perkawinan")) {
+                                    status_perkawinan = dataObj.getString("status_perkawinan");
+                                }
                             }
                             if (dataObj.has("kewarganegaraan")) {
-                                kewarganegaraan = dataObj.getString("kewarganegaraan");
+                                if (!dataObj.isNull("kewarganegaraan")) {
+                                    kewarganegaraan = dataObj.getString("kewarganegaraan");
+                                }
                             }
                             if (dataObj.has("pekerjaan")) {
-                                pekerjaan = dataObj.getString("pekerjaan");
+                                if (!dataObj.isNull("pekerjaan")) {
+                                    pekerjaan = dataObj.getString("pekerjaan");
+                                }
                             }
 
                             if (ttl.indexOf(",") > 0) {
@@ -5032,6 +6485,8 @@ public class frag_cif_new extends Fragment {
                             datasReqOCR.remove("desa_kelurahan");
                             datasReqOCR.remove("status_perkawinan");
 
+                            sessions.saveOCR(datasReqOCR.toString());
+
                             flagOCR = true;
                             PopUpOCR();
                             JSONObject dataReq = dataReqOCR2();
@@ -5041,7 +6496,9 @@ public class frag_cif_new extends Fragment {
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             }
-                            RabbitMirroring.MirroringSendKey(reqOCR);
+                            if (isSessionZoom) {
+                                ConnectionRabbitHttp.mirroringKey(reqOCR);
+                            }
                         } else {
                             Toast.makeText(mContext, message, Toast.LENGTH_SHORT).show();
                         }
@@ -5055,7 +6512,6 @@ public class frag_cif_new extends Fragment {
                     String msg = "";
                     if (response.errorBody().toString().isEmpty()) {
                         String dataS = response.errorBody().toString();
-                        Log.e("CEK","ERROR RESPON : "+dataS);
                         try {
                             JSONObject dataObj = new JSONObject(dataS);
                             msg = dataObj.getString("message");
@@ -5066,7 +6522,6 @@ public class frag_cif_new extends Fragment {
                         String dataS = null;
                         try {
                             dataS = response.errorBody().string();
-                            Log.e("CEK","ERROR RESPON 2 : "+dataS);
                             JSONObject dataObj = new JSONObject(dataS);
                             if (dataObj.has("message")) {
                                 msg = dataObj.getString("message");
@@ -5077,7 +6532,6 @@ public class frag_cif_new extends Fragment {
                     }
 
                     dialogFailedValidation("OCR");
-                    //Toast.makeText(mContext,msg,Toast.LENGTH_SHORT).show();
                 }
             }
             @Override
@@ -5153,9 +6607,7 @@ public class frag_cif_new extends Fragment {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == RESULT_OK && data != null) {
             getRequestCode = requestCode;
-            Log.e("CEK","requestCode : "+requestCode+" | isCust : "+isCust);
             if (requestCode == REQUESTCODE_CAPTURE){
-                Log.e("CEK","RETURN CAMERA");
                 sessions.saveFlagUpDoc(true);
                 byte[] resultCamera = data.getByteArrayExtra("result_camera");
                 Bitmap bitmap = BitmapFactory.decodeByteArray(resultCamera, 0, resultCamera.length);
@@ -5166,19 +6618,24 @@ public class frag_cif_new extends Fragment {
                     e.printStackTrace();
                 }
                 picturePath = mediaFilePhoto.getAbsolutePath();
-                Log.e("CEK","onActivityResult picturePath : "+picturePath);
                 LL.setBackgroundResource(0);
-                if (formCode != 4) {
+                //if (formCode != 4) {
                     btnNext.setVisibility(View.VISIBLE);
                     btnNext.setClickable(true);
                     imgDelete.setVisibility(View.VISIBLE);
                     viewImage.setVisibility(View.VISIBLE);
                     chooseImage.setVisibility(View.GONE);
-                }
+                //}
                 viewImage.setImageBitmap(bitmap);
-                processSendImage(bitmap);
+                if (formCode != 4) {
+                    processSendImage(bitmap);
+                } else {
+                    Bitmap thumbnail = prosesOptimalImage(picturePath,1);
+                    imgtoBase64(thumbnail);
+                }
             }
             else if (requestCode == REQUESTCODE_GALLERY){
+                sessions.saveMedia(0);
                 Uri selectedImage = data.getData();
                 String[] filePath = {MediaStore.Images.Media.DATA};
                 Cursor c = mContext.getContentResolver().query(selectedImage, filePath, null, null, null);
@@ -5198,14 +6655,9 @@ public class frag_cif_new extends Fragment {
                     e.printStackTrace();
                 }
 
-                Log.e("CEK","rotation : "+rotation);
-                Log.e("CEK","onActivityResult picturePath : "+picturePath);
-                Log.e("CEK","REQUESTCODE_GALLERY : "+REQUESTCODE_GALLERY);
-
                 if (REQUESTCODE_GALLERY == 201) {
 
                 } else {
-                    sessions.saveFlagUpDoc(true);
                     LL.setBackgroundResource(0);
                     if (formCode != 4) {
                         btnNext.setVisibility(View.VISIBLE);
@@ -5216,9 +6668,6 @@ public class frag_cif_new extends Fragment {
                         chooseImage.setVisibility(View.GONE);
                     }
                     imgtoBase64(thumbnail);
-                    /*if (formCode == 4) {
-                        imgtoBase64OCR();
-                    }*/
                 }
             }
             else if (requestCode == REQUESTCODE_SWAFOTO){
@@ -5228,7 +6677,7 @@ public class frag_cif_new extends Fragment {
                 Bitmap bitmap = BitmapFactory.decodeFile(filePaths);
                 Bitmap bitmapCrop = BitmapFactory.decodeFile(filePathsCrop);
 
-                if (ocrKTP) {
+                if (swaOCR) {
                     ByteArrayOutputStream baos = new ByteArrayOutputStream();
                     bitmapCrop.compress(Bitmap.CompressFormat.JPEG,100, baos);
                     byte[] imageBytesCrop = baos.toByteArray();
@@ -5240,32 +6689,47 @@ public class frag_cif_new extends Fragment {
                 picturePath = filePaths;
                 picturePathCrop = filePathsCrop;
 
-                LL.setBackgroundResource(0);
-                btnNext.setVisibility(View.VISIBLE);
-                btnNext.setClickable(true);
-                imgDelete.setVisibility(View.VISIBLE);
-                viewImage.setVisibility(View.VISIBLE);
-                chooseImage.setVisibility(View.GONE);
-                viewImage.setImageBitmap(bitmap);
-                processSendImage(bitmap);
-                ((Activity)mContext).runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (isSessionZoom) {
-                            BaseMeetingActivity.showProgress(true);
-                        } else {
-                            DipsSwafoto.showProgress(true);
-                        }
+                if (formCode == 22 && isSessionZoom) {
+                    if (swaOCR) {
+                        imgtoBase64OCR();
                     }
-                });
-                processSwafotoCheck();
+                } else {
+                    LL.setBackgroundResource(0);
+                    btnNext.setVisibility(View.VISIBLE);
+                    btnNext.setClickable(true);
+                    imgDelete.setVisibility(View.VISIBLE);
+                    viewImage.setVisibility(View.VISIBLE);
+                    chooseImage.setVisibility(View.GONE);
+                    viewImage.setImageBitmap(bitmap);
+
+                    processSendImage(bitmap);
+                    ((Activity)mContext).runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (isSessionZoom) {
+                                BaseMeetingActivity.showProgress(true);
+                            } else {
+                                DipsSwafoto.showProgress(true);
+                            }
+                        }
+                    });
+                    processSwafotoCheck();
+                }
             }
         }
     }
 
     private void processSwafotoCheck() {
-        RequestBody requestFile = RequestBody.create(MediaType.parse("image/jpeg"), mediaFilePhoto);
-        RequestBody requestFileCrop = RequestBody.create(MediaType.parse("image/jpeg"), mediaFilePhotoCropSwafoto);
+        File filePhoto = mediaFilePhoto;
+        File filePhotoCrop = mediaFilePhotoCropSwafoto;
+        if (mediaImgKTP != null) {
+            filePhotoCrop = mediaImgKTP;
+        }
+        /*if (sessions.getPhotoLiveness() != null) {
+            filePhoto = new File(sessions.getPhotoLiveness());
+        }*/
+        RequestBody requestFile = RequestBody.create(MediaType.parse("image/jpeg"), filePhoto);
+        RequestBody requestFileCrop = RequestBody.create(MediaType.parse("image/jpeg"), filePhotoCrop);
 
         ApiService API = Server.getAPIService2();
         Call<JsonObject> call = null;
@@ -5275,19 +6739,16 @@ public class frag_cif_new extends Fragment {
         String exchangeToken = sessions.getExchangeToken();
 
         multipartBody = new MultipartBody.Builder()
-                .addPart(MultipartBody.Part.createFormData("firstImage", mediaFilePhoto.getName(), requestFile))
-                .addPart(MultipartBody.Part.createFormData("secondImage", mediaFilePhotoCropSwafoto.getName(), requestFileCrop))
+                .addPart(MultipartBody.Part.createFormData("firstImage", filePhoto.getName(), requestFile))
+                .addPart(MultipartBody.Part.createFormData("secondImage", filePhotoCrop.getName(), requestFileCrop))
                 .build();
         contentType = "multipart/form-data; charset=utf-8; boundary=" + multipartBody.boundary();
 
         call = API.swafotoCheck(contentType, authAccess, exchangeToken, multipartBody);
 
-        Log.e("CEK", "processSwafotoCheck call url : " + call.request().url());
-
         call.enqueue(new Callback<JsonObject>() {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
-                Log.e("CEK","processSwafotoCheck response code : "+response.code());
                 if (response.isSuccessful()) {
                     btnNext.setClickable(true);
                     btnNext.setBackgroundTintList(mContext.getResources().getColorStateList(R.color.zm_button));
@@ -5295,7 +6756,7 @@ public class frag_cif_new extends Fragment {
                     new Handler().postDelayed(new Runnable() {
                         @Override
                         public void run() {
-                            if (ocrKTP) {
+                            if (swaOCR) {
                                 imgtoBase64OCR();
                             }
                         }
@@ -5315,7 +6776,6 @@ public class frag_cif_new extends Fragment {
                     if (response.body() != null) {
                         String dataS = response.body().toString();
                         try {
-                            Log.e("CEK","processSwafotoCheck DIATAS 300 dataS : "+dataS);
                             JSONObject dataObj = new JSONObject(dataS);
                             msg = dataObj.getString("message");
                         } catch (JSONException e) {
@@ -5334,7 +6794,6 @@ public class frag_cif_new extends Fragment {
                             String dataS = null;
                             try {
                                 dataS = response.errorBody().string();
-                                Log.e("CEK","processSwafotoCheck DIATAS 300 dataS-2 : "+dataS);
                                 JSONObject dataObj = new JSONObject(dataS);
                                 msg = dataObj.getString("message");
                             } catch (IOException | JSONException e) {
@@ -5342,10 +6801,8 @@ public class frag_cif_new extends Fragment {
                             }
                         }
                     }
-                    Log.e("CEK","processSwafotoCheck DIATAS 300 : "+msg);
                     btnNext.setClickable(false);
                     btnNext.setBackgroundTintList(mContext.getResources().getColorStateList(R.color.btnFalse));
-                    //Toast.makeText(mContext, R.string.capture_back,Toast.LENGTH_SHORT).show();
                     dialogFailedValidation("swafotocheck");
                 }
             }
@@ -5417,6 +6874,23 @@ public class frag_cif_new extends Fragment {
             return true;
         }
         return false;
+    }
+
+    private void getFragmentPageBackStack(Fragment fragment){
+        if (isSessionZoom) {
+            ((FragmentActivity) mContext).getSupportFragmentManager()
+                    .beginTransaction()
+                    .add(R.id.layout_frame2, fragment)
+                    .addToBackStack("FragCIF")
+                    .commit();
+        } else {
+            ((FragmentActivity) mContext).getSupportFragmentManager()
+                    .beginTransaction()
+                    .add(R.id.layout_frame, fragment)
+                    .addToBackStack("FragCIF")
+                    .commit();
+        }
+
     }
 
 }

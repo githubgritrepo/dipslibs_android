@@ -18,6 +18,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -32,9 +33,12 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.evo.mitzoom.API.Server;
 import com.evo.mitzoom.Adapter.ItemSavingAdapter;
+import com.evo.mitzoom.BaseMeetingActivity;
+import com.evo.mitzoom.Helper.ConnectionRabbitHttp;
 import com.evo.mitzoom.Helper.RabbitMirroring;
 import com.evo.mitzoom.R;
 import com.evo.mitzoom.Session.SessionManager;
+import com.evo.mitzoom.ui.Alternative.DipsSwafoto;
 import com.google.gson.JsonObject;
 
 import org.json.JSONArray;
@@ -53,7 +57,7 @@ public class frag_list_produk extends Fragment {
     private Context context;
     private NestedScrollView nested;
     private ImageView btnBack;
-    private RelativeLayout rlOpenAccount;
+    private LinearLayout rlOpenAccount;
     private boolean isSessionZoom = false;
     private SweetAlertDialog sweetAlertDialogTNC = null;
     private View dialogView;
@@ -77,10 +81,7 @@ public class frag_list_produk extends Fragment {
         isCust = sessions.getKEY_iSCust();
         isSwafoto = sessions.getKEY_iSSwafoto();
         isSessionZoom = ZoomVideoSDK.getInstance().isInSession();
-        /*if (isSessionZoom) {
-            rabbitMirroring = new RabbitMirroring(context);
-        }*/
-        Log.e("CEK_FRAG_LIST_PROD","getNoCIF : "+sessions.getNoCIF());
+        ConnectionRabbitHttp.init(context);
     }
     @Nullable
     @Override
@@ -99,6 +100,12 @@ public class frag_list_produk extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         dataProduct = new JSONArray();
+
+        if (isSessionZoom) {
+            BaseMeetingActivity.showProgress(true);
+        } else {
+            DipsSwafoto.showProgress(true);
+        }
         new AsyncProcess().execute();
 
         if (isSessionZoom) {
@@ -110,7 +117,10 @@ public class frag_list_produk extends Fragment {
                 //rabbitMirroring.MirroringSendEndpoint(0);
                 /*rabbitMirroring.MirroringSendEndpoint(361);
                 PopUpTnc();*/
-                RabbitMirroring.MirroringSendEndpoint(201);
+                //RabbitMirroring.MirroringSendEndpoint(201);
+                if (isSessionZoom) {
+                    ConnectionRabbitHttp.mirroringEndpoint(201);
+                }
                 getFragmentPage(new frag_open_account_product());
             }
         });
@@ -194,7 +204,6 @@ public class frag_list_produk extends Fragment {
     }
 
     private void PopUpTnc(){
-        Log.e("CEK","MASUK PopUpTnc");
         LayoutInflater inflater = ((Activity) context).getLayoutInflater();
         if (sweetAlertDialogTNC == null) {
             dialogView = inflater.inflate(R.layout.item_tnc,null);
@@ -237,13 +246,12 @@ public class frag_list_produk extends Fragment {
             @Override
             public void onClick(View v) {
                 if (checkBox.isChecked()){
-                    Log.d("CHECK","TRUE");
                     btn.setBackgroundTintList(context.getResources().getColorStateList(R.color.zm_button));
                     btn.setClickable(true);
-                    RabbitMirroring.MirroringSendEndpoint(363);
+                    //RabbitMirroring.MirroringSendEndpoint(363);
+                    ConnectionRabbitHttp.mirroringEndpoint(363);
                 }
                 else {
-                    Log.d("CHECK","FALSE");
                     btn.setBackgroundTintList(context.getResources().getColorStateList(R.color.btnFalse));
                     btn.setClickable(false);
                 }
@@ -257,9 +265,11 @@ public class frag_list_produk extends Fragment {
                     sweetAlertDialogTNC.cancel();
                     sessions.saveIsCust(isCust);
                     sessions.saveIsSwafoto(isSwafoto);
+                    //sessions.saveFormCOde(4);
                     sessions.saveFormCOde(4);
                     Fragment fragment = new frag_cif_new();
-                    RabbitMirroring.MirroringSendEndpoint(4);
+                    //RabbitMirroring.MirroringSendEndpoint(4);
+                    ConnectionRabbitHttp.mirroringEndpoint(4);
                     getFragmentPage(fragment);
                 }
                 else {
@@ -275,6 +285,11 @@ public class frag_list_produk extends Fragment {
         Server.getAPIWAITING_PRODUCT().getNewProductPublish(authAccess,exchangeToken).enqueue(new Callback<JsonObject>() {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                if (isSessionZoom) {
+                    BaseMeetingActivity.showProgress(false);
+                } else {
+                    DipsSwafoto.showProgress(false);
+                }
                 if (response.isSuccessful()) {
                     String dataS = response.body().toString();
                     try {
@@ -345,13 +360,17 @@ public class frag_list_produk extends Fragment {
 
             @Override
             public void onFailure(Call<JsonObject> call, Throwable t) {
+                if (isSessionZoom) {
+                    BaseMeetingActivity.showProgress(false);
+                } else {
+                    DipsSwafoto.showProgress(false);
+                }
                 Toast.makeText(context,t.getMessage(),Toast.LENGTH_SHORT).show();
             }
         });
     }
 
     private void setRecylerList() {
-        Log.e("CEK","MASUK setRecylerList");
 
         ItemSavingAdapter dataList = new ItemSavingAdapter(context, dataProduct);
 
@@ -362,11 +381,19 @@ public class frag_list_produk extends Fragment {
     }
 
     private void getFragmentPage(Fragment fragment){
-        getActivity().getSupportFragmentManager()
-                .beginTransaction()
-                .replace(R.id.layout_frame2, fragment)
-                .addToBackStack(null)
-                .commit();
+        if (isSessionZoom) {
+            getActivity().getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.layout_frame2, fragment)
+                    .addToBackStack(null)
+                    .commit();
+        } else {
+            getActivity().getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.layout_frame, fragment)
+                    .addToBackStack(null)
+                    .commit();
+        }
     }
 
     private void sendDataFragment(Bundle bundle, Fragment fragment){

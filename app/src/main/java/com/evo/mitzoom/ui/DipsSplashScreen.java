@@ -37,7 +37,6 @@ public class DipsSplashScreen extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dips_splash_screen);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        Log.e(TAG,"MASUK onCreate");
         tvVersion = findViewById(R.id.tvVersion);
         rlBGTransparant = findViewById(R.id.rlBGTransparant);
 
@@ -149,7 +148,6 @@ public class DipsSplashScreen extends AppCompatActivity {
         finish();
     }
     private void processNext() {
-        Log.e("CEK","processNext");
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
@@ -165,7 +163,6 @@ public class DipsSplashScreen extends AppCompatActivity {
         },1000);
     }
     private void startApp() {
-        Log.e(TAG,"startApp");
         startActivity(new Intent(DipsSplashScreen.this, DipsChooseLanguage.class));
         finishAffinity();
     }

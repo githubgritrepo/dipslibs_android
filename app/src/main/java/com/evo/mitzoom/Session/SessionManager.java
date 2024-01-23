@@ -53,6 +53,8 @@ public class SessionManager {
     public static final String KEY_SESSIONID_DIPS = "SESSIONID_DIPS";
     public static final String KEY_SCHEDULE_DATE = "SCHEDULE_DATE";
     public static final String KEY_SCHEDULE_TIME = "SCHEDULE_TIME";
+    public static final String KEY_PHOTOLIVENESS = "PHOTOLIVENESS";
+    public static final String KEY_FLAGQUESTION = "FLAGQUESTION";
 
     // Constructor
     public SessionManager(Context context){
@@ -209,6 +211,16 @@ public class SessionManager {
         editor.commit();
     }
 
+    public void savePhotoLiveness(String data) {
+        editor.putString(KEY_PHOTOLIVENESS,data);
+        editor.commit();
+    }
+
+    public void saveFlagQuestion(Boolean data) {
+        editor.putBoolean(KEY_FLAGQUESTION,data);
+        editor.commit();
+    }
+
     public void clearPartData(){
         editor.putString(KEY_RTGS,null);
         editor.putString(KEY_CIF,null);
@@ -224,6 +236,7 @@ public class SessionManager {
         editor.putString(KEY_FORMREQ,null);
         editor.putString(KEY_FORMREQMIRRORING,null);
         editor.putString(KEY_noComplaint,null);
+        editor.putBoolean(KEY_FLAGQUESTION,false);
         editor.commit();
     }
 
@@ -241,6 +254,7 @@ public class SessionManager {
         editor.putString(KEY_FORMREQ,null);
         editor.putString(KEY_FORMREQMIRRORING,null);
         editor.putString(KEY_noComplaint,null);
+        editor.putBoolean(KEY_FLAGQUESTION,false);
         editor.commit();
     }
 
@@ -352,6 +366,12 @@ public class SessionManager {
     }
     public String getScheduledTime() {
         return pref.getString(KEY_SCHEDULE_TIME,null);
+    }
+    public String getPhotoLiveness() {
+        return pref.getString(KEY_PHOTOLIVENESS,null);
+    }
+    public boolean getFlagQuestion (){
+        return pref.getBoolean(KEY_FLAGQUESTION,false);
     }
 
 }

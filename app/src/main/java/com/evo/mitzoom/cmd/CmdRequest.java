@@ -4,6 +4,8 @@ import android.util.Log;
 
 import androidx.annotation.Nullable;
 
+import java.util.Objects;
+
 import us.zoom.sdk.ZoomVideoSDKUser;
 
 public abstract class CmdRequest {
@@ -14,18 +16,16 @@ public abstract class CmdRequest {
 
     @Nullable
     private static CmdRequest getRequest(CmdType type) {
-        switch (type) {
-            case Reaction:
-                return new CmdReactionRequest();
+        if (Objects.requireNonNull(type) == CmdType.Reaction) {
+            return new CmdReactionRequest();
 //            case FeedbackPush:
 //                return new CmdFeedbackPushRequest();
 //            case FeedbackSubmit:
 //                return new CmdFeedbackSubmitRequest();
 //            case LowerThird:
 //                return new CmdLowerThirdRequest();
-            default:
-                return null;
         }
+        return null;
     }
 
     public abstract CmdRequest builderRequest(String[] requestBody);

@@ -71,7 +71,6 @@ public class DownloadTaskHelper extends AsyncTask<String, Integer, String> {
         HttpsURLConnection connection = null;
         try {
             URL url = new URL(sUrl[0]);
-            Log.e("CEK","url : "+url);
             connection = (HttpsURLConnection) url.openConnection();
             connection.setRequestProperty("Authorization","Bearer "+sessionManager.getAuthToken());
             connection.setRequestProperty("exchangeToken",sessionManager.getExchangeToken());
@@ -80,8 +79,6 @@ public class DownloadTaskHelper extends AsyncTask<String, Integer, String> {
             // expect HTTP 200 OK, so we don't mistakenly save error report
             // instead of the file
             if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
-                Log.e("CEK","Server returned HTTP " + connection.getResponseCode()
-                        + " " + connection.getResponseMessage());
                 return "Server returned HTTP " + connection.getResponseCode()
                         + " " + connection.getResponseMessage();
             }
@@ -89,8 +86,6 @@ public class DownloadTaskHelper extends AsyncTask<String, Integer, String> {
             // this will be useful to display download percentage
             // might be -1: server did not report the length
             int fileLength = connection.getContentLength();
-
-            Log.e("CEK","fileLength : "+fileLength);
 
             File dir = createDir();
             if (!dir.exists()) {
@@ -102,13 +97,16 @@ public class DownloadTaskHelper extends AsyncTask<String, Integer, String> {
             String filename = "FORM_CIF_"+timeStamp+".pdf";
             if (sUrl[1] != null) {
                 if (!sUrl[1].isEmpty()) {
-                    filename = sUrl[1];
+                    if (sUrl[1].contains(".")) {
+                        filename = sUrl[1];
+                    } else if (sUrl[1].contains("?")) {
+                        String[] sp2 = sUrl[1].split("\\?");
+                        filename = sp2[0].trim()+".pdf";
+                    }
                 }
             }
             File mediaFile = new File(dir.getPath() + File.separator +
                     filename);
-
-            Log.e("CEK","mediaFile : "+mediaFile.getPath());
 
             // download the file
             input = connection.getInputStream();
@@ -172,9 +170,9 @@ public class DownloadTaskHelper extends AsyncTask<String, Integer, String> {
         mWakeLock.release();
         mProgressDialog.dismiss();
         if (result != null)
-            Toast.makeText(context,"Download error: "+result, Toast.LENGTH_LONG).show();
+            Toast.makeText(context,result, Toast.LENGTH_LONG).show();
         else
-            Toast.makeText(context,"File downloaded", Toast.LENGTH_LONG).show();
+            Toast.makeText(context, R.string.file_downloaded, Toast.LENGTH_LONG).show();
     }
 
     private File createDir() {

@@ -83,7 +83,6 @@ import retrofit2.Response;
 
 public class frag_berita extends Fragment implements com.wdullaer.materialdatetimepicker.date.DatePickerDialog.OnDateSetListener {
     private Context context;
-    int [] gambar = {R.drawable.rtgs, R.drawable.pembukaanakun, R.drawable.formulirkomplain, R.drawable.ads1,R.drawable.ads2, R.drawable.ads3, R.drawable.ads4, R.drawable.ads1,R.drawable.ads2, R.drawable.ads3, R.drawable.ads4, R.drawable.ads1,R.drawable.ads2, R.drawable.ads3, R.drawable.ads4, R.drawable.ads1};
     private RecyclerView rv_product;
     private ViewPager2 mPager;
     private GridProductAdapter gridAdapter;
@@ -197,8 +196,7 @@ public class frag_berita extends Fragment implements com.wdullaer.materialdateti
                             tanggalPenuh = dataObj.getJSONObject("data").getJSONArray("tanggalPenuh");
                             periodePenuh = dataObj.getJSONObject("data").getJSONArray("periodePenuh");
 
-                            Log.e("CEK","tanggalPenuh : "+tanggalPenuh.toString());
-                            Log.e("CEK","periodePenuh : "+periodePenuh.toString());
+                            l,,,,,,,,,,,,,,,,,
                         }
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -215,7 +213,6 @@ public class frag_berita extends Fragment implements com.wdullaer.materialdateti
 
     @Override
     public void onDateSet(com.wdullaer.materialdatetimepicker.date.DatePickerDialog view, int year, int monthOfYear, int dayOfMonth) {
-        Log.e("CEK","onDateSet");
         int addmonths = (month + 1);
         String months = String.valueOf(addmonths);
         if (addmonths < 10) {
@@ -271,9 +268,7 @@ public class frag_berita extends Fragment implements com.wdullaer.materialdateti
     }
 
     private void parseGetSchedule() {
-        Log.e("CEK","frag_berita parseGetSchedule");
         if (sessions.getScheduledDate() != null) {
-            Log.e("CEK","frag_berita sessions.getScheduledDate()");
             try {
                 JSONObject dataObj = new JSONObject(sessions.getScheduledDate());
                 tanggalPenuh = dataObj.getJSONObject("data").getJSONArray("tanggalPenuh");
@@ -284,10 +279,8 @@ public class frag_berita extends Fragment implements com.wdullaer.materialdateti
         }
 
         if (sessions.getScheduledTime() != null) {
-            Log.e("CEK","frag_berita sessions.getScheduledTime()");
             try {
                 JSONArray dataArrTimes = new JSONArray(sessions.getScheduledTime());
-                Log.e("CEK","frag_berita dataArrTimes : "+dataArrTimes.length());
                 for (int i = 0; i < dataArrTimes.length(); i++) {
                     int periodeId = dataArrTimes.getJSONObject(i).getInt("id");
                     String periode = dataArrTimes.getJSONObject(i).getString("periode");
@@ -302,41 +295,6 @@ public class frag_berita extends Fragment implements com.wdullaer.materialdateti
         }
     }
 
-    /*private void processGetScheduleTimes() {
-        Server.getAPIService().GetScheduleTimes().enqueue(new Callback<JsonObject>() {
-            @Override
-            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
-                if (response.isSuccessful()) {
-                    String dataS = response.body().toString();
-                    try {
-                        JSONObject dataObj = new JSONObject(dataS);
-                        int errCode = dataObj.getInt("code");
-                        if (errCode == 200) {
-                            JSONArray dataArrTimes = dataObj.getJSONArray("data");
-                            Log.e("CEK","dataArrTimes : "+dataArrTimes);
-                            for (int i = 0; i < dataArrTimes.length(); i++) {
-                                int periodeId = dataArrTimes.getJSONObject(i).getInt("id");
-                                String periode = dataArrTimes.getJSONObject(i).getString("periode");
-                                time.add(periode);
-                                periodeInt.add(periodeId);
-                                dataPeriode.put(periodeId,periode);
-                                dataPeriodeId.put(periode,periodeId);
-                            }
-                        }
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-
-                }
-            }
-
-            @Override
-            public void onFailure(Call<JsonObject> call, Throwable t) {
-
-            }
-        });
-    }*/
-
     private void processGetSpanduk() {
         indeksNotFound = new ArrayList<>();
         String authAccess = "Bearer "+sessions.getAuthToken();
@@ -344,7 +302,6 @@ public class frag_berita extends Fragment implements com.wdullaer.materialdateti
         Server.getAPIWAITING_PRODUCT().getSpandukPublish(authAccess,exchangeToken).enqueue(new Callback<JsonObject>() {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
-                Log.e("CEK","Response Code processGetSpanduk : "+response.code());
                 if (response.isSuccessful()) {
                     DipsWaitingRoom.showProgress(false);
                     String dataS = response.body().toString();
@@ -399,17 +356,14 @@ public class frag_berita extends Fragment implements com.wdullaer.materialdateti
     }
 
     private void processSpandukMedia(int idSpanduk, JSONObject dataStream, int indexs) {
-        Log.e("CEK","processSpandukMedia indexs : "+indexs+" | idSpanduk : "+idSpanduk);
         final int[] loops = {indexs};
         String authAccess = "Bearer "+sessions.getAuthToken();
         String exchangeToken = sessions.getExchangeToken();
         Server.getAPIWAITING_PRODUCT().getSpandukMedia(idSpanduk,authAccess,exchangeToken).enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                Log.e("CEK","processSpandukMedia response : "+response.code());
                 if (response.code() == 200) {
                     String Content_Type = response.headers().get("Content-Type");
-                    Log.e("CEK","processSpandukMedia Content_Type : "+Content_Type);
                     if (!Content_Type.contains("json")) {
                         InputStream in = response.body().byteStream();
 
@@ -462,7 +416,6 @@ public class frag_berita extends Fragment implements com.wdullaer.materialdateti
     }
 
     private void processParsingMedia(InputStream stream, String content_Type, JSONObject dataStream, int indexs) {
-        Log.e("CEK","processParsingMedia : "+content_Type);
         if (content_Type.indexOf("image") > -1) {
             Bitmap bitmap = BitmapFactory.decodeStream(stream);
             try {
@@ -511,7 +464,6 @@ public class frag_berita extends Fragment implements com.wdullaer.materialdateti
         Server.getAPIWAITING_PRODUCT().getNewProductPublish(authAccess,exchangeToken).enqueue(new Callback<JsonObject>() {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
-                Log.e("CEK","Response Code processGetProduct : "+response.code());
                 if (response.isSuccessful()) {
                     String dataS = response.body().toString();
                     try {
@@ -523,7 +475,6 @@ public class frag_berita extends Fragment implements com.wdullaer.materialdateti
                             sessions.saveExchangeToken(exchangeToken);
                         }
                         int errCode = dataObj.getInt("code");
-                        Log.e("CEK","errCode : "+errCode);
                         if (errCode == 200) {
                             JSONArray dataRows = dataObj.getJSONArray("data");
                             newDataProd = new ArrayList<JSONObject>();
@@ -560,7 +511,7 @@ public class frag_berita extends Fragment implements com.wdullaer.materialdateti
                             boolean includeEdge = true;
                             rv_product.setLayoutManager(new GridLayoutManager(context,spanCount));
                             rv_product.addItemDecoration(new GridSpacingItemDecoration(spanCount, spacing, includeEdge));
-                            gridAdapter = new GridProductAdapter(context,gambar,newDataProd);
+                            gridAdapter = new GridProductAdapter(context,newDataProd);
                             rv_product.setAdapter(gridAdapter);
                         }
                     } catch (JSONException e) {
@@ -654,7 +605,6 @@ public class frag_berita extends Fragment implements com.wdullaer.materialdateti
         //System.exit(0);
     }
     private void initPager() {
-        Log.e("CEK","initPager : "+dataArrSpanduk.length());
 
         mPager.setAdapter(new AdapterSlide(context, dataArrSpanduk));
         mPager.setClipToPadding(false);
@@ -761,7 +711,6 @@ public class frag_berita extends Fragment implements com.wdullaer.materialdateti
                 //dpd.setMaxDate(day);
 
                 dpd.setOnCancelListener(dialog -> {
-                    Log.e("DatePickerDialog", "Dialog was cancelled");
                     dpd = null;
                 });
                 dpd.show(requireFragmentManager(), "Datepickerdialog");
@@ -793,7 +742,7 @@ public class frag_berita extends Fragment implements com.wdullaer.materialdateti
                     sweetAlertDialog.dismiss();
                     String csId = sessions.getCSID();
                     if (csId != null && !csId.isEmpty()) {
-                        DipsWaitingRoom.publishCallAccept(csId, "cancel"); //RabbitMQ
+                        DipsWaitingRoom.publishCallAcceptHttp(csId, "cancel"); //RabbitMQ
                     }
                     sessions.saveIDSchedule(0);
                     DipsWaitingRoom.showProgress(true);
@@ -825,8 +774,6 @@ public class frag_berita extends Fragment implements com.wdullaer.materialdateti
         }
         String authAccess = "Bearer "+sessions.getAuthToken();
         String exchangeToken = sessions.getExchangeToken();
-        Log.e("CEK","PARAMS saveSchedule : "+ jsons);
-        Log.d("PARAMS JADWAL","idDips = "+idDips+", Tanggal = "+Savetanggal+", periodeId = "+periodeId);
         RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), jsons.toString());
         ApiService API = Server.getAPIService();
         Call<JsonObject> call = API.saveSchedule(requestBody,authAccess,exchangeToken);
@@ -834,9 +781,7 @@ public class frag_berita extends Fragment implements com.wdullaer.materialdateti
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
                 DipsWaitingRoom.showProgress(false);
-                Log.e("CEK","saveSchedule Respon Code : "+response.code());
                 if (response.isSuccessful() && response.body().size() > 0) {
-                    Log.e("CEK","saveSchedule Respon : "+ response.body());
 
                     String dataS = response.body().toString();
                     try {
@@ -852,19 +797,6 @@ public class frag_berita extends Fragment implements com.wdullaer.materialdateti
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
-
-                    /*if (DipsWaitingRoom.channelCall != null) {
-                        try {
-                            Log.e("CEK","MASUK channelCall abort close");
-                            DipsWaitingRoom.channelCall.close();
-                        } catch (IOException | TimeoutException e) {
-                            e.printStackTrace();
-                        }
-                        if (DipsWaitingRoom.subscribeThreadCall != null) {
-                            Log.e("CEK","MASUK subscribeThreadCall interrupt");
-                            DipsWaitingRoom.subscribeThreadCall.interrupt();
-                        }
-                    }*/
 
                     //doWorkMyWorker();
                     serviceOutbound();
@@ -913,8 +845,6 @@ public class frag_berita extends Fragment implements com.wdullaer.materialdateti
         workManager = WorkManager.getInstance(context);
 
         String jam = waktu;
-        Log.e("CEK","doWorkMyWorker Savetanggal : "+Savetanggal);
-        Log.e("CEK","doWorkMyWorker jam : "+jam);
         if (jam.indexOf("-") > 0) {
             String[] sp = jam.split("-");
             for (int i = 0; i < sp.length; i++) {
@@ -926,12 +856,10 @@ public class frag_berita extends Fragment implements com.wdullaer.materialdateti
 
                 String[] timeArray = sp[i].split(":");
                 String[] spDate = Savetanggal.split("-");
-                String thn = spDate[0].toString().trim();
-                String getBln = spDate[1].toString().trim();
+                String thn = spDate[0].trim();
+                String getBln = spDate[1].trim();
                 int bln = Integer.parseInt(getBln) - 1;
-                String tgl = spDate[2].toString().trim();
-
-                Log.e("CEK","DATETIMES-"+i+" : "+Savetanggal+" "+sp[i]);
+                String tgl = spDate[2].trim();
 
                 Calendar calendar = Calendar.getInstance();
                 calendar.set(Integer.parseInt(thn),bln,Integer.parseInt(tgl));
@@ -943,10 +871,7 @@ public class frag_berita extends Fragment implements com.wdullaer.materialdateti
                 long timeInMilis = calendar.getTimeInMillis();
                 long timeDiff = timeInMilis - timeCurrentMilis;
 
-                boolean start = true;
-                if (i > 0) {
-                    start = false;
-                }
+                boolean start = i <= 0;
 
                 Data data = new Data.Builder()
                         .putBoolean(EXTRA_START,start)

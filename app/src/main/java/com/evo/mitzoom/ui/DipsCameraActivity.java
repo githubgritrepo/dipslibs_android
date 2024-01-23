@@ -89,7 +89,7 @@ public class DipsCameraActivity extends AppCompatActivity {
     private final int optimalHeight = 0;
     private SessionManager sessions;
     private boolean isConfigure;
-    private boolean cekSwafoto = false;
+    private final boolean cekSwafoto = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -146,7 +146,6 @@ public class DipsCameraActivity extends AppCompatActivity {
 
                                         ExifInterface exif = new ExifInterface(pathFile);
                                         rotation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL);
-                                        Log.d("CEK", "rotation : " + rotation);
 
                                         String imgBase64 = imageRotateBase64(bitmapCrop, rotation);
                                         byte[] bytePhoto = Base64.decode(imgBase64, Base64.NO_WRAP);
@@ -158,8 +157,6 @@ public class DipsCameraActivity extends AppCompatActivity {
                                             e.printStackTrace();
                                         }
                                         int file_mediaFilesCrop = Integer.parseInt(String.valueOf(mediaFilesCrop.length()/1024));
-
-                                        Log.e("CEK", "file_mediaFilesCrop :"+file_mediaFilesCrop+" | bitmapCrop.getWidth() : "+bitmapCrop.getWidth()+" | bitmapCrop.getHeight() : "+bitmapCrop.getHeight());
 
                                         if (mediaFile.exists()) {
                                             try {
@@ -297,8 +294,6 @@ public class DipsCameraActivity extends AppCompatActivity {
     public byte[] getDownsizedImageBytes(Bitmap fullBitmap, int scaleWidth, int scaleHeight) throws IOException {
         Bitmap scaledBitmap = Bitmap.createScaledBitmap(fullBitmap, scaleWidth, scaleHeight, true);
 
-        Log.e("CEK", "scaledBitmap.getWidth() : "+scaledBitmap.getWidth()+" | scaledBitmap.getHeight() : "+scaledBitmap.getHeight());
-
         // 2. Instantiate the downsized image content as a byte[]
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         scaledBitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
@@ -309,7 +304,6 @@ public class DipsCameraActivity extends AppCompatActivity {
 
     private Bitmap prosesOptimalImage(Bitmap bitmap, File mediaFile, int perDiff) {
         int file_size = Integer.parseInt(String.valueOf(mediaFile.length()/1024));
-        Log.e("CEK", "file_size : "+file_size+" | bitmap.getWidth() : "+bitmap.getWidth()+" | bitmap.getHeight() : "+bitmap.getHeight());
 
         if (perDiff == 1) {
             if (file_size > 4096) {
@@ -447,7 +441,6 @@ public class DipsCameraActivity extends AppCompatActivity {
             camera.setParameters(parameters);
             inPreview = true;
             if (isConfigure) {
-                Log.d("CEK","MASUK isConfigure");
                 try {
                     Thread.sleep(500);
                     optimalCamera();
@@ -508,7 +501,6 @@ public class DipsCameraActivity extends AppCompatActivity {
 
         @Override
         public void surfaceChanged(@NonNull SurfaceHolder holder, int format, int width, int height) {
-            Log.e("CEK","surfaceChanged : width : "+width+" | height : "+height);
             initPreview(width, height);
             startPreview();
         }
@@ -626,7 +618,6 @@ public class DipsCameraActivity extends AppCompatActivity {
     {
         if (camera == null)
         {
-            Log.d("CEK","setCameraDisplayOrientation - camera null");
             return;
         }
 
@@ -711,9 +702,6 @@ public class DipsCameraActivity extends AppCompatActivity {
             Matrix matrix = new Matrix();
             // RESIZE THE BIT MAP
             matrix.postScale(sx, sy);
-
-            Log.e("CEK","diffH : "+diffH+" | sx : "+sx+" | sy : "+sy+" | cx : "+cx+" | cy : "+cy);
-            Log.e("CEK","Width Change : "+(width * 0.3)+" | Height Change : "+(height - diffH));
 
             // "RECREATE" THE NEW BITMAP
             resizedBitmap = Bitmap.createBitmap(

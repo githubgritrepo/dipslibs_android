@@ -28,17 +28,14 @@ public class OtpReceiver extends BroadcastReceiver {
                     String phoneNumber = smsMessage.getDisplayOriginatingAddress();
                     String sendNumber = phoneNumber;
                     message = smsMessage.getDisplayMessageBody();
-                    Log.i("ISI_SMS", "senderNum: " + sendNumber + "; message: " + message);
                 }
                 if (!message.isEmpty()) {
-                    Log.e("CEK","MESSAGE : "+message);
                     Intent newIntent = new Intent("getotp");
                     newIntent.putExtra("smsMessage", message);
                     LocalBroadcastManager.getInstance(context.getApplicationContext()).sendBroadcast(newIntent);
                 }
             }
         } catch (Exception e) {
-            Log.e("SmsReceiver", "Exception smsReceiver" + e);
         }
     }
 

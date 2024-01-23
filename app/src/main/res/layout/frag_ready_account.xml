@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".Fragments.frag_ready_account"
-    android:background="@color/bg2">
+    android:background="@color/white">
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -12,7 +12,8 @@
 
         <include
             android:id="@+id/inclHead"
-            layout="@layout/item_ready_account_head" />
+            layout="@layout/item_ready_account_head"
+            android:visibility="gone"/>
 
         <ImageView
             android:layout_width="match_parent"
@@ -57,14 +58,24 @@
                             android:layout_width="match_parent"
                             android:layout_height="30dp"
                             tools:text="Data Utama"
-                            android:textColor="@color/black"
-                            android:textSize="14dp"
+                            android:textColor="@color/zm_text"
+                            android:textSize="16dp"
                             android:textStyle="bold"
                             android:gravity="center_vertical"
                             android:layout_marginStart="10dp"/>
 
 
                     </LinearLayout>
+
+                    <TextView
+                        android:id="@+id/tvInfoFirst"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        tools:text="@string/info_first_data"
+                        android:textColor="@color/zm_text"
+                        android:layout_marginStart="@dimen/dp_20"
+                        android:layout_marginTop="@dimen/dp_20"
+                        android:layout_marginEnd="@dimen/dp_20" />
 
                     <LinearLayout
                         android:id="@+id/llFormBuild"
@@ -78,7 +89,8 @@
                         android:layout_width="match_parent"
                         android:layout_height="40dp"
                         android:background="@drawable/oval_background_10dp"
-                        android:backgroundTint="@color/zm_button"
+                        android:backgroundTint="@color/zm_text_grey"
+                        android:enabled="false"
                         android:text="@string/btn_continue"
                         android:textColor="@color/white"
                         android:textSize="14dp"

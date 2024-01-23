@@ -52,8 +52,14 @@ public class ItemOpenAccount extends RecyclerView.Adapter<ItemOpenAccount.ItemHo
         holder.ads.setImageResource(dataList.get(position).getGambarItem());
 
         if (position == 0) {
-            holder.cvItems.setBackgroundTintList(mContext.getResources().getColorStateList(R.color.zm_button));
-            holder.tvLabelItem.setTextColor(mContext.getColor(R.color.white));
+            holder.cvSubItems.setBackgroundTintList(mContext.getResources().getColorStateList(R.color.zm_button));
+            holder.tvLabelItem.setTextColor(mContext.getResources().getColor(R.color.white));
+        } else {
+            if (sessions.getKEY_iSCust()) {
+                holder.ads.setImageTintList(mContext.getResources().getColorStateList(R.color.zm_text_grey));
+                holder.cvItems.setBackgroundTintList(mContext.getResources().getColorStateList(R.color.zm_text_grey));
+                holder.tvLabelItem.setTextColor(mContext.getResources().getColor(R.color.zm_text_grey));
+            }
         }
 
         holder.cvItems.setOnClickListener(new View.OnClickListener() {
@@ -77,11 +83,13 @@ public class ItemOpenAccount extends RecyclerView.Adapter<ItemOpenAccount.ItemHo
         private final TextView tvLabelItem;
         private final ImageView ads;
         private final CardView cvItems;
+        private final CardView cvSubItems;
 
         public ItemHolder(@NonNull View itemView) {
             super(itemView);
 
             cvItems = itemView.findViewById(R.id.cvItems);
+            cvSubItems = (CardView) itemView.findViewById(R.id.cvSubItems);
             ads = itemView.findViewById(R.id.ads);
             tvLabelItem = itemView.findViewById(R.id.tvLabelItem);
 

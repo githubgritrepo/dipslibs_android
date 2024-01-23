@@ -55,9 +55,8 @@ public class GridProductAdapter extends RecyclerView.Adapter<GridProductAdapter.
     private final List<JSONObject> dataProduct;
     private ImageView adsImg;
 
-    public GridProductAdapter(Context ctx, int[] gambar, List<JSONObject> newDataProd) {
+    public GridProductAdapter(Context ctx, List<JSONObject> newDataProd) {
         this.ctx = ctx;
-        this.gambar = gambar;
         this.dataProduct = newDataProd;
         this.sessions = new SessionManager(this.ctx);
     }
@@ -96,7 +95,6 @@ public class GridProductAdapter extends RecyclerView.Adapter<GridProductAdapter.
     }
 
     private void PopUPData(String finalNamaProduk, String finalDataBody) {
-        Log.e("CEK","finalDataBody : "+finalDataBody);
 
         View views = LayoutInflater.from(ctx).inflate(R.layout.item_ads,null);
 
@@ -134,11 +132,8 @@ public class GridProductAdapter extends RecyclerView.Adapter<GridProductAdapter.
 
         int width = ctx.getResources().getDisplayMetrics().widthPixels;
         int height = ctx.getResources().getDisplayMetrics().heightPixels;
-
-        Log.e("CEK","PopUpTnc width : "+width+" | height : "+height);
         int newWidth = (int)(width*0.8);
         int newHeight = (int)(height*0.85);
-        Log.e("CEK","PopUpTnc newWidth : "+newWidth+" | newHeight : "+newHeight);
 
         sweet.getWindow().setGravity(Gravity.CENTER_HORIZONTAL);
         sweet.getWindow().setLayout(newWidth,newHeight);
@@ -148,7 +143,6 @@ public class GridProductAdapter extends RecyclerView.Adapter<GridProductAdapter.
     }
 
     private void processProductMedia(int produkId, GriViewHolder holder) {
-        Log.e("CEK","processProductMedia : "+produkId);
         String authAccess = "Bearer "+sessions.getAuthToken();
         String exchangeToken = sessions.getExchangeToken();
         Server.getAPIWAITING_PRODUCT().getProductMedia(produkId,authAccess,exchangeToken).enqueue(new Callback<ResponseBody>() {
@@ -156,7 +150,6 @@ public class GridProductAdapter extends RecyclerView.Adapter<GridProductAdapter.
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                 if (response.code() == 200) {
                     String Content_Type = response.headers().get("Content-Type");
-                    Log.e("CEK","processProductMedia Content_Type : "+Content_Type);
                     if (!Content_Type.contains("json")) {
                         InputStream in = response.body().byteStream();
                         processParsingMedia(in, Content_Type,holder);
@@ -219,12 +212,10 @@ public class GridProductAdapter extends RecyclerView.Adapter<GridProductAdapter.
                 @Override
                 public void onClick(View v) {
                     if (checkBox.isChecked()){
-                        Log.d("CHECK","TRUE");
                         btn.setBackgroundTintList(ctx.getResources().getColorStateList(R.color.Blue));
                         btn.setClickable(true);
                     }
                     else {
-                        Log.d("CHECK","FALSE");
                         btn.setBackgroundTintList(ctx.getResources().getColorStateList(R.color.btnFalse));
                         btn.setClickable(false);
                     }

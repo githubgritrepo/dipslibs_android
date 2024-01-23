@@ -202,10 +202,8 @@ public class DipsOutboundCall extends AppCompatActivity implements DatePickerDia
         //LocaleHelper.setLocale(this,lang);
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
         super.onCreate(savedInstanceState);
-        Log.e(TAG,"MASUK onCreate DipsOutboundCall");
         if (getIntent().getAction() != null) {
             getAction = getIntent().getAction();
-            Log.i(TAG,"MASUK ACTION : "+getAction);
         } else {
             playNotificationSound();
         }
@@ -273,7 +271,6 @@ public class DipsOutboundCall extends AppCompatActivity implements DatePickerDia
         myRunnable = new Runnable() {
             @Override
             public void run() {
-                Log.d("TIDAK DIANGKAT","");
                 OutboundServiceNew.OutConference();
                 Intent serviceIntent = new Intent(mContext, OutboundServiceNew.class);
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -324,7 +321,6 @@ public class DipsOutboundCall extends AppCompatActivity implements DatePickerDia
 
     @Override
     public void onDateSet(DatePickerDialog view, int year, int monthOfYear, int dayOfMonth) {
-        Log.e(TAG,"onDateSet");
         int addmonths = (month + 1);
         String months = String.valueOf(addmonths);
         if (addmonths < 10) {
@@ -440,7 +436,6 @@ public class DipsOutboundCall extends AppCompatActivity implements DatePickerDia
 
             try {
                 URL url = new URL(urls[0]);
-                Log.e(TAG,"url : "+url);
                 connection = (HttpsURLConnection) url.openConnection();
                 connection.setRequestProperty("Authorization","Bearer "+sessions.getAuthToken());
                 connection.setRequestProperty("exchangeToken",sessions.getExchangeToken());
@@ -449,7 +444,6 @@ public class DipsOutboundCall extends AppCompatActivity implements DatePickerDia
                 InputStream in = connection.getInputStream();
                 mIcon11 = BitmapFactory.decodeStream(in);
             } catch (Exception e) {
-                Log.e("Error", e.getMessage());
                 e.printStackTrace();
             }
             return mIcon11;
@@ -555,7 +549,7 @@ public class DipsOutboundCall extends AppCompatActivity implements DatePickerDia
         btnConfirmDialog.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                OutboundServiceNew.stopServiceSocket();
+                //OutboundServiceNew.stopServiceSocket();
                 Intent intentOutbound = new Intent(mContext, OutboundServiceNew.class);
                 mContext.stopService(intentOutbound);
 
@@ -613,7 +607,6 @@ public class DipsOutboundCall extends AppCompatActivity implements DatePickerDia
     }
 
     private void PopUpSchedule(){
-        Log.e(TAG,"MASUK POPUPSCHEDULE mRingtone : "+mRingtone);
         if (mRingtone != null) {
             mRingtone.stop();
         }
@@ -626,7 +619,7 @@ public class DipsOutboundCall extends AppCompatActivity implements DatePickerDia
         sweetAlertDialog.hideConfirmButton();
         sweetAlertDialog.show();
 
-        TextView textHeadSchedule = (TextView) dialogView.findViewById(R.id.textHeadSchedule);
+        TextView textHeadSchedule = dialogView.findViewById(R.id.textHeadSchedule);
         textHeadSchedule.setText(R.string.content_schedule_call);
         ImageView btnclose = dialogView.findViewById(R.id.btn_close_schedule);
         et_Date = dialogView.findViewById(R.id.et_Date);
@@ -635,8 +628,8 @@ public class DipsOutboundCall extends AppCompatActivity implements DatePickerDia
         ArrayAdapter<String> adapterTime = new ArrayAdapter<String>(mContext,R.layout.list_item, time);
         et_time.setAdapter(adapterTime);
 
-        Button end_call = (Button) dialogView.findViewById(R.id.btnSchedule2);
-        Button btnSchedule2 = (Button) dialogView.findViewById(R.id.end_call);
+        Button end_call = dialogView.findViewById(R.id.btnSchedule2);
+        Button btnSchedule2 = dialogView.findViewById(R.id.end_call);
         btnSchedule2.setVisibility(View.VISIBLE);
 
         end_call.setText(getString(R.string.end_call));
@@ -712,7 +705,6 @@ public class DipsOutboundCall extends AppCompatActivity implements DatePickerDia
                 //dpd.setMaxDate(day);
 
                 dpd.setOnCancelListener(dialog -> {
-                    Log.e("DatePickerDialog", "Dialog was cancelled");
                     dpd = null;
                 });
                 dpd.show(getSupportFragmentManager(), "Datepickerdialog");
@@ -774,16 +766,13 @@ public class DipsOutboundCall extends AppCompatActivity implements DatePickerDia
         }
         String authAccess = "Bearer "+sessions.getAuthToken();
         String exchangeToken = sessions.getExchangeToken();
-        Log.d("PARAMS JADWAL","idDips = "+idDips+", Tanggal = "+Savetanggal+", periodeId = "+periodeId);
         RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), jsons.toString());
         ApiService API = Server.getAPIService();
         Call<JsonObject> call = API.saveSchedule(requestBody,authAccess,exchangeToken);
         call.enqueue(new Callback<JsonObject>() {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
-                Log.e("CEK","saveSchedule Respon Code : "+response.code());
                 if (response.isSuccessful() && response.body().size() > 0) {
-                    Log.e("CEK","saveSchedule Respon : "+ response.body());
                     String dataS = response.body().toString();
                     try {
                         JSONObject dataObj = new JSONObject(dataS);
@@ -817,8 +806,6 @@ public class DipsOutboundCall extends AppCompatActivity implements DatePickerDia
         workManager = WorkManager.getInstance(mContext);
 
         String jam = waktu;
-        Log.e("CEK","doWorkMyWorker Savetanggal : "+Savetanggal);
-        Log.e("CEK","doWorkMyWorker jam : "+jam);
         if (jam.indexOf("-") > 0) {
             String[] sp = jam.split("-");
             for (int i = 0; i < sp.length; i++) {
@@ -830,12 +817,10 @@ public class DipsOutboundCall extends AppCompatActivity implements DatePickerDia
 
                 String[] timeArray = sp[i].split(":");
                 String[] spDate = Savetanggal.split("-");
-                String thn = spDate[0].toString().trim();
-                String getBln = spDate[1].toString().trim();
+                String thn = spDate[0].trim();
+                String getBln = spDate[1].trim();
                 int bln = Integer.parseInt(getBln) - 1;
-                String tgl = spDate[2].toString().trim();
-
-                Log.e("CEK","DATETIMES-"+i+" : "+Savetanggal+" "+sp[i]);
+                String tgl = spDate[2].trim();
 
                 Calendar calendar = Calendar.getInstance();
                 calendar.set(Integer.parseInt(thn),bln,Integer.parseInt(tgl));
@@ -847,10 +832,7 @@ public class DipsOutboundCall extends AppCompatActivity implements DatePickerDia
                 long timeInMilis = calendar.getTimeInMillis();
                 long timeDiff = timeInMilis - timeCurrentMilis;
 
-                boolean start = true;
-                if (i > 0) {
-                    start = false;
-                }
+                boolean start = i <= 0;
 
                 Data data = new Data.Builder()
                         .putBoolean(EXTRA_START,start)
@@ -952,7 +934,6 @@ public class DipsOutboundCall extends AppCompatActivity implements DatePickerDia
     public void setCameraDisplayOrientation(){
         if (camera == null)
         {
-            Log.d(TAG,"setCameraDisplayOrientation - camera null");
             return;
         }
 
@@ -1062,7 +1043,6 @@ public class DipsOutboundCall extends AppCompatActivity implements DatePickerDia
             camera.setParameters(parameters);
             inPreview = true;
             if (isConfigure) {
-                Log.d("CEK","MASUK isConfigure");
                 try {
                     Thread.sleep(500);
                     optimalCamera();
@@ -1181,7 +1161,6 @@ public class DipsOutboundCall extends AppCompatActivity implements DatePickerDia
     }
 
     private void processJoinVideo() {
-        Log.e(TAG,"processJoinVideo");
         if (!requestPermission())
             return;
         if (!NetworkUtil.hasDataNetwork(this)) {
@@ -1197,7 +1176,6 @@ public class DipsOutboundCall extends AppCompatActivity implements DatePickerDia
         processSignature();
     }
     private void processSignature() {
-        Log.e(TAG,"processSignature");
         JSONObject jsons = new JSONObject();
         try {
             jsons.put("sessionName",sessionId);
@@ -1208,7 +1186,6 @@ public class DipsOutboundCall extends AppCompatActivity implements DatePickerDia
             e.printStackTrace();
         }
 
-        Log.e(TAG,"processSignature REQ : "+ jsons);
         String authAccess = "Bearer "+sessions.getAuthToken();
         String exchangeToken = sessions.getExchangeToken();
 
@@ -1216,14 +1193,11 @@ public class DipsOutboundCall extends AppCompatActivity implements DatePickerDia
 
         ApiService API = Server.getAPIService();
         Call<JsonObject> call = API.Signature(requestBody,authAccess,exchangeToken);
-        Log.e(TAG,"Signature URL : "+call.request().url());
         call.enqueue(new Callback<JsonObject>() {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
-                Log.e(TAG,"Signature RESPONSE "+response.code());
                 if (response.isSuccessful() && response.body().size() > 0) {
                     String dataS = response.body().toString();
-                    Log.e(TAG,"Signature dataS : "+dataS);
                     try {
                         JSONObject jsObj = new JSONObject(dataS);
                         if (jsObj.has("token")) {

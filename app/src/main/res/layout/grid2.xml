@@ -8,39 +8,55 @@
     <androidx.cardview.widget.CardView
         android:id="@+id/cvItems"
         android:elevation="0dp"
-        android:backgroundTint="@color/zm_bg"
+        android:backgroundTint="@color/zm_button"
         android:layout_width="match_parent"
-        android:layout_height="120dp"
+        android:layout_height="140dp"
         app:cardCornerRadius="15dp"
         android:layout_gravity="center">
 
-        <RelativeLayout
+        <androidx.cardview.widget.CardView
+            android:id="@+id/cvSubItems"
+            android:elevation="0dp"
+            android:backgroundTint="@color/white"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:gravity="center">
+            app:cardCornerRadius="15dp"
+            android:layout_gravity="center"
+            android:layout_margin="2dp">
 
-            <ImageView
-                android:id="@+id/ads"
-                android:src="@drawable/v_building"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:scaleType="centerCrop"
-                tools:ignore="ContentDescription"
-                android:adjustViewBounds="true"
-                android:layout_centerHorizontal="true"/>
-
-            <TextView
-                android:id="@+id/tvLabelItem"
+            <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/ads"
-                android:textColor="@color/black"
-                android:gravity="center"
-                android:textSize="12dp"
-                tools:text="Items Gambar"
-                android:lines="3"/>
+                android:layout_height="match_parent"
+                android:gravity="center">
 
-        </RelativeLayout>
+                <ImageView
+                    android:id="@+id/ads"
+                    android:src="@drawable/v_building"
+                    android:layout_width="30dp"
+                    android:layout_height="wrap_content"
+                    android:minHeight="30dp"
+                    android:maxHeight="@dimen/liveness_50"
+                    android:scaleType="centerInside"
+                    tools:ignore="ContentDescription"
+                    android:adjustViewBounds="true"
+                    android:layout_centerHorizontal="true"
+                    android:layout_centerVertical="true"/>
+
+                <TextView
+                    android:id="@+id/tvLabelItem"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/ads"
+                    android:textColor="@color/black"
+                    android:gravity="center"
+                    android:textStyle="bold"
+                    tools:text="Items Gambar"
+                    android:maxLines="3"
+                    android:layout_centerVertical="true"/>
+
+            </RelativeLayout>
+
+        </androidx.cardview.widget.CardView>
 
     </androidx.cardview.widget.CardView>
 

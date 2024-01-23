@@ -14,10 +14,10 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="20dp"
-            android:text="@string/pastikan_gambar_atau_foto_ktp_sudah_jelas_dan_tidak_buram"
+            android:text="@string/alert_ktp"
             android:textAlignment="center"
             android:textColor="@color/black"
-            android:textSize="15dp" />
+            android:textSize="14dp" />
 
         <LinearLayout
             android:id="@+id/BackgroundLL"
@@ -40,7 +40,7 @@
                 <ImageView
                     android:id="@+id/choose_camera"
                     android:layout_width="50dp"
-                    android:layout_height="50dp"
+                    android:layout_height="41dp"
                     android:layout_gravity="center"
                     android:layout_marginBottom="15dp"
                     android:src="@drawable/kamera" />
@@ -132,8 +132,8 @@
                 android:clickable="false"
                 android:text="@string/btn_continue"
                 android:textColor="@color/white"
-                android:textSize="14dp"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:textAllCaps="false"/>
 
         </RelativeLayout>
 

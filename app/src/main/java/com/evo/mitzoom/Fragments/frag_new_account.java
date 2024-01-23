@@ -159,7 +159,7 @@ public class frag_new_account extends Fragment {
             String currencyValue = value.replaceAll(replaceRegex, "");
             return new BigDecimal(currencyValue);
         } catch (Exception e) {
-            Log.e("MyApp", e.getMessage(), e);
+
         }
         return BigDecimal.ZERO;
     }

@@ -28,8 +28,6 @@ public class CrashHandler implements Thread.UncaughtExceptionHandler {
 
     @Override
     public void uncaughtException(@NonNull Thread thread, @NonNull Throwable throwable) {
-        Log.e(TAG, throwable.toString());
-        Log.e(TAG,throwable.toString());
         throwable.printStackTrace();
         if (mDefaultCrashHandler != null) {
             mDefaultCrashHandler.uncaughtException(thread, throwable);

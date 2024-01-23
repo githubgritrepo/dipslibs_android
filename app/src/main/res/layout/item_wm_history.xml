@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:background="@drawable/bg_textinput_5"
+    android:padding="10dp"
+    android:layout_marginBottom="5dp"
+    android:layout_marginTop="5dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="@dimen/dp_10">
+
+            <TextView
+                android:id="@+id/tvTypeWM"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                tools:text="PEJUALAN"
+                android:textColor="@color/zm_text"
+                android:textSize="12dp"
+                android:layout_marginEnd="@dimen/dp_5"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="-"
+                android:textColor="@color/zm_text"
+                android:textSize="12dp"
+                android:layout_marginEnd="@dimen/dp_5"/>
+
+            <TextView
+                android:id="@+id/tvDateTimes"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                tools:text="10:12:01 21/06/23"
+                android:textColor="@color/zm_text"
+                android:textSize="12dp"
+                android:layout_marginEnd="@dimen/dp_5"/>
+
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/tvTitleProd"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            tools:text="REKSA DANA LANCAR VICTORIA MERKURIUS"
+            android:textStyle="bold"
+            android:textColor="@color/zm_text"
+            android:textSize="12dp"/>
+        <TextView
+            android:id="@+id/tvPtProd"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            tools:text="PT. VICTORIA MANAJEMEN INVESTASI"
+            android:textColor="@color/zm_text"
+            android:textSize="12dp"/>
+
+    </LinearLayout>
+
+</RelativeLayout>

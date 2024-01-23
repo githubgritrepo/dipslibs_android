@@ -1,0 +1,414 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    tools:context=".Fragments.frag_wm_detail_product">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:rotation="180"
+            android:scaleType="fitXY"
+            android:src="@drawable/batik_bvic" />
+
+        <LinearLayout
+            android:id="@+id/TopBar"
+            android:layout_width="match_parent"
+            android:layout_height="?android:actionBarSize"
+            android:background="@color/white"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:id="@+id/btnBack"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_margin="10dp"
+                android:src="@drawable/ic_baseline_arrow_back_24" />
+
+            <TextView
+                android:id="@+id/tvtitleHead"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginStart="6dp"
+                android:text="@string/produk_layanan"
+                android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                android:textSize="16dp"
+                android:textStyle="bold" />
+
+            <RelativeLayout
+                android:id="@+id/rlDownloadFile"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center_vertical"
+                android:layout_marginEnd="@dimen/dp_20"
+                android:visibility="gone">
+
+                <ImageView
+                    android:id="@+id/imgDownloadFile"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:src="@drawable/download"
+                    android:layout_alignParentRight="true"/>
+            </RelativeLayout>
+        </LinearLayout>
+
+        <RelativeLayout
+            android:id="@+id/rlHeadNAB"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/TopBar"
+            android:layout_margin="@dimen/dp_20"
+            android:background="@drawable/bg_textinput_5"
+            android:padding="10dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/tvNABUnits"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/zm_text"
+                    tools:text="@string/nab_unit" />
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:id="@+id/tvNABNominal"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:textColor="@color/zm_text"
+                        android:textSize="24dp"
+                        android:textStyle="bold"
+                        tools:text="Rp 8.000,00" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_marginStart="@dimen/dp_15"
+                        android:layout_toRightOf="@id/tvNABNominal"
+                        android:orientation="horizontal">
+
+                        <ImageView
+                            android:id="@+id/imgUp"
+                            android:layout_width="15dp"
+                            android:layout_height="15dp"
+                            android:layout_below="@id/tvImbalHasil"
+                            android:layout_gravity="center_vertical"
+                            android:src="@drawable/ic_up" />
+
+                        <TextView
+                            android:id="@+id/tvPercent"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_below="@id/tvImbalHasil"
+                            android:layout_marginStart="5dp"
+                            android:layout_toRightOf="@id/imgUp"
+                            android:textColor="@color/zm_text"
+                            tools:text="0% /Thn" />
+
+                    </LinearLayout>
+
+
+                </RelativeLayout>
+
+            </LinearLayout>
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/rlFile"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@id/TopBar"
+            android:layout_marginTop="@dimen/dp_20"
+            android:visibility="gone">
+
+            <com.github.barteksc.pdfviewer.PDFView
+                android:id="@+id/pdfView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_above="@id/btnRead" />
+
+            <Button
+                android:id="@+id/btnRead"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:background="@drawable/oval_background_10dp"
+                android:backgroundTint="@color/zm_button"
+                android:text="@string/i_have_read"
+                android:textColor="@color/white"
+                android:textSize="12dp"
+                android:textStyle="bold"
+                android:layout_marginTop="@dimen/dp_10"
+                android:layout_alignParentBottom="true"
+                android:layout_marginBottom="30dp"
+                android:layout_marginStart="@dimen/dp_20"
+                android:layout_marginEnd="@dimen/dp_20"/>
+
+        </RelativeLayout>
+
+        <androidx.core.widget.NestedScrollView
+            android:id="@+id/nestedScroll"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/rlHeadNAB"
+            android:scrollbars="vertical">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/dp_5"
+                android:paddingStart="@dimen/dp_20"
+                android:paddingEnd="@dimen/dp_20"
+                android:paddingBottom="30dp">
+
+                <com.github.mikephil.charting.charts.LineChart
+                    android:id="@+id/chart1"
+                    android:layout_width="match_parent"
+                    android:layout_height="300dp"
+                    android:layout_marginTop="@dimen/dp_20" />
+
+                <RadioGroup
+                    android:id="@+id/rgChooseChart"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/chart1"
+                    android:layout_marginTop="@dimen/dp_20"
+                    android:orientation="horizontal">
+
+                    <RadioButton
+                        android:id="@+id/rb10D"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginEnd="@dimen/dp_20"
+                        android:layout_weight="1"
+                        android:background="@drawable/selector_chart"
+                        android:button="@android:color/transparent"
+                        android:gravity="center"
+                        android:text="10D"
+                        android:textAlignment="center"
+                        android:textColor="@color/zm_green"
+                        android:textSize="14dp"
+                        android:textStyle="bold" />
+
+                    <RadioButton
+                        android:id="@+id/rb1M"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginStart="@dimen/dp_20"
+                        android:layout_marginEnd="@dimen/dp_20"
+                        android:layout_weight="1"
+                        android:background="@drawable/selector_chart"
+                        android:button="@android:color/transparent"
+                        android:checked="true"
+                        android:gravity="center"
+                        android:text="1M"
+                        android:textAlignment="center"
+                        android:textColor="@color/white"
+                        android:textSize="14dp"
+                        android:textStyle="bold" />
+
+                    <RadioButton
+                        android:id="@+id/rb6M"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginStart="@dimen/dp_20"
+                        android:layout_marginEnd="@dimen/dp_20"
+                        android:layout_weight="1"
+                        android:background="@drawable/selector_chart"
+                        android:button="@android:color/transparent"
+                        android:gravity="center"
+                        android:text="6M"
+                        android:textAlignment="center"
+                        android:textColor="@color/zm_green"
+                        android:textSize="14dp"
+                        android:textStyle="bold" />
+
+                    <RadioButton
+                        android:id="@+id/rb1Y"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginStart="@dimen/dp_20"
+                        android:layout_weight="1"
+                        android:background="@drawable/selector_chart"
+                        android:button="@android:color/transparent"
+                        android:gravity="center"
+                        android:text="1Y"
+                        android:textAlignment="center"
+                        android:textColor="@color/zm_green"
+                        android:textSize="14dp"
+                        android:textStyle="bold" />
+                </RadioGroup>
+
+                <LinearLayout
+                    android:id="@+id/llInfo"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/rgChooseChart"
+                    android:layout_marginTop="@dimen/dp_20"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/info_produk"
+                        android:textColor="@color/zm_text" />
+
+                    <TextView
+                        android:id="@+id/tvInfoProdVal"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="@dimen/dp_10"
+                        android:textColor="@color/zm_text"
+                        android:textStyle="bold"
+                        tools:text="Pasar Uang" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/yield"
+                        android:textColor="@color/zm_text" />
+
+                    <TextView
+                        android:id="@+id/tvImbalHasilVal"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="@dimen/dp_10"
+                        android:textColor="@color/button_schedule"
+                        android:textStyle="bold"
+                        tools:text="444.123412315124124 %" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/level_risk"
+                        android:textColor="@color/zm_text" />
+
+                    <TextView
+                        android:id="@+id/tvTingkatRiskVal"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="@dimen/dp_10"
+                        android:textColor="@color/zm_text"
+                        android:textStyle="bold"
+                        tools:text="SANGAT KONSERVATIF" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/manajer_investasi"
+                        android:textColor="@color/zm_text" />
+
+                    <TextView
+                        android:id="@+id/tvManageInvesVal"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="@dimen/dp_10"
+                        android:textColor="@color/zm_text"
+                        android:textStyle="bold"
+                        tools:text="PT. VICTORIA MANJEMEN INVESTASI" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/biaya_pembelian"
+                        android:textColor="@color/zm_text" />
+
+                    <TextView
+                        android:id="@+id/tvPurchaseFeeVal"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="@dimen/dp_10"
+                        android:textColor="@color/zm_text"
+                        android:textStyle="bold"
+                        tools:text="2%" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/pajak_pembelian"
+                        android:textColor="@color/zm_text" />
+
+                    <TextView
+                        android:id="@+id/tvPurchaseTaxVal"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="@dimen/dp_10"
+                        android:textColor="@color/zm_text"
+                        android:textStyle="bold"
+                        tools:text="2%" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="@dimen/dp_10"
+                        android:text="Pahami 3 informasi di bawah ini untuk melanjutkan:"
+                        android:textColor="@color/zm_text" />
+
+                    <CheckBox
+                        android:id="@+id/chkPros"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:buttonTint="@color/zm_button"
+                        android:text="Prospektus"
+                        android:textColor="@color/zm_button" />
+
+                    <CheckBox
+                        android:id="@+id/chkFund"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:buttonTint="@color/zm_button"
+                        android:text="Fund Fact Sheet"
+                        android:textColor="@color/zm_button" />
+
+                    <CheckBox
+                        android:id="@+id/chkTerm"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:buttonTint="@color/zm_button"
+                        android:text="@string/terms_condition2"
+                        android:textColor="@color/zm_button" />
+                </LinearLayout>
+
+                <Button
+                    android:id="@+id/btnBuy"
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp"
+                    android:background="@drawable/oval_background_10dp"
+                    android:backgroundTint="@color/btnFalse"
+                    android:enabled="false"
+                    android:text="Beli"
+                    android:textColor="@color/white"
+                    android:textSize="12dp"
+                    android:textStyle="bold"
+                    android:layout_below="@id/llInfo"
+                    android:layout_marginTop="@dimen/dp_10"
+                    android:layout_marginStart="80dp"
+                    android:layout_marginEnd="80dp"/>
+
+            </RelativeLayout>
+
+        </androidx.core.widget.NestedScrollView>
+
+    </RelativeLayout>
+
+</FrameLayout>

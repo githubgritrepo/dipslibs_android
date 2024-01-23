@@ -72,7 +72,7 @@ public class ChatMsgAdapter extends RecyclerView.Adapter<ChatMsgAdapter.MsgHolde
         CharSequence item = list.get(position);
         session = ZoomVideoSDK.getInstance().getSession();
 
-        if (isSelf.get(position) == true && isHost.get(position) == false) {
+        if (isSelf.get(position) && !isHost.get(position)) {
             holder.LLChat.setGravity(Gravity.RIGHT);
             holder.chatBubble.setBackgroundTintList(ctx.getResources().getColorStateList(R.color.bg_mychat));
             holder.chatBubble.setBackground(ContextCompat.getDrawable(ctx,R.drawable.chat_drawable));
@@ -116,7 +116,6 @@ public class ChatMsgAdapter extends RecyclerView.Adapter<ChatMsgAdapter.MsgHolde
         }
         String dataArr = jsonArray.toString();
         sessionManager.saveChat(dataArr);
-        Log.d("CEK PESAN ARRAY",dataArr);
     }
 
 

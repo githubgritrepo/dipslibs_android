@@ -40,7 +40,7 @@
             android:src="@drawable/ic_close"
             app:tint="@color/white" />
     </LinearLayout>
-    <com.google.android.material.tabs.TabLayout
+     <com.google.android.material.tabs.TabLayout
         android:id="@+id/tabs"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"

@@ -15,6 +15,17 @@
         android:src="@mipmap/anim_bvic"
         android:layout_centerInParent="true"/>
 
+    <TextView
+        android:id="@+id/tvLoading"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Permintan Anda sedang diproses."
+        android:layout_below="@id/gifLoading"
+        android:gravity="center"
+        android:textColor="@color/zm_text"
+        android:visibility="gone"/>
+
+
     <!--<de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/profileimage"
         android:layout_width="100dp"

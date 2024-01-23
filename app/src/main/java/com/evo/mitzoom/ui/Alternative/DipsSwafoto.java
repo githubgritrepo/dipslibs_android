@@ -12,6 +12,7 @@ import android.hardware.Camera;
 import android.hardware.SensorManager;
 import android.hardware.camera2.CameraAccessException;
 import android.hardware.camera2.CameraManager;
+import android.media.ExifInterface;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -50,13 +51,22 @@ import androidx.work.WorkRequest;
 import com.evo.mitzoom.API.ApiService;
 import com.evo.mitzoom.API.Server;
 import com.evo.mitzoom.Fragments.frag_cif_new;
+import com.evo.mitzoom.Fragments.frag_conferee_agree;
+import com.evo.mitzoom.Fragments.frag_ibmb;
 import com.evo.mitzoom.Fragments.frag_inputdata_new;
+import com.evo.mitzoom.Fragments.frag_list_produk;
+import com.evo.mitzoom.Fragments.frag_portfolio_new;
+import com.evo.mitzoom.Fragments.frag_service_antarbank;
+import com.evo.mitzoom.Fragments.frag_service_new;
+import com.evo.mitzoom.Fragments.frag_wm_transactions;
+import com.evo.mitzoom.Helper.ConnectionRabbitHttp;
 import com.evo.mitzoom.Helper.MyWorker;
 import com.evo.mitzoom.Helper.OutboundServiceNew;
 import com.evo.mitzoom.R;
 import com.evo.mitzoom.Session.SessionManager;
 import com.evo.mitzoom.ui.DipsWaitingRoom;
 import com.evo.mitzoom.view.CircularSurfaceView;
+import com.google.android.gms.vision.CameraSource;
 import com.google.gson.JsonObject;
 import com.wdullaer.materialdatetimepicker.date.DatePickerDialog;
 
@@ -78,6 +88,7 @@ import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+import us.zoom.sdk.ZoomVideoSDK;
 
 public class DipsSwafoto extends AppCompatActivity implements com.wdullaer.materialdatetimepicker.date.DatePickerDialog.OnDateSetListener {
 
@@ -97,7 +108,6 @@ public class DipsSwafoto extends AppCompatActivity implements com.wdullaer.mater
     private DisplayMetrics displayMetrics;
     String idDips;
     boolean isCust = false;
-    String custName;
     private Button btnSchedule;
     private Button btnEndCall;
     ArrayList<String> time = new ArrayList<>();
@@ -118,10 +128,12 @@ public class DipsSwafoto extends AppCompatActivity implements com.wdullaer.mater
     private JSONArray periodePenuh;
     private Button btnSchedule2;
     public static RelativeLayout rlprogress;
+    public static TextView tvLoading;
     Camera.Parameters parameters;
     public boolean surfaceCreated = false;
     private boolean isConfigure;
     private WorkManager workManager = null;
+    private boolean isSessionZoom;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -139,19 +151,19 @@ public class DipsSwafoto extends AppCompatActivity implements com.wdullaer.mater
         sessions.saveIsSwafoto(false);
         idDips = sessions.getKEY_IdDips();
         isCust = sessions.getKEY_iSCust();
+        isSessionZoom = ZoomVideoSDK.getInstance().isInSession();
 
         CardView cardSurf = findViewById(R.id.cardSurf);
         preview = findViewById(R.id.mySurface);
         btnSchedule = findViewById(R.id.btnSchedule);
         btnEndCall = findViewById(R.id.end_call);
         rlprogress = findViewById(R.id.rlprogress);
+        tvLoading = (TextView) findViewById(R.id.tvLoading);
 
         previewHolder();
 
         Intent intent = getIntent();
         useFacing = intent.getIntExtra(KEY_USE_FACING, Camera.CameraInfo.CAMERA_FACING_FRONT);
-
-        custName = getIntent().getExtras().getString("CUSTNAME");
         boolean cekformCode = getIntent().hasExtra("formCode");
         int formCode = 0;
         boolean ocrKTP = false;
@@ -161,17 +173,31 @@ public class DipsSwafoto extends AppCompatActivity implements com.wdullaer.mater
         }
 
         Fragment fragment = null;
-        Bundle bundle = new Bundle();
-        if (formCode == 22) {
+        if (formCode == 22 || formCode == 4) {
+            Bundle bundle = new Bundle();
             sessions.saveFormCOde(formCode);
             fragment = new frag_cif_new();
-            bundle.putBoolean("OCRKTP",ocrKTP);
+            bundle.putBoolean("swaOCR",ocrKTP);
+            fragment.setArguments(bundle);
         } else {
-            fragment = new frag_inputdata_new();
+            //fragment = new frag_inputdata_new();
+            /*if (isSessionZoom) {
+                ConnectionRabbitHttp.mirroringEndpoint(191);
+            }*/
+            /*Bundle bundle = new Bundle();
+            bundle.putInt("idGenerateForm",48);*/
+
+            fragment = new frag_service_new(); ///Rubah disini
+
+            //fragment = new frag_list_produk();
+            /*Bundle bundle = new Bundle();
+            bundle.putInt("idGenerateForm",56);
+            bundle.putString("idService", "16");
+            bundle.putString("labelserv", "Rekening Sendiri");
+            fragment = new frag_service_antarbank();
+            fragment.setArguments(bundle);*/
             sessions.saveIsCust(isCust);
-            bundle.putString("CUSTNAME", custName);
         }
-        fragment.setArguments(bundle);
         getFragmentPage(fragment);
 
         View dialogView = getLayoutInflater().inflate(R.layout.layout_dialog_sweet, null);
@@ -223,9 +249,7 @@ public class DipsSwafoto extends AppCompatActivity implements com.wdullaer.mater
     protected void onResume() {
         super.onResume();
         try {
-            Log.e("CEK","CAMERA IS"+cameraConfigured);
             isConfigure = false;
-            Log.d("CEK","MASUK onResume");
             if (checkSelfPermission(Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
                 requestPermissions(new String[]{Manifest.permission.CAMERA}, MY_CAMERA_PERMISSION_CODE);
             } else {
@@ -263,13 +287,9 @@ public class DipsSwafoto extends AppCompatActivity implements com.wdullaer.mater
     protected void onPause() {
         super.onPause();
         try {
-            Log.e("CEK","MASUK ONPAUSE");
             if (inPreview) {
                 camera.stopPreview();
             }
-
-            Log.e("CEK INPREVIEW",""+inPreview);
-            Log.e("CEK CAMERA pause",""+camera);
 
             if (camera != null) {
                 camera.release();
@@ -282,16 +302,13 @@ public class DipsSwafoto extends AppCompatActivity implements com.wdullaer.mater
             e.printStackTrace();
         }
     }
-    
+
 
     private void requestPermission() {
-        Log.e("CEK","requestPermission");
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
             if (ActivityCompat.checkSelfPermission(mContext,Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-                Log.e("CEK","WRITE_EXTERNAL_STORAGE");
                 ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_WRITE_PERMISSION);
             } else {
-                Log.e("CEK","Camera.open");
                 camera = Camera.open(useFacing);
                 startPreview();
             }
@@ -313,7 +330,6 @@ public class DipsSwafoto extends AppCompatActivity implements com.wdullaer.mater
 
     @Override
     public void onDateSet(com.wdullaer.materialdatetimepicker.date.DatePickerDialog view, int year, int monthOfYear, int dayOfMonth) {
-        Log.e("CEK","onDateSet");
         int addmonths = (month + 1);
         String months = String.valueOf(addmonths);
         if (addmonths < 10) {
@@ -444,7 +460,6 @@ public class DipsSwafoto extends AppCompatActivity implements com.wdullaer.mater
                 dpd.setSelectableDays(weekdayDays);
                 //dpd.setMaxDate(day);
                 dpd.setOnCancelListener(dialog -> {
-                    Log.e("DatePickerDialog", "Dialog was cancelled");
                     dpd = null;
                 });
                 dpd.show(getSupportFragmentManager(), "Datepickerdialog");
@@ -495,8 +510,6 @@ public class DipsSwafoto extends AppCompatActivity implements com.wdullaer.mater
         }
         String authAccess = "Bearer "+sessions.getAuthToken();
         String exchangeToken = sessions.getExchangeToken();
-        Log.e("CEK","PARAMS saveSchedule : "+ jsons);
-        Log.d("PARAMS JADWAL","idDips = "+idDips+", Tanggal = "+Savetanggal);
         RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), jsons.toString());
         ApiService API = Server.getAPIService();
         Call<JsonObject> call = API.saveSchedule(requestBody,authAccess,exchangeToken);
@@ -504,9 +517,7 @@ public class DipsSwafoto extends AppCompatActivity implements com.wdullaer.mater
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
                 showProgress(false);
-                Log.e("CEK","saveSchedule Respon Code : "+response.code());
                 if (response.isSuccessful() && response.body().size() > 0) {
-                    Log.e("CEK","saveSchedule Respon : "+ response.body());
 
                     String dataS = response.body().toString();
                     try {
@@ -522,19 +533,6 @@ public class DipsSwafoto extends AppCompatActivity implements com.wdullaer.mater
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
-
-                    /*if (DipsWaitingRoom.channelCall != null) {
-                        try {
-                            Log.e("CEK","MASUK channelCall abort close");
-                            DipsWaitingRoom.channelCall.close();
-                        } catch (IOException | TimeoutException e) {
-                            e.printStackTrace();
-                        }
-                        if (DipsWaitingRoom.subscribeThreadCall != null) {
-                            Log.e("CEK","MASUK subscribeThreadCall interrupt");
-                            DipsWaitingRoom.subscribeThreadCall.interrupt();
-                        }
-                    }*/
 
                     //doWorkMyWorker();
                     serviceOutbound();
@@ -583,8 +581,6 @@ public class DipsSwafoto extends AppCompatActivity implements com.wdullaer.mater
         workManager = WorkManager.getInstance(mContext);
 
         String jam = waktu;
-        Log.e("CEK","doWorkMyWorker Savetanggal : "+Savetanggal);
-        Log.e("CEK","doWorkMyWorker jam : "+jam);
         if (jam.indexOf("-") > 0) {
             String[] sp = jam.split("-");
             for (int i = 0; i < sp.length; i++) {
@@ -596,12 +592,10 @@ public class DipsSwafoto extends AppCompatActivity implements com.wdullaer.mater
 
                 String[] timeArray = sp[i].split(":");
                 String[] spDate = Savetanggal.split("-");
-                String thn = spDate[0].toString().trim();
-                String getBln = spDate[1].toString().trim();
+                String thn = spDate[0].trim();
+                String getBln = spDate[1].trim();
                 int bln = Integer.parseInt(getBln) - 1;
-                String tgl = spDate[2].toString().trim();
-
-                Log.e("CEK","DATETIMES-"+i+" : "+Savetanggal+" "+sp[i]);
+                String tgl = spDate[2].trim();
 
                 Calendar calendar = Calendar.getInstance();
                 calendar.set(Integer.parseInt(thn),bln,Integer.parseInt(tgl));
@@ -613,10 +607,7 @@ public class DipsSwafoto extends AppCompatActivity implements com.wdullaer.mater
                 long timeInMilis = calendar.getTimeInMillis();
                 long timeDiff = timeInMilis - timeCurrentMilis;
 
-                boolean start = true;
-                if (i > 0) {
-                    start = false;
-                }
+                boolean start = i <= 0;
 
                 Data data = new Data.Builder()
                         .putBoolean(EXTRA_START,start)
@@ -698,9 +689,6 @@ public class DipsSwafoto extends AppCompatActivity implements com.wdullaer.mater
                         if (errCode == 200) {
                             tanggalPenuh = dataObj.getJSONObject("data").getJSONArray("tanggalPenuh");
                             periodePenuh = dataObj.getJSONObject("data").getJSONArray("periodePenuh");
-
-                            Log.e("CEK","tanggalPenuh : "+tanggalPenuh.toString());
-                            Log.e("CEK","periodePenuh : "+periodePenuh.toString());
                         }
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -734,7 +722,6 @@ public class DipsSwafoto extends AppCompatActivity implements com.wdullaer.mater
                         }
                         if (errCode == 200) {
                             JSONArray dataArrTimes = dataObj.getJSONArray("data");
-                            Log.e("CEK","dataArrTimes : "+dataArrTimes);
                             sessions.saveScheduledTime(dataArrTimes.toString());
                             for (int i = 0; i < dataArrTimes.length(); i++) {
                                 int periodeId = dataArrTimes.getJSONObject(i).getInt("id");
@@ -769,20 +756,17 @@ public class DipsSwafoto extends AppCompatActivity implements com.wdullaer.mater
     SurfaceHolder.Callback surfaceCallback = new SurfaceHolder.Callback() {
         @Override
         public void surfaceCreated(@NonNull SurfaceHolder holder) {
-            Log.e("CEK","surfaceCreated");
             surfaceCreated = true;
         }
 
         @Override
         public void surfaceChanged(@NonNull SurfaceHolder holder, int format, int width, int height) {
-            Log.e("CEK","surfaceChanged width : "+width+" | height : "+height);
             initPreview(width, height, holder);
             startPreview();
         }
 
         @Override
         public void surfaceDestroyed(@NonNull SurfaceHolder holder) {
-            Log.e("CEK","surfaceDestroyed");
         }
     };
 
@@ -815,7 +799,6 @@ public class DipsSwafoto extends AppCompatActivity implements com.wdullaer.mater
                 Camera.Size size = getOptimalPreviewSize(sizes, width, height);
 
                 if (size != null) {
-                    Log.e("CEK","size.width : "+size.width+" | size.height : "+size.height);
                     parameters.setPreviewSize(size.width, size.height);
                     camera.setParameters(parameters);
                     cameraConfigured = true;
@@ -831,7 +814,6 @@ public class DipsSwafoto extends AppCompatActivity implements com.wdullaer.mater
     }
 
     private void startPreview() {
-        Log.e("CEK CAMERA",""+camera);
         if (cameraConfigured && camera != null) {
             try
             {
@@ -860,7 +842,6 @@ public class DipsSwafoto extends AppCompatActivity implements com.wdullaer.mater
                         cameraConfigured = true;
                         previewHolder();
                         startPreview();
-                        Log.e("Masuk sini","");
                     }
                 }
             }, 1000);
@@ -897,7 +878,6 @@ public class DipsSwafoto extends AppCompatActivity implements com.wdullaer.mater
     private void setCameraDisplayOrientation(){
         if (camera == null)
         {
-            Log.d("CEK","setCameraDisplayOrientation - camera null");
             return;
         }
 
@@ -917,6 +897,10 @@ public class DipsSwafoto extends AppCompatActivity implements com.wdullaer.mater
             case Surface.ROTATION_270: degrees = 270; break;
         }
 
+        if (degrees == 0 && Camera.CameraInfo.CAMERA_FACING_BACK == info.facing) {
+            degrees = exifToDegrees(degrees);
+        }
+
         int result;
         if (info.facing == Camera.CameraInfo.CAMERA_FACING_FRONT)
         {
@@ -927,6 +911,16 @@ public class DipsSwafoto extends AppCompatActivity implements com.wdullaer.mater
             result = 180;
         }
         camera.setDisplayOrientation(result);
+    }
+
+    private static int exifToDegrees(int exifOrientation) {
+        if (exifOrientation == ExifInterface.ORIENTATION_ROTATE_90) { return 90; }
+        else if (exifOrientation == ExifInterface.ORIENTATION_ROTATE_180) {  return 180; }
+        else if (exifOrientation == ExifInterface.ORIENTATION_ROTATE_270) {  return 270; }
+        else if (exifOrientation == ExifInterface.ORIENTATION_NORMAL) {  return 270; }
+        else if (exifOrientation == ExifInterface.ORIENTATION_UNDEFINED && useFacing == CameraSource.CAMERA_FACING_BACK) {  return 90; }
+        else if (exifOrientation == ExifInterface.ORIENTATION_UNDEFINED && useFacing == CameraSource.CAMERA_FACING_FRONT) { return 0; }
+        return 0;
     }
 
     private boolean getFragmentPage(Fragment fragment){

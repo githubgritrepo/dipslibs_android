@@ -42,13 +42,11 @@ public class RabbitMirroring {
         sessions = new SessionManager(mContext);
 
         String uriRabbit = Server.BASE_URL_RABBITMQ;
-        Log.e(TAG,"MASUK setupConnectionFactory uriRabbit : "+uriRabbit);
         try {
             connectionFactory.setAutomaticRecoveryEnabled(false);
             connectionFactory.setUri(uriRabbit);
             connection = connectionFactory.newConnection();
         } catch (URISyntaxException | NoSuchAlgorithmException | KeyManagementException e) {
-            Log.e(TAG,"ERROR setupConnectionFactory : "+e.getMessage());
             e.printStackTrace();
         } catch (IOException | TimeoutException e) {
             throw new RuntimeException(e);
@@ -57,7 +55,6 @@ public class RabbitMirroring {
 
     public static void MirroringSendKey(JSONObject jsons) {
         if (connection != null) {
-            Log.e(TAG, "MASUK MirroringSendKey : " + jsons.toString());
             publishThread = new Thread(new Runnable() {
                 @Override
                 public void run() {
@@ -66,18 +63,14 @@ public class RabbitMirroring {
                         chSendKey.confirmSelect();
 
                         String csID = sessions.getCSID();
-                        Log.e(TAG, "csID : " + csID);
 
                         JSONObject datax = dataMirroring(jsons);
                         String dataxS = datax.toString();
-
-                        Log.e(TAG, "dataxS : " + dataxS);
 
                         chSendKey.basicPublish("dips361-cs-send-key", "dips.direct.cs." + csID + ".send.key", false, null, dataxS.getBytes());
                         chSendKey.waitForConfirmsOrDie();
 
                     } catch (IOException | InterruptedException e) {
-                        Log.e(TAG, "MirroringSendKey Connection broken: " + e.getClass().getName());
                         try {
                             Thread.sleep(4000); //sleep and then try again
                             MirroringSendKey(jsons);
@@ -93,7 +86,6 @@ public class RabbitMirroring {
 
     public static void MirroringSendEndpoint(int kodeEndPoint) {
         if (connection != null) {
-            Log.e(TAG, "MASUK MirroringSendEndpoint : " + kodeEndPoint);
             publishEndpointThread = new Thread(new Runnable() {
                 @Override
                 public void run() {
@@ -106,7 +98,6 @@ public class RabbitMirroring {
                                 if (sessions.getKEY_IdDips() != null) {
                                     jsons.put("idDips", sessions.getKEY_IdDips());
                                 }
-                                OutboundServiceNew.stopServiceSocket();
                                 Intent intentOutbound = new Intent(mContext, OutboundServiceNew.class);
                                 mContext.stopService(intentOutbound);
                             }
@@ -114,24 +105,17 @@ public class RabbitMirroring {
                             e.printStackTrace();
                         }
 
-                        Log.e(TAG, "jsons : " + jsons);
-
                         chSendEndpoint = connection.createChannel();
                         chSendEndpoint.confirmSelect();
 
                         String csID = sessions.getCSID();
-                        Log.e(TAG, "csID : " + csID);
-
                         JSONObject datax = dataMirroring(jsons);
                         String dataxS = datax.toString();
-
-                        Log.e(TAG, "dataxS : " + dataxS);
 
                         chSendEndpoint.basicPublish("dips361-cs-send-endpoint", "dips.direct.cs." + csID + ".send.endpoint", false, null, dataxS.getBytes());
                         chSendEndpoint.waitForConfirmsOrDie();
 
                     } catch (IOException | InterruptedException e) {
-                        Log.e(TAG, "MirroringSendEndpoint Connection broken: " + e.getClass().getName());
                         try {
                             Thread.sleep(4000); //sleep and then try again
                         } catch (InterruptedException e1) {

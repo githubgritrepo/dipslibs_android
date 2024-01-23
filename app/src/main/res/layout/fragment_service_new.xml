@@ -10,6 +10,14 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:rotation="180"
+            android:scaleType="fitXY"
+            android:src="@drawable/batik_bvic" />
+
         <LinearLayout
             android:id="@+id/TopBar"
             android:layout_width="match_parent"
@@ -25,7 +33,7 @@
                 android:src="@drawable/ic_baseline_arrow_back_24" />
 
             <TextView
-                android:id="@+id/nama_tabungan"
+                android:id="@+id/titleBar"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"

@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -64,7 +65,6 @@ public class frag_new_resi extends Fragment {
         mContext = getContext();
         sessions = new SessionManager(mContext);
         dataRTGS = sessions.getRTGS();
-        Log.d("CEK","dataRTGS : "+dataRTGS);
 
     }
 
@@ -103,7 +103,6 @@ public class frag_new_resi extends Fragment {
         btnOK.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.e("CEK","MASUK BUTTON OK");
                 sessions.clearPartData();
                 String linkResi = "";
                 Mirroring(true,1,1, linkResi);
@@ -114,7 +113,6 @@ public class frag_new_resi extends Fragment {
         btnUnduhResi.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Log.e("CEK","MASUK BUTTON UnduhResi");
                 if (bytePhoto == null) {
                     Toast.makeText(mContext,"Tidak dapat mengunduh Formulir",Toast.LENGTH_SHORT).show();
                     return;
@@ -180,7 +178,6 @@ public class frag_new_resi extends Fragment {
         myFiles = mediaStorageDir.list();
         if (myFiles != null) {
             for (int i = 0; i < myFiles.length; i++) {
-                Log.d("CEK","myFiles ke-"+i+" : "+myFiles[i]);
                 File myFile = new File(mediaStorageDir, myFiles[i]);
                 myFile.delete();
             }
@@ -224,25 +221,23 @@ public class frag_new_resi extends Fragment {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        Log.e("CEK","PARAM MIRRORING : "+ jsons);
         RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), jsons.toString());
         ApiService API = Server.getAPIService();
         Call<JsonObject> call = API.Mirroring(requestBody);
         call.enqueue(new Callback<JsonObject>() {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
-                Log.d("MIRROR","Mirroring Sukses");
+
             }
 
             @Override
             public void onFailure(Call<JsonObject> call, Throwable t) {
-                Log.d("MIRROR","Mirroring Gagal");
+
             }
         });
     }
 
     private void getResume() {
-        Log.e("CEK","MASUK GETRESUME");
         try {
             JSONArray jsArr = new JSONArray(dataRTGS);
             int len = jsArr.length();
@@ -303,25 +298,17 @@ public class frag_new_resi extends Fragment {
 
                     int biaya = 2500;
 
-                    Log.e("CEK","index : "+index+" | etc : "+etc+" | idForm : "+idForm+" | penduduk : "+penduduk);
-                    Log.e("CEK","namaRek : "+namaRek+" | noRek : "+noRek+" | nominal : "+nominal+" | biaya : "+biaya);
-                    Log.e("CEK","nama_penerima : "+nama_penerima+" | sourceBank : "+sourceBank+" | rek_penerima : "+rek_penerima+" | berita : "+berita);
-
                     ApiService API = Server.getAPIService();
                     Call<JsonObject> call = API.GetResumeTransaction(index,etc,idForm,penduduk,namaRek,alamatNasabah,no_handphone,noRek,nominal,biaya,
                             nama_penerima,alamat_penerima,sourceBank,rek_penerima,berita,"Hadi");
-                    Log.e("CEK","request : "+ call.request());
                     String linkResi = call.request().url().toString();
-                    Log.e("CEK","request 2 : "+linkResi);
                     String URLServ = Server.BASE_URL_API;
-                    Log.e("CEK","URLServ : "+URLServ);
+
                     String finalLinkResi = linkResi.replace(URLServ,"");
-                    Log.e("CEK","finalLinkResi : "+finalLinkResi);
                     call.enqueue(new Callback<JsonObject>() {
                         @Override
                         public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
                             if (response.body() != null) {
-                                Log.e("CEK", "response : " + response.body());
                             }
                             if (response.isSuccessful()) {
                                 btnUnduhResi.setEnabled(true);
@@ -332,6 +319,14 @@ public class frag_new_resi extends Fragment {
                                     String base64Image = obj.getString("image");
                                     bytePhoto = Base64.decode(base64Image, Base64.NO_WRAP);
                                     Bitmap bitmap = BitmapFactory.decodeByteArray(bytePhoto, 0, bytePhoto.length);
+                                    RelativeLayout.LayoutParams lpImg = new RelativeLayout.LayoutParams(250, 300);
+                                    lpImg.addRule(RelativeLayout.CENTER_HORIZONTAL);
+                                    lpImg.setMargins(10,120,10,10);
+                                    imgResume.setLayoutParams(lpImg);
+                                    imgResume.setScaleX(2.5f);
+                                    imgResume.setScaleY(3f);
+                                    imgResume.setScaleType(ImageView.ScaleType.CENTER_CROP);
+                                    imgResume.setImageBitmap(bitmap);
                                     imgResume.setImageBitmap(bitmap);
                                 } catch (JSONException e) {
                                     e.printStackTrace();

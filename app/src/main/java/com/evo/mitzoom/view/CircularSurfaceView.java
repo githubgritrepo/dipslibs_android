@@ -80,8 +80,6 @@ public class CircularSurfaceView extends SurfaceView {
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         int width = measureWidth(widthMeasureSpec);
         int height = measureHeight(heightMeasureSpec);
-        Log.d("width", String.valueOf(width));
-        Log.d("height", String.valueOf(height));
         setMeasuredDimension(width, height);
     }
 

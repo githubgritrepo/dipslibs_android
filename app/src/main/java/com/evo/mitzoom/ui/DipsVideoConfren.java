@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -186,6 +187,8 @@ public class DipsVideoConfren extends BaseMeetingActivity {
 
         ZoomVideoSDKUser mySelf = ZoomVideoSDK.getInstance().getSession().getMySelf();
         subscribeVideoByUser(mySelf);
+
+
 //        refreshFps();
 //        CmdHelper.getInstance().addListener(lowerThirdHandler);
 //        CmdHelper.getInstance().addListener(emojiHandler);

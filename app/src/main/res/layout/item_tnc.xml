@@ -39,7 +39,8 @@
         android:layout_height="wrap_content"
         android:text="@string/checkbox_tnc"
         android:textSize="14dp"
-        android:textColor="@color/black"/>
+        android:textColor="@color/black"
+        android:buttonTint="@color/zm_button"/>
     <Button
         android:textSize="14dp"
         android:clickable="false"

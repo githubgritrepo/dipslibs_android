@@ -1,0 +1,432 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    tools:context=".Fragments.frag_wm_detail_porto">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:rotation="180"
+            android:scaleType="fitXY"
+            android:src="@drawable/batik_bvic" />
+
+        <LinearLayout
+            android:id="@+id/TopBar"
+            android:layout_width="match_parent"
+            android:layout_height="?android:actionBarSize"
+            android:background="@color/white"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:id="@+id/btnBack"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_margin="10dp"
+                android:src="@drawable/ic_baseline_arrow_back_24" />
+
+            <TextView
+                android:id="@+id/tvtitleHead"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginStart="6dp"
+                android:text="@string/detail_portofolio"
+                android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                android:textSize="16dp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@+id/TopBar">
+
+            <androidx.core.widget.NestedScrollView
+                android:id="@+id/nestedScroll"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:fillViewport="true"
+                android:scrollbars="vertical">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginTop="@dimen/dp_5"
+                    android:paddingStart="@dimen/dp_20"
+                    android:paddingEnd="@dimen/dp_20"
+                    android:paddingBottom="70dp">
+
+                    <LinearLayout
+                        android:id="@+id/llMainMutualFund"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/tvTitleProd"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:textColor="@color/zm_text"
+                            android:textSize="16dp"
+                            android:textStyle="bold"
+                            tools:text="REKSA DANA LANCAR VICTORIA MERKURIUS" />
+
+                        <TextView
+                            android:id="@+id/tvPtProd"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:textColor="@color/zm_text"
+                            android:textSize="16dp"
+                            tools:text="PT. VICTORIA MANAJEMEN INVESTASI" />
+
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="5dp"
+                            android:layout_marginTop="@dimen/dp_10"
+                            android:layout_marginBottom="@dimen/dp_10"
+                            android:background="@drawable/line_dash" />
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="@string/jumlah_unit"
+                            android:textColor="@color/zm_text" />
+
+                        <TextView
+                            android:id="@+id/tvTotalUnit"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="@dimen/dp_10"
+                            android:textColor="@color/zm_text"
+                            android:textStyle="bold"
+                            tools:text="10.485,6667 Unit" />
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="@string/nab"
+                            android:textColor="@color/zm_text" />
+
+                        <TextView
+                            android:id="@+id/tvNAB"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="@dimen/dp_10"
+                            android:textColor="@color/zm_text"
+                            android:textStyle="bold"
+                            tools:text="Rp 8.000,00" />
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="@string/tanggal_nab"
+                            android:textColor="@color/zm_text" />
+
+                        <TextView
+                            android:id="@+id/tvNABDate"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="@dimen/dp_10"
+                            android:textColor="@color/zm_text"
+                            android:textStyle="bold"
+                            tools:text="24/05/23" />
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="@string/nilai_semula"
+                            android:textColor="@color/zm_text" />
+
+                        <TextView
+                            android:id="@+id/tvOriginalVal"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="@dimen/dp_10"
+                            android:textColor="@color/zm_text"
+                            android:textStyle="bold"
+                            tools:text="Rp 83.885.333,6" />
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="@string/nilai_sekarang"
+                            android:textColor="@color/zm_text" />
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="@dimen/dp_10"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:id="@+id/tvNowVal"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginEnd="@dimen/dp_10"
+                                android:textColor="@color/zm_text"
+                                android:textStyle="bold"
+                                tools:text="Rp 608.168.668,60" />
+
+                            <TextView
+                                android:id="@+id/tvKurungBuka"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginEnd="@dimen/dp_5"
+                                android:text="("
+                                android:textColor="@color/button_schedule" />
+
+                            <ImageView
+                                android:id="@+id/imgImbalHasil"
+                                android:layout_width="14dp"
+                                android:layout_height="14dp"
+                                android:src="@drawable/upgreen" />
+
+                            <TextView
+                                android:id="@+id/tvPercent"
+                                android:layout_width="wrap_content"
+                                android:layout_height="match_parent"
+                                android:layout_marginStart="@dimen/dp_5"
+                                android:layout_marginEnd="@dimen/dp_5"
+                                android:textColor="@color/button_schedule"
+                                tools:text="0%" />
+
+                            <TextView
+                                android:id="@+id/tvKurungTutup"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text=")"
+                                android:textColor="@color/button_schedule" />
+
+
+                        </LinearLayout>
+
+                        <androidx.cardview.widget.CardView
+                            android:id="@+id/cvItems"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:layout_marginTop="@dimen/dp_10"
+                            android:backgroundTint="@color/zm_bg"
+                            android:elevation="0dp"
+                            app:cardCornerRadius="5dp">
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:padding="@dimen/dp_10"
+                                android:text="@string/info_nab"
+                                android:textColor="@color/zm_text"
+                                android:textSize="12dp" />
+
+                        </androidx.cardview.widget.CardView>
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/llNextSale"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:visibility="gone">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="@string/rekening_penerima_dana"
+                            android:textColor="@color/zm_text" />
+
+                        <RelativeLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/bg_textinput"
+                            android:layout_marginBottom="@dimen/dp_10">
+
+                            <Spinner
+                                android:id="@+id/spinSourceAccount"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="@dimen/dp_10"
+                                android:focusable="false"
+                                android:paddingRight="@dimen/dp_20"
+                                android:layout_centerVertical="true"/>
+
+                        </RelativeLayout>
+
+                        <TextView
+                            android:id="@+id/tvTitleProdNextSale"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:textColor="@color/zm_text"
+                            android:textStyle="bold"
+                            tools:text="REKSA DANA LANCAR VICTORIA MERKURIUS" />
+
+                        <TextView
+                            android:id="@+id/tvPtProdNextSale"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="10dp"
+                            android:textColor="@color/zm_text"
+                            tools:text="PT. VICTORIA MANAJEMEN INVESTASI" />
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="@string/biaya_penjualan"
+                            android:textColor="@color/zm_text" />
+                        <TextView
+                            android:id="@+id/tvFeeSale"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="@dimen/dp_10"
+                            android:textColor="@color/zm_text"
+                            android:textStyle="bold"
+                            tools:text="0%" />
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="@string/tax_cost_sales"
+                            android:textColor="@color/zm_text" />
+                        <TextView
+                            android:id="@+id/tvTaxFeeSale"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:textColor="@color/zm_text"
+                            android:textStyle="bold"
+                            tools:text="0%" />
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="@string/ket_feetaxsale"
+                            android:textColor="@color/zm_icon_grey"
+                            android:layout_marginBottom="@dimen/dp_10"
+                            android:textSize="12dp"/>
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="@string/unit_dimiliki"
+                            android:textColor="@color/zm_text" />
+                        <TextView
+                            android:id="@+id/tvUnitSelf"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:textColor="@color/zm_text"
+                            android:layout_marginBottom="@dimen/dp_10"
+                            android:textStyle="bold"
+                            tools:text="3.706,6667 Unit" />
+
+                        <TextView
+                            android:id="@+id/tvLabelNABSale"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="@string/nab"
+                            android:textColor="@color/zm_text" />
+                        <TextView
+                            android:id="@+id/tvNABSale"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:textColor="@color/zm_text"
+                            android:layout_marginBottom="@dimen/dp_10"
+                            android:textStyle="bold"
+                            tools:text="1.245" />
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="@string/jumlah_unit_pencairan"
+                            android:textColor="@color/zm_text" />
+                        <EditText
+                            android:id="@+id/edTotalUnitDisburs"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:hint="@string/jumlah_unit_pencairan"
+                            android:textSize="14dp"
+                            android:textColor="@color/zm_text"
+                            android:textStyle="bold"
+                            android:background="@drawable/bg_textinput"
+                            android:padding="@dimen/dp_10"
+                            android:inputType="numberDecimal"/>
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Penjualan unit minimal setidaknya 10% dan maksimal 50% dari total unit yang dimiliki."
+                            android:textColor="@color/zm_icon_grey"
+                            android:layout_marginBottom="@dimen/dp_10"
+                            android:textSize="12dp"/>
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="@string/sisa_unit"
+                            android:textColor="@color/zm_text" />
+                        <TextView
+                            android:id="@+id/tvRemainingUnits"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="@dimen/dp_10"
+                            android:textColor="@color/zm_text"
+                            android:textStyle="bold"
+                            tools:text="2.59466669 (70%)" />
+
+                        <CheckBox
+                            android:id="@+id/chkState"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="@string/state_sale_wm"
+                            android:buttonTint="@color/zm_button"
+                            android:layout_marginBottom="@dimen/dp_10"/>
+
+                    </LinearLayout>
+
+                </RelativeLayout>
+
+            </androidx.core.widget.NestedScrollView>
+
+            <Button
+                android:id="@+id/btnSale"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_alignParentBottom="true"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginEnd="20dp"
+                android:layout_marginBottom="20dp"
+                android:background="@drawable/oval_background_10dp"
+                android:backgroundTint="@color/zm_button"
+                android:text="Jual"
+                android:textAllCaps="false"
+                android:textColor="@color/white" />
+
+            <Button
+                android:id="@+id/btnNext"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:background="@drawable/oval_background_10dp"
+                android:backgroundTint="@color/zm_button"
+                android:text="@string/selanjutnya"
+                android:textColor="@color/white"
+                android:textStyle="bold"
+                android:textAllCaps="false"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginEnd="20dp"
+                android:layout_marginBottom="20dp"
+                android:layout_alignParentBottom="true"
+                android:visibility="gone"/>
+
+        </RelativeLayout>
+
+    </RelativeLayout>
+
+</FrameLayout>

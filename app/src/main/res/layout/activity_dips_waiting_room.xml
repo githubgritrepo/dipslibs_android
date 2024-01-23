@@ -57,106 +57,154 @@
                         android:layout_marginStart="@dimen/dp_10"
                         android:layout_marginEnd="@dimen/dp_10">
 
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:gravity="center_vertical"
-                        android:layout_marginBottom="@dimen/dp_10">
-
-                        <ImageView
-                            android:layout_width="15dp"
-                            android:layout_height="15dp"
-                            android:layout_marginEnd="5dp"
-                            android:src="@drawable/icon_timer" />
-
-                        <androidx.cardview.widget.CardView
+                        <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            app:cardCornerRadius="@dimen/dp_5"
-                            android:backgroundTint="@color/white">
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical"
+                            android:layout_marginBottom="@dimen/dp_10">
 
-                            <LinearLayout
-                                android:layout_width="wrap_content"
+                            <ImageView
+                                android:layout_width="15dp"
+                                android:layout_height="15dp"
+                                android:layout_marginEnd="5dp"
+                                android:src="@drawable/icon_timer" />
+
+                            <androidx.cardview.widget.CardView
+                                android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:orientation="horizontal"
-                                android:gravity="center_vertical"
-                                android:padding="@dimen/dp_5">
-                                <TextView
-                                    android:id="@+id/last_ticket"
+                                app:cardCornerRadius="@dimen/dp_5"
+                                android:backgroundTint="@color/white">
+
+                                <LinearLayout
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:text="000"
-                                    android:textSize="12dp"
-                                    android:textStyle="bold"
-                                    android:textColor="@color/zm_text"
-                                    android:gravity="center_vertical" />
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:text="@string/antrian_sekarang"
-                                    android:textSize="12dp"
-                                    android:textStyle="bold"
-                                    android:textColor="@color/zm_text"
+                                    android:orientation="horizontal"
                                     android:gravity="center_vertical"
-                                    android:layout_marginStart="2dp" />
-                            </LinearLayout>
+                                    android:padding="@dimen/dp_5">
+                                    <TextView
+                                        android:id="@+id/last_ticket"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="000"
+                                        android:textSize="12dp"
+                                        android:textStyle="bold"
+                                        android:textColor="@color/zm_text"
+                                        android:gravity="center_vertical" />
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="@string/antrian_sekarang"
+                                        android:textSize="12dp"
+                                        android:textStyle="bold"
+                                        android:textColor="@color/zm_text"
+                                        android:gravity="center_vertical"
+                                        android:layout_marginStart="2dp" />
+                                </LinearLayout>
 
-                        </androidx.cardview.widget.CardView>
+                            </androidx.cardview.widget.CardView>
 
-                    </LinearLayout>
+                        </LinearLayout>
 
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:gravity="center_vertical"
-                        android:layout_marginBottom="@dimen/dp_10">
-
-                        <ImageView
-                            android:layout_width="15dp"
-                            android:layout_height="15dp"
-                            android:layout_marginEnd="5dp"
-                            android:src="@drawable/ic_people3"
-                            app:tint="@color/zm_button" />
-
-                        <androidx.cardview.widget.CardView
+                        <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            app:cardCornerRadius="@dimen/dp_5"
-                            android:backgroundTint="@color/zm_button">
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical"
+                            android:layout_marginBottom="@dimen/dp_10">
 
-                            <LinearLayout
-                                android:layout_width="wrap_content"
+                            <ImageView
+                                android:layout_width="15dp"
+                                android:layout_height="15dp"
+                                android:layout_marginEnd="5dp"
+                                android:src="@drawable/ic_people3"
+                                app:tint="@color/zm_button" />
+
+                            <androidx.cardview.widget.CardView
+                                android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:gravity="center_vertical"
-                                android:orientation="horizontal"
-                                android:padding="@dimen/dp_5">
+                                app:cardCornerRadius="@dimen/dp_5"
+                                android:backgroundTint="@color/zm_button">
 
-                                <TextView
-                                    android:id="@+id/myticket"
+                                <LinearLayout
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:text="000"
-                                    android:textColor="@color/white"
-                                    android:textSize="12dp"
-                                    android:textStyle="bold" />
-
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:text="@string/antrian_saya"
-                                    android:textSize="12dp"
-                                    android:textColor="@color/white"
-                                    android:textStyle="bold"
                                     android:gravity="center_vertical"
-                                    android:layout_marginStart="2dp"/>
+                                    android:orientation="horizontal"
+                                    android:padding="@dimen/dp_5">
 
-                            </LinearLayout>
+                                    <TextView
+                                        android:id="@+id/myticket"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="000"
+                                        android:textColor="@color/white"
+                                        android:textSize="12dp"
+                                        android:textStyle="bold" />
 
-                        </androidx.cardview.widget.CardView>
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="@string/antrian_saya"
+                                        android:textSize="12dp"
+                                        android:textColor="@color/white"
+                                        android:textStyle="bold"
+                                        android:gravity="center_vertical"
+                                        android:layout_marginStart="2dp"/>
 
-                    </LinearLayout>
+                                </LinearLayout>
+
+                            </androidx.cardview.widget.CardView>
+
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical"
+                            android:layout_marginBottom="@dimen/dp_10"
+                            android:visibility="gone">
+
+                            <ImageView
+                                android:layout_width="15dp"
+                                android:layout_height="15dp"
+                                android:layout_marginEnd="5dp"
+                                android:src="@drawable/img_list" />
+
+                            <androidx.cardview.widget.CardView
+                                android:id="@+id/cvFormTrx"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                app:cardCornerRadius="@dimen/dp_5"
+                                android:backgroundTint="@color/white">
+
+                                <RelativeLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:gravity="center_vertical"
+                                    android:padding="@dimen/dp_5">
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="@string/form_transation"
+                                        android:textSize="12dp"
+                                        android:textStyle="bold"
+                                        android:textColor="@color/zm_text"
+                                        android:layout_centerVertical="true" />
+
+                                    <ImageView
+                                        android:layout_width="10dp"
+                                        android:layout_height="10dp"
+                                        android:src="@drawable/menu_next"
+                                        android:layout_alignParentRight="true"
+                                        android:layout_centerVertical="true"/>
+
+                                </RelativeLayout>
+
+                            </androidx.cardview.widget.CardView>
+
+                        </LinearLayout>
 
                     </LinearLayout>
 

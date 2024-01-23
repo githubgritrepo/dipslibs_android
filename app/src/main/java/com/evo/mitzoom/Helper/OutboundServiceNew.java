@@ -14,8 +14,10 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.PowerManager;
 import android.util.Log;
+import android.view.WindowManager;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 import androidx.core.content.ContextCompat;
@@ -81,8 +83,73 @@ public class OutboundServiceNew extends Service {
         mContext = this;
         sessions = new SessionManager(mContext);
         idDips = sessions.getKEY_IdDips();
-        setupConnectionFactory(); //RabbitMQ
-        subscribeCall();
+        //setupConnectionFactory(); //RabbitMQ
+        ConnectionRabbitHttp.init(mContext);
+        //subscribeCall();
+        ConnectionRabbitHttp.listenCall(new ConnectionRabbitHttp.getTicketInfoCallbacks() {
+            @Override
+            public void onSuccess(@NonNull String dataS) {
+                try {
+                    JSONObject bodyObj = new JSONObject(dataS);
+                    String getTicket = bodyObj.getString("ticket");
+                    String actionCall = bodyObj.getString("action");
+
+                    if (actionCall.equals("info")) {
+                        String csId = bodyObj.getString("csId");
+                        sessions.saveCSID(csId);
+                    } else {
+                        if (bodyObj.has("sessionId")) {
+                            sessionId = bodyObj.getString("sessionId");
+                            sessions.saveSessionIdDips(sessionId);
+                        }
+                        int getTicketInt = Integer.parseInt(getTicket);
+                        String getQueue = String.format("%03d", getTicketInt);
+                        csId = bodyObj.getString("csId");
+                        String password = bodyObj.getString("password");
+                        String agentImage = "";
+                        String namaAgen = "Fulan";
+                        if (bodyObj.has("agentImage")) {
+                            agentImage = bodyObj.getString("agentImage");
+                        }
+                        if (bodyObj.has("namaAgen")) {
+                            namaAgen = bodyObj.getString("namaAgen");
+                        }
+
+                        password_session = password;
+                        customerName = sessions.getNasabahName();
+                        imagesAgent = agentImage;
+                        nameAgent = namaAgen;
+                        sessions.saveCSID(csId);
+
+                        Intent intent = new Intent(getApplicationContext(), MyBroadcastReceiver.class);
+                        intent.setAction("calloutbound");
+
+                        PendingIntent pendingIntent = null;
+                        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
+                            pendingIntent = PendingIntent.getBroadcast
+                                    (mContext, 0, intent, PendingIntent.FLAG_IMMUTABLE);
+                        } else {
+                            pendingIntent = PendingIntent.getBroadcast
+                                    (mContext, 0, intent, 0);
+                        }
+
+                        long addTimes = System.currentTimeMillis() + 1000;
+
+                        AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+                        alarmManager.set(AlarmManager.RTC_WAKEUP, addTimes, pendingIntent);
+
+                        showNotificationOutbound();
+                    }
+                } catch (JSONException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+
+            @Override
+            public void onError(@NonNull Throwable throwable) {
+
+            }
+        });
         final PowerManager pm = ContextCompat.getSystemService(mContext, PowerManager.class);
         wakeLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "Outbound:Service");
 
@@ -92,7 +159,6 @@ public class OutboundServiceNew extends Service {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        Log.e(TAG,"MASUK ONDESTROY");
         /*if (subscribeThreadCallOutbound != null) {
             subscribeThreadCallOutbound.interrupt();
         }
@@ -105,7 +171,6 @@ public class OutboundServiceNew extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         String action = intent == null ? null : intent.getAction();
-        Log.e(TAG, "onStartCommand action : "+action);
 
         idDips = sessions.getKEY_IdDips();
         sessionId = idDips;
@@ -171,19 +236,15 @@ public class OutboundServiceNew extends Service {
                 @Override
                 public void run() {
                     try {
-                        Log.e(TAG, "MASUK subscribeCall");
                         channelCall = connection.createChannel();
                         channelCall.basicQos(1);
                         AMQP.Queue.DeclareOk q = channelCall.queueDeclare();
-                        Log.e(TAG, "subscribeCall getQueue : " + q.getQueue());
                         channelCall.exchangeDeclare("dips361-cust-call", "direct", true);
                         channelCall.queueBind(q.getQueue(), "dips361-cust-call", "dips.direct.cust." + idDips + ".call");
-                        Log.e(TAG, "AFTER subscribeCall queueBind getChannelNumber : " + channelCall.getChannelNumber());
                         channelCall.basicConsume(q.getQueue(), true, new DeliverCallback() {
                             @Override
                             public void handle(String consumerTag, Delivery message) throws IOException {
                                 String getMessage = new String(message.getBody());
-                                Log.e(TAG, "Success subscribeCall getMessage : " + getMessage);
                                 try {
                                     JSONObject dataObj = new JSONObject(getMessage);
                                     String actionCall = "";
@@ -202,11 +263,7 @@ public class OutboundServiceNew extends Service {
                                         }
                                         csId = dataObj.getJSONObject("transaction").getString("csId");
                                         String password = dataObj.getJSONObject("transaction").getString("password");
-                                        Log.e(TAG, "subscribeCall csId : " + csId);
-                                        Log.e(TAG, "subscribeCall password : " + password);
-                                        Log.e(TAG, "subscribeCall getTicket : " + getTicket);
                                         String getQueue = String.format("%03d", getTicket);
-                                        Log.e(TAG, "subscribeCall getQueue : " + getQueue);
 
                                         String agentImage = "";
                                         String namaAgen = "Fulan";
@@ -216,9 +273,6 @@ public class OutboundServiceNew extends Service {
                                         if (dataObj.getJSONObject("transaction").has("namaAgen")) {
                                             namaAgen = dataObj.getJSONObject("transaction").getString("namaAgen");
                                         }
-
-                                        Log.e(TAG, "subscribeCall agentImage : " + agentImage);
-                                        Log.e(TAG, "subscribeCall namaAgen : " + namaAgen);
 
                                         password_session = password;
                                         customerName = sessions.getNasabahName();
@@ -266,12 +320,11 @@ public class OutboundServiceNew extends Service {
                         }, new CancelCallback() {
                             @Override
                             public void handle(String consumerTag) throws IOException {
-                                Log.e(TAG, "subscribeCall consumerTag : " + consumerTag);
+
                             }
                         });
 
                     } catch (ShutdownSignalException e) {
-                        Log.e(TAG, "subscribeCall ShutdownSignalException: " + e.getMessage());
                         try {
                             Thread.sleep(4000); //sleep and then try again
                             subscribeCall();
@@ -279,12 +332,11 @@ public class OutboundServiceNew extends Service {
                             ex.printStackTrace();
                         }
                     } catch (IOException e1) {
-                        Log.e(TAG, "subscribeCall Connection broken: " + e1.getMessage());
                         try {
                             Thread.sleep(4000); //sleep and then try again
                             subscribeCall();
                         } catch (InterruptedException e) {
-                            Log.e(TAG, "subscribeCall InterruptedExceptionn: " + e.getMessage());
+
                         }
                     }
                 }
@@ -295,7 +347,6 @@ public class OutboundServiceNew extends Service {
 
     private void showIncomingCallNotification() {
         username_agent = nameAgent;
-        Log.e(TAG,"showIncomingCallNotification username_agent : "+username_agent);
 
         NotificationManager notificationManagerCompat = (NotificationManager) getApplicationContext().getSystemService(Context.NOTIFICATION_SERVICE);
 
@@ -304,8 +355,6 @@ public class OutboundServiceNew extends Service {
         PendingIntent pendingIntentEnd = createPendingDiPSOutboundSession(ACTION_DISMISS_CALL, 103);
 
         String nameApps = getResources().getString(R.string.app_name_dips);
-
-        Log.e(TAG,"showIncomingCallNotification nameApps : "+nameApps);
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext(), CHANNEL_ID)
                 .setSmallIcon(R.mipmap.dips361)
@@ -322,8 +371,6 @@ public class OutboundServiceNew extends Service {
                 .setAutoCancel(true)
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
                 .setCategory(NotificationCompat.CATEGORY_CALL);
-
-        Log.e(TAG,"showIncomingCallNotification NotificationCompat");
 
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
             NotificationChannel incomingCallsChannel = new NotificationChannel(
@@ -346,12 +393,9 @@ public class OutboundServiceNew extends Service {
         final Notification notification = builder.build();
         notification.flags = notification.flags | Notification.FLAG_INSISTENT;
         notificationManagerCompat.notify(NOTIFICATION_IDOutbound, notification);
-
-        Log.e(TAG,"END showIncomingCallNotification");
     }
 
     private void modifyIncomingCall(final NotificationCompat.Builder mBuilder) {
-        Log.e(TAG,"modifyIncomingCall");
         mBuilder.setPriority(NotificationCompat.PRIORITY_HIGH);
         setNotificationColor(mBuilder);
         mBuilder.setLights(LED_COLOR, 2000, 3000);
@@ -409,7 +453,6 @@ public class OutboundServiceNew extends Service {
 
     public static void MirroringSendEndpoint(int kodeEndPoint) {
         if (connection != null) {
-            Log.e(TAG, "MASUK MirroringSendEndpoint : " + kodeEndPoint);
             publishEndpointThread = new Thread(new Runnable() {
                 @Override
                 public void run() {
@@ -430,30 +473,24 @@ public class OutboundServiceNew extends Service {
                             e.printStackTrace();
                         }
 
-                        Log.e(TAG, "jsons : " + jsons);
-
                         Channel ch = connection.createChannel();
                         ch.confirmSelect();
 
                         String csID = sessions.getCSID();
-                        Log.e(TAG, "csID : " + csID);
 
                         JSONObject datax = dataMirroring(jsons);
                         String dataxS = datax.toString();
-
-                        Log.e(TAG, "dataxS : " + dataxS);
 
                         ch.basicPublish("dips361-cs-send-endpoint", "dips.direct.cs." + csID + ".send.endpoint", false, null, dataxS.getBytes());
                         ch.waitForConfirmsOrDie();
 
                         if (kodeEndPoint == 99) {
-                            OutboundServiceNew.stopServiceSocket();
+                            //OutboundServiceNew.stopServiceSocket();
                             Intent intentOutbound = new Intent(mContext, OutboundServiceNew.class);
                             mContext.stopService(intentOutbound);
                         }
 
                     } catch (IOException | InterruptedException e) {
-                        Log.e(TAG, "publishToAMQP Connection broken: " + e.getClass().getName());
                         try {
                             Thread.sleep(4000); //sleep and then try again
                         } catch (InterruptedException e1) {
@@ -482,9 +519,20 @@ public class OutboundServiceNew extends Service {
         return jsObj;
     }
 
+    public static void publishCallAcceptHttp(String labelAction) {
+        JSONObject dataObj = new JSONObject();
+        try {
+            dataObj.put("custId", idDips);
+            dataObj.put("csId", csId);
+            dataObj.put("action", labelAction);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        ConnectionRabbitHttp.acceptCall(dataObj);
+    }
+
     private static void publishCallAccept(String labelAction) {
         if (connection != null) {
-            Log.e("CEK", "publishCallAccept");
             publishCallAcceptThread = new Thread(new Runnable() {
                 @Override
                 public void run() {
@@ -495,15 +543,11 @@ public class OutboundServiceNew extends Service {
                         JSONObject dataTicketObj = reqAcceptCall(labelAction);
                         String dataTicket = dataTicketObj.toString();
 
-                        Log.e("CEK", "publishCallAccept REQ csId : " + csId);
-                        Log.e("CEK", "publishCallAccept REQ : " + dataTicket);
-
                         ch.exchangeDeclare("dips361-cs-accept-user", "direct", true);
                         ch.basicPublish("dips361-cs-accept-user", "dips.direct.cs." + csId + ".accept.user", false, null, dataTicket.getBytes());
                         ch.waitForConfirmsOrDie();
 
                     } catch (IOException | InterruptedException e) {
-                        Log.e(TAG, "publishCallAccept Connection broken: " + e.getClass().getName());
                         try {
                             Thread.sleep(4000); //sleep and then try again
                             publishCallAccept(labelAction);
@@ -519,11 +563,9 @@ public class OutboundServiceNew extends Service {
 
     public static void stopServiceSocket() {
         if (subscribeThreadCallOutbound != null) {
-            Log.e("CEK","subscribeThreadCallOutbound interrupt");
             subscribeThreadCallOutbound.interrupt();
         }
         if (publishCallAcceptThread != null) {
-            Log.e("CEK","publishCallAcceptThread interrupt");
             publishCallAcceptThread.interrupt();
         }
 
@@ -546,9 +588,9 @@ public class OutboundServiceNew extends Service {
     }
 
     public static void acceptCall() {
-        Log.e("CEK","acceptCall : "+sessions.getIDSchedule());
         if (sessions.getIDSchedule() > 0) {
-            publishCallAccept("accept");
+            //publishCallAccept("accept");
+            publishCallAcceptHttp("accept");
             /*if (subscribeThreadCallOutbound != null) {
                 subscribeThreadCallOutbound.interrupt();
             }
@@ -561,14 +603,13 @@ public class OutboundServiceNew extends Service {
     }
 
     public static void rejectCall() {
-        Log.e("CEK","rejectCall : "+sessions.getIDSchedule());
         if (sessions.getIDSchedule() > 0) {
-            publishCallAccept("cancel");
+            //publishCallAccept("cancel");
+            publishCallAcceptHttp("cancel");
         }
     }
 
     private void showNotificationOutbound() {
-        Log.e(TAG,"showNotificationOutbound");
         username_agent = nameAgent;
 
         NotificationManager notificationManagerCompat = (NotificationManager) getApplicationContext().getSystemService(Context.NOTIFICATION_SERVICE);
@@ -644,7 +685,8 @@ public class OutboundServiceNew extends Service {
     }
 
     public static void OutConference() {
-        MirroringSendEndpoint(99);
+        //MirroringSendEndpoint(99);
+        ConnectionRabbitHttp.mirroringEndpoint(99);
     }
 
     public static String getSessionID_Zoom(){

@@ -9,6 +9,14 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:rotation="180"
+            android:scaleType="fitXY"
+            android:src="@drawable/batik_bvic" />
+
         <include
             android:id="@+id/inclHead"
             layout="@layout/item_headbar" />
@@ -31,7 +39,7 @@
                     android:layout_marginBottom="10dp"
                     android:text="@string/nasabahtype"
                     android:textColor="@color/black"
-                    android:textSize="12dp"
+                    android:textSize="16dp"
                     android:textStyle="bold" />
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/rv_item"
@@ -48,7 +56,7 @@
                     android:layout_height="wrap_content"
                     android:textColor="@color/black"
                     android:text="@string/account_type"
-                    android:textSize="12dp"
+                    android:textSize="16dp"
                     android:layout_below="@+id/rv_item"
                     android:textStyle="bold"
                     android:layout_marginStart="10dp"
@@ -66,7 +74,7 @@
                 <Button
                     android:id="@+id/btnNext"
                     android:layout_width="wrap_content"
-                    android:layout_height="35dp"
+                    android:layout_height="40dp"
                     android:layout_centerHorizontal="true"
                     android:layout_below="@id/rv_item2"
                     android:paddingStart="@dimen/dp_20"
@@ -77,7 +85,7 @@
                     android:text="@string/btn_continue"
                     android:textAppearance="@style/TextAppearance.AppCompat.Button"
                     android:textColor="@color/white"
-                    android:textSize="13dp"
+                    android:textSize="14dp"
                     android:textStyle="bold" />
 
             </RelativeLayout>

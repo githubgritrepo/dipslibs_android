@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/tvContent"
+    android:maxLines="3"
+    android:minLines="2"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:ellipsize="end"
+    android:padding="@dimen/dp_5"
+    android:gravity="center_vertical">
+
+</TextView>

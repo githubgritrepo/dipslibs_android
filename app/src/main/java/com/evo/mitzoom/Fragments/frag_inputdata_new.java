@@ -50,6 +50,8 @@ import com.evo.mitzoom.API.ApiService;
 import com.evo.mitzoom.API.Server;
 import com.evo.mitzoom.Adapter.AdapterFile;
 import com.evo.mitzoom.BaseMeetingActivity;
+import com.evo.mitzoom.Helper.ConnectionRabbitHttp;
+import com.evo.mitzoom.Helper.HideSoftKeyboard;
 import com.evo.mitzoom.Helper.MyParserFormBuilder;
 import com.evo.mitzoom.Helper.RabbitMirroring;
 import com.evo.mitzoom.Model.FileModel;
@@ -116,13 +118,11 @@ public class frag_inputdata_new extends Fragment {
     private RabbitMirroring rabbitMirroring;
     private int lasLenChar;
     private boolean backSpaceChar;
-    private String custName = "";
     private String imgBase64;
     private byte[] imageBytes;
     private boolean isSessionZoom;
     private final String keys = "";
 
-    final String STATE_CUSTNAME = "custName";
     final String STATE_ELEMENTARRAY = "elementArray";
     final String STATE_ELEMENTObj = "elementObj";
     private boolean flagStuckSpin = false;
@@ -143,6 +143,7 @@ public class frag_inputdata_new extends Fragment {
         session = new SessionManager(mContext);
         isCust = session.getKEY_iSCust();
         isSessionZoom = ZoomVideoSDK.getInstance().isInSession();
+        ConnectionRabbitHttp.init(mContext);
         /*if (isSessionZoom) {
             rabbitMirroring = new RabbitMirroring(mContext);
         }*/
@@ -162,6 +163,12 @@ public class frag_inputdata_new extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        boolean flagDoc = session.getFlagUpDoc();
+        int valMedia = session.getMedia();
+        if (!flagDoc && valMedia == 1) {
+            session.saveFlagUpDoc(true);
+        }
+
         idDips = session.getKEY_IdDips();
 
         swipe.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
@@ -172,15 +179,9 @@ public class frag_inputdata_new extends Fragment {
         });
 
         if (savedInstanceState == null) {
-            Log.e("CEK","MASUK NULL SAVED INSTANACE");
-            if (getArguments().containsKey("CUSTNAME")) {
-                custName = getArguments().getString("CUSTNAME");
-            }
             swipe.setRefreshing(true);
             processGetForm();
         } else {
-            Log.e("CEK","MASUK SAVED INSTANACE");
-            custName = savedInstanceState.getString(STATE_CUSTNAME);
             String getIdElement = savedInstanceState.getString(STATE_ELEMENTARRAY);
             String getElementObj = savedInstanceState.getString(STATE_ELEMENTObj);
 
@@ -211,7 +212,6 @@ public class frag_inputdata_new extends Fragment {
                                     if (idEl == idDataEl) {
 
                                         if (llFormBuild.getChildAt(i) instanceof EditText) {
-                                            Log.e("CEK", "MASUK EDITTEXT ke-" + i);
                                             EditText ed = (EditText) llFormBuild.getChildAt(i);
                                             String results = ed.getText().toString();
                                             if (requiredDataEl && results.isEmpty()) {
@@ -234,11 +234,9 @@ public class frag_inputdata_new extends Fragment {
                                         else if (llFormBuild.getChildAt(i) instanceof RadioGroup) {
                                             RadioGroup rg = (RadioGroup) llFormBuild.getChildAt(i);
                                             int selectedId = rg.getCheckedRadioButtonId();
-                                            Log.e("CEK", "MASUK RadioGroup ke-" + i+" | selectedId : "+selectedId+" | requiredDataEl  : "+requiredDataEl);
                                             if (selectedId > 0 || selectedId < -1) {
                                                 RadioButton rb = rg.findViewById(selectedId);
                                                 String results = rb.getText().toString();
-                                                Log.e("CEK","RadioGroup results : "+results+" | requiredDataEl : "+requiredDataEl);
                                                 if (requiredDataEl && results.isEmpty()) {
                                                     Toast.makeText(mContext, nameDataEl+" "+getResources().getString(R.string.error_field), Toast.LENGTH_SHORT).show();
                                                     checkEmpty = true;
@@ -251,7 +249,6 @@ public class frag_inputdata_new extends Fragment {
                                             break;
                                         }
                                         else if (llFormBuild.getChildAt(i) instanceof CheckBox) {
-                                            Log.e("CEK", "MASUK CheckBox ke-" + i);
                                             CheckBox chk = (CheckBox) llFormBuild.getChildAt(i);
                                             boolean isChk = chk.isChecked();
                                             if (isChk) {
@@ -260,7 +257,6 @@ public class frag_inputdata_new extends Fragment {
                                             break;
                                         }
                                         else if (llFormBuild.getChildAt(i) instanceof Spinner) {
-                                            Log.e("CEK", "MASUK Spinner ke-" + i);
                                             Spinner spin = (Spinner) llFormBuild.getChildAt(i);
                                             if (spin.isSelected()) {
                                                 String results = spin.getSelectedItem().toString();
@@ -273,7 +269,6 @@ public class frag_inputdata_new extends Fragment {
                                             break;
                                         }
                                         else if (llFormBuild.getChildAt(i) instanceof AutoCompleteTextView) {
-                                            Log.e("CEK", "MASUK AutoCompleteTextView ke-" + i);
                                             AutoCompleteTextView autoText = (AutoCompleteTextView) llFormBuild.getChildAt(i);
                                             String results = autoText.getText().toString();
                                             if (requiredDataEl && results.isEmpty()) {
@@ -284,21 +279,6 @@ public class frag_inputdata_new extends Fragment {
                                             objEl.put(nameDataEl, results);
                                             break;
                                         }
-                                        /*else if (llFormBuild.getChildAt(i) instanceof LinearLayout) {
-                                            Log.e("CEK", "MASUK LinearLayout ke-" + i);
-                                            LinearLayout ll = (LinearLayout) llFormBuild.getChildAt(i);
-                                            Log.e("CEK", "LinearLayout getChildCount : " + ll.getChildCount());
-                                            if (ll.getChildCount() > 1) {
-                                                if (ll.getChildAt(0) instanceof LinearLayout) {
-                                                    LinearLayout ll2 = (LinearLayout) ll.getChildAt(0);
-                                                    TextView tvll = (TextView) ll2.getChildAt(1);
-                                                    String txt = tvll.getText().toString();
-                                                    Log.e("CEK", "tvll : " + txt);
-                                                    keys = nameDataEl;
-                                                    objEl.put(nameDataEl, imageBytes);
-                                                }
-                                            }
-                                        }*/
                                     }
                                 } catch (JSONException e) {
                                     e.printStackTrace();
@@ -313,8 +293,6 @@ public class frag_inputdata_new extends Fragment {
                             }
                         }
                     }
-
-                    Log.e("CEL","REQUEST : "+objEl.toString());
 
                     if (flagNext) {
                         for (int j = 0; j < idElement.length(); j++) {
@@ -357,70 +335,15 @@ public class frag_inputdata_new extends Fragment {
                             }
                         }
 
-                        Log.e("CEL","REQUEST SEND : "+objEl.toString());
-
-                        /*String timeStamp = new SimpleDateFormat("yyyy-MM-dd",
-                                Locale.getDefault()).format(new Date());
-
-                        JSONObject objAPI = new JSONObject();
-                        try {
-                            JSONObject objData = new JSONObject(objEl.toString());
-                            String keyTgl = "tanggalpengaduan";
-                            String keyUpTtd = "tandatangan";
-                            List<String> keyUpFile = new ArrayList<String>();
-                            int loop = 0;
-                            for(Iterator<String> iter = objData.keys(); iter.hasNext();) {
-                                String key = iter.next();
-                                String valKurung = "";
-                                int indx = key.indexOf("(");
-                                if (indx >= 0) {
-                                    valKurung = key.substring(indx);
-                                }
-
-                                if ((key.contains("tanggal") || key.contains("tgl")) && (key.contains("pengaduan"+valKurung) || key.contains("komplain"+valKurung))) {
-                                    keyTgl = key;
-                                } else if (key.contains("file") && key.contains("pendukung"+valKurung)) {
-                                    keyUpFile.add(loop,key);
-                                    loop++;
-                                } else if (key.contains("tangan")) {
-                                    keyUpTtd = key;
-                                }
-                            }
-
-                            objData.remove(keyTgl);
-                            objData.remove(keyUpTtd);
-                            for (int op = 0; op < keyUpFile.size(); op++) {
-                                objData.remove(keyUpFile.get(op));
-                            }
-
-                            if (objData.has("pernyataan")) {
-                                objData.remove("pernyataan");
-                            }
-                            if (objData.has("idDips")) {
-                                objData.remove("idDips");
-                            }
-
-                            objAPI.put("idJenis",id_Perihal);
-                            objAPI.put("tanggal",timeStamp);
-                            objAPI.put("idDips",idDips);
-                            objAPI.put("data",objData);
-                        } catch (JSONException e) {
-                            throw new RuntimeException(e);
-                        }
-
-                        Log.e("CEK","PAYLOAD API KOMPLAIN : "+objAPI.toString());*/
-
                         if (validate) {
                             if (isSessionZoom) {
                                 BaseMeetingActivity.showProgress(true);
-                                keyboard(mContext);
                             } else {
-                                keyboard(mContext);
                                 DipsSwafoto.showProgress(true);
                             }
+                            HideSoftKeyboard.hideSoftKeyboard(getActivity());
                             CekDataByNIK(objEl);
                         } else {
-                            Log.e("CEK","ELSE : "+validate);
                             Toast.makeText(mContext, R.string.doesn_match, Toast.LENGTH_SHORT).show();
                         }
                     }
@@ -428,15 +351,6 @@ public class frag_inputdata_new extends Fragment {
             }
         });
     }
-
-    private void keyboard(Context context){
-        InputMethodManager imm = (InputMethodManager) context.getSystemService(Activity.INPUT_METHOD_SERVICE);
-        if (imm.isAcceptingText()){
-            ((InputMethodManager) getActivity().getSystemService(Activity.INPUT_METHOD_SERVICE))
-                    .toggleSoftInput(InputMethodManager.SHOW_IMPLICIT, 0);
-        }
-    }
-
 
     @Override
     public void onDestroy() {
@@ -450,7 +364,6 @@ public class frag_inputdata_new extends Fragment {
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putString(STATE_CUSTNAME,custName);
         outState.putString(STATE_ELEMENTARRAY,idElement.toString());
         outState.putString(STATE_ELEMENTObj,objEl.toString());
     }
@@ -501,18 +414,15 @@ public class frag_inputdata_new extends Fragment {
     }
 
     private void processGetForm() {
-        Log.e("CEK","MASUK processGetForm");
         String authAccess = "Bearer "+session.getAuthToken();
         String exchangeToken = session.getExchangeToken();
         Server.getAPIWAITING_PRODUCT().getFormBuilder(7,authAccess,exchangeToken).enqueue(new Callback<JsonObject>() {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
                 swipe.setRefreshing(false);
-                Log.e("CEK","response processGetForm : "+response.code());
                 if (response.isSuccessful()) {
                     btnNext.setVisibility(View.VISIBLE);
                     String dataS = response.body().toString();
-                    Log.e("CEK","response dataS : "+dataS);
                     llFormBuild.removeAllViewsInLayout();
                     try {
                         JSONObject dataObj = new JSONObject(dataS);
@@ -524,12 +434,9 @@ public class frag_inputdata_new extends Fragment {
                         }
                         JSONObject dataObjForm = dataObj.getJSONObject("data");
                         String dataForm = dataObjForm.getString("data");
-                        Log.e("CEK","dataForm : "+dataForm);
                         MyParserFormBuilder parseForm = new MyParserFormBuilder(mContext, dataForm, llFormBuild);
                         idElement = MyParserFormBuilder.getForm();
-                        Log.e("CEK","dataElement : "+ idElement);
                         processValidationActionForm();
-                        Log.e("CEK","DATA FORM : "+objEl.toString());
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
@@ -544,7 +451,6 @@ public class frag_inputdata_new extends Fragment {
     }
 
     private void processValidationActionForm() {
-        Log.e("CEK","MASUK processValidationActionForm");
         int child = llFormBuild.getChildCount();
 
         if (child > 0 && idElement.length() > 0) {
@@ -567,7 +473,6 @@ public class frag_inputdata_new extends Fragment {
                             if (idEl == idDataEl) {
                                 String finalValKurung = valKurung;
                                 if (llFormBuild.getChildAt(i) instanceof EditText) {
-                                    Log.e("CEK","MASUK EditText : "+nameDataEl);
                                     if (!urlPath.isEmpty()) {
                                         AutoCompleteTextView AutoText = (AutoCompleteTextView) llFormBuild.getChildAt(i);
                                         boolean flagDot = false;
@@ -589,13 +494,10 @@ public class frag_inputdata_new extends Fragment {
                                         AutoText.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                                             @Override
                                             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                                                Log.e("CEK","MASUK AutoText setOnItemClickListener");
                                                 String txt = AutoText.getText().toString().trim();
-                                                Log.e("CEK","MASUK AutoText setOnItemClickListener txt : "+txt+" | getItemAtPosition : "+parent.getItemAtPosition(position));
                                                 FormSpin dataSpin = (FormSpin) parent.getItemAtPosition(position);
                                                 int idData = dataSpin.getId();
                                                 String results = dataSpin.getName();
-                                                Log.e("CEK","dataSpin.getId() : "+idData+" | results : "+results);
                                                 try {
                                                     objEl.put(nameDataEl, results);
                                                     if (nameDataEl.contains("jenis") && (nameDataEl.contains("pengaduan") || nameDataEl.contains("komplain"))) {
@@ -611,7 +513,7 @@ public class frag_inputdata_new extends Fragment {
                                         AutoText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
                                             @Override
                                             public void onFocusChange(View view, boolean b) {
-                                                Log.e("CEK","onFocusChange : "+b);
+
                                             }
                                         });
                                     } else {
@@ -645,7 +547,6 @@ public class frag_inputdata_new extends Fragment {
                                                     backSpaceChar = lasLenChar > s.length();
                                                     if (!backSpaceChar) {
                                                         String dataNPWP = s.toString();
-                                                        Log.e("CEK", "dataNPWP : " + dataNPWP);
                                                         String formatNPWP = "";
                                                         if (dataNPWP.length() == 2 || dataNPWP.length() == 6 || dataNPWP.length() == 10 || dataNPWP.length() == 16) {
                                                             formatNPWP = ".";
@@ -663,11 +564,9 @@ public class frag_inputdata_new extends Fragment {
                                     }
                                     objEl.put(nameDataEl, "");
                                 } else if (llFormBuild.getChildAt(i) instanceof RadioGroup) {
-                                    Log.e("CEK","MASUK RadioGroup");
                                     objEl.put(nameDataEl, "");
                                     break;
                                 } else if (llFormBuild.getChildAt(i) instanceof CheckBox) {
-                                    Log.e("CEK","MASUK CheckBox");
                                     objEl.put(nameDataEl, false);
 
                                     CheckBox chk = (CheckBox) llFormBuild.getChildAt(i);
@@ -692,7 +591,6 @@ public class frag_inputdata_new extends Fragment {
                                     });
                                     break;
                                 } else if (llFormBuild.getChildAt(i) instanceof Spinner) {
-                                    Log.e("CEK","MASUK Spinner");
                                     objEl.put(nameDataEl, "");
                                     Spinner spin = (Spinner) llFormBuild.getChildAt(i);
                                     spin.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -713,7 +611,6 @@ public class frag_inputdata_new extends Fragment {
                                     });
                                     break;
                                 } else if (llFormBuild.getChildAt(i) instanceof RelativeLayout) {
-                                    Log.e("CEK","MASUK RelativeLayout");
                                     RelativeLayout rl = (RelativeLayout) llFormBuild.getChildAt(i);
                                     if (rl.getChildAt(0) instanceof Spinner) {
                                         Spinner spin = (Spinner) rl.getChildAt(0);
@@ -739,16 +636,19 @@ public class frag_inputdata_new extends Fragment {
                                         spin.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                                             @Override
                                             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                                                Log.e("CEK","getSelectedItem : "+spin.getSelectedItem().toString());
                                                 FormSpin dataSpin = (FormSpin) spin.getSelectedItem();
                                                 int idData = dataSpin.getId();
                                                 String getCodeType = dataSpin.getCode();
                                                 String results = dataSpin.getName();
-                                                Log.e("CEK","dataSpin.getId() : "+idData);
                                                 try {
                                                     objEl.put(nameDataEl, results);
                                                     if (nameDataEl.contains("provinsi") || nameDataEl.contains("kabupaten") || nameDataEl.contains("kota") || nameDataEl.contains("kecamatan") || (nameDataEl.contains("kelurahan") || nameDataEl.contains("desa"))) {
-                                                        valSpinProv.put(nameDataEl,idData);
+                                                        String newNameDataEl = nameDataEl;
+                                                        if (nameDataEl.contains("(")) {
+                                                            int indxProv = nameDataEl.indexOf("(");
+                                                            newNameDataEl = nameDataEl.substring(0,indxProv).trim();
+                                                        }
+                                                        valSpinProv.put(newNameDataEl,idData);
                                                     } else {
                                                         valSpin.put(nameDataEl, idData);
                                                         if (nameDataEl.contains("jenis") && (nameDataEl.contains("pengaduan") || nameDataEl.contains("komplain"))) {
@@ -762,7 +662,6 @@ public class frag_inputdata_new extends Fragment {
                                                     e.printStackTrace();
                                                 }
 
-                                                Log.e("CEK","flagStuckSpin : "+flagStuckSpin);
                                                 if (flagStuckSpin) {
                                                     processGetSpinChild(nameDataEl);
                                                 }
@@ -776,7 +675,6 @@ public class frag_inputdata_new extends Fragment {
                                         break;
                                     }
                                 } else if (llFormBuild.getChildAt(i) instanceof AutoCompleteTextView) {
-                                    Log.e("CEK","MASUK AutoCompleteTextView");
                                     objEl.put(nameDataEl, "");
                                     AutoCompleteTextView AutoText = (AutoCompleteTextView) llFormBuild.getChildAt(i);
                                     boolean flagDot = false;
@@ -798,17 +696,13 @@ public class frag_inputdata_new extends Fragment {
                                     break;
                                 } else if (llFormBuild.getChildAt(i) instanceof LinearLayout) {
                                     LinearLayout ll = (LinearLayout) llFormBuild.getChildAt(i);
-                                    Log.e("CEK", "LinearLayout getChildCount : " + ll.getChildCount());
                                     if (ll.getChildCount() > 1) {
                                         if (ll.getChildAt(1) instanceof TextView) {
                                             keyUpFile = nameDataEl;
                                             if (ll.getChildAt(0) instanceof LinearLayout) {
                                                 LinearLayout ll2 = (LinearLayout) ll.getChildAt(0);
-                                                Log.e("CEK", "MASUK LinearLayout CHILD ke-" + i);
-
                                                 TextView tvll = (TextView) ll2.getChildAt(1);
                                                 String txt = tvll.getText().toString();
-                                                Log.e("CEK", "tvll : " + txt);
                                                 if (txt.toLowerCase().indexOf("gambar") > 0 || txt.toLowerCase().indexOf("image") > 0 || txt.toLowerCase().indexOf("tangan") > 0) {
                                                     tvSavedImg = (TextView) ll.getChildAt(1);
                                                     ll2.setOnClickListener(new View.OnClickListener() {
@@ -848,7 +742,6 @@ public class frag_inputdata_new extends Fragment {
                                             }
                                         } else if (ll.getChildAt(1) instanceof RecyclerView) {
                                             keyUpFile = nameDataEl;
-                                            Log.e("CEK","MASUK UPLOAD FILE RecyclerView");
                                             LinearLayout llUploadFile = ll.findViewById(R.id.llUploadFile);
                                             rv_item_file = ll.findViewById(R.id.rv_item_file);
                                             rv_item_file.setHasFixedSize(false);
@@ -880,7 +773,6 @@ public class frag_inputdata_new extends Fragment {
                                             });
                                         } else {
                                             keyUpImage = nameDataEl;
-                                            Log.e("CEK","MASUK UPLOAD GALLERY");
                                             ImageView btnCamera = ll.findViewById(R.id.choose_camera);
                                             chooseImage = ll.findViewById(R.id.Choose_Image);
                                             LinearLayout btnGallery = ll.findViewById(R.id.choose_gallery);
@@ -935,16 +827,13 @@ public class frag_inputdata_new extends Fragment {
     }
 
     private void processGetDynamicURLAutoComplete(AutoCompleteTextView autoText, String urlPath, String nameDataEl) {
-        Log.e("CEK","processGetDynamicURLAutoComplete : "+urlPath);
         String authAccess = "Bearer "+session.getAuthToken();
         String exchangeToken = session.getExchangeToken();
         Server.getAPIService().getDynamicUrl(urlPath,authAccess,exchangeToken).enqueue(new Callback<JsonObject>() {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
-                Log.e("CEK","processGetDynamicURL code : "+response.code());
                 if (response.isSuccessful()) {
                     String dataS = response.body().toString();
-                    Log.e("CEK", "processGetDynamicURL dataS : " + dataS);
                     try {
                         JSONObject dataObj = new JSONObject(dataS);
                         if (dataObj.has("token")) {
@@ -985,16 +874,13 @@ public class frag_inputdata_new extends Fragment {
 
     private void processGetDynamicURL(Spinner spin, String urlPath, String nameDataEl) {
         flagStuckSpin = false;
-        Log.e("CEK","processGetDynamicURL : "+urlPath);
         String authAccess = "Bearer "+session.getAuthToken();
         String exchangeToken = session.getExchangeToken();
         Server.getAPIService().getDynamicUrl(urlPath,authAccess,exchangeToken).enqueue(new Callback<JsonObject>() {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
-                Log.e("CEK","processGetDynamicURL code : "+response.code());
                 if (response.isSuccessful()) {
                     String dataS = response.body().toString();
-                    Log.e("CEK","processGetDynamicURL dataS : "+dataS);
                     try {
                         JSONObject dataObj = new JSONObject(dataS);
                         if (dataObj.has("token")) {
@@ -1055,7 +941,12 @@ public class frag_inputdata_new extends Fragment {
                                 dataDropDown.add(new FormSpin(idData, labelIdn, labelIdn, labelEng));
                                 if (i == 0) {
                                     if (nameDataEl.contains("provinsi") || nameDataEl.contains("kabupaten") || nameDataEl.contains("kota") || nameDataEl.contains("kecamatan") || (nameDataEl.contains("kelurahan") || nameDataEl.contains("desa"))) {
-                                        valSpinProv.put(nameDataEl,idData);
+                                        String newNameDataEl = nameDataEl;
+                                        if (nameDataEl.contains("(")) {
+                                            int indxProv = nameDataEl.indexOf("(");
+                                            newNameDataEl = nameDataEl.substring(0,indxProv).trim();
+                                        }
+                                        valSpinProv.put(newNameDataEl,idData);
                                     } else {
                                         valSpin.put(nameDataEl, idData);
                                         valSpinLabel.put(nameDataEl,labelEng);
@@ -1085,7 +976,6 @@ public class frag_inputdata_new extends Fragment {
     }
 
     private void processGetSpinChildAutoComplete(String nameDataEl) {
-        Log.e("CEK","processGetSpinChildAutoComplete nameDataEl : "+nameDataEl);
         int child = llFormBuild.getChildCount();
         for (int i = 0; i < child; i++) {
             int idEl = llFormBuild.getChildAt(i).getId();
@@ -1100,7 +990,6 @@ public class frag_inputdata_new extends Fragment {
 
                     if (idEl == idDataEl) {
                         if (llFormBuild.getChildAt(i) instanceof EditText) {
-                            Log.e("CEK", "MASUK EditText : " + nameDataEl);
                             if ((nameDataEl.contains("jenis") && (nameDataEl.contains("pengaduan") || nameDataEl.contains("komplain"))) &&
                                     (getnameDataEl.contains("hal") && (getnameDataEl.contains("pengaduan") || getnameDataEl.contains("komplain")))) {
                                 if (!urlPath.isEmpty()) {
@@ -1108,8 +997,6 @@ public class frag_inputdata_new extends Fragment {
                                     if (!urlPath.isEmpty()) {
                                         String typeComplaint = valSpinAutoComplete.getString(nameDataEl);
                                         String urlNew = urlPath.replace(":jenisPengaduan",typeComplaint);
-
-                                        Log.e("CEK", "urlNew : "+urlNew);
                                         processGetDynamicURLAutoComplete(AutoText, urlPath, nameDataEl);
                                     }
                                 }
@@ -1124,7 +1011,6 @@ public class frag_inputdata_new extends Fragment {
     }
 
     private void processGetSpinChild(String nameDataEl) {
-        Log.e("CEK","processGetSpinChild nameDataEl : "+nameDataEl);
         int child = llFormBuild.getChildCount();
         for (int i = 0; i < child; i++) {
             int idEl = llFormBuild.getChildAt(i).getId();
@@ -1140,7 +1026,6 @@ public class frag_inputdata_new extends Fragment {
                     if (idEl == idDataEl) {
                         if (llFormBuild.getChildAt(i) instanceof RelativeLayout) {
                             if (nameDataEl.contains("provinsi") && (getnameDataEl.contains("kabupaten") || getnameDataEl.contains("kota"))) {
-                                Log.e("CEK","processGetSpinChild getnameDataEl : "+getnameDataEl);
                                 if (!urlPath.isEmpty()) {
                                     int idProv = 0;
                                     if (valSpinProv.has("provinsi")) {
@@ -1151,8 +1036,6 @@ public class frag_inputdata_new extends Fragment {
                                     String idSpin = String.valueOf(idProv);
                                     if (idProv != 0) {
                                         String urlNew = urlPath.replace(":id_provinsi", idSpin);
-
-                                        Log.e("CEK", "urlNew : " + urlNew);
 
                                         RelativeLayout rl = (RelativeLayout) llFormBuild.getChildAt(i);
                                         if (rl.getChildAt(0) instanceof Spinner) {
@@ -1191,7 +1074,6 @@ public class frag_inputdata_new extends Fragment {
                                     String idSpin2 = String.valueOf(idKabKot);
                                     String urlNew = urlPath.replace(":id_provinsi",idSpin).replace(":id_kabupaten",idSpin2);
 
-                                    Log.e("CEK", "urlNew : "+urlNew);
                                     if (idKabKot != 0) {
                                         RelativeLayout rl = (RelativeLayout) llFormBuild.getChildAt(i);
                                         if (rl.getChildAt(0) instanceof Spinner) {
@@ -1237,8 +1119,6 @@ public class frag_inputdata_new extends Fragment {
                                     String idSpin3 = String.valueOf(idKec);
                                     String urlNew = urlPath.replace(":id_provinsi",idSpin).replace(":id_kabupaten",idSpin2).replace(":id_kecamatan",idSpin3);
 
-                                    Log.e("CEK", "urlNew : "+urlNew);
-
                                     if (idKec != 0) {
                                         RelativeLayout rl = (RelativeLayout) llFormBuild.getChildAt(i);
                                         if (rl.getChildAt(0) instanceof Spinner) {
@@ -1256,7 +1136,6 @@ public class frag_inputdata_new extends Fragment {
                                     String typeComplaint = valSpinLabel.getString(nameDataEl);
                                     String urlNew = urlPath.replace(":jenisPengaduan", typeComplaint);
 
-                                    Log.e("CEK", "urlNew : " + urlNew);
                                     RelativeLayout rl = (RelativeLayout) llFormBuild.getChildAt(i);
                                     if (rl.getChildAt(0) instanceof Spinner) {
                                         Spinner spin = (Spinner) rl.getChildAt(0);
@@ -1282,7 +1161,6 @@ public class frag_inputdata_new extends Fragment {
     }
 
     private void CekDataByNIK(JSONObject jsons){
-        Log.e("CEL","MASUK CekDataByNIK");
 
         String authAccess = "Bearer "+session.getAuthToken();
         String exchangeToken = session.getExchangeToken();
@@ -1291,11 +1169,9 @@ public class frag_inputdata_new extends Fragment {
 
         ApiService API = Server.getAPIService();
         Call<JsonObject> call = API.CekByNIK(requestBody,authAccess,exchangeToken);
-        Log.e("CEL","URL CekDataByNIK : "+call.request().url());
         call.enqueue(new Callback<JsonObject>() {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
-                Log.e("CEK","RESPONSE CekDataByNIK  : "+response.code());
                 if (isSessionZoom) {
                     BaseMeetingActivity.showProgress(false);
                 } else {
@@ -1304,7 +1180,6 @@ public class frag_inputdata_new extends Fragment {
                 if (response.isSuccessful() && response.body().size() > 0) {
                     //Mirroring(true, Nama, NIK);
                     String dataS = response.body().toString();
-                    Log.e("CEK","RESPONSE  : "+dataS);
                     try {
                         JSONObject jsObj = new JSONObject(dataS);
                         int err_code = jsObj.getInt("code");
@@ -1316,7 +1191,6 @@ public class frag_inputdata_new extends Fragment {
                             session.saveIdDips(idDips);
 
                             String getDataNasabah = session.getNasabah();
-                            Log.e("CEK","getDataNasabah : "+getDataNasabah);
                             JSONObject dataNasabahObj = null;
                             if (getDataNasabah != null && !getDataNasabah.isEmpty()) {
                                 dataNasabahObj = new JSONObject(getDataNasabah);
@@ -1352,7 +1226,8 @@ public class frag_inputdata_new extends Fragment {
                                     e.printStackTrace();
                                 }
                                 if (isSessionZoom) {
-                                    RabbitMirroring.MirroringSendKey(jsons);
+                                    //RabbitMirroring.MirroringSendKey(jsons);
+                                    ConnectionRabbitHttp.mirroringKey(jsons);
                                 }
                             }
                             isSwafoto = dataObj.getBoolean("isSwafoto");
@@ -1368,7 +1243,8 @@ public class frag_inputdata_new extends Fragment {
                                         Bundle bundle = new Bundle();
                                         fragment.setArguments(bundle);
                                         if (isSessionZoom) {
-                                            RabbitMirroring.MirroringSendEndpoint(3);
+                                            //RabbitMirroring.MirroringSendEndpoint(3);
+                                            ConnectionRabbitHttp.mirroringEndpoint(3);
                                             getFragmentPage(fragment);
                                         } else {
                                             getFragmentPageDefault(fragment);
@@ -1376,9 +1252,7 @@ public class frag_inputdata_new extends Fragment {
                                     }
                                     else {
                                         //if (chkFlow == 1) {
-                                        Log.e("CEK_INPUT_DATA","getNoCIF : "+session.getNoCIF());
                                             Intent intent = new Intent(mContext, DipsWaitingRoom.class);
-                                            intent.putExtra("CUSTNAME",custName);
                                             startActivity(intent);
                                             ((Activity) mContext).finishAffinity();
                                         /*} else {
@@ -1391,9 +1265,7 @@ public class frag_inputdata_new extends Fragment {
                                 }
                                 else {
                                     //if (chkFlow == 1) {
-                                    Log.e("CEK_INPUT_DATA","getNoCIF : "+session.getNoCIF());
                                         Intent intent = new Intent(mContext, DipsWaitingRoom.class);
-                                        intent.putExtra("CUSTNAME",custName);
                                         startActivity(intent);
                                         ((Activity) mContext).finishAffinity();
                                     /*} else {
@@ -1421,11 +1293,9 @@ public class frag_inputdata_new extends Fragment {
                 else {
                     if (response.code() == 404) {
                         Intent intent = new Intent(mContext, DipsWaitingRoom.class);
-                        intent.putExtra("CUSTNAME",custName);
                         startActivity(intent);
                         ((Activity) mContext).finishAffinity();
                     }
-                    Log.d("CEK","MASUK ELSE");
                 }
             }
 
@@ -1442,7 +1312,6 @@ public class frag_inputdata_new extends Fragment {
     }
 
     private void PopUpTnc(){
-        Log.e("CEK","MASUK PopUpTnc");
         inflater = ((Activity)mContext).getLayoutInflater();
         if (sweetAlertDialogTNC == null) {
             dialogView = inflater.inflate(R.layout.item_tnc,null);
@@ -1459,12 +1328,10 @@ public class frag_inputdata_new extends Fragment {
             @Override
             public void onClick(View v) {
                 if (checkBox.isChecked()){
-                    Log.d("CHECK","TRUE");
                     btn.setBackgroundTintList(mContext.getResources().getColorStateList(R.color.Blue));
                     btn.setClickable(true);
                 }
                 else {
-                    Log.d("CHECK","FALSE");
                     btn.setBackgroundTintList(mContext.getResources().getColorStateList(R.color.btnFalse));
                     btn.setClickable(false);
                 }
@@ -1485,7 +1352,8 @@ public class frag_inputdata_new extends Fragment {
                     fragment.setArguments(bundle);
 
                     if (isSessionZoom) {
-                        RabbitMirroring.MirroringSendEndpoint(3);
+                        //RabbitMirroring.MirroringSendEndpoint(3);
+                        ConnectionRabbitHttp.mirroringEndpoint(3);
                         getFragmentPage(fragment);
                     } else {
                         getFragmentPageDefault(fragment);
@@ -1501,10 +1369,8 @@ public class frag_inputdata_new extends Fragment {
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        Log.e("CEK","onActivityResult : "+resultCode);
         if (resultCode == RESULT_OK && data != null) {
             if (requestCode == REQUESTCODE_CAPTURE) {
-                Log.e("CEK","RETURN CAMERA");
                 session.saveFlagUpDoc(true);
                 byte[] resultCamera = data.getByteArrayExtra("result_camera");
                 Bitmap bitmap = BitmapFactory.decodeByteArray(resultCamera, 0, resultCamera.length);
@@ -1527,8 +1393,6 @@ public class frag_inputdata_new extends Fragment {
                 }
                 imgtoBase64(bitmap);
             } else if (requestCode == 201) {
-                session.saveFlagUpDoc(true);
-                Log.e("CEK","RESULT GAMBAR");
                 Uri selectedImage = data.getData();
                 String[] filePath = { MediaStore.Images.Media.DATA };
                 Cursor c = mContext.getContentResolver().query(selectedImage,filePath, null, null, null);
@@ -1537,8 +1401,6 @@ public class frag_inputdata_new extends Fragment {
                 String picturePath = c.getString(columnIndex);
                 File files = new File(picturePath);
                 String fileName = files.getName();
-                Log.e("CEK","RESULT picturePath : "+picturePath);
-                Log.e("CEK","RESULT files.getName : "+fileName);
                 tvSavedImg.setText(fileName);
                 c.close();
                 prosesOptimalImage(picturePath);
@@ -1555,9 +1417,7 @@ public class frag_inputdata_new extends Fragment {
                     }
                 }
             } else if (requestCode == REQUESTCODE_FILE) {
-                Log.e("CEK","RESULT FILE");
                 Uri uri = data.getData();
-                Log.e("CEK","uri : "+uri);
                 if (dataFiles.size() > 3) {
                     Toast.makeText(mContext, R.string.max_upfile, Toast.LENGTH_SHORT).show();
                     return;
@@ -1567,7 +1427,6 @@ public class frag_inputdata_new extends Fragment {
                     Cursor c = mContext.getContentResolver().query(uri,null, null, null, null);
                     c.moveToFirst();
                     @SuppressLint("Range") String fileName = c.getString(c.getColumnIndex(OpenableColumns.DISPLAY_NAME));
-                    Log.e("CEK","RESULT fileName : "+fileName);
                     if (tvSavedFile != null) {
                         tvSavedFile.setText(fileName);
                         if (!keyUpFile.isEmpty()) {
@@ -1602,15 +1461,12 @@ public class frag_inputdata_new extends Fragment {
                     }
                 } else if (data.getClipData().getItemCount() > 0) {
                     dataFiles = new ArrayList();
-                    Log.e("CEK","MULTI uri : "+data.getClipData().getItemCount());
 
                     for(int i = 0; i < data.getClipData().getItemCount(); i++) {
                         Uri uriFile = data.getClipData().getItemAt(i).getUri();
-                        Log.e("CEK","uriFile : "+uriFile.toString());
                         Cursor c = mContext.getContentResolver().query(uriFile,null, null, null, null);
                         c.moveToFirst();
                         @SuppressLint("Range") String fileName = c.getString(c.getColumnIndex(OpenableColumns.DISPLAY_NAME));
-                        Log.e("CEK","RESULT fileName : "+fileName);
                         if (rv_item_file != null) {
                             dataFiles.add(new FileModel("1", fileName, R.color.item_file_silver, ""));
                         }
@@ -1675,7 +1531,6 @@ public class frag_inputdata_new extends Fragment {
         File mediaFile = new File(picturePath);
         Bitmap thumbnail = (BitmapFactory.decodeFile(picturePath));
         int file_size = Integer.parseInt(String.valueOf(mediaFile.length()/1024));
-        Log.d("CEK", "file_size : "+file_size);
 
         int perDiff = 1;
         if (file_size > 3072) {
@@ -1724,7 +1579,8 @@ public class frag_inputdata_new extends Fragment {
             JSONObject dataImg = new JSONObject();
             try {
                 dataImg.put(keys,imgBase64);
-                RabbitMirroring.MirroringSendKey(dataImg);
+                //RabbitMirroring.MirroringSendKey(dataImg);
+                ConnectionRabbitHttp.mirroringKey(dataImg);
             } catch (JSONException e) {
                 e.printStackTrace();
             }
