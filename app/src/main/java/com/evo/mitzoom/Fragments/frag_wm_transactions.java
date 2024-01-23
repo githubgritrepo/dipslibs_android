@@ -498,13 +498,10 @@ public class frag_wm_transactions extends Fragment {
         rgSortType.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup radioGroup, int checkedId) {
-                switch (checkedId) {
-                    case R.id.rbSortAsc:
-                        sort = "asc";
-                        break;
-                    case R.id.rbSortDesc:
-                        sort = "desc";
-                        break;
+                if (checkedId == R.id.rbSortAsc) {
+                    sort = "asc";
+                } else if (checkedId == R.id.rbSortDesc) {
+                    sort = "desc";
                 }
             }
         });

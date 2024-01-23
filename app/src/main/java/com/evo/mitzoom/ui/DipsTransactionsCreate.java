@@ -1317,25 +1317,23 @@ public class DipsTransactionsCreate extends AppCompatActivity {
 
     public void onRBServiceType(View view) {
         boolean isChecked = ((RadioButton) view).isChecked();
-        switch (view.getId()) {
-            case R.id.rbTarik:
-                if (isChecked) {
-                    typeService = rbTarik.getText().toString();
-                    rbTarik.setTextColor(ColorStateList.valueOf(mContext.getResources().getColor(R.color.white)));
-                    rbSetor.setTextColor(ColorStateList.valueOf(mContext.getResources().getColor(R.color.zm_button)));
-                    form_id = 67;
-                    processGetForm(form_id);
-                }
-                break;
-            case R.id.rbSetor:
-                if (isChecked) {
-                    typeService = rbSetor.getText().toString();
-                    rbTarik.setTextColor(ColorStateList.valueOf(mContext.getResources().getColor(R.color.zm_button)));
-                    rbSetor.setTextColor(ColorStateList.valueOf(mContext.getResources().getColor(R.color.white)));
-                    form_id = 53;
-                    processGetForm(form_id);
-                }
-                break;
+        int id = view.getId();
+        if (id == R.id.rbTarik) {
+            if (isChecked) {
+                typeService = rbTarik.getText().toString();
+                rbTarik.setTextColor(ColorStateList.valueOf(mContext.getResources().getColor(R.color.white)));
+                rbSetor.setTextColor(ColorStateList.valueOf(mContext.getResources().getColor(R.color.zm_button)));
+                form_id = 67;
+                processGetForm(form_id);
+            }
+        } else if (id == R.id.rbSetor) {
+            if (isChecked) {
+                typeService = rbSetor.getText().toString();
+                rbTarik.setTextColor(ColorStateList.valueOf(mContext.getResources().getColor(R.color.zm_button)));
+                rbSetor.setTextColor(ColorStateList.valueOf(mContext.getResources().getColor(R.color.white)));
+                form_id = 53;
+                processGetForm(form_id);
+            }
         }
     }
 

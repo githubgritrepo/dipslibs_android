@@ -804,50 +804,47 @@ public class frag_wm_detail_porto extends Fragment {
         rgSaleUnit.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup radioGroup, int checkedId) {
-                switch (checkedId) {
-                    case R.id.salePart:
-                        Sale = "part";
-                        try {
-                            dataMirr.put("alert","half");
-                            for(Iterator<String> iter = dataObjProd.keys(); iter.hasNext();) {
-                                if (iter.hasNext()) {
-                                    String key = iter.next();
-                                    dataMirr.put(key,dataObjProd.get(key));
-                                }
+                if (checkedId == R.id.salePart) {
+                    Sale = "part";
+                    try {
+                        dataMirr.put("alert", "half");
+                        for (Iterator<String> iter = dataObjProd.keys(); iter.hasNext(); ) {
+                            if (iter.hasNext()) {
+                                String key = iter.next();
+                                dataMirr.put(key, dataObjProd.get(key));
                             }
-
-                            formMirr.put(labelDetailKey,dataMirr);
-                            mirrObj.put(labelTrx,formMirr);
-                            ConnectionRabbitHttp.mirroringKey(mirrObj);
-
-                        } catch (JSONException e) {
-                            throw new RuntimeException(e);
                         }
 
-                        btnNext.setEnabled(true);
-                        btnNext.setBackgroundTintList(mContext.getResources().getColorStateList(R.color.zm_button));
-                        break;
-                    case R.id.saleFull:
-                        Sale = "full";
-                        try {
-                            dataMirr.put("alert","all");
-                            for(Iterator<String> iter = dataObjProd.keys(); iter.hasNext();) {
-                                if (iter.hasNext()) {
-                                    String key = iter.next();
-                                    dataMirr.put(key,dataObjProd.get(key));
-                                }
+                        formMirr.put(labelDetailKey, dataMirr);
+                        mirrObj.put(labelTrx, formMirr);
+                        ConnectionRabbitHttp.mirroringKey(mirrObj);
+
+                    } catch (JSONException e) {
+                        throw new RuntimeException(e);
+                    }
+
+                    btnNext.setEnabled(true);
+                    btnNext.setBackgroundTintList(mContext.getResources().getColorStateList(R.color.zm_button));
+                } else if (checkedId == R.id.saleFull) {
+                    Sale = "full";
+                    try {
+                        dataMirr.put("alert", "all");
+                        for (Iterator<String> iter = dataObjProd.keys(); iter.hasNext(); ) {
+                            if (iter.hasNext()) {
+                                String key = iter.next();
+                                dataMirr.put(key, dataObjProd.get(key));
                             }
-
-                            formMirr.put(labelDetailKey,dataMirr);
-                            mirrObj.put(labelTrx,formMirr);
-                            ConnectionRabbitHttp.mirroringKey(mirrObj);
-
-                        } catch (JSONException e) {
-                            throw new RuntimeException(e);
                         }
-                        btnNext.setEnabled(true);
-                        btnNext.setBackgroundTintList(mContext.getResources().getColorStateList(R.color.zm_button));
-                        break;
+
+                        formMirr.put(labelDetailKey, dataMirr);
+                        mirrObj.put(labelTrx, formMirr);
+                        ConnectionRabbitHttp.mirroringKey(mirrObj);
+
+                    } catch (JSONException e) {
+                        throw new RuntimeException(e);
+                    }
+                    btnNext.setEnabled(true);
+                    btnNext.setBackgroundTintList(mContext.getResources().getColorStateList(R.color.zm_button));
                 }
             }
         });

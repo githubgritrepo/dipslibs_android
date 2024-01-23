@@ -9,6 +9,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -384,71 +385,66 @@ public class frag_wm_detail_product extends Fragment {
         rgChooseChart.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup radioGroup, int checkedId) {
-                switch (checkedId) {
-                    case R.id.rb10D:
-                            rb10D.setTextColor(ColorStateList.valueOf(mContext.getResources().getColor(R.color.white)));
-                            rb1M.setTextColor(ColorStateList.valueOf(mContext.getResources().getColor(R.color.zm_green)));
-                            rb6M.setTextColor(ColorStateList.valueOf(mContext.getResources().getColor(R.color.zm_green)));
-                            rb1Y.setTextColor(ColorStateList.valueOf(mContext.getResources().getColor(R.color.zm_green)));
+                if (checkedId == R.id.rb10D) {
+                    rb10D.setTextColor(ColorStateList.valueOf(mContext.getResources().getColor(R.color.white)));
+                    rb1M.setTextColor(ColorStateList.valueOf(mContext.getResources().getColor(R.color.zm_green)));
+                    rb6M.setTextColor(ColorStateList.valueOf(mContext.getResources().getColor(R.color.zm_green)));
+                    rb1Y.setTextColor(ColorStateList.valueOf(mContext.getResources().getColor(R.color.zm_green)));
 
-                            rangeType = "D";
-                            rangeValue = 10;
-                            rangeLabel = rb10D.getText().toString();
-                            if (isSessionZoom) {
-                                BaseMeetingActivity.showProgress(true);
-                            } else {
-                                DipsSwafoto.showProgress(true);
-                            }
-                            processNavPerformance();
-                        break;
-                    case R.id.rb1M:
-                            rb10D.setTextColor(ColorStateList.valueOf(mContext.getResources().getColor(R.color.zm_green)));
-                            rb1M.setTextColor(ColorStateList.valueOf(mContext.getResources().getColor(R.color.white)));
-                            rb6M.setTextColor(ColorStateList.valueOf(mContext.getResources().getColor(R.color.zm_green)));
-                            rb1Y.setTextColor(ColorStateList.valueOf(mContext.getResources().getColor(R.color.zm_green)));
+                    rangeType = "D";
+                    rangeValue = 10;
+                    rangeLabel = rb10D.getText().toString();
+                    if (isSessionZoom) {
+                        BaseMeetingActivity.showProgress(true);
+                    } else {
+                        DipsSwafoto.showProgress(true);
+                    }
+                    processNavPerformance();
+                } else if (checkedId == R.id.rb1M) {
+                    rb10D.setTextColor(ColorStateList.valueOf(mContext.getResources().getColor(R.color.zm_green)));
+                    rb1M.setTextColor(ColorStateList.valueOf(mContext.getResources().getColor(R.color.white)));
+                    rb6M.setTextColor(ColorStateList.valueOf(mContext.getResources().getColor(R.color.zm_green)));
+                    rb1Y.setTextColor(ColorStateList.valueOf(mContext.getResources().getColor(R.color.zm_green)));
 
-                            rangeType = "D";
-                            rangeValue = 30;
-                            rangeLabel = rb1M.getText().toString();
-                            if (isSessionZoom) {
-                                BaseMeetingActivity.showProgress(true);
-                            } else {
-                                DipsSwafoto.showProgress(true);
-                            }
-                            processNavPerformance();
-                        break;
-                    case R.id.rb6M:
-                            rb10D.setTextColor(ColorStateList.valueOf(mContext.getResources().getColor(R.color.zm_green)));
-                            rb1M.setTextColor(ColorStateList.valueOf(mContext.getResources().getColor(R.color.zm_green)));
-                            rb6M.setTextColor(ColorStateList.valueOf(mContext.getResources().getColor(R.color.white)));
-                            rb1Y.setTextColor(ColorStateList.valueOf(mContext.getResources().getColor(R.color.zm_green)));
+                    rangeType = "D";
+                    rangeValue = 30;
+                    rangeLabel = rb1M.getText().toString();
+                    if (isSessionZoom) {
+                        BaseMeetingActivity.showProgress(true);
+                    } else {
+                        DipsSwafoto.showProgress(true);
+                    }
+                    processNavPerformance();
+                } else if (checkedId == R.id.rb6M) {
+                    rb10D.setTextColor(ColorStateList.valueOf(mContext.getResources().getColor(R.color.zm_green)));
+                    rb1M.setTextColor(ColorStateList.valueOf(mContext.getResources().getColor(R.color.zm_green)));
+                    rb6M.setTextColor(ColorStateList.valueOf(mContext.getResources().getColor(R.color.white)));
+                    rb1Y.setTextColor(ColorStateList.valueOf(mContext.getResources().getColor(R.color.zm_green)));
 
-                            rangeType = "M";
-                            rangeValue = 6;
-                            rangeLabel = rb6M.getText().toString();
-                            if (isSessionZoom) {
-                                BaseMeetingActivity.showProgress(true);
-                            } else {
-                                DipsSwafoto.showProgress(true);
-                            }
-                            processNavPerformance();
-                        break;
-                    case R.id.rb1Y:
-                            rb10D.setTextColor(ColorStateList.valueOf(mContext.getResources().getColor(R.color.zm_green)));
-                            rb1M.setTextColor(ColorStateList.valueOf(mContext.getResources().getColor(R.color.zm_green)));
-                            rb6M.setTextColor(ColorStateList.valueOf(mContext.getResources().getColor(R.color.zm_green)));
-                            rb1Y.setTextColor(ColorStateList.valueOf(mContext.getResources().getColor(R.color.white)));
+                    rangeType = "M";
+                    rangeValue = 6;
+                    rangeLabel = rb6M.getText().toString();
+                    if (isSessionZoom) {
+                        BaseMeetingActivity.showProgress(true);
+                    } else {
+                        DipsSwafoto.showProgress(true);
+                    }
+                    processNavPerformance();
+                } else if (checkedId == R.id.rb1Y) {
+                    rb10D.setTextColor(ColorStateList.valueOf(mContext.getResources().getColor(R.color.zm_green)));
+                    rb1M.setTextColor(ColorStateList.valueOf(mContext.getResources().getColor(R.color.zm_green)));
+                    rb6M.setTextColor(ColorStateList.valueOf(mContext.getResources().getColor(R.color.zm_green)));
+                    rb1Y.setTextColor(ColorStateList.valueOf(mContext.getResources().getColor(R.color.white)));
 
-                            rangeType = "M";
-                            rangeValue = 12;
-                            rangeLabel = rb1Y.getText().toString();
-                            if (isSessionZoom) {
-                                BaseMeetingActivity.showProgress(true);
-                            } else {
-                                DipsSwafoto.showProgress(true);
-                            }
-                            processNavPerformance();
-                        break;
+                    rangeType = "M";
+                    rangeValue = 12;
+                    rangeLabel = rb1Y.getText().toString();
+                    if (isSessionZoom) {
+                        BaseMeetingActivity.showProgress(true);
+                    } else {
+                        DipsSwafoto.showProgress(true);
+                    }
+                    processNavPerformance();
                 }
             }
         });
@@ -933,21 +929,23 @@ public class frag_wm_detail_product extends Fragment {
         sweetAlertDialogTNC.setCancelable(true);
 
         if (!dataTnC.isEmpty()) {
-            tvBody.setText(Html.fromHtml(dataTnC, Html.FROM_HTML_MODE_LEGACY, new Html.ImageGetter() {
-                @Override
-                public Drawable getDrawable(String source) {
-                    int idx = source.indexOf(",");
-                    idx += 1;
-                    String new_source = source.substring(idx);
-                    byte[] data = Base64.decode(new_source, Base64.NO_WRAP);
-                    Bitmap bitmap = BitmapFactory.decodeByteArray(data, 0, data.length);
-                    Drawable d = new BitmapDrawable(mContext.getResources(), bitmap);
-                    int intH = d.getIntrinsicHeight();
-                    int intW = d.getIntrinsicWidth();
-                    d.setBounds(0, 0, intW, intH);
-                    return d;
-                }
-            }, null));
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                tvBody.setText(Html.fromHtml(dataTnC, Html.FROM_HTML_MODE_LEGACY, new Html.ImageGetter() {
+                    @Override
+                    public Drawable getDrawable(String source) {
+                        int idx = source.indexOf(",");
+                        idx += 1;
+                        String new_source = source.substring(idx);
+                        byte[] data = Base64.decode(new_source, Base64.NO_WRAP);
+                        Bitmap bitmap = BitmapFactory.decodeByteArray(data, 0, data.length);
+                        Drawable d = new BitmapDrawable(mContext.getResources(), bitmap);
+                        int intH = d.getIntrinsicHeight();
+                        int intW = d.getIntrinsicWidth();
+                        d.setBounds(0, 0, intW, intH);
+                        return d;
+                    }
+                }, null));
+            }
         }
 
         sweetAlertDialogTNC.show();
