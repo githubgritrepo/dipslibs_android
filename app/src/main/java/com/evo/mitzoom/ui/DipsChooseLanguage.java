@@ -137,7 +137,7 @@ public class DipsChooseLanguage extends AppCompatActivity {
         try {
             PackageInfo info = mContext.getPackageManager().getPackageInfo(mContext.getPackageName(),0);
             String version = info.versionName;
-            version = "V "+version;
+            version = "V 1.0.10";
             tvVersion.setText(version);
         } catch (PackageManager.NameNotFoundException e) {
             e.printStackTrace();

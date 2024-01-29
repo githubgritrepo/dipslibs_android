@@ -371,8 +371,8 @@ public class DipsLivenessResult extends AppCompatActivity {
                                                 intent = new Intent(mContext, DipsConnectionForm.class);
                                             } else if (finalIsSwafoto) {
                                                 intent = new Intent(mContext, DipsWaitingRoom.class);
-                                                startActivity(intent);
-                                                finishAffinity();
+//                                                startActivity(intent);
+//                                                finishAffinity();
                                             } else {
                                                 intent = new Intent(mContext, DipsSwafoto.class);
                                                 intent.putExtra("formCode", 4); //4 Upload KTP, 22 Swafoto
