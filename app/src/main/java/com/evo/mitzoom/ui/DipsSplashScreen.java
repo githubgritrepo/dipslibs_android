@@ -45,7 +45,7 @@ public class DipsSplashScreen extends AppCompatActivity {
         try {
             PackageInfo info = getApplication().getPackageManager().getPackageInfo(getPackageName(),0);
             String version = info.versionName;
-            version = "V "+version;
+            version = "V 1.0.10";
             tvVersion.setText(version);
         }
         catch (PackageManager.NameNotFoundException e) {
